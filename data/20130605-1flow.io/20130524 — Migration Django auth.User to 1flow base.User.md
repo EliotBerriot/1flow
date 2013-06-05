@@ -19,19 +19,21 @@
     fab ${DST} command:'./manage.py syncdb'
     fab ${DST} command:'./manage.py reset profiles'
 
-    fab ${DST} sdf.putdata:
-        # modified auth.User
-    fab ${DST} sdf.putdata:
-        # modified profiles
+    # load the modified data.
+    fab ${DST} sdf.putdata:./data/20130605-1flow.io/after/base.User_2013-06-05_0001.json
+    fab ${DST} sdf.putdata:./data/20130605-1flow.io/after/profiles_2013-06-05_0001.json
 
     fab ${DST} command:'./manage.py reset south'
     fab ${DST} command:'./manage.py migrate redisboard --fake 0001'
     fab ${DST} command:'./manage.py migrate redisboard --fake 0002'
     fab ${DST} command:'./manage.py migrate redisboard --fake 0003'
 
+    #
+    # TODO / SYSADMIN: install new server packages (eg. supervisor, MongoDB…)
+    #
+
     fab ${DST} command:'sudo rm /etc/supervisor/conf.d/*'
     fab ${DST} deploy
-    fab ${DST} command:'sudo supervisorctl reload'
 
     # NOT NEEDED:
     #fab ${DST} sdf.update_services_configuration
