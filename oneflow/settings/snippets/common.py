@@ -289,6 +289,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django_reset',
+    'gunicorn',
     'south',
     'south_admin',
     #'maintenancemode', — not needed at all, the middleware is sufficient.
