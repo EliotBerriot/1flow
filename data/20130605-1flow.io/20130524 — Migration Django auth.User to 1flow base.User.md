@@ -2,7 +2,8 @@
 ## Migration from Django user schema to 1flow user schema
 
     SRC=prod
-    DST=zero
+    #DST=zero
+    DST=zero:feature/core+ember
 
     fab ${SRC} maint
 
