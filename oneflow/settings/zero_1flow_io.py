@@ -10,8 +10,8 @@ from sparks.django.settings import include_snippets
 include_snippets(
     (
         '000_nobother',
-        #'00_production',
-        '00_development',
+        '00_production',
+        #'00_development',
         '1flow_io',
         'common',
         'db_common',
