@@ -31,6 +31,10 @@
     #
     # TODO / SYSADMIN: install new server packages (eg. supervisor, MongoDB…)
     #
+    # eg.   fab -H ${MAIN_SERVER} sdf.fabfile.db_mongo
+    #       vim /etc/mongodb.conf
+    #       …
+    #
 
     fab ${DST} command:'sudo rm /etc/supervisor/conf.d/*'
     fab ${DST} deploy
