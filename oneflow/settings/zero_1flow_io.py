@@ -21,6 +21,8 @@ include_snippets(
         'mail_production',
         'raven_development',
         'common_production',
+        # we need django-nose, devserver, etc.
+        'common_development',
     ),
     __file__, globals()
 )
