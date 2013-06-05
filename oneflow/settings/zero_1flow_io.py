@@ -17,6 +17,7 @@ include_snippets(
         'db_production',
         'cache_common',
         'cache_production',
+        'celery_production',
         'mail_production',
         'raven_development',
         'common_production',
