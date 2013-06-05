@@ -23,3 +23,6 @@ include_snippets(
 # Overide real production settings, to be able to distinguish.
 SITE_DOMAIN = 'zero.1flow.io'
 ALLOWED_HOSTS += ['localhost', SITE_DOMAIN]
+
+# OMG: do not attach to real production database.
+DATABASES['default']['HOST'] = '10.0.3.1'
