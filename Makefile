@@ -62,7 +62,7 @@ prod-restart:
 allfixtures: datafixtures fixtures
 
 datafixtures:
-	@find . -name '*.json' -path 'data/*'
+	@find . -name '*.json' -path '*/data/*'
 
 fixtures:
 	@find . -name '*.json' -path '*/fixtures/*'
