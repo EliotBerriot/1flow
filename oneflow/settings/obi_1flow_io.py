@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-# Settings for obi.1flow.net (test)
+# Settings for obi.1flow.io (preview)
+
+MAIN_SERVER = '91.121.220.149'
 
 from sparks.django.settings import include_snippets
 

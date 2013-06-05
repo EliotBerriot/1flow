@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 # Settings for 1flow.net (production)
 
+MAIN_SERVER = '91.121.220.149'
+
 from sparks.django.settings import include_snippets
 
 include_snippets(

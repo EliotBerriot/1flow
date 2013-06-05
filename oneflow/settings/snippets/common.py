@@ -10,7 +10,12 @@ import os
 # This is imported here to benefit to all other included snippets.
 from sparks import platform # NOQA
 
-MAIN_SERVER = '91.121.220.149'
+try:
+    MAIN_SERVER
+
+except NameError:
+    raise RuntimeError('MAIN_SERVER setting must be defined '
+                       'before common.py inclusion!')
 
 # We need to go down 2 times because the starting point of these settings is
 # `project/settings/__init__.py`, instead of good old `project/settings.py`.

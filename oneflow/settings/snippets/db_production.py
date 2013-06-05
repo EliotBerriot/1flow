@@ -1,6 +1,7 @@
 
 DATABASES['default'] = dj_database_url.config(
-    default='postgres://oneflow:8jxcWaAfPJT3mV@{0}/oneflow'.format(MAIN_SERVER))
+    default='postgres://oneflow:8jxcWaAfPJT3mV@{0}'
+    '/oneflow'.format(MAIN_SERVER))
 
 mongoengine.connect('oneflow', host=MAIN_SERVER)
 
