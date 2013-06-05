@@ -39,7 +39,10 @@
 
     fab ${DST} op
 
-## Form adaptations
+## Form adaptations for a User without `username` attribute
+
+As of 20130604, we decided to keep the `username` attribute for @coolness sake. But refering to sparks.django.models.EmailUser, the following content is what
+I studied/did to implement it.
 
 cf. https://docs.djangoproject.com/en/1.5/topics/auth/customizing/#custom-users-and-the-built-in-auth-forms
 
@@ -57,16 +60,15 @@ cf. https://docs.djangoproject.com/en/1.5/topics/auth/customizing/#custom-users-
 - PasswordChangeForm: OK
 - AdminPasswordChangeForm: OK
 
-## Tests
+## Implementation / Tests
 
 - sparks create superuser [OK]
 - inscription [OK]
-    - délai 1 seconde
-- ré-inscription [OK]
-- admin classique, liste + form [OK]
-- admin 1flow, liste + form [OK]
+    - delay 1 second > still problems with the inlined profile
+- re-inscription [OK]
+- classic admin, list + form [OK]
+- admin 1flow, list + form [OK]
     - change password [OK]
 - admin création [OK]
-
-- edit profile
-- change password
+- edit profile [OK]
+- change password [OK]
