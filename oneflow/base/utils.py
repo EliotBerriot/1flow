@@ -5,12 +5,14 @@ import logging
 from django.conf import settings
 from django.template import Context, Template
 from django.utils import translation
+from django.contrib.auth import get_user_model
 
 from sparks.django import mail
 
 from models import EmailContent
 
 LOGGER = logging.getLogger(__name__)
+User = get_user_model()
 
 
 def send_email_with_db_content(context, email_template_name, **kwargs):
@@ -32,7 +34,8 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
 
     # If there is no new user, it's not a registration, we
     # just get the context user, to fill email fields.
-    user = context.get('new_user', context.get('user'))
+    user = User.objects.get(id=context.get('new_user_id',
+                            context.get('user_id')))
     lang = context.get('language_code')
 
     if lang is not None:
@@ -128,12 +131,9 @@ def request_context_celery(request, *args, **kwargs):
             pass
 
     context.update({
-                   'user': request.user,
                    'meta': meta,
-                   # We need to pass the session key, not the real object,
-                   # because redis_sessions are not picklable because of
-                   # lambdas. Basic types are, but we never know.
-                   'session_key': request.session.session_key
+                   'session_key': request.session.session_key,
+                   'user_id': request.user.id,
                    })
 
     try:

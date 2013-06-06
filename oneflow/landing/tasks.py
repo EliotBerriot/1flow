@@ -23,7 +23,7 @@ def background_post_register_actions(context):
         application landing page. """
 
     meta = context['meta']
-    user = context['new_user']
+    user = User.objects.get(id=context['new_user_id'])
 
     # Classic Django
     #session = Session.objects.get(pk=context['session_key'])

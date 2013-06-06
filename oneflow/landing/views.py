@@ -30,7 +30,7 @@ def home(request):
 
             # We need to forge a context for celery,
             # passing the request "as is" never works.
-            context = request_context_celery(request, {'new_user': user})
+            context = request_context_celery(request, {'new_user_id': user.id})
 
             # we need to delay to be sure the profile creation is done.
             background_post_register_actions.delay(context)
