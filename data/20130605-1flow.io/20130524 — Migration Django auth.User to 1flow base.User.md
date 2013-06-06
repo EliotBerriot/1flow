@@ -6,6 +6,7 @@
     DST=zero:feature/core+ember
 
     fab ${SRC} maint
+    fab ${DST} maint
 
     fab ${SRC} sdf.getdata:profiles
     # edit profiles > adapt model (+data, -select_*, …)
@@ -13,6 +14,9 @@
     fab ${SRC} sdf.getdata:auth.User
     # NO: edit auth.User > remove 'username'
     # YES: s/auth\.user/base.user/
+
+    # HEADS UP: only if $SRC != $DST
+    fab ${SRC} op
 
     # Will fail at the syncdb run (it's normal)
     fab ${DST} runable
@@ -25,6 +29,9 @@
     #       from Pgadmin3: restore DB from dump
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
     #
+
+    # ONLY: if already partially up-to-date (eg. on OBI)
+    fab ${DST} command:'echo "yes" | ./manage.py reset base'
 
     # Will fail at the syncdb run (it's normal)
     fab ${DST} runable
