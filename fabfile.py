@@ -20,17 +20,17 @@
 
 """
 import os
-import pwd
 
-from fabric.api import env, task, run
-from fabric.context_managers import cd
+from fabric.api import env, task, roles, local as fablocal
 
-from sparks.fabric import with_remote_configuration
+from sparks.fabric import (with_remote_configuration,
+                           set_roledefs_and_parallel)
 import sparks.django.fabfile as sdf
 
 # Make the main deployment tasks immediately accessible
 runable, deploy, fast_deploy = sdf.runable, sdf.deploy, sdf.fast_deploy
 maintenance_mode, operational_mode = sdf.maintenance_mode, sdf.operational_mode
+run_command, restart_services = sdf.run_command, sdf.restart_services
 
 # The Django project name
 env.project    = 'oneflow'
@@ -45,25 +45,30 @@ env.virtualenv = '1flow'
 
 # Where is the django project located
 env.root         = '/home/1flow/www/src'
-env.host_string  = 'obi.1flow.io'
 env.environment  = 'test'
 env.pg_superuser = 'oneflow_admin'
 env.pg_superpass = 'ZQmeDuNF7b2GMC'
 env.repository   = 'olive@dev.1flow.net:1flow.git'
 
 
+def get_current_git_branch():
+    return fablocal('git rev-parse --abbrev-ref HEAD',
+                    capture=True).strip()
+
+
 @task
 def local():
+    # NOTE: a local environment doesn't need roledefs.
+    # We use Profile.development for running processes.
+    # We just need a host_string for direct calls like:
+    #       fab local sdf.requirements
     env.host_string = 'localhost'
-    env.environment = 'test'
-    env.virtualenv  = '1flow-master'
-    env.user        = pwd.getpwuid(os.getuid()).pw_name
     env.root        = os.path.expanduser('~/sources/1flow')
     env.env_was_set = True
 
 
 @task(alias='test')
-def preview():
+def preview(branch=None):
     """ This is the default config, we don't need to set anything more.
 
         To create a new test environment:
@@ -77,26 +82,63 @@ def preview():
 
     """
 
+    set_roledefs_and_parallel({
+        'db': ['obi.1flow.io'],
+        'web': ['obi.1flow.io'],
+        'lang': ['obi.1flow.io'],
+        'flower': ['worbi.1flow.io'],
+        'worker_high': ['worbi.1flow.io'],
+        'worker_low': ['worbi.1flow.io'],
+        #'redis': ['duncan.licorn.org'],
+    })
+
+    if branch is None:
+        env.branch = get_current_git_branch()
+
+    # implicit: else: branch will be 'develop',
+    # set directly from the sparks defaults.
+
     # we force the user because we can login as standard user there
     env.user        = '1flow'
     env.env_was_set = True
 
 
+@task(alias='prod')
+def production():
+    # we force the user because we can login as standard user there
+    env.user        = '1flow'
+    env.environment = 'production'
+    set_roledefs_and_parallel({
+        'db': ['1flow.io'],
+        'web': ['1flow.io'],
+        'flower': ['worker-01.1flow.io'],
+        'worker_high': ['worker-01.1flow.io'],
+        'worker_low': ['worker-02.1flow.io'],
+        #'redis': ['duncan.licorn.org'],
+    })
+    env.env_was_set = True
+
+
 @task
-def zero():
+def zero(branch=None):
     """ A master clone, restarted from scratch everytime to test migrations. """
 
-    # set_roledefs_and_hosts({
-    #     'db': ['zero.1flow.io'],
-    #     'web': ['zero.1flow.io'],
-    #     'worker': ['zero.1flow.io'],
-    #     'flower': ['zero.1flow.io'],
-    #     #'redis': ['zero.1flow.io'],
-    # })
+    set_roledefs_and_parallel({
+        'db': ['zero.1flow.io'],
+        'web': ['zero.1flow.io'],
+        'worker': ['zero.1flow.io'],
+        'flower': ['zero.1flow.io'],
+        #'redis': ['zero.1flow.io'],
+    })
+
+    if branch is None:
+        env.branch = 'develop'
+    else:
+        env.branch = get_current_git_branch()
+
+    env.host_string = 'zero.1flow.io'
 
     # env.user is set via .ssh/config
-    env.host_string = 'zero.1flow.io'
-    env.branch      = 'develop'
     env.env_was_set = True
 
 
@@ -124,30 +166,6 @@ def oneflowapp():
         raise RuntimeError('environment not supported')
 
 
-@task(alias='prod')
-def production():
-
-    # we force the user because we can login as standard user there
-    env.user        = '1flow'
-    env.host_string = '1flow.io'
-    env.environment = 'production'
-    env.env_was_set = True
-
-
-@task
-def command(cmd):
-    with sdf.activate_venv():
-        with cd(env.root):
-            run(cmd)
-
-
-@task
-def out(cmd):
-    with sdf.activate_venv():
-        with cd(env.root):
-            print(run(cmd) != '')
-
-
 @task
 @with_remote_configuration
 def testapps(remote_configuration):
@@ -160,7 +178,13 @@ def testapps(remote_configuration):
 
 
 @task
-def firstdeploy():
-    deploy()
+@roles('db')
+def firstdata():
     sdf.putdata('./oneflow/landing/fixtures/landing_2013-05-14_final-before-beta-opening.json') # NOQA
     sdf.putdata('./oneflow/base/fixtures/base_2013-05-14_final-before-beta-opening.json') # NOQA
+
+
+@task(aliases=('first', ))
+def firstdeploy():
+    deploy()
+    firstdata()

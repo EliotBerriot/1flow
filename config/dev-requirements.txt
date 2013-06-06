@@ -1,7 +1,12 @@
--e git+https://github.com/mbi/django-rosetta@b56350aa2da8d6a9ac8c7ff74d0f64e9d84ca096#egg=django_rosetta-dev
+-e git+https://github.com/Karmak23/fabric.git@7bd2eee26d7255c7b0edac0b87c1ee196086668f#egg=Fabric-dev
+-e git+https://github.com/mbi/django-rosetta.git@b56350aa2da8d6a9ac8c7ff74d0f64e9d84ca096#egg=django_rosetta-dev
 -e git+https://github.com/platypus-creation/django-rosetta-grappelli.git@83eff3890b6881460f105b6ecd63ff055f51dba4#egg=django_rosetta_grappelli-dev
+django-devserver==0.6.2
 django-nose==1.1
-Fabric==1.6.0
 flake8==2.0
+guppy==0.1.10
 ipython==0.13.2
-pip-tools==0.3.1
+line-profiler==1.0b3
+pip-tools==0.3.4
+sqlparse==0.1.7
+Werkzeug==0.8.3

@@ -2,6 +2,7 @@
 /static
 
 /MAINTENANCE_MODE
+/celerybeat-schedule
 
 # PIP local installs
 /src
@@ -10,3 +11,5 @@
 *.pyc
 *.pyo
 *.pye
+
+.sass-cache

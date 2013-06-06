@@ -3,14 +3,12 @@
 from django.contrib import admin
 from django.conf import settings
 from .models import LandingContent
-from sparks.django.admin import truncate_field
+from sparks.django.admin import languages, truncate_field
 
 
 if settings.FULL_ADMIN:
-
     content_fields_names = tuple(('content_' + code)
-                                 for code, lang
-                                 in settings.LANGUAGES)
+                                 for code, lang in languages)
     content_fields_displays = tuple((field + '_display')
                                     for field in content_fields_names)
 

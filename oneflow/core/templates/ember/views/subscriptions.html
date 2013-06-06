@@ -1,0 +1,30 @@
+{% handlebars "subscriptions" %}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10">&nbsp;</div>
+    </div>
+    <div class="row-fluid">
+      <div class="span10 offset1">
+        <h1>{% trans "Subscriptions" %}</h1>
+        <ul>
+        {{#each subscription in subscriptions}}
+          <li> linkto feed.url » name <span class="label">unread</span>
+            {{#if isExpanded}}
+              <div class='body'>{{body}}</div>
+              <button {{action collapse}}>{% trans "Collapse" %}</button>
+            {{else}}
+              <button {{action expand}}>{% trans "Details" %}</button>
+            {{/if}}
+          </li>
+        {{else}}
+          <li class="empty">
+            {% captureas add_one %}linkto subscription_new {% trans "Add one?" %} endlinkto{% endcaptureas %}
+            {% blocktrans %}
+              No subscription yet. {{add_one}}
+            {% endblocktrans %}
+        {{/each}}
+        </ul>
+      </div>
+    </div>
+  </div>
+{% endhandlebars %}

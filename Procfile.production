@@ -1,0 +1,8 @@
+# NOTE: as of 20130527, this file is not used in production, because sparks
+# already manage these services via supervisord. It is kept here for reference,
+# but should be reviewed before using it in real conditions.
+
+web: gunicorn_django -b "0.0.0.0:$PORT" -w 4
+flower: python manage.py celery flower
+worker_high: python manage.py celery worker -E --priority high --loglevel=info
+worker_low: python manage.py celery worker -E --priority low --loglevel=info

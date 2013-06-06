@@ -1,0 +1,102 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-22 17:51+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: forms.py:20
+msgid "E-mail address cannot be empty."
+msgstr ""
+
+#: models.py:12
+msgid "Template variable name"
+msgstr ""
+
+#: models.py:14
+msgid "Template variable content"
+msgstr ""
+
+#: models.py:17
+msgid "{field_name}: {truncated_field_value}"
+msgstr ""
+
+#: models.py:23
+msgid "Landing page content"
+msgstr ""
+
+#: models.py:24
+msgid "Landing page contents"
+msgstr ""
+
+#: urls.py:9
+msgid "^thanks/(?P<already_registered>\\w+)?$"
+msgstr ""
+
+#: views.py:106
+msgid "again"
+msgstr ""
+
+#: templates/landing_base.html:33
+msgid "Follow us on twitter!"
+msgstr ""
+
+#: templates/landing_base.html:67
+msgid "©2013, all right reserved | <strong>1flow</strong> team"
+msgstr ""
+
+#: templates/landing_index.html:14
+#, python-format
+msgid ""
+"\n"
+"                          <strong>1flow</strong> opens in %(timer)s.\n"
+"                        "
+msgstr ""
+
+#: templates/snippets/beta_invites_left.html:6
+#, python-format
+msgid ""
+"\n"
+"\n"
+"           There are <span class=\"number\">%(beta_invites_left)s</span> "
+"invites left.\n"
+"        "
+msgstr ""
+
+#: templates/snippets/beta_invites_left.html:12
+#, python-format
+msgid ""
+"\n"
+"           Hurry, there's only <span class=\"number\">%(counter)s</span> "
+"invite left.\n"
+"\n"
+"        "
+msgid_plural ""
+"\n"
+"           There are only <span class=\"number\">%(counter)s</span> invites "
+"left.\n"
+"\n"
+"        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/snippets/beta_invites_left.html:22
+msgid "No invite left!"
+msgstr ""
+
+#: templates/snippets/lang-switcher.html:13
+#, python-format
+msgid "Switch to %(name_local)s"
+msgstr ""

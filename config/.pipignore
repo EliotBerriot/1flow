@@ -1,12 +1,15 @@
+bencode
 distribute
 httplib2
 mccabe
+mimeparse
 nose
 oauth2
 paramiko
 pep8
 pycrypto
 pyflakes
+python-dateutil
 python-openid
 six
 stevedore

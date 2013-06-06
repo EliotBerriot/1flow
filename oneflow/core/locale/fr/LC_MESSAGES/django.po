@@ -1,0 +1,197 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+# 
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-26 11:13+0200\n"
+"PO-Revision-Date: 2013-05-27 06:46+0009\n"
+"Last-Translator:   <admin@1flow.net>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
+"Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Translated-Using: django-rosetta 0.7.2\n"
+
+#: urls.py:10
+msgid "^home/$"
+msgstr "^accueil/$"
+
+#: urls.py:11
+msgid "^profile/$"
+msgstr "^profil/$"
+
+#: urls.py:16
+msgid "^signin/$"
+msgstr "^connexion/$"
+
+#: urls.py:18
+msgid "^signout/$"
+msgstr "^deconnexion/$"
+
+#: models/nonrel.py:137
+msgid "Select whole paragraph on click"
+msgstr ""
+
+#: models/nonrel.py:139
+msgid "Grows public by default"
+msgstr ""
+
+#: models/oldrel.py:58 models/reldb.py:215
+msgid "Categories"
+msgstr "Catégories"
+
+#: templates/home.html:3
+msgid "Home"
+msgstr "Accueil"
+
+#: templates/profile.html:3 templates/ember/main.html:24
+msgid "Profile"
+msgstr "Profil"
+
+#: templates/signin.html:3 templates/ember/main.html:37
+msgid "Sign in…"
+msgstr "Connexion…"
+
+#: templates/signin.html:8
+msgid "1flow authentication"
+msgstr "Identification 1flow"
+
+#: templates/signin.html:38
+#, python-format
+msgid ""
+"\n"
+"              New to 1flow? <a href=\"%(register_url)s\">Register</a>.\n"
+"          "
+msgstr ""
+"\n"
+"Pas encore de compte ? <a href=\"%(register_url)s\">Enregistrez-vous</a>."
+
+#: templates/signin.html:43
+msgid "Sign in!"
+msgstr "Connexion !"
+
+#: templates/signin.html:49
+msgid "Social authentication"
+msgstr "Identification sociale"
+
+#: templates/signout.html:5
+#, fuzzy
+msgid "Signed out."
+msgstr "Déconnexion"
+
+#: templates/signout.html:6
+msgid "Welcome back to anonymous world."
+msgstr "Bon retour dans le monde de l'anonymat."
+
+#: templates/signout.html:6
+msgid "Thanks for spending some time on <strong>1flow</strong>."
+msgstr "Merci pour le temps que vous avez passé sur <strong>1flow</strong>."
+
+#: templates/signout.html:8
+#, python-format
+msgid ""
+"\n"
+"        Would you like to <a href=\"%(signin_url)s\">sign in again</a> with another account?\n"
+"    "
+msgstr ""
+"\n"
+"Désirez-vous <a href=\"%(signin_url)s\">vous identifier à nouveau</a> avec un autre compte ?"
+
+#: templates/ember/main.html:16
+msgid "Help"
+msgstr "Aide"
+
+#: templates/ember/main.html:27
+msgid "Django Admin."
+msgstr "Admin. Django"
+
+#: templates/ember/main.html:31
+msgid "Sign Out"
+msgstr "Déconnexion"
+
+#: templates/ember/main.html:44
+msgid "flowboard"
+msgstr ""
+
+#: templates/ember/main.html:45
+msgid "teams"
+msgstr "équipes"
+
+#: templates/ember/main.html:46
+msgid "subscriptions"
+msgstr "abonnements"
+
+#: templates/ember/main.html:47
+msgid "discovery"
+msgstr "découverte"
+
+#: templates/ember/main.html:51
+msgid "Search…"
+msgstr "Rechercher…"
+
+#: templates/ember/main.html:56
+msgid "about"
+msgstr "à propos"
+
+#: templates/ember/main.html:57
+msgid "contact"
+msgstr ""
+
+#: templates/ember/views/discovery.html:8
+#: templates/ember/views/recommended.html:8
+msgid "Not implemented"
+msgstr ""
+
+#: templates/ember/views/discovery.html:10
+#: templates/ember/views/recommended.html:10
+msgid "This is just a waiting view. Please be patient!"
+msgstr ""
+
+#: templates/ember/views/index.html:8
+msgid "Welcome!"
+msgstr "Bienvenue !"
+
+#: templates/ember/views/index.html:9
+msgid "This this hope. Er… Home!"
+msgstr ""
+
+#: templates/ember/views/subscriptions.html:8
+msgid "Subscriptions"
+msgstr "Abonnements"
+
+#: templates/ember/views/subscriptions.html:14
+msgid "Collapse"
+msgstr ""
+
+#: templates/ember/views/subscriptions.html:16
+msgid "Details"
+msgstr "Détails"
+
+#: templates/ember/views/subscriptions.html:21
+msgid "Add one?"
+msgstr ""
+
+#: templates/ember/views/subscriptions.html:22
+#, python-format
+msgid ""
+"\n"
+"              No subscription yet. %(add_one)s\n"
+"            "
+msgstr ""
+
+#: templates/ember/views/teams.html:4
+msgid "Your teams"
+msgstr "Vos équipes"
+
+#~ msgid "my flow"
+#~ msgstr "mon flux"
+
+#~ msgid "recommended"
+#~ msgstr "recommandations"

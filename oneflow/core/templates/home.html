@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+
+{% block title %}{% trans 'Home' %}{% endblock title %}
+
+{% block extrajs_header %}
+  <script type="text/javascript">
+    var url_root = '{{ request.META.SCRIPT_NAME }}';
+  </script>
+{% endblock extrajs_header %}
+
+{% block body %}
+{% include 'ember/main.html' %}
+{% include 'ember/views/index.html' %}
+{% include 'ember/views/teams.html' %}
+{% include 'ember/views/subscriptions.html' %}
+{% include 'ember/views/discovery.html' %}
+{% include 'ember/views/help.html' %}
+{% endblock body %}
+
+{% block extrajs_footer %}
+
+    {% emberpie_js %}
+    {% compressed_js 'bootstrap' %}
+    {% compressed_js 'showdown' %}
+    {% compressed_js 'moment' %}
+    {% compressed_js 'utils' %}
+    {% compressed_js 'core' %}
+
+    {# This must stay here (in the template) to get the server-side language. #}
+    <script type="text/javascript">
+        moment.lang('{{ LANGUAGE_CODE }}');
+    </script>
+
+    {% csrf_token %}
+{% endblock extrajs_footer %}

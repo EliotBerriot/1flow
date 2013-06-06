@@ -1,9 +1,5 @@
 {% extends "landing_base.html" %}
-
-{% load i18n %}
-{% load widget_tweaks %}
-{% load base_utils %}
-{% load markdown_deux_tags %}
+{% load js i18n base_utils widget_tweaks markdown_deux_tags %}
 
 {% block landing_title %}{% firstof landing_page_title 'landing_page_title' %}{% endblock landing_title %}
 
@@ -95,3 +91,11 @@
               </div>
             </div><!-- /span3 -->
 {% endblock landing_features %}
+
+{% block extrajs_footer %}
+  {{ block.super }}
+  <script type="text/javascript">
+    $('.feature a').tooltip();
+    $('#promise_right a').tooltip();
+  </script>
+{% endblock extrajs_footer %}

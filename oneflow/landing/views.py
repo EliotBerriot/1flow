@@ -1,108 +1,63 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import datetime
-import simplejson as json
 
-from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.shortcuts import render
 from django.utils.translation import ugettext_lazy as _
 from django.views.decorators.cache import never_cache
 
-from ..base.utils import send_email_with_db_content
+from .forms import LandingPageForm
+from .tasks import background_post_register_actions
+from .funcs import get_all_beta_data
 
-from forms import LandingPageForm
-from models import LandingContent
+from ..base.utils import request_context_celery
 
 LOGGER = logging.getLogger(__name__)
-
-
-def get_all_beta_data():
-    """ Return all Landing BETA related data, in a way suited to be used as::
-
-        context.update(get_all_beta_data())
-
-    """
-
-    return get_translations() + get_beta_invites_left() + get_beta_time_left()
-
-
-def get_beta_invites_left(only_number=False):
-
-    beta_invites_left = settings.LANDING_BETA_INVITES - User.objects.count()
-
-    if only_number:
-        return beta_invites_left
-
-    return (('beta_invites_left', beta_invites_left), )
-
-
-def get_beta_time_left():
-
-    delta = (settings.LANDING_BETA_DATE - datetime.datetime.now())
-
-    return (('beta_time_left', delta.days * 86400 + delta.seconds), )
-
-
-def get_translations():
-
-    # We can't speed up this thing with .values_list() because
-    # Transmeta's way of doing thing isn't compatible with it:
-    # it would need to specify the *_lang field name, which
-    # would avoid the ability to fallback to default lang if
-    # the field has no translation.
-    return tuple((x.name, x.content) for x in LandingContent.objects.all())
+User = get_user_model()
 
 
 def home(request):
-
-    context = {}
-
     if request.POST:
         form = LandingPageForm(request.POST)
 
         if form.is_valid():
             email = form.cleaned_data['email']
 
-            user, created = User.objects.get_or_create(username=(email[:29]
-                                                       + (email[29:] and u'_')),
-                                                       email=email)
+            user = User.objects.create(username=email, email=email)
 
-            if created:
-                has_invites_left = get_beta_invites_left(True) > 0
+            # We need to forge a context for celery,
+            # passing the request "as is" never works.
+            context = request_context_celery(request, {'new_user_id': user.id})
 
-                send_email_with_db_content(request,
-                                           'landing_thanks'
-                                           if has_invites_left
-                                           else 'landing_waiting_list',
-                                           new_user=user)
+            # we need to delay to be sure the profile creation is done.
+            background_post_register_actions.delay(context)
 
-                request_data = {
-                    'language': request.META.get('HTTP_ACCEPT_LANGUAGE', ''),
-                    'user_agent': request.META.get('HTTP_USER_AGENT', ''),
-                    'encoding': request.META.get('HTTP_ACCEPT_ENCODING', ''),
-                    'remote_addr': request.META.get('REMOTE_ADDR', ''),
-                    'remote_host': request.META.get('REMOTE_HOST', ''),
-                    'referer': request.session.get('INITIAL_REFERER', ''),
-                }
+            return HttpResponseRedirect(reverse('landing_thanks'))
 
-                user.profile.register_request_data = json.dumps(request_data)
-                user.profile.save()
-
-                try:
-                    del request.session['INITIAL_REFERER']
-                except KeyError:
-                    pass
-
-                return HttpResponseRedirect(reverse('landing_thanks'))
+        else:
+            try:
+                email = form.data['email']
+            except:
+                pass
 
             else:
-                return HttpResponseRedirect(reverse('landing_thanks',
-                                            kwargs={'already_registered':
-                                            _('again')}))
+                # Avoid displaying the disgracious error:
+                # "User with this Email address already exists."
+                # It will show up later in the application, but
+                # on the landing page this is not cool.
+                try:
+                    User.objects.get(email=email)
+
+                except User.DoesNotExist:
+                    pass
+
+                else:
+                    return HttpResponseRedirect(reverse('landing_thanks',
+                                                kwargs={'already_registered':
+                                                _('again')}))
 
     else:
         form = LandingPageForm()
@@ -111,8 +66,7 @@ def home(request):
         request.session.setdefault('INITIAL_REFERER',
                                    request.META.get('HTTP_REFERER', ''))
 
-    context['form'] = form
-
+    context = {'form': form}
     context.update(get_all_beta_data())
 
     return render(request, 'landing_index.html', context)

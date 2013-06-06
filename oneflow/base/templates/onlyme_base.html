@@ -1,5 +1,12 @@
 {% extends 'landing_base.html' %}
 
+{% block header_right %}{# intentionaly empty. #}{% endblock header_right %}
+
+{% block extrajs_header %}
+  {{ block.super }}
+  {% compressed_css 'core' %}
+{% endblock extrajs_header %}
+
 {% block full_content %}
     <div class="row-fluid">
         <div class="span6 offset3">

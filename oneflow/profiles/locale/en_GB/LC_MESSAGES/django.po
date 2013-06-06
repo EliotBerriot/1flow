@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-15 00:20+0200\n"
+"POT-Creation-Date: 2013-05-22 17:51+0200\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
-#: admin.py:43
+#: admin.py:44
 msgid "Groups"
 msgstr ""
 
-#: admin.py:48
+#: admin.py:49
 msgid "Full name"
 msgstr ""
 
-#: admin.py:53
+#: admin.py:54
 msgid "Announcements?"
 msgstr ""
 
@@ -39,26 +39,18 @@ msgid "Register data"
 msgstr ""
 
 #: models.py:24
-msgid "Select whole paragraph on click"
-msgstr ""
-
-#: models.py:26
-msgid "Grows public by default"
-msgstr ""
-
-#: models.py:28
 msgid "Last modified"
 msgstr ""
 
-#: models.py:29
+#: models.py:25
 msgid "Current validation code"
 msgstr ""
 
-#: models.py:33
+#: models.py:29
 msgid "User profile"
 msgstr ""
 
-#: models.py:34
+#: models.py:30
 msgid "User profiles"
 msgstr ""
 
