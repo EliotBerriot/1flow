@@ -1,4 +1,4 @@
--e git+https://github.com/Karmak23/sparks.git@sparks-2.4#egg=sparks-dev
+-e git+https://github.com/Karmak23/sparks.git@sparks-2.4.1#egg=sparks-dev
 -e git+https://github.com/gregmuellegger/django-reset.git@4f859d9319a7bfc41484f302e96e1f880aaa67db#egg=django_reset-dev
 -e git://github.com/noirbizarre/django-ember.git@b01e75e6a4b4d6eb353565b14756472cb972c6e9#egg=django_ember-dev
 amqp==1.0.11
