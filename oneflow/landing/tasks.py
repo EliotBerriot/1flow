@@ -42,8 +42,8 @@ def background_post_register_actions(context):
         'language': meta.get('HTTP_ACCEPT_LANGUAGE', ''),
         'user_agent': meta.get('HTTP_USER_AGENT', ''),
         'encoding': meta.get('HTTP_ACCEPT_ENCODING', ''),
-        'remote_addr': meta.get('REMOTE_ADDR', ''),
-        'remote_host': meta.get('REMOTE_HOST', ''),
+        'remote_addr': meta.get('HTTP_X_FORWARDED_FOR',
+                                meta.get('REMOTE_ADDR', '')),
         'referer': session.get('INITIAL_REFERER', ''),
     }
 
