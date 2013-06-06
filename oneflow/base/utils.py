@@ -109,11 +109,18 @@ def request_context_celery(request, *args, **kwargs):
         This Context instance is specialy forged for celery tasks,
         and should not make them crash with :class:`PicklingError`.
         In case it still does, you can mark ``HttpRequest.META`` keys to
-        be removed from the context. Defaults keys purged are::
+        be removed from the context via the ``CELERY_CONTEXT_EXPUNGE_META``
+        setting directive. Defaults keys purged are::
 
-            ('wsgi.errors', 'wsgi.input', )
+            ('wsgi.errors', 'wsgi.input', 'wsgi.file_wrapper',
+             'gunicorn.socket', )
 
         You can specify non-existing keys, they will just be skipped.
+
+        .. note:: the default keys will *always* be purged. You do not need
+            to add them to ``CELERY_CONTEXT_EXPUNGE_META``. Said another way
+            there is currently no way to avoid expunging them, and this is
+            intentional.
 
     """
 
@@ -122,8 +129,13 @@ def request_context_celery(request, *args, **kwargs):
 
     meta = request.META.copy()
 
-    for key in getattr(settings, 'CELERY_CONTEXT_EXPUNGE_META',
-                       ('wsgi.errors', 'wsgi.input', )):
+    expunge_keys = getattr(settings, 'CELERY_CONTEXT_EXPUNGE_META', ())
+
+    # We always get the basics for free.
+    expunge_keys += ('wsgi.errors', 'wsgi.input', 'wsgi.file_wrapper',
+                     'gunicorn.socket', )
+
+    for key in expunge_keys:
         try:
             del meta[key]
 
