@@ -14,15 +14,18 @@
     # NO: edit auth.User > remove 'username'
     # YES: s/auth\.user/base.user/
 
-    #
-    # restart-from-scratch note:
-    # lxc-scratch-restart.sh
-    # fab $DST sdf.createdb
-    # from Pgadmin3: restore DB from dump
-
 
     # Will fail at the syncdb run (it's normal)
     fab ${DST} runable
+
+    #
+    # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
+    # restart-from-scratch note:
+    #       lxc-scratch-restart.sh (or from Pgadmin3: remove DB)
+    #       fab $DST sdf.createdb (or runable, given your context)
+    #       from Pgadmin3: restore DB from dump
+    # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
+    #
 
     fab ${DST} command:'./manage.py syncdb'
     fab ${DST} command:'./manage.py reset profiles'
