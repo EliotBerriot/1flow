@@ -103,6 +103,22 @@ def preview(branch=None):
     env.env_was_set = True
 
 
+@task(alias='prod')
+def production():
+    # we force the user because we can login as standard user there
+    env.user        = '1flow'
+    env.environment = 'production'
+    set_roledefs_and_parallel({
+        'db': ['1flow.io'],
+        'web': ['1flow.io'],
+        'flower': ['worker-01.1flow.io'],
+        'worker_high': ['worker-01.1flow.io'],
+        'worker_low': ['worker-02.1flow.io'],
+        #'redis': ['duncan.licorn.org'],
+    })
+    env.env_was_set = True
+
+
 @task
 def zero(branch=None):
     """ A master clone, restarted from scratch everytime to test migrations. """
@@ -148,22 +164,6 @@ def oneflowapp():
 
     else:
         raise RuntimeError('environment not supported')
-
-
-@task(alias='prod')
-def production():
-    # we force the user because we can login as standard user there
-    env.user        = '1flow'
-    env.environment = 'production'
-    set_roledefs_and_parallel({
-        'db': ['1flow.io'],
-        'web': ['1flow.io'],
-        'flower': ['worker-01.1flow.io'],
-        'worker_high': ['worker-01.1flow.io'],
-        'worker_low': ['worker-02.1flow.io'],
-        #'redis': ['duncan.licorn.org'],
-    })
-    env.env_was_set = True
 
 
 @task
