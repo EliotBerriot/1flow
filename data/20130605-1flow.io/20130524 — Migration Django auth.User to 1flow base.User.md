@@ -29,14 +29,14 @@
     # Will fail at the syncdb run (it's normal)
     fab ${DST} runable
 
-    fab ${DST} command:'./manage.py syncdb'
-    fab ${DST} command:'./manage.py reset profiles'
+    fab ${DST} command:'echo "yes" | ./manage.py syncdb'
+    fab ${DST} command:'echo "yes" | ./manage.py reset profiles'
 
     # load the modified data.
     fab ${DST} sdf.putdata:./data/20130605-1flow.io/after/base.User_2013-06-05_0001.json
     fab ${DST} sdf.putdata:./data/20130605-1flow.io/after/profiles_2013-06-05_0001.json
 
-    fab ${DST} command:'./manage.py reset south'
+    fab ${DST} command:'echo "yes" | ./manage.py reset south'
     fab ${DST} command:'./manage.py migrate redisboard --fake 0001'
     fab ${DST} command:'./manage.py migrate redisboard --fake 0002'
     fab ${DST} command:'./manage.py migrate redisboard --fake 0003'
@@ -51,10 +51,6 @@
 
     fab ${DST} command:'sudo rm /etc/supervisor/conf.d/*'
     fab ${DST} deploy
-
-    # NOT NEEDED:
-    #fab ${DST} sdf.update_services_configuration
-    #fab ${DST} sdf.restart_services
 
     fab ${DST} op
 
