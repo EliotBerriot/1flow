@@ -46,9 +46,16 @@
     fab ${DST} sdf.putdata:./data/20130605-1flow.io/after/profiles_2013-06-05_0001.json
 
     fab ${DST} command:'echo "yes" | ./manage.py reset south'
-    fab ${DST} command:'./manage.py migrate redisboard --fake 0001'
-    fab ${DST} command:'./manage.py migrate redisboard --fake 0002'
-    fab ${DST} command:'./manage.py migrate redisboard --fake 0003'
+    fab ${DST} command:'./manage.py migrate redisboard --fake'
+
+    # In case we must do them one by one.
+    # fab ${DST} command:'./manage.py migrate redisboard --fake 0001'
+    # fab ${DST} command:'./manage.py migrate redisboard --fake 0002'
+    # fab ${DST} command:'./manage.py migrate redisboard --fake 0003'
+
+    # Not required, but I had to run these on 'local' target.
+    # fab ${DST} command:'./manage.py migrate djcelery --fake'
+    # fab ${DST} command:'./manage.py migrate tastypie --fake'
 
     #
     # TODO / SYSADMIN: install new server packages (eg. supervisor, MongoDB…)
