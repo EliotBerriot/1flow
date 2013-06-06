@@ -1,0 +1,103 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-22 17:51+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#: urls.py:7
+msgid "^home/$"
+msgstr ""
+
+#: models/keyval.py:203 models/reldb.py:215
+msgid "Categories"
+msgstr ""
+
+#: models/nonrel.py:92
+msgid "Select whole paragraph on click"
+msgstr ""
+
+#: models/nonrel.py:94
+msgid "Grows public by default"
+msgstr ""
+
+#: templates/home.html:5
+msgid "Home"
+msgstr ""
+
+#: templates/ember/main.html:16
+msgid "Help"
+msgstr ""
+
+#: templates/ember/main.html:24
+msgid "Profile"
+msgstr ""
+
+#: templates/ember/main.html:27
+msgid "Django Admin."
+msgstr ""
+
+#: templates/ember/main.html:31
+msgid "Sign Out"
+msgstr ""
+
+#: templates/ember/main.html:37
+msgid "Sign in…"
+msgstr ""
+
+#: templates/ember/main.html:44
+msgid "my flow"
+msgstr ""
+
+#: templates/ember/main.html:45
+msgid "my teams"
+msgstr ""
+
+#: templates/ember/main.html:46
+msgid "recommended"
+msgstr ""
+
+#: templates/ember/main.html:50
+msgid "Search…"
+msgstr ""
+
+#: templates/ember/main.html:55
+msgid "about"
+msgstr ""
+
+#: templates/ember/main.html:56
+msgid "contact"
+msgstr ""
+
+#: templates/ember/views/index.html:8
+msgid "Welcome!"
+msgstr ""
+
+#: templates/ember/views/index.html:9
+msgid "This this hope. Er… Home!"
+msgstr ""
+
+#: templates/ember/views/notimpl.html:8
+msgid "Not implemented"
+msgstr ""
+
+#: templates/ember/views/notimpl.html:10
+msgid "This is just a waiting view. Please be patient!"
+msgstr ""
+
+#: templates/ember/views/teams.html:4
+msgid "Your teams"
+msgstr ""

@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-# Settings for obi.1flow.net (test)
+# Settings for obi.1flow.io (preview)
 
-import os
+MAIN_SERVER = '91.121.220.149'
+
 from sparks.django.settings import include_snippets
 
 include_snippets(
-    os.path.dirname(__file__), (
+    (
         '000_nobother',
         # production: we don't debug on OBI,
         # we need to be in "real-life-mode",
@@ -20,13 +21,14 @@ include_snippets(
         'cache_development',
         'mail_production',
         # But it's a preview/test environment, still.
+        'celery_preview',
         'raven_preview',
         'common_preview',
         # Thus we get rosetta, and the Django Debug toolbar.
         'rosetta',
         'djdt',
     ),
-    globals()
+    __file__, globals()
 )
 
 # Override `1flow_io` for preview/test environment.

@@ -43,15 +43,39 @@ msgstr "Contenu de landing page"
 msgid "Landing page contents"
 msgstr "Contenus de landing page"
 
-#: urls.py:8
+#: urls.py:9
 msgid "^thanks/(?P<already_registered>\\w+)?$"
 msgstr "^merci/(?P<already_registered>\\w+)?$"
 
-#: views.py:104
+#: views.py:106
 msgid "again"
 msgstr "encore"
 
-#: templates/landing_base.html:55
+#: templates/landing_base.html:32
+msgid "Head to Home"
+msgstr "Entrer dans l'application"
+
+#: templates/landing_base.html:35
+msgid "Read our blog"
+msgstr "Parcourez notre blog"
+
+#: templates/landing_base.html:40
+msgid "Register for a new account"
+msgstr "Enregistrez un nouveau compte"
+
+#: templates/landing_base.html:42
+msgid "Register"
+msgstr "Enregistrement"
+
+#: templates/landing_base.html:45
+msgid "Identify yourself to access the service"
+msgstr "Identifiez-vous pour accéder au service"
+
+#: templates/landing_base.html:47
+msgid "Sign in"
+msgstr "Connexion"
+
+#: templates/landing_base.html:52
 msgid "Follow us on twitter!"
 msgstr "Suivez-nous sur Twitter !"
 

@@ -1,17 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import csv
+
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
 from django.contrib import admin
-#from django.contrib.sites.models import Site
 from django.contrib.admin.util import flatten_fieldsets
+from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
 
-from .models import EmailContent
+from .models import EmailContent, User
 
-from sparks.django.admin import truncate_field
+from sparks.django.admin import languages, truncate_field
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••• Helpers and abstract classes
@@ -128,10 +130,65 @@ class CSVAdminMixin(admin.ModelAdmin):
 # ••••••••••••••••••••••••••••••••••••••••••••••• Base Django App admin classes
 
 
+class OneFlowUserAdmin(UserAdmin, CSVAdminMixin):
+
+    list_display = ('id', 'username', 'email', 'full_name_display',
+                    'date_joined', 'last_login',
+                    'profile_email_announcements_display',
+                    'is_active', 'is_staff', 'is_superuser',
+                    'groups_display', 'profile_display', )
+    list_display_links = ('username', 'email', 'full_name_display', )
+    list_filter = ('profile__email_announcements',
+                   'is_active', 'is_staff', 'is_superuser', )
+    ordering = ('-date_joined',)
+    date_hierarchy = 'date_joined'
+    search_fields = ('email', 'first_name', 'last_name', )
+    change_list_template = "admin/change_list_filter_sidebar.html"
+    change_list_filter_template = "admin/filter_listing.html"
+    # Don't display the UserProfile inline, this will conflict with the
+    # post_save() signal in profiles.models. There is a race condition…
+    #inlines = [] if UserProfile is None else [UserProfileInline, ]
+
+    def groups_display(self, obj):
+        return u', '.join([g.name for g in obj.groups.all()]
+                          ) if obj.groups.count() else u'—'
+
+    groups_display.short_description = _(u'Groups')
+
+    def full_name_display(self, obj):
+        return obj.get_full_name()
+
+    full_name_display.short_description = _(u'Full name')
+
+    def profile_email_announcements_display(self, obj):
+        return obj.profile.email_announcements
+
+    profile_email_announcements_display.short_description = _(u'Announcements?')
+    profile_email_announcements_display.admin_order_field = 'profile__email_announcements' # NOQA
+    profile_email_announcements_display.boolean = True
+
+    def profile_display(self, obj):
+        try:
+            profile = obj.profile
+
+        except:
+            return u'—'
+
+        return u'<a href="{0}">{1}</a>'.format(
+            reverse('admin:%s_%s_change' % (profile._meta.app_label,
+                    profile._meta.module_name), args=[profile.pk]),
+                    _('Edit'))
+
+    profile_display.short_description = _(u"Profile")
+    profile_display.allow_tags = True
+
+
+admin.site.register(User, OneFlowUserAdmin)
+
+
 if settings.FULL_ADMIN:
     subject_fields_names = tuple(('subject_' + code)
-                                 for code, lang
-                                 in settings.LANGUAGES)
+                                 for code, lang in languages)
     subject_fields_displays = tuple((field + '_display')
                                     for field in subject_fields_names)
 

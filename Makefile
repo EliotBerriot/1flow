@@ -15,9 +15,18 @@ prod-fastdeploy:
 #	SPARKS_DJANGO_SETTINGS=chani_app ./manage.py runserver 0.0.0.0:8000
 
 runserver:
-	./manage.py runserver 0.0.0.0:8000
+	honcho -f Procfile.development start
 
 run: runserver
+
+test: tests
+
+tests:
+	# REUSE fails with
+	# "AttributeError: 'DatabaseCreation' object has no attribute '_rollback_works'"
+	# until https://github.com/jbalogh/django-nose/pull/101 is merged.
+	#REUSE_DB=1 ./manage.py test oneflow  --noinput --stop
+	./manage.py test oneflow --noinput --stop
 
 shell:
 	./manage.py shell
@@ -30,6 +39,9 @@ messages:
 
 compilemessages:
 	fab local sdf.compilemessages
+
+upgrade-requirements:
+	(cd config && pip-review -vai)
 
 update-requirements:
 	(cd config && pip-dump)
@@ -47,6 +59,10 @@ test-restart:
 prod-restart:
 	fab prod sdf.restart_services
 
+allfixtures: datafixtures fixtures
+
+datafixtures:
+	@find . -name '*.json' -path '*/data/*'
 
 fixtures:
 	@find . -name '*.json' -path '*/fixtures/*'

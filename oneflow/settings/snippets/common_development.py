@@ -20,7 +20,10 @@ ALLOWED_HOSTS += [
     'gurney.licorn.org'
 ]
 
-INSTALLED_APPS += ('django_nose', )
+INSTALLED_APPS += ('django_nose', 'devserver', )
+
+DEVSERVER_DEFAULT_ADDR = '0.0.0.0'
+DEVSERVER_DEFAULT_PORT = 8000
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 

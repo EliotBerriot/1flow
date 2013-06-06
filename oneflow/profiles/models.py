@@ -8,26 +8,27 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 
 class UserProfile(models.Model):
 
-    user = models.OneToOneField(User, related_name='profile',
-                                on_delete=models.CASCADE)
+    user = models.OneToOneField(settings.AUTH_USER_MODEL,
+                                related_name='profile',
+                                on_delete=models.CASCADE,
+                                primary_key=True)
 
     email_announcements = models.BooleanField(_('Email announcements'),
                                               default=True, blank=True)
     register_request_data = JSONField(_('Register data'),
                                       default='{}', blank=True)
-    select_paragraph = models.BooleanField(_('Select whole paragraph on click'),
-                                           default=False, blank=True)
-    default_public = models.BooleanField(_('Grows public by default'),
-                                         default=True, blank=True)
     last_modified = models.DateTimeField(_('Last modified'), auto_now_add=True)
     hash_code = models.CharField(_(u'Current validation code'), max_length=32,
                                  default=lambda: uuid.uuid4().hex)
+
+    data = JSONField(_('profile data, as JSON'),
+                     default='{}', blank=True)
 
     class Meta:
         verbose_name = _(u'User profile')
@@ -49,6 +50,7 @@ class UserProfile(models.Model):
 
 def create_user_profile(sender, instance, created, **kwargs):
     if created:
-        profile, created = UserProfile.objects.get_or_create(user=instance)
+        UserProfile.objects.get_or_create(user=instance)
 
-post_save.connect(create_user_profile, sender=User)
+
+post_save.connect(create_user_profile, sender=get_user_model())

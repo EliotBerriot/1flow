@@ -1,0 +1,11 @@
+{% extends "onlyme_base.html" %}
+
+{% block onlyme_content %}
+
+    <h1>{{ _('Signed out.') }}</h1>
+    <h2>{{ _('Welcome back to anonymous world.') }} {{ _('Thanks for spending some time on <strong>1flow</strong>.') }}</h2>
+    {% captureas signin_url %}{% url 'signin' %}{% endcaptureas %}
+    <p>{% blocktrans %}
+        Would you like to <a href="{{signin_url}}">sign in again</a> with another account?
+    {% endblocktrans %}</p>
+{% endblock onlyme_content %}

@@ -1,171 +1,102 @@
-{% load i18n %}
-{% load base_utils %}
-{% load markdown_deux_tags %}
-{% get_current_language as current_lang_code %}
-<!DOCTYPE html>
-<html lang="{{ current_lang_code }}">
-  <head>
-    <meta charset="utf-8">
-    <title>1flow – {% block landing_title %}{% firstof landing_title 'landing_title' %}{% endblock landing_title %}</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="">
-    <meta name="author" content="Shy Design">
+{% extends 'base.html' %}
+{% load js compressed i18n base_utils markdown_deux_tags %}
 
-    <!-- Le styles -->
-    <link href="{{ STATIC_URL }}css/bootstrap.min.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/bootstrap-responsive.min.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/custom.css" rel="stylesheet">
-    <link href="{{ STATIC_URL }}css/font-awesome.min.css" rel="stylesheet">
+{% block title %}{% block landing_title %}{% firstof landing_title 'landing_title' %}{% endblock landing_title %}{% endblock title %}
 
-    <script type="text/javascript" src="{{ STATIC_URL }}js/jquery.js"></script>
+{% block extrajs_header %}
+  {% js 'js/jquery.js' %}
+  {% compressed_css 'landing' %}
+{% endblock extrajs_header %}
 
-    <!--[if IE 7]>
-      <link rel="stylesheet" href="{{ STATIC_URL }}css/font-awesome-ie7.min.css">
-    <![endif]-->
+{% block body %}
+  <header id="header" class="site-header">
+    <div class="container">
 
-    <!-- HTML5 shim, for IE6-8 support of HTML5 elements -->
-    <!--[if lt IE 9]>
-      <script src="{{ STATIC_URL }}js/html5shiv.js"></script>
-    <![endif]-->
+      {% block lang_switcher %}
+        {% include 'snippets/lang-switcher.html' %}
+      {% endblock lang_switcher %}
 
-  </head>
-
-  <body>
-
-    <header id="header" class="site-header">
-        <div class="container">
-
-          {% block lang_switcher %}
-            {% include 'snippets/lang-switcher.html' %}
-          {% endblock lang_switcher %}
-
-          <div class="row-fluid">
-            <div class="span12">
-              <div class="pull-left">
-                <h1><a class="site-title" href="/">
-                  1flow <span
-                    class="badge badge-warning badge-beta">BETA</span></a>
-                </h1>
-                <h2 class="site-subtitle">{{ baseline_site_subtitle|markdown }}</h2>
-              </div>
-              <div class="user text-right">
-                <a class="user-login link-tooltip"
-                  href="https://twitter.com/1flow_io"
-                  target="_blank"
-                  title="{% trans "Follow us on twitter!" %}"><i
-                  class="icon-twitter"></i></a>
-                <!--
-                <a class="user-login" href="http://blog.1flow.net/"
-                  title=""><i class="icon-bullhorn"></i></a>
-                -->
-              </div>
-            </div><!-- /span12 -->
-          </div><!-- /row-fluid -->
-        </div><!-- /container -->
-
-      <div class="container">
-
-        {% block full_content %}{% endblock full_content %}
-
-      </div><!-- /container -->
-    </header>
-
-    <section id="features" class="features">
-      <div class="container">
-        <div class="row-fluid">
-
-          {% block landing_features %}{% endblock landing_features %}
-
-        </div><!-- /row-fluid -->
-      </div><!-- /container -->
-    </section>
-
-    <footer id="footer" class="footer">
-      <div class="container">
-        <div class="row-fluid">
-          <div class="span12">
-            <h1 class="footer-title pull-left"><a href="/">1flow <span
-              class="badge badge-warning badge-beta">BETA</span></a> <small class="footer-title">{{ baseline_site_subtitle }}</small></h1>
-            <div class="pull-right copyright">{% if footer_copyright %}{{ footer_copyright|markdown }}{% else %}{% trans "©2013, all right reserved | <strong>1flow</strong> team" %}{% endif %}</div>
+      <div class="row-fluid">
+        <div class="span12">
+          <div class="pull-left">
+            <h1><a class="site-title" href="/">
+              1flow <span
+                class="badge badge-warning badge-beta">BETA</span></a>
+            </h1>
+            <h2 class="site-subtitle">{{ baseline_site_subtitle|markdown }}</h2>
           </div>
-        </div>
+          {% block header_right %}
+            <div class="user text-right">
+              {% if user.is_authenticated %}
+                <a class="user-login link-tooltip" href="{% url 'home' %}"
+                  title="{% trans "Head to Home" %}"><i
+                    class="icon-home"></i></a>
+                <a class="user-login link-tooltip"
+                  title="{% trans "Read our blog" %}"
+                  href="http://blog.1flow.net/"><i
+                    class="icon-bullhorn"></i></a>
+              {% else %}
+              <!--
+                <a class="user-login link-tooltip"
+                  title="{% trans "Register for a new account" %}"
+                  href="{% url 'signin' %}"><i
+                    class="icon-ticket"></i> {% trans "Register" %}</a>
+
+                <a class="user-login link-tooltip"
+                  title="{% trans "Identify yourself to access the service" %}"
+                  href="{% url 'signin' %}"><i
+                    class="icon-signin"></i> {% trans "Sign in" %}</a>
+              -->
+              {% endif %}
+
+              <a class="user-login link-tooltip"
+                href="https://twitter.com/1flow_io"
+                title="{% trans "Follow us on twitter!" %}"
+                target="_blank"><i
+                  class="icon-twitter"></i></a>
+            </div>
+          {% endblock header_right %}
+        </div><!-- /span12 -->
+      </div><!-- /row-fluid -->
+    </div><!-- /container -->
+
+  <div class="container">
+
+    {% block full_content %}{% endblock full_content %}
+
+  </div><!-- /container -->
+</header>
+
+<section id="features" class="features">
+  <div class="container">
+    <div class="row-fluid">
+
+      {% block landing_features %}{% endblock landing_features %}
+
+    </div><!-- /row-fluid -->
+  </div><!-- /container -->
+</section>
+
+<footer id="footer" class="footer">
+  <div class="container">
+    <div class="row-fluid">
+      <div class="span12">
+        <h1 class="footer-title pull-left"><a href="/">1flow <span
+          class="badge badge-warning badge-beta">BETA</span></a> <small class="footer-title">{{ baseline_site_subtitle }}</small></h1>
+        <div class="pull-right copyright">{% if footer_copyright %}{{ footer_copyright|markdown }}{% else %}{% trans "©2013, all right reserved | <strong>1flow</strong> team" %}{% endif %}</div>
       </div>
-    </footer>
+    </div>
+  </div>
+</footer>
+{% endblock body %}
 
-    <!-- Le javascript
-    ================================================== -->
-    <!-- Placed at the end of the document so the pages load faster -->
-    <script type="text/javascript" src="{{ STATIC_URL }}js/bootstrap.min.js"></script>
+{% block extrajs_footer %}
+  {% compressed_js 'bootstrap' %}
 
-    <script type='text/javascript'>
-    var _ues = {
-    host:'1flow.userecho.com',
-    forum:'19803',
-    lang:'{{ current_lang_code }}',
-    tab_corner_radius:5,
-    tab_font_size:20,
-    {% if current_lang_code == 'fr' %}
-    tab_image_hash:'ZmVlZGJhY2s%3D',
-    tab_chat_hash:'Y2hhdA%3D%3D',
-    //tab_image_hash:'YXNzaXN0YW5jZQ%3D%3D',
-    //tab_chat_hash:'Y2xhdmFyZGFnZQ%3D%3D',
-    {% else %}
-    tab_image_hash:'ZmVlZGJhY2s%3D',
-    tab_chat_hash:'Y2hhdA%3D%3D',
-    {% endif %}
-    tab_alignment:'right',
-    tab_text_color:'#FFFFFF',
-    tab_text_shadow_color:'#00000055',
-    tab_bg_color:'#FD8759',
-    tab_hover_color:'#db522f'
-    };
-
-    (function() {
-        var _ue = document.createElement('script'); _ue.type = 'text/javascript'; _ue.async = true;
-        _ue.src = ('https:' == document.location.protocol ? 'https://' : 'http://') + 'cdn.userecho.com/js/widget-1.4.gz.js';
-        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(_ue, s);
-      })();
-
-    </script>
-
-    {% if user.is_anonymous or not user.is_staff or not user.is_superuser %}
-      <script type="text/javascript">
-        var _gaq = _gaq || [];
-        _gaq.push(['_setAccount', 'UA-2868362-8']);
-        _gaq.push(['_trackPageview']);
-        (function() {
-          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-        })();
-      </script>
-    {% endif %}
-
-    <span id="inframation_slides" style="display: none">
-      <iframe src="{{ inframation_slides|safe }}"
-        frameborder="0" width="652" height="420"
-        allowfullscreen="true" mozallowfullscreen="true"
-        webkitallowfullscreen="true"></iframe>
-    </span>
-
-    <script type="text/javascript">
-
-    $('.feature a').tooltip();
-    $('#promise_right a').tooltip();
+  <script type="text/javascript">
     $('a.link-tooltip').tooltip();
-
     try {
         $("#lang-flags input[type=image]").tooltip({placement: 'bottom'});
     } catch(err) {};
-
-
-    $('#promise_left a').popover({
-        template: '<div class="popover"><div class="arrow"></div>'
-        + '<div class="popover-inner popover-presentation">'
-        + '<h3 class="popover-title"></h3><div class="popover-content">'
-        + $("#inframation_slides").html()
-        + '</div></div></div>',
-    });
-    </script>
-  </body>
-</html>
+  </script>
+{% endblock extrajs_footer %}

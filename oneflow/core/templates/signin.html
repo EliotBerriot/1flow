@@ -1,0 +1,53 @@
+{% extends "onlyme_base.html" %}
+
+{% block title %}{% trans 'Sign in…' %}{% endblock title %}
+
+{% block onlyme_content %}
+  <form class="form-login form-horizontal" method="post">
+    <fieldset>
+      <legend>{% trans "1flow authentication" %}</legend>
+      <p>&nbsp;</p>
+      {% if form.non_field_errors %}
+        <div class="alert alert-error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}" />
+
+      <div class="control-group {% if form.username.errors %}error{% endif %}">
+        <label class="control-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
+        <div class="controls">
+          {{ form.username }}
+          <span class="help-inline">{{ form.username.errors }}</span>
+        </div>
+      </div>
+
+      <div class="control-group {% if form.password.errors %}error{% endif %}">
+        <label class="control-label" for="{{ form.password.id_for_label }}">{{ form.password.label }}</label>
+        <div class="controls">
+          {{ form.password }}
+          <span class="help-inline">{{ form.password.errors }}</span>
+        </div>
+      </div>
+
+      <div class="form-actions">
+        <div class="pull-left">
+          {% captureas register_url %}{# {% url 'register' %} #}{% endcaptureas %}
+          {% blocktrans %}
+              New to 1flow? <a href="{{ register_url }}">Register</a>.
+          {% endblocktrans %}
+        </div>
+        <div class="pull-right">
+          <button class="btn btn-primary" type="submit" class="btn">{% trans "Sign in!" %}</button>
+        </div>
+      </div>
+
+    </fieldset>
+    <fieldset>
+      <legend>{% trans "Social authentication" %}</legend>
+
+    </fieldset>
+  </form>
+{% endblock onlyme_content %}

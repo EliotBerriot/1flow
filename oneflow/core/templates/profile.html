@@ -1,0 +1,10 @@
+{% extends 'base.html' %}
+
+{% block title %}{% trans 'Profile' %}{% endblock title %}
+
+
+{% block body %}
+    {% csrf_token %}
+    {{form}}
+{% endblock body %}
+

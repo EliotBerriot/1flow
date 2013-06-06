@@ -1,0 +1,81 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2013-05-22 17:51+0200\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: admin.py:44
+msgid "Groups"
+msgstr ""
+
+#: admin.py:49
+msgid "Full name"
+msgstr ""
+
+#: admin.py:54
+msgid "Announcements?"
+msgstr ""
+
+#: models.py:20
+msgid "Email announcements"
+msgstr ""
+
+#: models.py:22
+msgid "Register data"
+msgstr ""
+
+#: models.py:24
+msgid "Last modified"
+msgstr ""
+
+#: models.py:25
+msgid "Current validation code"
+msgstr ""
+
+#: models.py:29
+msgid "User profile"
+msgstr ""
+
+#: models.py:30
+msgid "User profiles"
+msgstr ""
+
+#: urls.py:8
+msgid "^unsubscribe/(?P<hash_code>\\w{32,32})?$"
+msgstr ""
+
+#: templates/unsubscribe.html:6
+msgid "Successfully unsubscribed!"
+msgstr ""
+
+#: templates/unsubscribe.html:10
+#, python-format
+msgid ""
+"\n"
+"\n"
+"# Unsubscribed!\n"
+"\n"
+"## You will not receive anything more from us at your email address "
+"%(email)s.\n"
+"\n"
+"We are sad to see you jump without any parachute during the flight.\n"
+"\n"
+"If you change your mind, you don't need to call *Iron Man*: just float "
+"gently back to [Home][] and register again.\n"
+"\n"
+"  [Home]: /\n"
+"\n"
+msgstr ""
