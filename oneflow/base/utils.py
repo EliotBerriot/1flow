@@ -34,8 +34,16 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
 
     # If there is no new user, it's not a registration, we
     # just get the context user, to fill email fields.
-    user = User.objects.get(id=context.get('new_user_id',
-                            context.get('user_id')))
+    # BTW, we need to get back the real user object,
+    # because the celery task only gave us the ID.
+    if 'new_user_id' in context:
+        user = User.objects.get(id=context['new_user_id'])
+        context['new_user'] = user
+    else:
+        user = User.objects.get(id=context['user_id'])
+
+    context['user'] = user
+
     lang = context.get('language_code')
 
     if lang is not None:
