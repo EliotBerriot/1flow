@@ -21,7 +21,7 @@
 """
 import os
 
-from fabric.api import env, task, local as fablocal
+from fabric.api import env, task, roles, local as fablocal
 
 from sparks.fabric import (with_remote_configuration,
                            set_roledefs_and_parallel)
@@ -177,8 +177,14 @@ def testapps(remote_configuration):
     print(str(list(project_apps)))
 
 
+@task
+@roles('db')
+def firstdata():
+    sdf.putdata('./oneflow/landing/fixtures/landing_2013-05-14_final-before-beta-opening.json') # NOQA
+    sdf.putdata('./oneflow/base/fixtures/base_2013-05-14_final-before-beta-opening.json') # NOQA
+
+
 @task(aliases=('first', ))
 def firstdeploy():
     deploy()
-    sdf.putdata('./oneflow/landing/fixtures/landing_2013-05-14_final-before-beta-opening.json') # NOQA
-    sdf.putdata('./oneflow/base/fixtures/base_2013-05-14_final-before-beta-opening.json') # NOQA
+    firstdata()
