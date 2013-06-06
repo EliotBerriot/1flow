@@ -1,3 +1,27 @@
+
+# Hosts
+
+## On Duncan
+
+On the `10.0.3.0` network:
+
+- 1     PG/redis/MongoDB (duncan, physical host, production + preview)
+- 109    worker (LXC TEMPLATE, must stay down and thus unreachable)
+- 110    dev.1flow.net (production, sentry)
+- 111    obi (preview, web instance)
+- 112    1flow.io (production, web instance)
+- 113    worker-01 (production worker)
+
+## On Gurney
+
+On the `10.0.3.0` network:
+
+- 1     PG/redis/MongoDB (Gurney, physical host, preview + tests)
+- 10    worbi (preview worker)
+- 11    zero (scratch tests, single node web+worker+flower)
+- 12    twenty (idem)
+- 13    worker-02 (production worker + flower)
+
 # Databases
 
 # Redis
