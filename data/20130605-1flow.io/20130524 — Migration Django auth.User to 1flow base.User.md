@@ -32,6 +32,8 @@
 
     # ONLY: if already partially up-to-date (eg. on OBI)
     fab ${DST} command:'echo "yes" | ./manage.py reset base'
+    fab ${DST} command:'echo "yes" | ./manage.py reset landing'
+    fab ${DST} firstdata
 
     # Will fail at the syncdb run (it's normal)
     fab ${DST} runable
@@ -56,6 +58,8 @@
     #       …
     #
 
+    # HEADS UP: you will need to specify manually all machines,
+    # because -R … won't work. Don't ask me why, I don't know.
     fab ${DST} command:'sudo rm /etc/supervisor/conf.d/*'
     fab ${DST} deploy
 
