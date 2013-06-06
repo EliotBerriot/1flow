@@ -58,10 +58,24 @@ def get_current_git_branch():
 
 @task
 def local():
-    # NOTE: a local environment doesn't need roledefs.
-    # We use Profile.development for running processes.
-    # We just need a host_string for direct calls like:
-    #       fab local sdf.requirements
+    # NOTE: in theory a local environment doesn't need any roledef, because
+    # we use Profile.development for running processes and all fabric
+    # operations should be run via local(). BUT, in fact, they are run via
+    # run() or sudo() (sparks doesn't make any difference, all tasks are
+    # "remote"), that's why we populate roledefs, to benefit from all sparks
+    # tasks.
+    set_roledefs_and_parallel({
+        'db': ['localhost'],
+        'web': ['localhost'],
+        'lang': ['localhost'],
+        'flower': ['localhost'],
+        'worker': ['localhost'],
+        #'redis': ['localhost'],
+    })
+
+    # As of sparks 2.2+, it should not be needed to set env.host_string anymore,
+    # but it's still comfortable to have it when lanching tasks that are not
+    # fully roledefs-compatible (eg. sdf.compilemessages ran alone).
     env.host_string = 'localhost'
     env.root        = os.path.expanduser('~/sources/1flow')
     env.env_was_set = True
