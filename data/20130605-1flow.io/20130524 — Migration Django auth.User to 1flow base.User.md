@@ -14,7 +14,6 @@
     # NO: edit auth.User > remove 'username'
     # YES: s/auth\.user/base.user/
 
-
     # Will fail at the syncdb run (it's normal)
     fab ${DST} runable
 
@@ -26,6 +25,9 @@
     #       from Pgadmin3: restore DB from dump
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••
     #
+
+    # Will fail at the syncdb run (it's normal)
+    fab ${DST} runable
 
     fab ${DST} command:'./manage.py syncdb'
     fab ${DST} command:'./manage.py reset profiles'
