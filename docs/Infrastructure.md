@@ -32,6 +32,10 @@ On the `10.0.3.0` network:
 
 ## Numbering and accesses
 
+development & production use same numbers: obviously they are never on the same
+machine, there can't be any collision, unlike production & preview which are
+on the same machine as of 2013-06-07.
+
 - Main 1flow database (comments, ratings…) is **0**.
     - on preview we could set it to **10**, to avoid mixing prod/preview, except
       if it's a desired behavior (cutting edge code on real data).

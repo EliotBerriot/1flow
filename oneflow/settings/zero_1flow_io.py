@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
-# Settings for zero.1flow.io, a master clone used to validate migrations.
+# Settings for zero.1flow.io, a single-host production clone
+# used to validate migrations. The LXC guest is resetted every
+# night (see on Gurney.licorn.org olive::crontab)
 
 # This will connect all databases to local LXC host,
 # instead of production host. SAFER.

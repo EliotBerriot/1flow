@@ -91,11 +91,15 @@ def preview(branch=None):
         ssh duncan
         lxc-clone
         in the LXC rootfs, clean /etc/supervisor/conf.d/*
-        edit /etc/rc.local
+        edit firewall / iptables
         start LXC
 
     """
 
+    #
+    # WARNING: when adding preview machine(s),
+    # don't forget to add django settings files for them…
+    #
     set_roledefs_and_parallel({
         'db': ['obi.1flow.io'],
         'web': ['obi.1flow.io'],
