@@ -45,8 +45,9 @@
     fab ${DST} sdf.putdata:./data/20130605-1flow.io/after/base.User_2013-06-05_0001.json
     fab ${DST} sdf.putdata:./data/20130605-1flow.io/after/profiles_2013-06-05_0001.json
 
-    fab ${DST} command:'echo "yes" | ./manage.py reset south'
-    fab ${DST} command:'./manage.py migrate redisboard --fake'
+    # Not required, but I had to run these on 'local' and 'obi'.
+    #fab ${DST} command:'echo "yes" | ./manage.py reset south'
+    #fab ${DST} command:'./manage.py migrate redisboard --fake'
 
     # In case we must do them one by one.
     # fab ${DST} command:'./manage.py migrate redisboard --fake 0001'
@@ -68,8 +69,8 @@
     # HEADS UP: you will need to specify manually all machines,
     # because -R … won't work. Don't ask me why, I don't know.
     fab ${DST} command:'sudo rm /etc/supervisor/conf.d/*'
-    fab ${DST} deploy
 
+    fab ${DST} deploy
     fab ${DST} op
 
 ## Form adaptations for a User without `username` attribute
