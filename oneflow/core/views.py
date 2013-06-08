@@ -13,8 +13,10 @@ from django.core.urlresolvers import reverse
 from django.shortcuts import render
 from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
+from django.contrib.auth import authenticate, login
 
 from ..profiles.forms import UserProfileForm
+from .forms import FullUserCreationForm
 
 LOGGER = logging.getLogger(__name__)
 
@@ -52,3 +54,23 @@ def profile(request):
     context = {'form': form}
 
     return render(request, 'profile.html', context)
+
+
+def register(request):
+
+    creation_form = FullUserCreationForm(data=request.POST or None)
+
+    if request.method == 'POST' and creation_form.is_valid():
+
+        user = creation_form.save()
+
+        authenticated_user = authenticate(
+            username=user.username,
+            password=creation_form.cleaned_data['password1']
+        )
+
+        login(request, authenticated_user)
+
+        return HttpResponseRedirect(reverse('home'))
+
+    return render(request, 'register.html', {'form': creation_form})

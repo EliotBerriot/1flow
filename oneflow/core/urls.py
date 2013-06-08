@@ -3,12 +3,13 @@ from django.conf.urls import patterns, url
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 
-from .views import home, profile
+from .views import home, profile, register
 
 urlpatterns = patterns(
     'oneflow.core.views',
     url(_(r'^home/$'), login_required(home), name='home'),
     url(_(r'^profile/$'), login_required(profile), name='profile'),
+    url(_(r'^register/$'), register, name='register'),
 )
 
 urlpatterns += patterns(
