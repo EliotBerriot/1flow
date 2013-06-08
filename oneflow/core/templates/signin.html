@@ -51,3 +51,10 @@
     </fieldset>
   </form>
 {% endblock onlyme_content %}
+
+{% block extrajs_footer %}
+  {{ block.super }}
+  <script>
+    $('#id_username').focus();
+  </script>
+{% endblock extrajs_footer %}
