@@ -70,6 +70,7 @@ TRANSMETA_LANGUAGES = LANGUAGES + (
 
 # We use oneflow.base.models.User as a drop-in replacement.
 AUTH_USER_MODEL = 'base.User'
+SOCIAL_AUTH_USER_MODEL = 'base.User'
 
 USE_I18N = True
 USE_L10N = True
@@ -258,9 +259,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # TODO: activate this if needed.
+    #'social_auth.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'maintenancemode.middleware.MaintenanceModeMiddleware',
-    #'django.middleware.gzip.GZipMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     #'pipeline.middleware.MinifyHTMLMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
 )
@@ -283,6 +286,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'absolute.context_processors.absolute',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+
+    # TODO: activate one of these when needed.
+    #'social_auth.context_processors.social_auth_by_name_backends',
+    'social_auth.context_processors.social_auth_backends',
+    #'social_auth.context_processors.social_auth_login_redirect',
+
     # One day, if we have some:
     #'oneflow.base.context_processors.…',
     #'oneflow.core.context_processors.…',
@@ -315,6 +324,7 @@ INSTALLED_APPS = (
     'redisboard',
     'djcelery',
     'memcache_status',
+    'social_auth',
     'markdown_deux',
     'djangojs',
     'pipeline',
@@ -359,10 +369,42 @@ MARKDOWN_DEUX_STYLES = {
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
 
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
+    #'social_auth.backends.facebook.FacebookBackend',
+    #'social_auth.backends.google.GoogleOAuthBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    'social_auth.backends.google.GoogleBackend',
+    #'social_auth.backends.yahoo.YahooBackend',
+    #'social_auth.backends.browserid.BrowserIDBackend',
+    #'social_auth.backends.contrib.linkedin.LinkedinBackend',
+    #'social_auth.backends.contrib.disqus.DisqusBackend',
+    #'social_auth.backends.contrib.livejournal.LiveJournalBackend',
+    #'social_auth.backends.contrib.orkut.OrkutBackend',
+    #'social_auth.backends.contrib.foursquare.FoursquareBackend',
+    #'social_auth.backends.contrib.github.GithubBackend',
+    #'social_auth.backends.contrib.vk.VKOAuth2Backend',
+    #'social_auth.backends.contrib.live.LiveBackend',
+    #'social_auth.backends.contrib.skyrock.SkyrockBackend',
+    #'social_auth.backends.contrib.yahoo.YahooOAuthBackend',
+    #'social_auth.backends.contrib.readability.ReadabilityBackend',
+    #'social_auth.backends.contrib.fedora.FedoraBackend',
+    #'social_auth.backends.OpenIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
-LOGIN_URL = 'signin'
-LOGOUT_URL = 'signout'
+# See http://django-social-auth.readthedocs.org/en/latest/configuration.html#urls-options # NOQA
+# for social_auth specific URLs.
+LOGIN_URL          = 'signin'
+LOGOUT_URL         = 'signout'
 LOGIN_REDIRECT_URL = 'home'
+LOGIN_ERROR_URL    = 'signin_error'
+
+# See SOCIAL_AUTH_USER_MODEL earlier in this file.
+#SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+#SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
+#SOCIAL_AUTH_SESSION_EXPIRATION = False
+
 
 LOGGING = {
     'version': 1,
