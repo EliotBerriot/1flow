@@ -1,0 +1,19 @@
+/* TEAM */
+    Founder/Technical: Olivier Cortès
+    Contact: oc [at] 1flow.io
+    Twitter: @Karmak23
+    From: Bordeaux, France
+
+    Functional/Marketing: Matthieu Chaignot
+    Contact: mc [at] 1flow.io
+    Twitter: @mchaignot
+    From: Paris, France
+
+    UI developer: our own little hands
+
+/* SITE */
+    Language: English / French
+    Doctype: HTML5
+    IDE: Sublime Text 2
+
+/* http://humanstxt.org/ */

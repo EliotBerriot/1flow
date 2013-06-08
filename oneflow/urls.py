@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.i18n import i18n_patterns
+from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 from django.contrib import admin
 
@@ -21,6 +22,11 @@ handler503 = 'oneflow.base.views.maintenance_mode'
 urlpatterns = patterns(
     '',
     url(r'', include('oneflow.base.urls')),
+    url(r'', include('social_auth.urls')),
+    url(r'^robots\.txt$', TemplateView.as_view(template_name='robots.txt',
+        content_type='text/plain')),
+    url(r'^humans\.txt$', TemplateView.as_view(template_name='humans.txt',
+        content_type='text/plain')),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^djangojs/', include('djangojs.urls')),
 )
