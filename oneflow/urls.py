@@ -56,7 +56,7 @@ urlpatterns += patterns(
 
 urlpatterns += patterns(
     '',
-    (r'^api/', include(v1_api.urls)),
+    url(r'^api/', include(v1_api.urls)),
 )
 
 # This will add urls only when DEBUG=True
