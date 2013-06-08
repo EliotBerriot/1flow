@@ -31,22 +31,22 @@
                 <a class="user-login link-tooltip" href="{% url 'home' %}"
                   title="{% trans "Head to Home" %}"><i
                     class="icon-home"></i></a>
+                <!--
                 <a class="user-login link-tooltip"
                   title="{% trans "Read our blog" %}"
                   href="http://blog.1flow.net/"><i
                     class="icon-bullhorn"></i></a>
+                -->
               {% else %}
-              <!--
                 <a class="user-login link-tooltip"
                   title="{% trans "Register for a new account" %}"
-                  href="{% url 'signin' %}"><i
+                  href="{% url 'register' %}"><i
                     class="icon-ticket"></i> {% trans "Register" %}</a>
 
                 <a class="user-login link-tooltip"
                   title="{% trans "Identify yourself to access the service" %}"
                   href="{% url 'signin' %}"><i
                     class="icon-signin"></i> {% trans "Sign in" %}</a>
-              -->
               {% endif %}
 
               <a class="user-login link-tooltip"
