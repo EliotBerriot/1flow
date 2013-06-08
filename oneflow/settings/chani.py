@@ -38,7 +38,7 @@ ALLOWED_HOSTS += [
 ]
 
 # We need an official public host name for all `social_auth` backends.
-SITE_DOMAIN = 'lil.1flow.io:8080'
+SITE_DOMAIN = 'lil.1flow.io'
 
 EMAIL_HOST = 'gurney'
 #EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
