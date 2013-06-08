@@ -1,0 +1,51 @@
+{% extends "onlyme_form.html" %}
+
+{% block title %}{% trans 'Register' %}{% endblock title %}
+
+{% block onlyme_content %}
+  <form class="form-login form-horizontal" method="post">
+    <fieldset>
+      <legend>{% trans "Create your account" %}</legend>
+      <p>&nbsp;</p>
+      {% if form.non_field_errors %}
+        <div class="alert alert-error">
+          {{ form.non_field_errors }}
+        </div>
+      {% endif %}
+
+      {% csrf_token %}
+      <input type="hidden" name="next" value="{{ next }}" />
+
+      {% for field in form %}
+
+        <div class="control-group {% if field.errors %}error{% endif %}">
+          <label class="control-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+          <div class="controls">
+            {{ field }}
+            <span class="help-inline">{{ field.errors }}</span>
+          </div>
+        </div>
+
+      {% endfor %}
+
+      <div>
+        {% blocktrans %}
+            Note: on successful registration, you will be automatically redirected to the <strong>1flow</strong> application.
+        {% endblocktrans %}
+      </div>
+
+      <div class="form-actions">
+        <div class="pull-right">
+          <button class="btn btn-primary" type="submit" class="btn">{% trans "Register and sign in!" %}</button>
+        </div>
+      </div>
+
+    </fieldset>
+    <fieldset>
+      <legend>{% trans "Social registration" %}</legend>
+      <p>{% blocktrans %}
+          You can just use any of your social account to register on <strong>1flow</strong>. This will automatically import your social content into <em>your flows</em>. Two operations in one!
+      {% endblocktrans %}</p>
+    </fieldset>
+  </form>
+{% endblock onlyme_content %}
