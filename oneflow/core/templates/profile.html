@@ -6,5 +6,12 @@
 {% block body %}
     {% csrf_token %}
     {{form}}
+
+    {% comment %}
+    {% url "socialauth_begin" "backend-name" %}
+    {% url "socialauth_disconnect" "backend-name" %}
+    {% url "socialauth_disconnect_individual" "backend-name" backend-id %}
+    {% endcomment %}
+
 {% endblock body %}
 
