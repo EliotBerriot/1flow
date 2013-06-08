@@ -224,12 +224,23 @@ PIPELINE_JS = {
     }
 }
 
-TEMPLATE_LOADERS = (
-    ('django.template.loaders.cached.Loader', (
+if TEMPLATE_DEBUG:
+    # Because Django's cached templates doesn't use a proper caching
+    # engine, it doesn't benefit from our DummyCache development setting…
+    # We have to deactivate it completely for development.
+    # cf. http://stackoverflow.com/a/4071488/654755
+    TEMPLATE_LOADERS = (
         'django.template.loaders.filesystem.Loader',
         'django.template.loaders.app_directories.Loader',
-    )),
-)
+    )
+
+else:
+    TEMPLATE_LOADERS = (
+        ('django.template.loaders.cached.Loader', (
+            'django.template.loaders.filesystem.Loader',
+            'django.template.loaders.app_directories.Loader',
+        )),
+    )
 
 # We always include the *Cache* middlewares. In development &
 # pre-production it's a dummy cache, allowing to keep them here.
