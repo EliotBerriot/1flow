@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-05-26 11:13+0200\n"
-"PO-Revision-Date: 2013-05-27 06:46+0009\n"
+"PO-Revision-Date: 2013-06-08 10:43+0009\n"
 "Last-Translator:   <admin@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -82,9 +82,8 @@ msgid "Social authentication"
 msgstr "Identification sociale"
 
 #: templates/signout.html:5
-#, fuzzy
 msgid "Signed out."
-msgstr "Déconnexion"
+msgstr "Déconnecté."
 
 #: templates/signout.html:6
 msgid "Welcome back to anonymous world."
