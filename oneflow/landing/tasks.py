@@ -3,18 +3,16 @@
 import logging
 import simplejson as json
 
+from celery import task
 from django.contrib.auth import get_user_model
 #from django.contrib.sessions.models import Session
 from redis_sessions.session import SessionStore
 
+from .funcs import get_beta_invites_left
 from ..base.utils import send_email_with_db_content
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
-
-from celery import task
-
-from .funcs import get_beta_invites_left
 
 
 @task()
