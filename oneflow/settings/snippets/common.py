@@ -7,6 +7,8 @@
 
 import os
 
+from django.core.urlresolvers import reverse_lazy
+
 # This is imported here to benefit to all other included snippets.
 from sparks import platform # NOQA
 
@@ -395,10 +397,10 @@ AUTHENTICATION_BACKENDS = (
 
 # See http://django-social-auth.readthedocs.org/en/latest/configuration.html#urls-options # NOQA
 # for social_auth specific URLs.
-LOGIN_URL          = 'signin'
-LOGOUT_URL         = 'signout'
-LOGIN_REDIRECT_URL = 'home'
-LOGIN_ERROR_URL    = 'signin_error'
+LOGIN_URL          = reverse_lazy('signin')
+LOGOUT_URL         = reverse_lazy('signout')
+LOGIN_REDIRECT_URL = reverse_lazy('home')
+LOGIN_ERROR_URL    = reverse_lazy('signin_error')
 
 # See SOCIAL_AUTH_USER_MODEL earlier in this file.
 #SOCIAL_AUTH_SANITIZE_REDIRECTS = False
