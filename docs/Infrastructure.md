@@ -1,7 +1,7 @@
 
 # Hosts
 
-## On Duncan
+## On Duncan.licorn.org
 
 On the `10.0.3.0` network:
 
@@ -12,7 +12,7 @@ On the `10.0.3.0` network:
 - 112    1flow.io (production, web instance)
 - 113    worker-01 (production worker)
 
-## On Gurney
+## On Gurney.licorn.org
 
 On the `10.0.3.0` network:
 
