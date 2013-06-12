@@ -1,5 +1,5 @@
 /* TEAM */
-    Founder/Technical: Olivier Cortès
+    Founder/Technical/Functional: Olivier Cortès
     Contact: oc [at] 1flow.io
     Twitter: @Karmak23
     From: Bordeaux, France
@@ -9,11 +9,12 @@
     Twitter: @mchaignot
     From: Paris, France
 
-    UI developer: our own little hands
+    UI developers: our own little hands (any emotional designer interested? just get in touch… Twitter @1flow_io)
 
 /* SITE */
     Language: English / French
     Doctype: HTML5
     IDE: Sublime Text 2
+    Frameworks: Django/EmberJS
 
 /* http://humanstxt.org/ */
