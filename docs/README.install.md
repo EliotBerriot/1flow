@@ -20,5 +20,6 @@ start and not running virtualenvwrapper stuff, on which sparks relies.
 
 Let Fabric and sparks install Django and all the rest:
 
+    git clone git@dev.1flow.net:1flow.git
     cd 1flow
-    make runable
+    fab local firstdeploy
