@@ -10,7 +10,6 @@ App = Ember.Application.create({
 });
 
 App.Store = DS.Store.extend({
-  revision: 12,
   adapter: DS.DjangoTastypieAdapter.extend({
       namespace: 'api/v1'
       // namespace: (url_root + '/api/v1').replace(/^\//g, ''),
