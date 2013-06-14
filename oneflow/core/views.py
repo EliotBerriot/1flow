@@ -60,17 +60,21 @@ def register(request):
 
     creation_form = FullUserCreationForm(data=request.POST or None)
 
-    if request.method == 'POST' and creation_form.is_valid():
+    if request.method == 'POST':
 
-        user = creation_form.save()
+        if creation_form.is_valid():
 
-        authenticated_user = authenticate(
-            username=user.username,
-            password=creation_form.cleaned_data['password1']
-        )
+            user = creation_form.save()
 
-        login(request, authenticated_user)
+            authenticated_user = authenticate(
+                username=user.username,
+                password=creation_form.cleaned_data['password1']
+            )
 
-        return HttpResponseRedirect(reverse('home'))
+            login(request, authenticated_user)
+
+            #post_register_actions.delay((user.id, ))
+
+            return HttpResponseRedirect(reverse('home'))
 
     return render(request, 'register.html', {'form': creation_form})
