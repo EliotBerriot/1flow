@@ -207,6 +207,14 @@ PIPELINE_JS = {
         'output_filename': 'js/moment.js',
     },
 
+    # TODO: to be removed; see core/templates/…/home.html
+    'temp_handlebars_rc4': {
+        'source_filenames': (
+            'js/workarounds/handlebars-1.0.0-rc4/handlebars.js',
+        ),
+        'output_filename': 'js/handlebars-1.0.0-rc4.js',
+    },
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
 
     'utils': {
