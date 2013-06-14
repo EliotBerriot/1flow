@@ -38,24 +38,6 @@ def home(request):
     return render(request, 'home.html')
 
 
-@never_cache
-def profile(request):
-
-    if request.POST:
-        form = UserProfileForm(request.POST)
-
-        if form.is_valid():
-            form.save()
-            return HttpResponseRedirect(reverse('profile'))
-
-    else:
-        form = UserProfileForm(request.user.profile)
-
-    context = {'form': form}
-
-    return render(request, 'profile.html', context)
-
-
 def register(request):
 
     creation_form = FullUserCreationForm(data=request.POST or None)
