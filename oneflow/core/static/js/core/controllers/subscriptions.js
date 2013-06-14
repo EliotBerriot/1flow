@@ -9,5 +9,6 @@ App.SubcriptionController = Ember.ObjectController.extend({
 
   collapse: function() {
     this.set('isExpanded', false);
+    //this.get('store').commit();
   }
 });

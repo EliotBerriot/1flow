@@ -21,13 +21,14 @@ App.Router.map(function(){
     this.resource('teams');
     this.resource('discovery');
     this.resource('subscriptions', function() {
-        this.route('edit', { path: '/:subscription_id' });
+        this.route('edit', { path: ':subscription_id' });
     });
     this.resource('help');
 })
 
 // App.IndexRoute = Ember.Route.extend({
 //     redirect: function() {
+  //        this.transitionTo('subscriptions');
 //         this.replaceWith('subscriptions');
 //     }
 // });
