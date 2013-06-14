@@ -37,6 +37,11 @@
                   href="http://blog.1flow.net/"><i
                     class="icon-bullhorn"></i></a>
                 -->
+                <a class="user-login link-tooltip"
+                  title="{% trans "Sign out" %}"
+                  href="{% url 'signout' %}"><i
+                    class="icon-signout"></i> {% trans "Sign out" %}</a>
+
               {% else %}
                 <a class="user-login link-tooltip"
                   title="{% trans "Register for a new account" %}"
