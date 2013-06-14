@@ -34,7 +34,7 @@
 
       <div class="form-actions">
         <div class="pull-left">
-          {% captureas register_url %}{# {% url 'register' %} #}{% endcaptureas %}
+          {% url 'register' as register_url %}
           {% blocktrans %}
               New to 1flow? <a href="{{ register_url }}">Register</a>.
           {% endblocktrans %}
