@@ -406,6 +406,13 @@ AUTHENTICATION_BACKENDS = (
     'django.contrib.auth.backends.ModelBackend',
 )
 
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Social Auth
+
+from libgreader.auth import OAuth2Method
+
+GOOGLE_OAUTH_EXTRA_SCOPE           = OAuth2Method.SCOPE
+GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
+
 # See http://django-social-auth.readthedocs.org/en/latest/configuration.html#urls-options # NOQA
 # for social_auth specific URLs.
 LOGIN_URL          = reverse_lazy('signin')
@@ -418,6 +425,7 @@ LOGIN_ERROR_URL    = reverse_lazy('signin_error')
 #SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
 #SOCIAL_AUTH_SESSION_EXPIRATION = False
 
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
 
 LOGGING = {
     'version': 1,
