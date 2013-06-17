@@ -348,6 +348,8 @@ INSTALLED_APPS = (
     'oneflow.core',
 )
 
+JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
+
 import djcelery
 djcelery.setup_loader()
 # BROKER and other settings are in celery_* snippets.

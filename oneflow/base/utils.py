@@ -1,11 +1,13 @@
 # -*- coding: utf-8 -*-
 
+import six
 import logging
 
 from django.conf import settings
 from django.template import Context, Template
 from django.utils import translation
 from django.contrib.auth import get_user_model
+from djangojs.utils import ContextSerializer
 
 from sparks.django import mail
 
@@ -163,3 +165,21 @@ def request_context_celery(request, *args, **kwargs):
         context.update({'language_code': None})
 
     return context
+
+
+class JsContextSerializer(ContextSerializer):
+    """ This class should probably move into sparks some day. """
+
+    def process_social_auth(self, social_auth, data):
+        """ Just force social_auth's LazyDict to be converted to a dict for the
+            JSON serialization to work properly. """
+
+        data['social_auth'] = dict(six.iteritems(social_auth))
+
+    def handle_user(self, data):
+        """ We just add the user ID to everything already gathered by Django.JS
+            user serializer. """
+
+        super(JsContextSerializer, self).handle_user(data)
+
+        data['user']['id'] = self.request.user.id
