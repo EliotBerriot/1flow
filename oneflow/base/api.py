@@ -34,16 +34,26 @@ class UserObjectsOnlyAuthorization(Authorization):
 
         user = bundle.request.user
 
-        return bundle.obj.user == user or user.is_staff or user.is_superuser
+        try:
+            return bundle.obj.user == user or user.is_staff or user.is_superuser
+
+        except AttributeError:
+            return bundle.obj == user or user.is_staff or user.is_superuser
 
     def create_list(self, object_list, bundle):
         # Assuming their auto-assigned to ``user``.
         return object_list
 
     def create_detail(self, object_list, bundle):
+        """ TODO: make this method more granular for some types of objects. """
+
         user = bundle.request.user
 
-        return bundle.obj.user == user or user.is_staff or user.is_superuser
+        try:
+            return bundle.obj.user == user or user.is_staff or user.is_superuser
+
+        except AttributeError:
+            return user.is_staff or user.is_superuser
 
     def update_list(self, object_list, bundle):
         allowed = []
@@ -52,17 +62,29 @@ class UserObjectsOnlyAuthorization(Authorization):
 
         # Since they may not all be saved, iterate over them.
         for obj in object_list:
-            if obj.user == user or user.is_staff or user.is_superuser:
+            try:
+                object_user = obj.user
+
+            except AttributeError:
+                object_user = obj
+
+            if object_user == user or user.is_staff or user.is_superuser:
                 allowed.append(obj)
 
         return allowed
 
     def update_detail(self, object_list, bundle):
-        return bundle.obj.user == bundle.request.user
+        try:
+            return bundle.obj.user == bundle.request.user
+
+        except AttributeError:
+            return bundle.obj == bundle.request.user
 
     def delete_list(self, object_list, bundle):
+        """ TODO: implement staff/superuser. """
         # Sorry user, no deletes for you!
         raise Unauthorized("Sorry, no deletes.")
 
     def delete_detail(self, object_list, bundle):
+        """ TODO: implement staff/superuser. """
         raise Unauthorized("Sorry, no deletes.")
