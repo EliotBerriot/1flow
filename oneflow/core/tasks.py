@@ -2,6 +2,7 @@
 
 import logging
 import datetime
+from humanize.time import naturaldelta
 
 from libgreader import GoogleReader, OAuth2Method
 
@@ -12,11 +13,12 @@ from django.contrib.auth import get_user_model
 
 from .models import RATINGS
 from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
+from .gr_import import GoogleReaderImport
 
 #from ..base.utils import send_email_with_db_content
 
 # Maximum number of articles fetched at each import wave.
-GR_LOAD_LIMIT = 250
+GR_LOAD_LIMIT = 500
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -47,11 +49,20 @@ def import_google_reader_data_trigger(user_id):
     user.social_auth.get(
         provider='google-oauth2').tokens['access_token']
 
+    gri = GoogleReaderImport(user)
+
+    # notify it will start, to avoid the
+    # import button showing again on web page.
+    gri.start(set_time=True)
+
     import_google_reader_data.delay(user_id)
 
 
 @task
 def import_google_reader_data(user_id):
+
+    ftstamp = datetime.datetime.fromtimestamp
+    now     = datetime.datetime.now
 
     django_user, mongo_user = get_user_from_dbs(user_id)
 
@@ -76,20 +87,30 @@ def import_google_reader_data(user_id):
                        'access_token was invalid.', django_user.username)
         return
 
-    LOGGER.info('Starting google reader import for user %s(%s)',
+    LOGGER.info('Starting Google Reader import for user %s(%s)',
                 user_infos['userEmail'], user_infos['userId'])
 
-    mongo_user.gr_import_begin(user_infos)
+    gri = GoogleReaderImport(django_user)
+
+    # refresh start time with the actual real start time.
+    gri.start(set_time=True, user_infos=user_infos)
 
     reader.buildSubscriptionList()
 
-    total = len(reader.feeds)
-    current = 1
+    total_feeds     = len(reader.feeds)
+    total_articles  = reader.totalReadItems()
+    processed_feeds = 0
+
+    gri.total_articles(total_articles)
+    gri.total_feeds(total_feeds)
+
+    LOGGER.info(u'Google Reader import %s feed(s) and %s article(s) to go…',
+                total_feeds, total_articles)
 
     for gr_feed in reader.feeds:
 
         LOGGER.info(u'Importing feed “%s” (%s/%s)…',
-                    gr_feed.title, current, total)
+                    gr_feed.title, processed_feeds + 1, total_feeds)
 
         Feed.objects(url=gr_feed.feedUrl,
                      site_url=gr_feed.siteUrl
@@ -110,7 +131,14 @@ def import_google_reader_data(user_id):
                                           upsert=True)
 
         import_google_reader_articles.delay(user_id, reader, gr_feed, feed)
-        current += 1
+
+        processed_feeds += 1
+        gri.incr_feeds()
+
+    LOGGER.info(u'Done importing %s feeds in %s; import already started for '
+                u'the %s article(s)…', total_feeds,
+                naturaldelta(now() - ftstamp(float(gri.start()))),
+                total_articles)
 
 
 @task
@@ -119,6 +147,8 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
     ftstamp = datetime.datetime.fromtimestamp
 
     django_user, mongo_user = get_user_from_dbs(user_id)
+
+    gri = GoogleReaderImport(django_user)
 
     if wave:
         gr_feed.loadMoreItems(loadLimit=GR_LOAD_LIMIT)
@@ -160,6 +190,7 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
                                   upsert=True)
 
         current += 1
+        gri.incr_articles()
 
     if total % GR_LOAD_LIMIT == 0:
         # We got a multiple of the loadLimit. Go for next wave,
@@ -171,11 +202,10 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
         LOGGER.info(u'Done importing %s article(s) in feed “%s”.',
                     grand_total, gr_feed.title)
 
-        # This will save(), and end() the import if appropriate.
-        if mongo_user.gr_import_update(grand_total):
-            mongo_user.reload()
+        if gri.total_articles() == gri.articles():
+            gri.end(set_time=True)
             LOGGER.info(u'Done importing Google Reader data (%s article(s), '
-                        u'%s feed(s)).', mongo_user.gr_import.articles_imported,
-                        mongo_user.gr_import.feeds_imported)
-
-    # message: importing started
+                        u'%s feed(s) in %s).', gri.total_articles(),
+                        gri.total_feeds(), naturaldelta(
+                        ftstamp(float(gri.end()))
+                        - ftstamp(float(gri.start()))))
