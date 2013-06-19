@@ -2,7 +2,9 @@
 
 import datetime
 import logging
+import simplejson as json
 
+from celery import task
 from mongoengine import Document
 from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 DateTimeField,
@@ -13,22 +15,41 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
 
 from django.utils.translation import ugettext_lazy as _
 
+from ...base.utils import connect_mongoengine_signals
 from .keyval import FeedbackDocument
 
 LOGGER = logging.getLogger(__name__)
 
 
 class Source(Document):
-    # what difference with a feed ??
-    url = URLField()
-    name = StringField()
-    slug = StringField()
+    """ The "original source" for similar articles: they have different authors,
+        different contents, but all refer to the same information, which can
+        come from the same article on the net (or radio, etc).
+
+        Eg:
+            - article1 on Le Figaro
+            - article2 on Liberation
+            - both refer to the same AFP news, but have different content.
+
+    """
+    type    = StringField()
+    uri     = URLField()
+    name    = StringField()
+    authors = ListField(ReferenceField('User'))
+    slug    = StringField()
 
 
 class Feed(Document):
-    name = StringField()
-    url = URLField()
-    restricted = BooleanField()
+    # TODO: init
+    name       = StringField()
+    url        = URLField()
+    site_url   = URLField()
+    slug       = StringField()
+    restricted = BooleanField(default=False)
+
+    @classmethod
+    def signal_post_init_handler(cls, sender, document, **kwargs):
+        LOGGER.warning('POST INIT for %s', document)
 
 
 class Subscription(Document):
@@ -50,6 +71,7 @@ class Group(Document):
 
 
 class Article(Document):
+    # TODO: init
     title = StringField(max_length=256, required=True)
     slug = StringField(max_length=256)
     authors = ListField(ReferenceField('User'))
@@ -58,8 +80,10 @@ class Article(Document):
     date_published = DateTimeField(default=datetime.datetime.now)
     abstract = StringField()
     content = StringField()
+    full_content = StringField(default='')
     comments = ListField(ReferenceField('Comment'))
-    default_rating = FloatField()
+    default_rating = FloatField(default=0.0)
+    google_reader_original_data = StringField()
 
     # A snap / a serie of snaps references the original article.
     # An article references its source (origin blog / newspaper…)
@@ -73,15 +97,33 @@ class Article(Document):
     # Avoid displaying duplicates to the user.
     duplicates = ListField(ReferenceField('Article'))  # , null=True)
 
+    @classmethod
+    def signal_post_init_handler(cls, sender, document, **kwargs):
+        LOGGER.warning('POST INIT for %s', document)
+
+        article_post_init_task.delay(document.id)
+
+
+@task
+def article_post_init_task(article_id):
+
+    # TODO: full_content_fetch
+    # TODO: images_fetch
+    # TODO: authors_fetch
+    # TODO: publishers_fetch
+    # TODO: duplicates_find
+    pass
+
 
 class Read(Document):
     user = ReferenceField('User')
     article = ReferenceField('Article')
     is_read = BooleanField()
     is_auto_read = BooleanField()
-    date_created = DateTimeField()
+    date_created = DateTimeField(default=datetime.datetime.now)
     date_read = DateTimeField()
     date_auto_read = DateTimeField()
+    tags = ListField(StringField())
 
     # This will be set to Article.default_rating
     # until the user sets it manually.
@@ -149,6 +191,45 @@ class Preference(Document):
     notification = EmbeddedDocumentField('NotificationPreference')
 
 
+class GoogleReaderImport(Document):
+    start_time        = DateTimeField()
+    end_time          = DateTimeField()
+    is_running        = BooleanField(default=False)
+    account_data      = StringField()
+    feeds_imported    = IntField(default=0)
+    articles_imported = IntField(default=0)
+
+
 class User(Document):
     django_user = IntField()
-    preferences = EmbeddedDocumentField('Preference')
+    preferences = ReferenceField('Preference')
+    gr_import   = ReferenceField('GoogleReaderImport')
+
+    def gr_import_begin(self, gr_data):
+        LOGGER.info('GR import begin…')
+
+        self.gr_import = GoogleReaderImport(
+            start_time=datetime.datetime.now(),
+            is_running=True,
+            account_data=json.dumps(gr_data)
+        )
+
+        self.save()
+
+    def gr_import_end(self, gr_data):
+        LOGGER.info('GR import end…')
+        self.gr_import.end_time   = datetime.datetime.now()
+        self.gr_import.is_running = False
+
+    def gr_import_update(self, more_articles):
+        self.reload(2)
+
+        self.gr_import.feeds_imported += 1
+        self.gr_import.articles_imported += more_articles
+
+        if self.gr_import.feeds_imported == Subscription.objects(user=self):
+            self.gr_import_end()
+
+        self.save()
+
+connect_mongoengine_signals(globals())
