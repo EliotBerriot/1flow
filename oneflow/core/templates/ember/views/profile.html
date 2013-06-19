@@ -1,0 +1,88 @@
+
+{%captureas next_url %}?next={% absolute "home" %}#/profile{% endcaptureas %}
+
+{% handlebars "profile" %}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10">&nbsp;</div>
+    </div>
+    <div class="row-fluid">
+      <div class="hero-unit span10 offset1">
+        <div class="row-fluid">
+
+          <div class="span6">
+            <h1>{% trans "Your profile" %}</h1>
+
+            <h2>{% trans "not yet implemented." %}</h2>
+
+            {% if has_google %}
+              {% url "import_google_reader" as import_url %}
+              <a href=" {{import_url }}" class="btn btn-large btn-primary">
+              {% blocktrans %}
+                Import your google Reader data
+              {% endblocktrans %}
+              </a>
+
+            {% else %}
+              <p>
+                {% url "socialauth_begin" "google-oauth2" as gg_url %}
+                {% blocktrans %}
+                    To import your google Reader data, please <a href="{{gg_url}}">sign in with google</a> first.
+                {% endblocktrans %}
+            {% endif %}
+
+
+          </div>
+
+          <div class="span6">
+
+            <h1>{% trans "Social accounts" %}</h1>
+
+            {% if social_auth.associated %}
+              <h3>{% trans "Currently associated" %}
+              </h3>
+              <ul>
+                {% for backend in social_auth.associated %}
+                 {% if backend.provider == "google-oauth2" %}
+                    {% captureas backend_name %}Google{% endcaptureas %}
+                    {% captureas backend_full_name %}{{backend|slice:'-6'}}{% endcaptureas %}
+
+                  {% else %}
+                    {% captureas backend_name %}{{ backend.name }}{% endcaptureas %}
+                    {% captureas backend_full_name %}{{backend}}{% endcaptureas %}
+
+                  {% endif %}
+
+                  <li><a
+                      class="btn btn-small" href="{% url "socialauth_disconnect_individual" backend.provider backend.id %}{{next_url}}"
+                  title="{% blocktrans %}Disconnect from {{ backend_name }}{% endblocktrans %}"><i
+                    class="icon-signout"></i> {{backend_full_name|title}}</a></li>
+
+
+                {% endfor %}
+              </ul>
+
+              <h3>{% trans "Associate more accounts" %}</h3>
+            {% else %}
+              <h3>{% trans "Associate accounts" %}</h3>
+
+            {% endif %}
+
+            <ul>
+            {% for backend_name in social_auth.backends %}
+              <li>
+                <a class="btn btn-primary" title="" href="{% url "socialauth_begin" backend_name %}{{next_url}}">
+                  {% if backend_name == 'google-oauth2' %}
+                    <i class="icon-google-plus"></i> Google</a>
+                  {% else %}
+                    <i class="icon-{{ backend_name }}"></i> {{backend_name|title}}</a>
+                  {% endif %}
+              </li>
+              {% endfor %}
+  </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+{% endhandlebars %}

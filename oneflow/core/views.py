@@ -28,6 +28,7 @@ add_to_builtins('ember.templatetags.ember')
 add_to_builtins('django.templatetags.i18n')
 add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
+add_to_builtins('absolute.templatetags.absolute_future')
 add_to_builtins('oneflow.base.templatetags.base_utils')
 
 
@@ -35,7 +36,12 @@ add_to_builtins('oneflow.base.templatetags.base_utils')
 def home(request):
     """ will return the base of the Ember.JS application. """
 
-    return render(request, 'home.html')
+    has_google = request.user.social_auth.filter(
+        provider='google-oauth2').count() > 0
+
+    return render(request, 'home.html', {
+        'has_google': has_google,
+    })
 
 
 def register(request):

@@ -21,7 +21,7 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
+              <li>{% linkto 'profile' %}{% trans 'Profile' %}{% endlinkto %}</li>
 
             {% if request.user.is_superuser %}
               <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>

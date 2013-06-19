@@ -14,12 +14,11 @@
 {% include 'ember/views/teams.html' %}
 {% include 'ember/views/subscriptions.html' %}
 {% include 'ember/views/discovery.html' %}
+{% include 'ember/views/profile.html' %}
 {% include 'ember/views/help.html' %}
 {% endblock body %}
 
 {% block extrajs_footer %}
-
-    {% compressed_js 'bootstrap' %}
 
     {% jquery_js %}
     {% compressed_js 'temp_handlebars_rc4' %}
@@ -34,6 +33,7 @@
     is resolved
     {% endcomment %}
 
+    {% compressed_js 'bootstrap' %}
     {% compressed_js 'showdown' %}
     {% compressed_js 'moment' %}
     {% compressed_js 'utils' %}
