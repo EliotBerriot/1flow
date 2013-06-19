@@ -3,6 +3,7 @@
 import six
 import logging
 
+from mongoengine import Document, signals
 from django.conf import settings
 from django.template import Context, Template
 from django.utils import translation
@@ -15,6 +16,28 @@ from models import EmailContent
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
+
+
+def connect_mongoengine_signals(module_scope):
+    for key in dir(module_scope):
+        value = getattr(module_scope, key)
+
+        # TODO: use ReferenceDocument and other Mongo classes.
+        try:
+            should_lookup_handlers = issubclass(Document, value)
+
+        except:
+            continue
+
+        if should_lookup_handlers:
+            for signal_name in ('pre_init', 'post_init', 'pre_save',
+                                'pre_save_post_validation', 'post_save',
+                                'pre_delete', 'post_delete',
+                                'pre_bulk_insert', 'post_bulk_insert'):
+                classmethod_name = 'signal_{0}_handler'.format(signal_name)
+                if hasattr(value, classmethod_name):
+                    getattr(signals, signal_name).connect(
+                        getattr(value, classmethod_name), sender=value)
 
 
 def send_email_with_db_content(context, email_template_name, **kwargs):
