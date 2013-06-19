@@ -15,7 +15,7 @@ include_snippets(
         '00_production',
         '1flow_io',
         'common',
-        'api_keys_production',
+        'api_keys_preview',
         'db_common',
         'db_preview',
         'cache_common',

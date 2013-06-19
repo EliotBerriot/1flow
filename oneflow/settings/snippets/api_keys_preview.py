@@ -1,20 +1,23 @@
 #
-# Django social-auth API keys (for production)
+# Django social-auth API keys (for development)
 #
 
-#TWITTER_CONSUMER_KEY         = ''
-#TWITTER_CONSUMER_SECRET      = ''
+# WARNING: replace development keys!!
+#TWITTER_CONSUMER_KEY         = 'lTsNA7J3zERYsfUdxvJVYA'
+#TWITTER_CONSUMER_SECRET      = '4aQGOPCFn4HOmrMzSYx7LXW86y4XBdIxkCB0KtlxNT0'
 #FACEBOOK_APP_ID              = ''
 #FACEBOOK_API_SECRET          = ''
 #LINKEDIN_CONSUMER_KEY        = ''
 #LINKEDIN_CONSUMER_SECRET     = ''
 #ORKUT_CONSUMER_KEY           = ''
 #ORKUT_CONSUMER_SECRET        = ''
-#GOOGLE_CONSUMER_KEY          = ''
-#GOOGLE_CONSUMER_SECRET       = ''
+
 GOOGLE_DISPLAY_NAME          = '1flow'
-GOOGLE_OAUTH2_CLIENT_ID      = '494350410052-0ol8ei4u7urd9vp1tuvjmubomeasps57.apps.googleusercontent.com'
-GOOGLE_OAUTH2_CLIENT_SECRET  = 'WY390L9iKfCBi6qpF6lEZypG'
+#GOOGLE_CONSUMER_KEY          = 'obi.1flow.io'
+#GOOGLE_CONSUMER_SECRET       = 'Rw50Gef6-ERnZBDjX890_4Qj'
+GOOGLE_OAUTH2_CLIENT_ID      = '494350410052-g68jghl733si3sbh9s2dkjjcrk7l0j5f.apps.googleusercontent.com' # NOQA
+GOOGLE_OAUTH2_CLIENT_SECRET  = '5NSj_1AtpBA2jSn4hxYagOYd'
+
 #FOURSQUARE_CONSUMER_KEY      = ''
 #FOURSQUARE_CONSUMER_SECRET   = ''
 #VK_APP_ID                    = ''
