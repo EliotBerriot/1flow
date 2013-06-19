@@ -27,6 +27,7 @@ App.Router.map(function(){
     this.resource('profile');
 })
 
+/*
 App.ProfileRoute = Ember.Route.extend({
   enter: function() {
 
@@ -69,4 +70,4 @@ App.ProfileRoute = Ember.Route.extend({
 //         this.replaceWith('subscriptions');
 //     }
 // });
-
+*/
