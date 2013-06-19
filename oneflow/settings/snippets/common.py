@@ -231,6 +231,7 @@ PIPELINE_JS = {
             'js/core/models/*.js',
             'js/core/routes/*.js',
             'js/core/helpers/*.js',
+            'js/core/init.js',
         ),
         'output_filename': 'js/core.js',
     }
