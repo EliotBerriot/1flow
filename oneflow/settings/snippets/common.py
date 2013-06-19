@@ -383,7 +383,9 @@ MARKDOWN_DEUX_STYLES = {
 TASTYPIE_DEFAULT_FORMATS = ('json', )
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.twitter.TwitterBackend',
+    # WARNING: when activating Twitter, we MUST implement the email pipeline,
+    # else the social-only registration will fail because user has no mail.
+    #'social_auth.backends.twitter.TwitterBackend',
     #'social_auth.backends.facebook.FacebookBackend',
     #'social_auth.backends.google.GoogleOAuthBackend',
     'social_auth.backends.google.GoogleOAuth2Backend',
@@ -407,10 +409,15 @@ AUTHENTICATION_BACKENDS = (
 )
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Social Auth
+# See snippets/api_keys_*.py for API keys.
+
 
 from libgreader.auth import OAuth2Method
 
+# Get the google reader scope.
 GOOGLE_OAUTH_EXTRA_SCOPE           = OAuth2Method.SCOPE
+# We need this to be able to refresh tokens
+# See http://stackoverflow.com/a/10857806/654755 for notes.
 GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
 
 # See http://django-social-auth.readthedocs.org/en/latest/configuration.html#urls-options # NOQA
@@ -423,7 +430,8 @@ LOGIN_ERROR_URL    = reverse_lazy('signin_error')
 # See SOCIAL_AUTH_USER_MODEL earlier in this file.
 #SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 #SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
-#SOCIAL_AUTH_SESSION_EXPIRATION = False
+SOCIAL_AUTH_EXTRA_DATA = True
+SOCIAL_AUTH_SESSION_EXPIRATION = False
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
 
