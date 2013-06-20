@@ -48,7 +48,7 @@ env.root         = '/home/1flow/www/src'
 env.environment  = 'test'
 env.pg_superuser = 'oneflow_admin'
 env.pg_superpass = 'ZQmeDuNF7b2GMC'
-env.repository   = 'olive@dev.1flow.net:1flow.git'
+env.repository   = 'git@dev.1flow.net:1flow.git'
 
 
 def get_current_git_branch():
