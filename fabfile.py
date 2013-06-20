@@ -131,7 +131,11 @@ def production():
         'web': ['1flow.io'],
         'flower': ['worker-01.1flow.io'],
         'worker_high': ['worker-01.1flow.io'],
-        'worker_low': ['worker-02.1flow.io'],
+        'worker_low': [
+            'worker-02.1flow.io',
+            #'worker-03.1flow.io', wait for DNS to expire…
+            'worker-05.1flow.io',
+        ],
         #'redis': ['duncan.licorn.org'],
     })
     env.env_was_set = True
