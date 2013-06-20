@@ -112,23 +112,25 @@ def import_google_reader_stats(request):
     if running is None:
         data = {'done': None}
 
-    elif running:
+    else:
         data = {
             'feeds': gri.feeds(),
             'total_feeds': gri.total_feeds(),
+            'reads': gri.reads(),
+            'starred': gri.starred(),
             'articles': gri.articles(),
-            'total_articles': gri.total_articles(),
+            'total_reads': gri.total_reads(),
             'start': gri.start(),
-            'done' : False,
         }
-    else:
-        data = {
-            'done': True,
-            'start': gri.start(),
-            'end': gri.end(),
-            'total_feeds': gri.total_feeds(),
-            'total_articles': gri.total_articles(),
-        }
+        if running:
+            data.update({
+                'done' : False,
+            })
+        else:
+            data.update({
+                'done': True,
+                'end': gri.end(),
+            })
 
     return HttpResponse(json.dumps(data),
                         content_type="application/json")
