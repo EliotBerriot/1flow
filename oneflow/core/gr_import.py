@@ -53,7 +53,7 @@ class GoogleReaderImport(object):
             return REDIS.set(key, time.time()
                              if time_value is None else time_value)
 
-        return float(REDIS.get(key) or 0.0)
+        return ftstamp(float(REDIS.get(key) or 0.0))
 
     @classmethod
     def __int_incr_key(cls, key, increment=False):
@@ -125,8 +125,7 @@ class GoogleReaderImport(object):
             LOGGER.info(u'Import statistics: %s article(s), %s read, '
                         u'%s starred, %s feed(s) in %s).',
                         self.articles(), self.reads(), self.starred(),
-                        self.feeds(), naturaldelta(ftstamp(float(self.end()))
-                        - ftstamp(float(self.start()))))
+                        self.feeds(), naturaldelta(self.end() - self.start()))
 
         return GoogleReaderImport.__time_key(self.key_base + ':end', False)
 
@@ -137,7 +136,7 @@ class GoogleReaderImport(object):
                                              time_value=set_date)
 
         if set_date is None:
-            return datetime.datetime.fromtimestamp(date or 0.0)
+            return ftstamp(float(date or 0.0))
 
         return date
 

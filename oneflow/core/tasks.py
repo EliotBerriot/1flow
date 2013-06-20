@@ -153,7 +153,7 @@ Just for you to know…
 
     LOGGER.info(u'Done importing %s feeds in %s; import already started for '
                 u'the %s article(s)…', processed_feeds,
-                naturaldelta(now() - ftstamp(float(gri.start()))),
+                naturaldelta(now() - gri.start()),
                 total_reads)
 
 
