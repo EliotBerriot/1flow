@@ -1,4 +1,4 @@
--e git://github.com/Karmak23/sparks.git@sparks-2.7.6#egg=sparks
+-e git://github.com/Karmak23/sparks.git@sparks-2.7.7#egg=sparks
 -e git://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
 -e git://github.com/gregmuellegger/django-reset.git@4f859d9319a7bfc41484f302e96e1f880aaa67db#egg=django_reset-dev
 -e git://github.com/noirbizarre/django-ember.git@2845c3ef46711320b6941c22ce8204c302d6651f#egg=django_ember-dev
