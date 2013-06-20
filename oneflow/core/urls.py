@@ -5,7 +5,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 
 from .views import (home, register,
-                    import_google_reader, import_google_reader_stats)
+                    google_reader_import,
+                    google_reader_import_stats,
+                    google_reader_import_status)
 
 urlpatterns = patterns(
     'oneflow.core.views',
@@ -13,10 +15,12 @@ urlpatterns = patterns(
     url(_(r'^register/$'), register, name='register'),
     url(_(r'^signin_error/$'), TemplateView.as_view(
         template_name='signin_error.html'), name='signin_error'),
-    url(_(r'^grimport/$'), login_required(import_google_reader),
-        name='import_google_reader'),
-    url(_(r'^grstats/$'), login_required(import_google_reader_stats),
-        name='import_google_reader_stats'),
+    url(_(r'^grimport/$'), login_required(google_reader_import),
+        name='google_reader_import'),
+    url(_(r'^grstats/$'), login_required(google_reader_import_stats),
+        name='google_reader_import_stats'),  # SHOULD VANISH in favor of status.
+    url(_(r'^grstatus/$'), login_required(google_reader_import_status),
+        name='google_reader_import_status'),
 )
 
 urlpatterns += patterns(

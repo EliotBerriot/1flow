@@ -13,34 +13,9 @@
           <div class="span6">
             <h1>{% trans "Your profile" %}</h1>
 
-            <h2>{% trans "not yet implemented." %}</h2>
+            <h3>{% trans "not yet implemented." %}</h3>
 
-            {% if has_google %}
-              {% if has_gr_import %}
-                {% url "import_google_reader_stats" as stats_url %}
-                <a href=" {{stats_url }}" class="btn btn-large btn-success" target="_blank">
-                {% blocktrans %}
-                  Show import status (new window/tab)
-                {% endblocktrans %}
-                </a>
-
-              {% else %}
-                {% url "import_google_reader" as import_url %}
-                <a href=" {{import_url }}" class="btn btn-large btn-primary">
-                {% blocktrans %}
-                  Import your google Reader data
-                {% endblocktrans %}
-                </a>
-              {% endif %}
-
-            {% else %}
-              <p>
-                {% url "socialauth_begin" "google-oauth2" as gg_url %}
-                {% blocktrans %}
-                    To import your google Reader data, please <a href="{{gg_url}}">sign in with google</a> first.
-                {% endblocktrans %}
-            {% endif %}
-
+            {% include 'snippets/google-reader-import.html' %}
 
           </div>
 

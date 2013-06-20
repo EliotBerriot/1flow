@@ -4,11 +4,11 @@
       <div class="span10">&nbsp;</div>
     </div>
     <div class="row-fluid">
-      <div class="hero-unit span12">
+      <div class="hero-unit span7 offset2">
         <h1>{% trans "Welcome!" %}</h1>
-        <p>{% trans "More to come here." %}</p>
+        <p>{% trans "There is nothing much more ready, except the Google Reader import." %}</p>
 
-        <p>{% trans "Moment.JS+lang date test:" %} {{momentFromNow "20130615"}}</p>
+        {% include 'snippets/google-reader-import.html' %}
       </div>
     </div>
   </div>

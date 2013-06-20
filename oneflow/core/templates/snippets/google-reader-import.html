@@ -1,0 +1,14 @@
+
+{% if has_google %}
+
+  <div id="google-reader-import-status"></div>
+
+{% else %}
+  {% url "socialauth_begin" "google-oauth2" as gg_url %}
+
+  <p>
+    {% blocktrans %}
+        To import your google Reader data, please <a href="{{gg_url}}">sign in with google</a> first.
+    {% endblocktrans %}
+  </p>
+{% endif %}

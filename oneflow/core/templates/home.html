@@ -44,5 +44,19 @@
         moment.lang('{{ LANGUAGE_CODE }}');
     </script>
 
+    {% if has_google %}
+        <script type="text/javascript">
+            function update_gri_status() {
+                $.get("{% url 'google_reader_import_status' %}", function(data){
+                    $('#google-reader-import-status').html(data);
+                });
+            }
+
+            update_gri_status();
+
+            setInterval(update_gri_status, 2000);
+        </script>
+    {% endif %}
+
     {% csrf_token %}
 {% endblock extrajs_footer %}

@@ -7,6 +7,7 @@
 """
 
 import logging
+from humanize import time as humanize_time
 import simplejson as json
 
 from django.http import HttpResponse, HttpResponseRedirect
@@ -42,11 +43,9 @@ def home(request):
     has_google = request.user.social_auth.filter(
         provider='google-oauth2').count() > 0
 
-    has_gr_import = GoogleReaderImport(request.user).running()
-
     return render(request, 'home.html', {
         'has_google': has_google,
-        'has_gr_import': has_gr_import,
+        'gr_import': GoogleReaderImport(request.user),
     })
 
 
@@ -74,7 +73,7 @@ def register(request):
     return render(request, 'register.html', {'form': creation_form})
 
 
-def import_google_reader(request):
+def google_reader_import(request):
 
     def info(text):
         messages.add_message(request, messages.INFO, text)
@@ -102,7 +101,42 @@ def import_google_reader(request):
     return HttpResponseRedirect(redirect_url)
 
 
-def import_google_reader_stats(request):
+def google_reader_import_status(request):
+    """ An HTML snippet view. """
+
+    gri = GoogleReaderImport(request.user)
+
+    running = gri.running()
+
+    if running is None:
+        data = {'status': 'not_started'}
+
+    else:
+        data = {
+            'feeds': gri.feeds(),
+            'total_feeds': gri.total_feeds(),
+            'reads': gri.reads(),
+            'starred': gri.starred(),
+            'articles': gri.articles(),
+            'total_reads': gri.total_reads(),
+            'start': humanize_time.naturaltime(gri.start()),
+        }
+
+        if running:
+            data.update({
+                'status' : 'running',
+            })
+        else:
+            data.update({
+                'status': 'done',
+                'end': humanize_time.naturaltime(gri.end()),
+                'duration': humanize_time.naturaldelta(gri.end() - gri.start()),
+            })
+
+    return render(request, 'snippets/google-reader-import-status.html', data)
+
+
+def google_reader_import_stats(request):
     """ A JSON View. """
 
     gri = GoogleReaderImport(request.user)

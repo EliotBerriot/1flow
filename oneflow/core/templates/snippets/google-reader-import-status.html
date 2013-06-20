@@ -1,0 +1,32 @@
+
+{% if status == 'not_started' %}
+
+  {% url "import_google_reader" as import_url %}
+
+  <a href=" {{import_url }}" class="btn btn-large btn-primary">
+  {% blocktrans %}
+    Import your google Reader data
+  {% endblocktrans %}
+  </a>
+
+{% elif status == 'running' %}
+
+  <p>{% blocktrans %}
+    Your Google Reader import has started {{ start }}.<br />
+
+{{ feeds }} feeds and {{ articles }} articles imported so far, {{ starred }} starred.<br />
+
+<small>(reload the page if this status is not updated automatically)</small>
+{% endblocktrans %}</p>
+
+{% else %}
+
+  <p>{% blocktrans %}
+    Your Google Reader import finished {{ end }}, and took {{ duration }}.<br />
+
+    {{ feeds }} feeds and {{ articles }} articles imported, {{ starred }} starred.<br />
+
+    See you very soon for the upcoming features of <strong>1flow</strong>!
+    {% endblocktrans %}</p>
+
+{% endif %}
