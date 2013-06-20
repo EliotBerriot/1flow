@@ -19,25 +19,34 @@ User = get_user_model()
 
 
 def connect_mongoengine_signals(module_scope):
+    """ Automatically iterate classes of a given module and connect handlers
+        to signals, given they follow the name pattern
+        ``signal_<signal_name>_handler()``.
+
+        See https://mongoengine-odm.readthedocs.org/en/latest/guide/signals.html#overview
+        for a list of valid signal names.
+    """
+
     for key in dir(module_scope):
-        value = getattr(module_scope, key)
+        klass = getattr(module_scope, key)
 
         # TODO: use ReferenceDocument and other Mongo classes.
         try:
-            should_lookup_handlers = issubclass(Document, value)
+            look_for_handlers = issubclass(Document, klass)
 
         except:
+            # klass is definitely not a class ;-)
             continue
 
-        if should_lookup_handlers:
+        if look_for_handlers:
             for signal_name in ('pre_init', 'post_init', 'pre_save',
                                 'pre_save_post_validation', 'post_save',
                                 'pre_delete', 'post_delete',
                                 'pre_bulk_insert', 'post_bulk_insert'):
-                classmethod_name = 'signal_{0}_handler'.format(signal_name)
-                if hasattr(value, classmethod_name):
+                handler_name = 'signal_{0}_handler'.format(signal_name)
+                if hasattr(klass, handler_name):
                     getattr(signals, signal_name).connect(
-                        getattr(value, classmethod_name), sender=value)
+                        getattr(klass, handler_name), sender=klass)
 
 
 def send_email_with_db_content(context, email_template_name, **kwargs):
