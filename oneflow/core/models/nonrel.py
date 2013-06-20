@@ -2,7 +2,6 @@
 
 import datetime
 import logging
-import simplejson as json
 
 from celery import task
 from mongoengine import Document
@@ -203,33 +202,5 @@ class GoogleReaderImport(Document):
 class User(Document):
     django_user = IntField()
     preferences = ReferenceField('Preference')
-    gr_import   = ReferenceField('GoogleReaderImport')
-
-    def gr_import_begin(self, gr_data):
-        LOGGER.info('GR import begin…')
-
-        self.gr_import = GoogleReaderImport(
-            start_time=datetime.datetime.now(),
-            is_running=True,
-            account_data=json.dumps(gr_data)
-        )
-
-        self.save()
-
-    def gr_import_end(self, gr_data):
-        LOGGER.info('GR import end…')
-        self.gr_import.end_time   = datetime.datetime.now()
-        self.gr_import.is_running = False
-
-    def gr_import_update(self, more_articles):
-        self.reload(2)
-
-        self.gr_import.feeds_imported += 1
-        self.gr_import.articles_imported += more_articles
-
-        if self.gr_import.feeds_imported == Subscription.objects(user=self):
-            self.gr_import_end()
-
-        self.save()
 
 connect_mongoengine_signals(globals())
