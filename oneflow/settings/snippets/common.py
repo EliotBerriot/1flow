@@ -301,6 +301,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'absolute.context_processors.absolute',
+    'constance.context_processors.config',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
 
@@ -334,6 +335,7 @@ INSTALLED_APPS = (
     #'maintenancemode', — not needed at all, the middleware is sufficient.
     'transmeta',
     'logentry_admin',
+    'constance',
     'tastypie',
     'tastypie_mongoengine',
     'overextends',
@@ -385,6 +387,19 @@ MARKDOWN_DEUX_STYLES = {
     }
 }
 
+CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
+# CONSTANCE_REDIS_CONNECTION is to be found in db_*
+CONSTANCE_REDIS_PREFIX = 'c0s1f:'
+CONSTANCE_CONFIG = {
+    'GR_MAX_ARTICLES': (25 if DEBUG else 250000, ugettext(u'maximum number '
+                        u'of Google Reader articles imported for a user.')),
+    'GR_MAX_FEEDS': (2 if DEBUG else 1000, ugettext(u'maximum number of '
+                     u'articles imported from Google Reader for any user.')),
+    'GR_LOAD_LIMIT': (500, ugettext(u'maximum number of articles '
+                      u'in each wave of Google Reader feed import.')),
+    'GR_WAVE_LIMIT': (25, ugettext(u'maximum number of import waves for each '
+                      u'Google Reader feed.')),
+}
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
 
