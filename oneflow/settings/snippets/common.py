@@ -103,6 +103,11 @@ STATICFILES_FINDERS = (
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
+# FOR NOW, pipeline is disabled because
+# compression messes the JS ember tastypie adapter.
+PIPELINE_ENABLED = False
+PIPELINE_DISABLE_WRAPPER = True
+
 PIPELINE_COMPILERS = (
     'pipeline.compilers.less.LessCompiler',
     # We don't use the from django-pipeline-compass compiler,
