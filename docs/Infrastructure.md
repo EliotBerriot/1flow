@@ -10,7 +10,9 @@ On the `10.0.3.0` network:
 - 110    dev.1flow.net (production, sentry)
 - 111    obi (preview, web instance)
 - 112    1flow.io (production, web instance)
-- 113    worker-01 (production worker)
+- 113    worker-01 (production worker, high queue)
+- 114    worker-03 (production worker, low+default queue)
+- 115    worker-05 (production worker, low+default queue)
 
 ## On Gurney.licorn.org
 
