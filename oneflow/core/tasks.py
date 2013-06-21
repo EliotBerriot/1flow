@@ -193,12 +193,14 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
 
         if gri.reads() >= total_reads:
             gri.end(set_time=True)
-            LOGGER.info(u'All read articles imported, stopping task.')
+            LOGGER.info(u'All read articles imported for user %s, stopping all '
+                        u'tasks in turn.', django_user.username)
             return
 
         if gri.articles() >= GR_MAX_ARTICLES:
             gri.end(set_time=True)
-            LOGGER.info(u'Maximum article limit reached, stopping import.')
+            LOGGER.info(u'Maximum article limit reached for user %s, stopping '
+                        u'import.', django_user.username)
             return
 
         if gr_article.time:
@@ -256,20 +258,23 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
                                                             gr_feed, feed,
                                                             wave=wave + 1)
                     else:
-                        LOGGER.warning(u'Datetime limit reached on feed “%s”, '
-                                       u'stopping. %s article(s) imported '
-                                       u'so far.', gr_feed.title, grand_total)
+                        LOGGER.warning(u'Datetime limit reached on feed “%s” '
+                                       u'for user %s, stopping. %s article(s) '
+                                       u'imported.', gr_feed.title,
+                                       django_user.username, grand_total)
                 else:
-                    LOGGER.warning(u'Wave limit reached on feed “%s”, '
-                                   u'stopping. %s article(s) imported so far.',
-                                   gr_feed.title, grand_total)
+                    LOGGER.warning(u'Wave limit reached on feed “%s”, for user '
+                                   u'%s, stopping. %s article(s) imported.',
+                                   gr_feed.title, django_user.username,
+                                   grand_total)
         else:
-            LOGGER.warning(u'Forced import stop of feed “%s”, %s '
-                           u'article(s) imported so far.',
-                           gr_feed.title, grand_total)
+            LOGGER.warning(u'Forced import stop of feed “%s” for user %s, %s '
+                           u'article(s) imported.', gr_feed.title,
+                           django_user.username, grand_total)
     else:
         # We have reached the "beginning" of the feed in GR.
         # Probably one with only a few subscribers, because
         # in normal conditions, GR data is kind of unlimited.
-        LOGGER.info(u'Reached beginning of feed “%s”, %s article(s) imported.',
-                    gr_feed.title, grand_total)
+        LOGGER.info(u'Reached beginning of feed “%s” for user %s, %s '
+                    u'article(s) imported.', gr_feed.title,
+                    django_user.username, grand_total)
