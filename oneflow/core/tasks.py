@@ -60,7 +60,8 @@ def import_google_reader_data_trigger(user_id):
     # import button showing again on web page.
     gri.start(set_time=True)
 
-    import_google_reader_data.delay(user_id)
+    # go to high-priority queue.
+    import_google_reader_data.apply_async((user_id, ), queue='high')
 
 
 @task
@@ -146,7 +147,9 @@ Just for you to know…
                                       set__tags=tags,
                                       upsert=True)
 
-        import_google_reader_articles.delay(user_id, reader, gr_feed, feed)
+        # go to default queue.
+        import_google_reader_articles.apply_async(
+            (user_id, reader, gr_feed, feed), queue='low')
 
         processed_feeds += 1
         gri.incr_feeds()
