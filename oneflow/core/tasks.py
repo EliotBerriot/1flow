@@ -168,7 +168,9 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
 
     ftstamp = datetime.datetime.fromtimestamp
 
-    GR_LOAD_LIMIT = config.GR_LOAD_LIMIT
+    # Get them right here so we don't hit redis at each loop-cycle.
+    GR_LOAD_LIMIT   = config.GR_LOAD_LIMIT
+    GR_MAX_ARTICLES = config.GR_MAX_ARTICLES
 
     django_user, mongo_user = get_user_from_dbs(user_id)
 
@@ -194,7 +196,7 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
             LOGGER.info(u'All read articles imported, stopping task.')
             return
 
-        if gri.articles() >= config.GR_MAX_ARTICLES:
+        if gri.articles() >= GR_MAX_ARTICLES:
             gri.end(set_time=True)
             LOGGER.info(u'Maximum article limit reached, stopping import.')
             return
