@@ -7,6 +7,7 @@ from constance import config
 
 from humanize.time import naturaldelta
 
+from pymongo.errors import DuplicateKeyError
 from libgreader import GoogleReader, OAuth2Method
 
 from celery import task
@@ -202,10 +203,15 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
         LOGGER.debug(u'Importing article “%s” from feed “%s” (%s/%s, wave %s)…',
                      gr_article.title, gr_feed.title, current, total, wave + 1)
 
-        Article.objects(url=gr_article.url).update_one(
-            set__url=gr_article.url, set__title=gr_article.title,
-            set__feed=feed, set__google_reader_original_data=gr_article.data,
-            set__content=gr_article.content, upsert=True)
+        try:
+            Article.objects(url=gr_article.url).update_one(
+                set__url=gr_article.url, set__title=gr_article.title,
+                set__feed=feed, set__content=gr_article.content,
+                set__google_reader_original_data=gr_article.data, upsert=True)
+
+        except DuplicateKeyError:
+            LOGGER.warning(u'Duplicate article “%s” in feed “%s”: %s',
+                           gr_article.title, feed.name, gr_article.data)
 
         article = Article.objects.get(url=gr_article.url)
         tags = [c.label for c in gr_feed.getCategories()]
