@@ -6,7 +6,6 @@ from django.contrib.auth.decorators import login_required
 
 from .views import (home, register,
                     google_reader_import,
-                    google_reader_import_stats,
                     google_reader_import_status)
 
 urlpatterns = patterns(
@@ -17,8 +16,6 @@ urlpatterns = patterns(
         template_name='signin_error.html'), name='signin_error'),
     url(_(r'^grimport/$'), login_required(google_reader_import),
         name='google_reader_import'),
-    url(_(r'^grstats/$'), login_required(google_reader_import_stats),
-        name='google_reader_import_stats'),  # SHOULD VANISH in favor of status.
     url(_(r'^grstatus/$'), login_required(google_reader_import_status),
         name='google_reader_import_status'),
 )

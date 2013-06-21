@@ -7,10 +7,11 @@
 """
 
 import logging
-from humanize import time as humanize_time
-import simplejson as json
+import datetime
 
-from django.http import HttpResponse, HttpResponseRedirect
+from humanize import time as humanize_time
+
+from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
@@ -101,6 +102,7 @@ def google_reader_import(request):
     return HttpResponseRedirect(redirect_url)
 
 
+@never_cache
 def google_reader_import_status(request):
     """ An HTML snippet view. """
 
@@ -112,59 +114,47 @@ def google_reader_import_status(request):
         data = {'status': 'not_started'}
 
     else:
+        now         = datetime.datetime.now()
+        start       = gri.start()
+        articles    = gri.articles()
+        reads       = gri.reads()
+        total_reads = gri.total_reads()
+
         data = {
             'feeds': gri.feeds(),
             'total_feeds': gri.total_feeds(),
-            'reads': gri.reads(),
+            'reads': reads,
             'starred': gri.starred(),
-            'articles': gri.articles(),
-            'total_reads': gri.total_reads(),
-            'start': humanize_time.naturaltime(gri.start()),
+            'articles': articles,
+            'total_reads': total_reads,
+            'start': humanize_time.naturaltime(start),
         }
 
         if running:
             data.update({
                 'status' : 'running',
             })
+
         else:
+            end = gri.end()
+
             data.update({
                 'status': 'done',
-                'end': humanize_time.naturaltime(gri.end()),
-                'duration': humanize_time.naturaldelta(gri.end() - gri.start()),
+                'end': humanize_time.naturaltime(end),
+                'duration': humanize_time.naturaldelta(end - start),
             })
+
+        def duration_since(start):
+            delta = (now if running else end) - start
+            return delta.seconds + delta.microseconds / 1E6 + delta.days * 86400
+
+        speed = articles / duration_since(start)
+
+        data['speed'] = int(speed * 60)
+
+        if running:
+            data['ETA'] = humanize_time.naturaltime(now + datetime.timedelta(
+                                                    seconds=(total_reads
+                                                    - reads) * speed))
 
     return render(request, 'snippets/google-reader-import-status.html', data)
-
-
-def google_reader_import_stats(request):
-    """ A JSON View. """
-
-    gri = GoogleReaderImport(request.user)
-
-    running = gri.running()
-
-    if running is None:
-        data = {'done': None}
-
-    else:
-        data = {
-            'feeds': gri.feeds(),
-            'total_feeds': gri.total_feeds(),
-            'reads': gri.reads(),
-            'starred': gri.starred(),
-            'articles': gri.articles(),
-            'total_reads': gri.total_reads(),
-            'start': gri.start(),
-        }
-        if running:
-            data.update({
-                'done' : False,
-            })
-        else:
-            data.update({
-                'done': True,
-                'end': gri.end(),
-            })
-
-    return HttpResponse(json.dumps(data),
-                        content_type="application/json")
