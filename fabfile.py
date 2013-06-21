@@ -106,7 +106,7 @@ def preview(branch=None):
         'lang': ['obi.1flow.io'],
         'flower': ['worbi.1flow.io'],
         'worker_high': ['worbi.1flow.io'],
-        'worker_low': ['worbi.1flow.io'],
+        'worker_low': ['obi.1flow.io', 'worbi.1flow.io'],
         #'redis': ['duncan.licorn.org'],
     })
 
