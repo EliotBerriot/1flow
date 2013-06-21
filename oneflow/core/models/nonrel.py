@@ -32,7 +32,7 @@ class Source(Document):
 
     """
     type    = StringField()
-    uri     = URLField()
+    uri     = URLField(unique=True)
     name    = StringField()
     authors = ListField(ReferenceField('User'))
     slug    = StringField()
@@ -41,7 +41,7 @@ class Source(Document):
 class Feed(Document):
     # TODO: init
     name       = StringField()
-    url        = URLField()
+    url        = URLField(unique=True)
     site_url   = URLField()
     slug       = StringField()
     restricted = BooleanField(default=False)
@@ -53,7 +53,7 @@ class Feed(Document):
 
 class Subscription(Document):
     feed = ReferenceField('Feed')
-    user = ReferenceField('User')
+    user = ReferenceField('User', unique_with='feed')
 
     # allow the user to rename the field in its own subscription
     name = StringField()
@@ -63,6 +63,7 @@ class Subscription(Document):
 
 
 class Group(Document):
+    name = StringField(unique_with='creator')
     creator = ReferenceField('User')
     administrators = ListField(ReferenceField('User'))
     members = ListField(ReferenceField('User'))
@@ -75,7 +76,7 @@ class Article(Document):
     slug = StringField(max_length=256)
     authors = ListField(ReferenceField('User'))
     publishers = ListField(ReferenceField('User'))
-    url = URLField()
+    url = URLField(unique=True)
     date_published = DateTimeField(default=datetime.datetime.now)
     abstract = StringField()
     content = StringField()
@@ -116,7 +117,7 @@ def article_post_init_task(article_id):
 
 class Read(Document):
     user = ReferenceField('User')
-    article = ReferenceField('Article')
+    article = ReferenceField('Article', unique_with='user')
     is_read = BooleanField()
     is_auto_read = BooleanField()
     date_created = DateTimeField(default=datetime.datetime.now)
@@ -190,17 +191,8 @@ class Preference(Document):
     notification = EmbeddedDocumentField('NotificationPreference')
 
 
-class GoogleReaderImport(Document):
-    start_time        = DateTimeField()
-    end_time          = DateTimeField()
-    is_running        = BooleanField(default=False)
-    account_data      = StringField()
-    feeds_imported    = IntField(default=0)
-    articles_imported = IntField(default=0)
-
-
 class User(Document):
-    django_user = IntField()
+    django_user = IntField(unique=True)
     preferences = ReferenceField('Preference')
 
 connect_mongoengine_signals(globals())
