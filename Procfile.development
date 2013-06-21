@@ -8,4 +8,5 @@
 web: python manage.py run_gunicorn -b 0.0.0.0:8000
 #web: uwsgi --http :8000 -H ${WORKON_HOME}/1flow --chdir ${HOME}/sources/1flow --wsgi-file oneflow/wsgi.py --master --processes 4
 flower: python manage.py celery flower
-worker: python manage.py celery worker -E -B --loglevel=info --autoreload
+worker_bunch: python manage.py celery worker -E --loglevel=info --autoreload --queues medium,low,celery
+worker_high: python manage.py celery worker -E -B --loglevel=info --autoreload --queues high
