@@ -5,7 +5,7 @@ import logging
 import datetime
 from constance import config
 
-from humanize.time import naturaldelta
+from humanize.time import naturaldelta, naturaltime
 
 from pymongo.errors import DuplicateKeyError
 from libgreader import GoogleReader, OAuth2Method
@@ -154,10 +154,13 @@ Just for you to know…
         processed_feeds += 1
         gri.incr_feeds()
 
-    LOGGER.info(u'Done importing %s feeds in %s; import already started for '
-                u'the %s article(s)…', processed_feeds,
-                naturaldelta(now() - gri.start()),
-                total_reads)
+    LOGGER.info(u'Done importing %s feeds in %s; articles import already '
+                u'started with limits. Date: %s, max waves: %s or %s '
+                u'articles, total max articles: %s, max reads: %s.',
+                processed_feeds, naturaldelta(now() - gri.start()),
+                naturaltime(max([gri.reg_date(), GR_OLDEST_DATE])),
+                config.GR_WAVE_LIMIT, config.GR_LOAD_LIMIT,
+                config.GR_MAX_ARTICLES, total_reads)
 
 
 @task
