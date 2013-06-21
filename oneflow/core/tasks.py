@@ -65,8 +65,7 @@ def import_google_reader_data_trigger(user_id):
 @task
 def import_google_reader_data(user_id):
 
-    ftstamp = datetime.datetime.fromtimestamp
-    now     = datetime.datetime.now
+    now = datetime.datetime.now
 
     GR_MAX_FEEDS = config.GR_MAX_FEEDS
 
@@ -98,8 +97,8 @@ def import_google_reader_data(user_id):
 
     gri = GoogleReaderImport(django_user)
 
-    # refresh start time with the actual real start time.
-    gri.start(set_time=True, user_infos=user_infos)
+    # take note of user informations now that we have them.
+    gri.start(user_infos=user_infos)
 
     reader.buildSubscriptionList()
 
@@ -173,18 +172,30 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
     else:
         gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT)
 
-    #date_limit = max([gri.reg_date(), GR_OLDEST_DATE])
+    total_reads = gri.total_reads()
+    date_limit  = max([gri.reg_date(), GR_OLDEST_DATE])
     grand_total = len(gr_feed.items)
-    total = grand_total - (wave * GR_LOAD_LIMIT)
-    current = 1
+    total       = grand_total - (wave * GR_LOAD_LIMIT)
+    current     = 1
+
     continue_fetching = True
 
     for gr_article in gr_feed.items[wave * GR_LOAD_LIMIT:]:
 
+        if gri.reads() >= total_reads:
+            gri.end(set_time=True)
+            LOGGER.info(u'All read articles imported, stopping task.')
+            return
+
+        if gri.articles() >= config.GR_MAX_ARTICLES:
+            gri.end(set_time=True)
+            LOGGER.info(u'Maximum article limit reached, stopping import.')
+            return
+
         if gr_article.time:
             # If articles don't have datetimes,
             # we will rely on other limits to stop importing.
-            if ftstamp(gr_article.time) < GR_OLDEST_DATE:
+            if ftstamp(gr_article.time) < date_limit:
                 continue_fetching = False
                 break
 
@@ -223,20 +234,6 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
 
         if gr_article.starred:
             gri.incr_starred()
-
-    if gri.reads() >= gri.total_reads():
-        gri.end(set_time=True)
-
-        LOGGER.info(u'All read articles imported, stopping import '
-                    u'to avoid fetching half of the internet. %s >= %s',
-                    gri.reads(), gri.total_reads())
-        return
-
-    if gri.articles() >= config.GR_MAX_ARTICLES:
-        gri.end(set_time=True)
-
-        LOGGER.info(u'Maximum article limit reached, stopping GR import.')
-        return
 
     if total % GR_LOAD_LIMIT == 0:
         # We got a multiple of the loadLimit. Go for next wave,

@@ -12,8 +12,6 @@ import logging
 import datetime
 import simplejson as json
 
-from humanize.time import naturaldelta
-
 from django.conf import settings
 
 LOGGER = logging.getLogger(__name__)
@@ -26,7 +24,9 @@ ftstamp = datetime.datetime.fromtimestamp
 boolcast = {
     'True': True,
     'False': False,
-    'None': None
+    'None': None,
+    # The real None is needed in case of a non-existing key.
+    None: None
 }
 
 
@@ -86,15 +86,17 @@ class GoogleReaderImport(object):
 
     def running(self, set_running=None):
 
+        key = self.key_base + ':run'
+
         # Just to be sure we need to cast…
         # LOGGER.warning('running: set=%s, value=%s type=%s',
         #                set_running, REDIS.get(self.key_base),
         #                type(REDIS.get(self.key_base)))
 
         if set_running is None:
-            return boolcast[REDIS.get(self.key_base)]
+            return boolcast[REDIS.get(key)]
 
-        return REDIS.set(self.key_base, set_running)
+        return REDIS.set(key, set_running)
 
     def start(self, set_time=False, user_infos=None):
 
@@ -119,32 +121,14 @@ class GoogleReaderImport(object):
 
         if self.running():
             self.running(set_running=False)
-            return GoogleReaderImport.__time_key(self.key_base + ':end',
-                                                 set_time)
 
-            LOGGER.info(u'Import statistics: %s article(s), %s read, '
-                        u'%s starred, %s feed(s) in %s).',
-                        self.articles(), self.reads(), self.starred(),
-                        self.feeds(), naturaldelta(self.end() - self.start()))
-
-        return GoogleReaderImport.__time_key(self.key_base + ':end', False)
+        return GoogleReaderImport.__time_key(self.key_base + ':end', set_time)
 
     def reg_date(self, set_date=None):
 
-        date = GoogleReaderImport.__time_key(self.key_base + ':rd',
+        return GoogleReaderImport.__time_key(self.key_base + ':rd',
                                              set_time=set_date is not None,
                                              time_value=set_date)
-
-        if set_date is None:
-            return ftstamp(float(date or 0.0))
-
-        return date
-
-    def must_stop(self, set_stop=None):
-        # NOT USED ?
-        return GoogleReaderImport.__int_set_key(
-            self.key_base + ':stp',
-            {None: None, False: 0, True: 1}[set_stop])
 
     def incr_feeds(self):
         return self.feeds(increment=True)
