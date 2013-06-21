@@ -15,6 +15,7 @@ include_snippets(
         #'00_production',
         '1flow_io',
         'common',
+        'api_keys_development',
         'db_common',
         'db_development',
         'cache_common',
@@ -29,8 +30,15 @@ include_snippets(
     __file__, globals()
 )
 
-# Override `1flow_net` for local development
-SITE_DOMAIN = 'localhost:8000'
+ALLOWED_HOSTS += [
+    'lil.1flow.io',
+    'chani.licorn.org',
+    'leto.licorn.org',
+    'gurney.licorn.org',
+]
+
+# We need an official public host name for all `social_auth` backends.
+SITE_DOMAIN = 'lil.1flow.io'
 
 EMAIL_HOST = 'gurney'
 #EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'

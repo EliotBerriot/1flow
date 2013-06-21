@@ -15,9 +15,6 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 ALLOWED_HOSTS += [
     'localhost',
-    'chani.licorn.org',
-    'leto.licorn.org',
-    'gurney.licorn.org'
 ]
 
 INSTALLED_APPS += ('django_nose', 'devserver', )

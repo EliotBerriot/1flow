@@ -20,6 +20,11 @@ User = get_user_model()
 
 
 def home(request):
+
+    if request.user.is_authenticated():
+        if not (request.user.is_staff or request.user.is_superuser):
+            return HttpResponseRedirect(reverse('home'))
+
     if request.POST:
         form = LandingPageForm(request.POST)
 

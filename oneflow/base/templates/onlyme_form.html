@@ -1,0 +1,23 @@
+{% extends "onlyme_base.html" %}
+
+{% block extrajs_footer %}
+    {{ block.super }}
+    <script>
+        var error_field = $("div.control-group.error:first");
+        if (error_field){
+
+            // Django always empty passwords between runs.
+            // We focus on the first, to assist user in re-typing it.
+            // Having them emptied is already a hassle, don't add to it.
+            if (error_field.find('input').attr('name') == 'password2') {
+                focus_field = $('#id_password1');
+
+            } else {
+                focus_field = error_field.find('input');
+
+            }
+
+            focus_field.focus();
+        }
+    </script>
+{% endblock extrajs_footer %}

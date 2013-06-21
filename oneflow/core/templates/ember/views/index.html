@@ -4,10 +4,11 @@
       <div class="span10">&nbsp;</div>
     </div>
     <div class="row-fluid">
-      <div class="hero-unit span12">
+      <div class="hero-unit span7 offset2">
         <h1>{% trans "Welcome!" %}</h1>
-        <p>{% trans "This this hope. Er… Home!" %}</p>
-        <p>{{fromNow '20130615'}}</p>
+        <p>{% trans "There is nothing much more ready, except the Google Reader import." %}</p>
+
+        {% include 'snippets/google-reader-import.html' %}
       </div>
     </div>
   </div>

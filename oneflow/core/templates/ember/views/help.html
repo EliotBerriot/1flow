@@ -1,16 +1,24 @@
+{% load markdown_deux_tags %}
 {% handlebars "help" %}
   <div class="container-fluid">
     <div class="row-fluid">
-      <div class="span12">
+      <div>&nbsp;</div>
+      <div>&nbsp;</div>
+      <div class="span7 offset2">
         <div class="about">
-          <h1>OK, this is help</h1>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-          <h2>We have some work to do…</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-          <h2>… And again, more!</h2>
-          <p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
           <div class="hero-unit">
-            <h1>Matt: fill this place, it's yours :-D</h1>
+            <h1>{% trans "1flow minimal help" %}</h1>
+            <p>{% filter markdown %}{% blocktrans %}
+We are so sorry: this is the main help page, but as we still didn't reach the beta status,
+there is currently no fully-featured content.
+
+But if you really *need* help, or to reach real people, you still have:
+
+- the **feedback form** (on the right), which links to our help forums,
+- the **chat** widget, to which we are connected in real time (it's not a robot!).
+
+Note: you should not use our twitter feed to contact us: we use it primarily for publishing informations and don't read it that much.
+            {% endblocktrans %}{% endfilter %}</p>
           </div>
         </div>
       </div>
