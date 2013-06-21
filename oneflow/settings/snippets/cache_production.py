@@ -1,2 +1,1 @@
-
-REDIS_DB = 0
+# Empty for now. Redis settings are in db_*

@@ -3,6 +3,9 @@
 {% block title %}{% trans 'Sign in…' %}{% endblock title %}
 
 {% block onlyme_content %}
+
+  <!-- disabled for now
+
   <form class="form-login form-horizontal" method="post">
     <fieldset>
       <legend>{% trans "1flow authentication" %}</legend>
@@ -20,6 +23,7 @@
         <label class="control-label" for="{{ form.username.id_for_label }}">{{ form.username.label }}</label>
         <div class="controls">
           {{ form.username }}
+          <span class="help-inline">{{ _('(or any registrered email address)') }}</span>
           <span class="help-inline">{{ form.username.errors }}</span>
         </div>
       </div>
@@ -34,7 +38,7 @@
 
       <div class="form-actions">
         <div class="pull-left">
-          {% captureas register_url %}{# {% url 'register' %} #}{% endcaptureas %}
+          {% url 'register' as register_url %}
           {% blocktrans %}
               New to 1flow? <a href="{{ register_url }}">Register</a>.
           {% endblocktrans %}
@@ -45,9 +49,23 @@
       </div>
 
     </fieldset>
+
+  -->
+
     <fieldset>
       <legend>{% trans "Social authentication" %}</legend>
+
+      <p>&nbsp;</p>
+
+      {% include "snippets/social_auth.html" %}
 
     </fieldset>
   </form>
 {% endblock onlyme_content %}
+
+{% block extrajs_footer %}
+  {{ block.super }}
+  <script>
+    $('#id_username').focus();
+  </script>
+{% endblock extrajs_footer %}

@@ -44,6 +44,7 @@ class LandingTests(TransactionTestCase):
             follow=True
         )
         self.assertEqual(response.status_code, 200)
+        # TODO: test there is "error" in the content
         #self.assert
 
     def test_request_invite_nolang(self):
@@ -57,6 +58,7 @@ class LandingTests(TransactionTestCase):
 
         self.assertEqual(mail.outbox[0].subject,
                          'Your boarding card for the 1flow flight')
+        # TODO: assertContains(mail.outbox[0].body, self.test_email)
 
     def test_request_invite_lang_fr(self):
         """ This should send a mail in French. """

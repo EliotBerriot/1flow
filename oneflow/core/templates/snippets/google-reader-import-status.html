@@ -1,0 +1,44 @@
+
+{% if status == 'not_started' %}
+
+  {% url "google_reader_import" as import_url %}
+
+  <p>
+    <a href=" {{import_url }}" class="btn btn-large btn-primary">
+    {% trans "Import your Google Reader data" %}</a>
+  </p>
+  <p>{% blocktrans %}
+      Note: after starting it, the import can take up to
+      one minute before importing the first data.
+  {% endblocktrans %}</p>
+
+{% elif status == 'running' %}
+
+  <p>{% blocktrans %}
+    Your Google Reader import has started {{ start }}.<br />
+
+    {{ feeds }} feeds and {{ articles }} articles processed so far, {{ starred }} starred.<br />
+
+    Average import speed: {{ speed }} article(s)/minute.<br />
+    Approximative ETA: {{ ETA }}.<br /><br />
+
+    <small>It will take longer if many users import their GR data at once.
+      This status is updated every 5 seconds. You can safely leave
+      <strong>1flow</strong> or close this window and come back later.</small><br /><br />
+
+      <small>Note: the real number of imported article will be less than the
+        processed ones, due to some duplicates present on Google Reader.</small>
+{% endblocktrans %}</p>
+
+{% else %}
+
+  <p>{% blocktrans %}
+    Your Google Reader import finished {{ end }}, and took {{ duration }}.<br />
+
+    {{ feeds }} feeds and {{ articles }} articles imported, {{ starred }} starred.<br />
+    Average import speed: {{ speed }} article(s)/minute.<br />
+
+    See you very soon for the upcoming features of <strong>1flow</strong>!
+    {% endblocktrans %}</p>
+
+{% endif %}

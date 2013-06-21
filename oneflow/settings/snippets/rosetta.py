@@ -10,8 +10,6 @@ if 'dummycache' in CACHES['default']['BACKEND'].lower():
     }
 
 ROSETTA_MESSAGES_PER_PAGE = 25
-ROSETTA_ENABLE_TRANSLATION_SUGGESTIONS = True
-BING_APP_ID = 'aJZPiXVxOgwX95F/BR3bFrMql2z/Q8DIevtBVbKdvZI'
 
 MAINTENANCE_IGNORE_URLS += (
     r'^/translate/.*',

@@ -14,12 +14,25 @@
 {% include 'ember/views/teams.html' %}
 {% include 'ember/views/subscriptions.html' %}
 {% include 'ember/views/discovery.html' %}
+{% include 'ember/views/profile.html' %}
 {% include 'ember/views/help.html' %}
 {% endblock body %}
 
 {% block extrajs_footer %}
 
-    {% emberpie_js %}
+    {% jquery_js %}
+    {% compressed_js 'temp_handlebars_rc4' %}
+    {% ember_js %}
+    {% ember_data_js %}
+    {% tastypie_adapter_js %}
+
+    {% comment %}
+    restore {% emberpie_js %}
+    when
+        http://discuss.emberjs.com/t/ember-rc-5-is-not-working-properly-with-handlebars-1-0-0/1391
+    is resolved
+    {% endcomment %}
+
     {% compressed_js 'bootstrap' %}
     {% compressed_js 'showdown' %}
     {% compressed_js 'moment' %}
@@ -30,6 +43,27 @@
     <script type="text/javascript">
         moment.lang('{{ LANGUAGE_CODE }}');
     </script>
+
+    {% if has_google %}
+        <script type="text/javascript">
+            function update_gri_status() {
+                try {
+                    $.get("{% url 'google_reader_import_status' %}", function(data){
+                        $('#google-reader-import-status').html(data);
+                        if ($('#google-reader-import-status').html().indexOf("{% trans "finished" %}")>=0) {
+                            clearInterval(gri_interval);
+                        }
+                    });
+                } catch (err) {
+                    // nothing…
+                }
+            }
+
+            update_gri_status();
+
+            var gri_interval = setInterval(update_gri_status, 5000);
+        </script>
+    {% endif %}
 
     {% csrf_token %}
 {% endblock extrajs_footer %}

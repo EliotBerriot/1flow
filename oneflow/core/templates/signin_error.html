@@ -1,0 +1,16 @@
+{% extends "onlyme_base.html" %}
+
+{% block title %}{{ _('Error Signin in.') }}{% endblock title %}
+
+{% block onlyme_content %}
+
+    <h1>{{ _('Error Signin in..') }}</h1>
+    <h2>{{ _('There was a problem processing your signin.') }}</h2>
+    {% url 'home' as home_url %}
+    <p>{% blocktrans %}
+        Either you didn't allow <strong>1flow</strong> to access your social
+        account, or the remote site sent us a boo-boo. We're sorry for that.
+        <br />
+        Return to <a href="{{ home_url }}">home</a>?
+    {% endblocktrans %}</p>
+{% endblock onlyme_content %}

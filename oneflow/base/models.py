@@ -78,12 +78,14 @@ class User(AbstractBaseUser, PermissionsMixin):
     """ Username, password and email are required.
         Other fields are optional. """
 
+    #NOTE: AbstractBaseUser brings `password` and `last_login` fields.
+
     username = models.CharField(_('User name'), max_length=254,
                                 unique=True, db_index=True,
                                 help_text=_('Required. letters, digits, '
                                             'and "@+-_".'))
     email = models.EmailField(_('email address'),  max_length=254,
-                              unique=True, db_index=True, blank=True,
+                              unique=True, db_index=True,
                               help_text=_('Any valid email address.'))
     first_name = models.CharField(_('first name'), max_length=64, blank=True)
     last_name = models.CharField(_('last name'), max_length=64, blank=True)
@@ -101,7 +103,7 @@ class User(AbstractBaseUser, PermissionsMixin):
     objects = UserManager()
 
     USERNAME_FIELD = 'username'
-    REQUIRED_FIELDS = []
+    REQUIRED_FIELDS = ('email', )
 
     class Meta:
         verbose_name = _('user')

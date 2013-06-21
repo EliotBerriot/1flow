@@ -48,7 +48,7 @@ env.root         = '/home/1flow/www/src'
 env.environment  = 'test'
 env.pg_superuser = 'oneflow_admin'
 env.pg_superpass = 'ZQmeDuNF7b2GMC'
-env.repository   = 'olive@dev.1flow.net:1flow.git'
+env.repository   = 'git@dev.1flow.net:1flow.git'
 
 
 def get_current_git_branch():
@@ -106,7 +106,7 @@ def preview(branch=None):
         'lang': ['obi.1flow.io'],
         'flower': ['worbi.1flow.io'],
         'worker_high': ['worbi.1flow.io'],
-        'worker_low': ['worbi.1flow.io'],
+        'worker_low': ['obi.1flow.io', 'worbi.1flow.io'],
         #'redis': ['duncan.licorn.org'],
     })
 
@@ -131,7 +131,11 @@ def production():
         'web': ['1flow.io'],
         'flower': ['worker-01.1flow.io'],
         'worker_high': ['worker-01.1flow.io'],
-        'worker_low': ['worker-02.1flow.io'],
+        'worker_low': [
+            'worker-02.1flow.io',
+            #'worker-03.1flow.io', wait for DNS to expire…
+            'worker-05.1flow.io',
+        ],
         #'redis': ['duncan.licorn.org'],
     })
     env.env_was_set = True

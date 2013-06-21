@@ -3,6 +3,7 @@
 import datetime
 import logging
 
+from celery import task
 from mongoengine import Document
 from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 DateTimeField,
@@ -13,27 +14,46 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
 
 from django.utils.translation import ugettext_lazy as _
 
+from ...base.utils import connect_mongoengine_signals
 from .keyval import FeedbackDocument
 
 LOGGER = logging.getLogger(__name__)
 
 
 class Source(Document):
-    # what difference with a feed ??
-    url = URLField()
-    name = StringField()
-    slug = StringField()
+    """ The "original source" for similar articles: they have different authors,
+        different contents, but all refer to the same information, which can
+        come from the same article on the net (or radio, etc).
+
+        Eg:
+            - article1 on Le Figaro
+            - article2 on Liberation
+            - both refer to the same AFP news, but have different content.
+
+    """
+    type    = StringField()
+    uri     = URLField(unique=True)
+    name    = StringField()
+    authors = ListField(ReferenceField('User'))
+    slug    = StringField()
 
 
 class Feed(Document):
-    name = StringField()
-    url = URLField()
-    restricted = BooleanField()
+    # TODO: init
+    name       = StringField()
+    url        = URLField(unique=True)
+    site_url   = URLField()
+    slug       = StringField()
+    restricted = BooleanField(default=False)
+
+    @classmethod
+    def signal_post_init_handler(cls, sender, document, **kwargs):
+        LOGGER.warning('POST INIT for %s', document)
 
 
 class Subscription(Document):
     feed = ReferenceField('Feed')
-    user = ReferenceField('User')
+    user = ReferenceField('User', unique_with='feed')
 
     # allow the user to rename the field in its own subscription
     name = StringField()
@@ -43,6 +63,7 @@ class Subscription(Document):
 
 
 class Group(Document):
+    name = StringField(unique_with='creator')
     creator = ReferenceField('User')
     administrators = ListField(ReferenceField('User'))
     members = ListField(ReferenceField('User'))
@@ -50,16 +71,19 @@ class Group(Document):
 
 
 class Article(Document):
+    # TODO: init
     title = StringField(max_length=256, required=True)
     slug = StringField(max_length=256)
     authors = ListField(ReferenceField('User'))
     publishers = ListField(ReferenceField('User'))
-    url = URLField()
+    url = URLField(unique=True)
     date_published = DateTimeField(default=datetime.datetime.now)
     abstract = StringField()
     content = StringField()
+    full_content = StringField(default='')
     comments = ListField(ReferenceField('Comment'))
-    default_rating = FloatField()
+    default_rating = FloatField(default=0.0)
+    google_reader_original_data = StringField()
 
     # A snap / a serie of snaps references the original article.
     # An article references its source (origin blog / newspaper…)
@@ -73,15 +97,33 @@ class Article(Document):
     # Avoid displaying duplicates to the user.
     duplicates = ListField(ReferenceField('Article'))  # , null=True)
 
+    @classmethod
+    def signal_post_init_handler(cls, sender, document, **kwargs):
+        LOGGER.warning('POST INIT for %s', document)
+
+        article_post_init_task.delay(document.id)
+
+
+@task
+def article_post_init_task(article_id):
+
+    # TODO: full_content_fetch
+    # TODO: images_fetch
+    # TODO: authors_fetch
+    # TODO: publishers_fetch
+    # TODO: duplicates_find
+    pass
+
 
 class Read(Document):
     user = ReferenceField('User')
-    article = ReferenceField('Article')
+    article = ReferenceField('Article', unique_with='user')
     is_read = BooleanField()
     is_auto_read = BooleanField()
-    date_created = DateTimeField()
+    date_created = DateTimeField(default=datetime.datetime.now)
     date_read = DateTimeField()
     date_auto_read = DateTimeField()
+    tags = ListField(StringField())
 
     # This will be set to Article.default_rating
     # until the user sets it manually.
@@ -150,5 +192,7 @@ class Preference(Document):
 
 
 class User(Document):
-    django_user = IntField()
-    preferences = EmbeddedDocumentField('Preference')
+    django_user = IntField(unique=True)
+    preferences = ReferenceField('Preference')
+
+connect_mongoengine_signals(globals())

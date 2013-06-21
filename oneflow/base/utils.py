@@ -1,11 +1,14 @@
 # -*- coding: utf-8 -*-
 
+import six
 import logging
 
+from mongoengine import Document, signals
 from django.conf import settings
 from django.template import Context, Template
 from django.utils import translation
 from django.contrib.auth import get_user_model
+from djangojs.utils import ContextSerializer
 
 from sparks.django import mail
 
@@ -13,6 +16,37 @@ from models import EmailContent
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
+
+
+def connect_mongoengine_signals(module_scope):
+    """ Automatically iterate classes of a given module and connect handlers
+        to signals, given they follow the name pattern
+        ``signal_<signal_name>_handler()``.
+
+        See https://mongoengine-odm.readthedocs.org/en/latest/guide/signals.html#overview
+        for a list of valid signal names.
+    """
+
+    for key in dir(module_scope):
+        klass = getattr(module_scope, key)
+
+        # TODO: use ReferenceDocument and other Mongo classes.
+        try:
+            look_for_handlers = issubclass(Document, klass)
+
+        except:
+            # klass is definitely not a class ;-)
+            continue
+
+        if look_for_handlers:
+            for signal_name in ('pre_init', 'post_init', 'pre_save',
+                                'pre_save_post_validation', 'post_save',
+                                'pre_delete', 'post_delete',
+                                'pre_bulk_insert', 'post_bulk_insert'):
+                handler_name = 'signal_{0}_handler'.format(signal_name)
+                if hasattr(klass, handler_name):
+                    getattr(signals, signal_name).connect(
+                        getattr(klass, handler_name), sender=klass)
 
 
 def send_email_with_db_content(context, email_template_name, **kwargs):
@@ -163,3 +197,21 @@ def request_context_celery(request, *args, **kwargs):
         context.update({'language_code': None})
 
     return context
+
+
+class JsContextSerializer(ContextSerializer):
+    """ This class should probably move into sparks some day. """
+
+    def process_social_auth(self, social_auth, data):
+        """ Just force social_auth's LazyDict to be converted to a dict for the
+            JSON serialization to work properly. """
+
+        data['social_auth'] = dict(six.iteritems(social_auth))
+
+    def handle_user(self, data):
+        """ We just add the user ID to everything already gathered by Django.JS
+            user serializer. """
+
+        super(JsContextSerializer, self).handle_user(data)
+
+        data['user']['id'] = self.request.user.id

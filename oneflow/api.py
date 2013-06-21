@@ -8,6 +8,7 @@ import importlib
 from django.conf import settings
 from tastypie.api import Api
 
+from tastypie.resources import ModelResource
 from tastypie_mongoengine.resources import MongoEngineResource
 
 LOGGER = logging.getLogger(__name__)
@@ -26,7 +27,8 @@ for app_name in settings.INSTALLED_APPS:
             for objekt_name in dir(apimod):
                 objekt = getattr(apimod, objekt_name)
                 try:
-                    if issubclass(objekt, MongoEngineResource):
+                    if issubclass(objekt, MongoEngineResource) \
+                            or issubclass(objekt, ModelResource):
                         v1_api.register(objekt())
                         LOGGER.info('Automatically registered '
                                     '%(module_name)s.%(class_name)s '

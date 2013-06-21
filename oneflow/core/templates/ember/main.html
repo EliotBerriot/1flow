@@ -21,7 +21,7 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
+              <li>{% linkto 'profile' %}{% trans 'Profile' %}{% endlinkto %}</li>
 
             {% if request.user.is_superuser %}
               <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
@@ -42,15 +42,20 @@
           <ul class="nav">
             {% if request.user.is_authenticated %}
               <li>{% linkto 'index' %}{% trans 'flowboard' %}{% endlinkto %}</li>
-              <li>{% linkto 'teams' %}{% trans 'teams' %}{% endlinkto %}</li>
-              <li>{% linkto 'subscriptions' %}{% trans 'subscriptions' %}{% endlinkto %}</li>
-              <li>{% linkto 'discovery' %}{% trans 'discovery' %}{% endlinkto %}</li>
-              <li>
-                  <form class="navbar-search">
-                    <input type="text" class="search-query input-small"
-                        placeholder="{% trans 'Search…' %}">
-                  </form>
-              </li>
+
+              {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
+
+                <li>{% linkto 'teams' %}{% trans 'teams' %}{% endlinkto %}</li>
+                <li>{% linkto 'subscriptions' %}{% trans 'subscriptions' %}{% endlinkto %}</li>
+                <li>{% linkto 'discovery' %}{% trans 'discovery' %}{% endlinkto %}</li>
+                <li>
+                    <form class="navbar-search">
+                      <input type="text" class="search-query input-small"
+                          placeholder="{% trans 'Search…' %}">
+                    </form>
+                </li>
+
+              {% endif %}
             {% else %}
 
               <li>{% linkto 'about' %}{% trans 'about' %}{% endlinkto %}</li>

@@ -7,6 +7,8 @@
 
 import os
 
+from django.core.urlresolvers import reverse_lazy
+
 # This is imported here to benefit to all other included snippets.
 from sparks import platform # NOQA
 
@@ -70,6 +72,7 @@ TRANSMETA_LANGUAGES = LANGUAGES + (
 
 # We use oneflow.base.models.User as a drop-in replacement.
 AUTH_USER_MODEL = 'base.User'
+SOCIAL_AUTH_USER_MODEL = 'base.User'
 
 USE_I18N = True
 USE_L10N = True
@@ -99,6 +102,11 @@ STATICFILES_FINDERS = (
 )
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
+
+# FOR NOW, pipeline is disabled because
+# compression messes the JS ember tastypie adapter.
+PIPELINE_ENABLED = False
+PIPELINE_DISABLE_WRAPPER = True
 
 PIPELINE_COMPILERS = (
     'pipeline.compilers.less.LessCompiler',
@@ -204,6 +212,14 @@ PIPELINE_JS = {
         'output_filename': 'js/moment.js',
     },
 
+    # TODO: to be removed; see core/templates/…/home.html
+    'temp_handlebars_rc4': {
+        'source_filenames': (
+            'js/workarounds/handlebars-1.0.0-rc4/handlebars.js',
+        ),
+        'output_filename': 'js/handlebars-1.0.0-rc4.js',
+    },
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
 
     'utils': {
@@ -218,7 +234,9 @@ PIPELINE_JS = {
             'js/core/core.js',
             'js/core/controllers/*.js',
             'js/core/models/*.js',
+            'js/core/routes/*.js',
             'js/core/helpers/*.js',
+            'js/core/init.js',
         ),
         'output_filename': 'js/core.js',
     }
@@ -258,9 +276,11 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+    # TODO: activate this if needed.
+    #'social_auth.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'maintenancemode.middleware.MaintenanceModeMiddleware',
-    #'django.middleware.gzip.GZipMiddleware',
+    'django.middleware.gzip.GZipMiddleware',
     #'pipeline.middleware.MinifyHTMLMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
 )
@@ -281,8 +301,15 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.tz',
     'django.core.context_processors.request',
     'absolute.context_processors.absolute',
+    'constance.context_processors.config',
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
+
+    # TODO: activate one of these when needed.
+    #'social_auth.context_processors.social_auth_by_name_backends',
+    'social_auth.context_processors.social_auth_backends',
+    #'social_auth.context_processors.social_auth_login_redirect',
+
     # One day, if we have some:
     #'oneflow.base.context_processors.…',
     #'oneflow.core.context_processors.…',
@@ -308,6 +335,7 @@ INSTALLED_APPS = (
     #'maintenancemode', — not needed at all, the middleware is sufficient.
     'transmeta',
     'logentry_admin',
+    'constance',
     'tastypie',
     'tastypie_mongoengine',
     'overextends',
@@ -315,6 +343,7 @@ INSTALLED_APPS = (
     'redisboard',
     'djcelery',
     'memcache_status',
+    'social_auth',
     'markdown_deux',
     'djangojs',
     'pipeline',
@@ -326,6 +355,8 @@ INSTALLED_APPS = (
     'oneflow.landing',
     'oneflow.core',
 )
+
+JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
 import djcelery
 djcelery.setup_loader()
@@ -356,13 +387,74 @@ MARKDOWN_DEUX_STYLES = {
     }
 }
 
+CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
+# CONSTANCE_REDIS_CONNECTION is to be found in db_*
+CONSTANCE_REDIS_PREFIX = 'c0s1f:'
+CONSTANCE_CONFIG = {
+    'GR_MAX_ARTICLES': (25 if DEBUG else 250000, ugettext(u'maximum number '
+                        u'of Google Reader articles imported for a user.')),
+    'GR_MAX_FEEDS': (2 if DEBUG else 1000, ugettext(u'maximum number of '
+                     u'articles imported from Google Reader for any user.')),
+    'GR_LOAD_LIMIT': (10 if DEBUG else 500, ugettext(u'maximum number of '
+                      u'articles in each wave of Google Reader feed import.')),
+    'GR_WAVE_LIMIT': (10 if DEBUG else 300, ugettext(u'maximum number of import waves for each '
+                      u'Google Reader feed.')),
+}
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
 
+AUTHENTICATION_BACKENDS = (
+    # WARNING: when activating Twitter, we MUST implement the email pipeline,
+    # else the social-only registration will fail because user has no mail.
+    #'social_auth.backends.twitter.TwitterBackend',
+    #'social_auth.backends.facebook.FacebookBackend',
+    #'social_auth.backends.google.GoogleOAuthBackend',
+    'social_auth.backends.google.GoogleOAuth2Backend',
+    #'social_auth.backends.google.GoogleBackend',
+    #'social_auth.backends.yahoo.YahooBackend',
+    #'social_auth.backends.browserid.BrowserIDBackend',
+    'social_auth.backends.contrib.linkedin.LinkedinBackend',
+    #'social_auth.backends.contrib.disqus.DisqusBackend',
+    #'social_auth.backends.contrib.livejournal.LiveJournalBackend',
+    #'social_auth.backends.contrib.orkut.OrkutBackend',
+    #'social_auth.backends.contrib.foursquare.FoursquareBackend',
+    #'social_auth.backends.contrib.github.GithubBackend',
+    #'social_auth.backends.contrib.vk.VKOAuth2Backend',
+    #'social_auth.backends.contrib.live.LiveBackend',
+    #'social_auth.backends.contrib.skyrock.SkyrockBackend',
+    #'social_auth.backends.contrib.yahoo.YahooOAuthBackend',
+    #'social_auth.backends.contrib.readability.ReadabilityBackend',
+    #'social_auth.backends.contrib.fedora.FedoraBackend',
+    #'social_auth.backends.OpenIDBackend',
+    'django.contrib.auth.backends.ModelBackend',
+)
 
-LOGIN_URL = 'signin'
-LOGOUT_URL = 'signout'
-LOGIN_REDIRECT_URL = 'home'
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Social Auth
+# See snippets/api_keys_*.py for API keys.
+
+
+from libgreader.auth import OAuth2Method
+
+# Get the google reader scope.
+GOOGLE_OAUTH_EXTRA_SCOPE           = OAuth2Method.SCOPE
+# We need this to be able to refresh tokens
+# See http://stackoverflow.com/a/10857806/654755 for notes.
+GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
+
+# See http://django-social-auth.readthedocs.org/en/latest/configuration.html#urls-options # NOQA
+# for social_auth specific URLs.
+LOGIN_URL          = reverse_lazy('signin')
+LOGOUT_URL         = reverse_lazy('signout')
+LOGIN_REDIRECT_URL = reverse_lazy('home')
+LOGIN_ERROR_URL    = reverse_lazy('signin_error')
+
+# See SOCIAL_AUTH_USER_MODEL earlier in this file.
+#SOCIAL_AUTH_SANITIZE_REDIRECTS = False
+#SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
+SOCIAL_AUTH_EXTRA_DATA = True
+SOCIAL_AUTH_SESSION_EXPIRATION = False
+
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
 
 LOGGING = {
     'version': 1,
