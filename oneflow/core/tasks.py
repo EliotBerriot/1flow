@@ -130,20 +130,20 @@ Just for you to know…
 
         Feed.objects(url=gr_feed.feedUrl,
                      site_url=gr_feed.siteUrl
-                     ).update_one(set__url=gr_feed.feedUrl,
-                                  set__site_url=gr_feed.siteUrl,
-                                  set__name=gr_feed.title,
-                                  upsert=True)
+                     ).update(set__url=gr_feed.feedUrl,
+                              set__site_url=gr_feed.siteUrl,
+                              set__name=gr_feed.title,
+                              upsert=True)
 
         feed = Feed.objects.get(url=gr_feed.feedUrl, site_url=gr_feed.siteUrl)
         tags = [c.label for c in gr_feed.getCategories()]
 
         Subscription.objects(feed=feed,
                              user=mongo_user
-                             ).update_one(set__feed=feed,
-                                          set__user=mongo_user,
-                                          set__tags=tags,
-                                          upsert=True)
+                             ).update(set__feed=feed,
+                                      set__user=mongo_user,
+                                      set__tags=tags,
+                                      upsert=True)
 
         import_google_reader_articles.delay(user_id, reader, gr_feed, feed)
 
@@ -202,29 +202,25 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
         LOGGER.debug(u'Importing article “%s” from feed “%s” (%s/%s, wave %s)…',
                      gr_article.title, gr_feed.title, current, total, wave + 1)
 
-        Article.objects(title=gr_article.title,
-                        url=gr_article.url).update_one(set__url=gr_article.url,
-                                                       set__title=gr_article.title, # NOQA
-                                                       set__feed=feed,
-                                                       set__google_reader_original_data=gr_article.data, # NOQA
-                                                       set__content=gr_article.content, # NOQA
-                                                       upsert=True)
+        Article.objects(url=gr_article.url).update_one(
+            set__url=gr_article.url, set__title=gr_article.title,
+            set__feed=feed, set__google_reader_original_data=gr_article.data,
+            set__content=gr_article.content, upsert=True)
 
-        article = Article.objects.get(title=gr_article.title,
-                                      url=gr_article.url)
+        article = Article.objects.get(url=gr_article.url)
         tags = [c.label for c in gr_feed.getCategories()]
 
         Read.objects(article=article,
                      user=mongo_user
-                     ).update_one(set__article=article,
-                                  set__user=mongo_user,
-                                  set__tags=tags,
-                                  set__is_read=gr_article.read,
-                                  set__date_created=ftstamp(gr_article.time),
-                                  set__rating=article.default_rating +
-                                  (RATINGS.STARRED if gr_article.starred
-                                   else 0.0),
-                                  upsert=True)
+                     ).update(set__article=article,
+                              set__user=mongo_user,
+                              set__tags=tags,
+                              set__is_read=gr_article.read,
+                              set__date_created=ftstamp(gr_article.time),
+                              set__rating=article.default_rating +
+                              (RATINGS.STARRED if gr_article.starred
+                               else 0.0),
+                              upsert=True)
 
         current += 1
         gri.incr_articles()
