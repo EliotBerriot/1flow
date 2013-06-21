@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-26 11:13+0200\n"
-"PO-Revision-Date: 2013-06-08 10:43+0009\n"
+"POT-Creation-Date: 2013-06-21 18:03+0200\n"
+"PO-Revision-Date: 2013-06-21 19:20+0009\n"
 "Last-Translator:   <admin@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,29 +19,57 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: urls.py:10
+#: forms.py:24
+msgid "The two password fields didn't match."
+msgstr "Les deux mots de passe ne correspondent pas."
+
+#: forms.py:28
+msgid "Password"
+msgstr "Mot de passe"
+
+#: forms.py:30
+msgid "Password confirmation"
+msgstr "Confirmation"
+
+#: forms.py:32
+msgid "Enter the same password as above, for verification."
+msgstr "Saisissez le même mot de passe pour vérification."
+
+#: urls.py:13
 msgid "^home/$"
 msgstr "^accueil/$"
 
-#: urls.py:11
-msgid "^profile/$"
-msgstr "^profil/$"
+#: urls.py:14
+msgid "^register/$"
+msgstr "^enregistrement/$"
 
-#: urls.py:16
+#: urls.py:15
+msgid "^signin_error/$"
+msgstr "^erreur_connexion/$"
+
+#: urls.py:17
+msgid "^grimport/$"
+msgstr "^importgr/$"
+
+#: urls.py:19
+msgid "^grstatus/$"
+msgstr "^etatgr/"
+
+#: urls.py:25
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:18
+#: urls.py:27
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: models/nonrel.py:137
+#: models/nonrel.py:179
 msgid "Select whole paragraph on click"
-msgstr ""
+msgstr "Sélectionner le paragraphe entier lors du clic"
 
-#: models/nonrel.py:139
+#: models/nonrel.py:181
 msgid "Grows public by default"
-msgstr ""
+msgstr "Les pousses sont publiques par défaut"
 
 #: models/oldrel.py:58 models/reldb.py:215
 msgid "Categories"
@@ -51,19 +79,57 @@ msgstr "Catégories"
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/profile.html:3 templates/ember/main.html:24
-msgid "Profile"
-msgstr "Profil"
+#: templates/home.html:54
+msgid "finished"
+msgstr "terminé"
+
+#: templates/register.html:3
+msgid "Register"
+msgstr "Enregistrement"
+
+#: templates/register.html:8
+msgid "Create your account"
+msgstr "Créez votre compte"
+
+#: templates/register.html:32
+msgid ""
+"\n"
+"            Note: on successful registration, you will be automatically redirected to the <strong>1flow</strong> application.\n"
+"        "
+msgstr ""
+"\n"
+"Note : après une création réussie, vous serez automatiquement redirigé(e) vers l'applications <strong>1flow</strong>."
+
+#: templates/register.html:39
+msgid "Register and sign in!"
+msgstr "Enregistrer et ouvrir la session !"
+
+#: templates/register.html:45
+msgid "Social registration"
+msgstr "Identification par réseau social"
+
+#: templates/register.html:46
+msgid ""
+"\n"
+"          You can just use any of your social account to register on <strong>1flow</strong>. This will automatically import your social content into <em>your flows</em>. Two operations in one!\n"
+"      "
+msgstr ""
+"\n"
+"Vous pouvez utiliser un compte de réseau social pour vous enregistrer en un clic sur <strong>1flow</strong>. Ceci importera automatiquement vos données dans  <strong>1flow</strong>. D'une pierre deux coups !"
 
 #: templates/signin.html:3 templates/ember/main.html:37
 msgid "Sign in…"
 msgstr "Connexion…"
 
-#: templates/signin.html:8
+#: templates/signin.html:11
 msgid "1flow authentication"
 msgstr "Identification 1flow"
 
-#: templates/signin.html:38
+#: templates/signin.html:26
+msgid "(or any registrered email address)"
+msgstr "(ou n'importe quelle adresse email enregistrée)"
+
+#: templates/signin.html:42
 #, python-format
 msgid ""
 "\n"
@@ -73,27 +139,53 @@ msgstr ""
 "\n"
 "Pas encore de compte ? <a href=\"%(register_url)s\">Enregistrez-vous</a>."
 
-#: templates/signin.html:43
+#: templates/signin.html:47
 msgid "Sign in!"
 msgstr "Connexion !"
 
-#: templates/signin.html:49
+#: templates/signin.html:56
 msgid "Social authentication"
 msgstr "Identification sociale"
 
-#: templates/signout.html:5
+#: templates/signin_error.html:3
+msgid "Error Signin in."
+msgstr "Erreur de connexion."
+
+#: templates/signin_error.html:7
+msgid "Error Signin in.."
+msgstr ""
+
+#: templates/signin_error.html:8
+msgid "There was a problem processing your signin."
+msgstr "Une erreur s'est produite pendant le processus de connexion."
+
+#: templates/signin_error.html:10
+#, python-format
+msgid ""
+"\n"
+"        Either you didn't allow <strong>1flow</strong> to access your social\n"
+"        account, or the remote site sent us a boo-boo. We're sorry for that.\n"
+"        <br />\n"
+"        Return to <a href=\"%(home_url)s\">home</a>?\n"
+"    "
+msgstr ""
+"\n"
+"Soit vous n'avez pas autorisé <strong>1flow</strong> à accéder à votre compte de réseau social, soit le site distant nous a envoyé une boule puante. Nous en sommes désolés.<br />\n"
+"Voulez-vous retourner <a href=\"%(home_url)s\">à l'accueil</a> ?"
+
+#: templates/signout.html:3 templates/signout.html.py:7
 msgid "Signed out."
 msgstr "Déconnecté."
 
-#: templates/signout.html:6
+#: templates/signout.html:8
 msgid "Welcome back to anonymous world."
 msgstr "Bon retour dans le monde de l'anonymat."
 
-#: templates/signout.html:6
+#: templates/signout.html:8
 msgid "Thanks for spending some time on <strong>1flow</strong>."
 msgstr "Merci pour le temps que vous avez passé sur <strong>1flow</strong>."
 
-#: templates/signout.html:8
+#: templates/signout.html:10
 #, python-format
 msgid ""
 "\n"
@@ -107,6 +199,10 @@ msgstr ""
 msgid "Help"
 msgstr "Aide"
 
+#: templates/ember/main.html:24
+msgid "Profile"
+msgstr "Profil"
+
 #: templates/ember/main.html:27
 msgid "Django Admin."
 msgstr "Admin. Django"
@@ -119,47 +215,104 @@ msgstr "Déconnexion"
 msgid "flowboard"
 msgstr ""
 
-#: templates/ember/main.html:45
+#: templates/ember/main.html:48
 msgid "teams"
 msgstr "équipes"
 
-#: templates/ember/main.html:46
+#: templates/ember/main.html:49
 msgid "subscriptions"
 msgstr "abonnements"
 
-#: templates/ember/main.html:47
+#: templates/ember/main.html:50
 msgid "discovery"
 msgstr "découverte"
 
-#: templates/ember/main.html:51
+#: templates/ember/main.html:54
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: templates/ember/main.html:56
+#: templates/ember/main.html:61
 msgid "about"
 msgstr "à propos"
 
-#: templates/ember/main.html:57
+#: templates/ember/main.html:62
 msgid "contact"
 msgstr ""
 
 #: templates/ember/views/discovery.html:8
 #: templates/ember/views/recommended.html:8
 msgid "Not implemented"
-msgstr ""
+msgstr "Non implémenté"
 
 #: templates/ember/views/discovery.html:10
 #: templates/ember/views/recommended.html:10
 msgid "This is just a waiting view. Please be patient!"
 msgstr ""
 
+#: templates/ember/views/help.html:10
+msgid "1flow minimal help"
+msgstr "Aide minimale 1flow"
+
+#: templates/ember/views/help.html:11
+msgid ""
+"\n"
+"We are so sorry: this is the main help page, but as we still didn't reach the beta status,\n"
+"there is currently no fully-featured content.\n"
+"\n"
+"But if you really *need* help, or to reach real people, you still have:\n"
+"\n"
+"- the **feedback form** (on the right), which links to our help forums,\n"
+"- the **chat** widget, to which we are connected in real time (it's not a robot!).\n"
+"\n"
+"Note: you should not use our twitter feed to contact us: we use it primarily for publishing informations and don't read it that much.\n"
+"            "
+msgstr ""
+"\n"
+"Nous sommes quelque peu désolés : ceci est bien la page principale d'aide de <strong>1flow</strong>, mais comme nous n'avons pas encore atteint le statut officiel de beta, il n'y a pas de contenu particulier.\n"
+"\n"
+"Mais si vous avez *vraiment* besoin d'aide ou vous si vous voulez nous joindre, vous avez à votre disposition :\n"
+"\n"
+"- le **formulaire de feedback** (sur la droite), qui pointe vers nos forums d'aide,\n"
+"- la fenêtre de **tchat**, à la quelle nous sommes connectés en temps réel (ce n'est pas un robot!).\n"
+"\n"
+"Note : ne comptez pas trop sur Twitter pour nous contacter: nous l'utilisons principalement pour y publier des informations et ne le lisons que rarement actuellement."
+
 #: templates/ember/views/index.html:8
 msgid "Welcome!"
 msgstr "Bienvenue !"
 
 #: templates/ember/views/index.html:9
-msgid "This this hope. Er… Home!"
-msgstr ""
+msgid "There is nothing much more ready, except the Google Reader import."
+msgstr "Pour l'instant, seul l'import Google Reader est disponible."
+
+#: templates/ember/views/profile.html:14
+msgid "Your profile"
+msgstr "Profil"
+
+#: templates/ember/views/profile.html:16
+msgid "Profile data it not yet editable."
+msgstr "Les données de profil ne sont pas encore modifiables."
+
+#: templates/ember/views/profile.html:24
+msgid "Social accounts"
+msgstr "Comptes de réseaux sociaux"
+
+#: templates/ember/views/profile.html:27
+msgid "Currently associated"
+msgstr "Actuellement associés"
+
+#: templates/ember/views/profile.html:43
+#, python-format
+msgid "Disconnect from %(backend_name)s"
+msgstr "Se déconnecter de %(backend_name)s"
+
+#: templates/ember/views/profile.html:50
+msgid "Associate more accounts"
+msgstr "Associer d'autres comptes"
+
+#: templates/ember/views/profile.html:52
+msgid "Associate accounts"
+msgstr "Associer des comptes"
 
 #: templates/ember/views/subscriptions.html:8
 msgid "Subscriptions"
@@ -175,7 +328,7 @@ msgstr "Détails"
 
 #: templates/ember/views/subscriptions.html:21
 msgid "Add one?"
-msgstr ""
+msgstr "En ajouter une ?"
 
 #: templates/ember/views/subscriptions.html:22
 #, python-format
@@ -188,6 +341,85 @@ msgstr ""
 #: templates/ember/views/teams.html:4
 msgid "Your teams"
 msgstr "Vos équipes"
+
+#: templates/snippets/google-reader-import-status.html:8
+msgid "Import your Google Reader data"
+msgstr "Importer vos données Google Reader"
+
+#: templates/snippets/google-reader-import-status.html:10
+msgid ""
+"\n"
+"      Note: after starting it, the import can take up to\n"
+"      one minute before importing the first data.\n"
+"  "
+msgstr ""
+"\n"
+"Note : après son lancement, l'import peut mettre jusqu'à une minute avant d'importer les premiers flux & articles."
+
+#: templates/snippets/google-reader-import-status.html:17
+#, python-format
+msgid ""
+"\n"
+"    Your Google Reader import has started %(start)s.<br />\n"
+"\n"
+"    %(feeds)s feeds and %(articles)s articles processed so far, %(starred)s starred.<br />\n"
+"\n"
+"    Average import speed: %(speed)s article(s)/minute.<br />\n"
+"    Approximative ETA: %(ETA)s.<br /><br />\n"
+"\n"
+"    <small>It will take longer if many users import their GR data at once.\n"
+"      This status is updated every 5 seconds. You can safely leave\n"
+"      <strong>1flow</strong> or close this window and come back later.</small><br /><br />\n"
+"\n"
+"      <small>Note: the real number of imported article will be less than the\n"
+"        processed ones, due to some duplicates present on Google Reader.</small>\n"
+msgstr ""
+"\n"
+"Votre import Google Reader a démarré %(start)s.<br />\n"
+"\n"
+"%(feeds)s flux et %(articles)s articles (dont %(starred)s favoris) ont déjà été traités.<br />\n"
+"\n"
+"Vitesse moyenne d'import : %(speed)s article(s)/minute.<br />\n"
+"Fin approximative : %(ETA)s.<br /><br />\n"
+"\n"
+"<small>La procédure prendra plus de temps si plusieurs utilisateurs importent leur GR en même temps. L'état de l'import est mis à jour toutes les 5 secondes. Vous pouvez quitter\n"
+"<strong>1flow</strong> ou fermer cette fenêtre pour revenir plus tard.</small><br /><br />\n"
+"\n"
+"<small>Note : le nombre réel d'articles importés sera moins important que le nombre de traités, à cause de certains doublons naturellement présents sur Google Reader.</small>\n"
+
+#: templates/snippets/google-reader-import-status.html:35
+#, python-format
+msgid ""
+"\n"
+"    Your Google Reader import finished %(end)s, and took %(duration)s.<br />\n"
+"\n"
+"    %(feeds)s feeds and %(articles)s articles imported, %(starred)s starred.<br />\n"
+"    Average import speed: %(speed)s article(s)/minute.<br />\n"
+"\n"
+"    See you very soon for the upcoming features of <strong>1flow</strong>!\n"
+"    "
+msgstr ""
+"\n"
+"Votre import Google Reader s'est terminé %(end)s et a duré %(duration)s.<br />\n"
+"\n"
+"%(feeds)s flux et %(articles)s articles (dont %(starred)s favoris) ont été traités.<br />\n"
+"Vitesse moyenne d'import: %(speed)s article(s)/minute.<br />\n"
+"\n"
+"À très bientôt pour la sortie des nouvelles fonctionnalités de <strong>1flow</strong> !"
+
+#: templates/snippets/google-reader-import.html:6
+msgid "Ajax Loader Spinner"
+msgstr ""
+
+#: templates/snippets/google-reader-import.html:14
+#, python-format
+msgid ""
+"\n"
+"        To import your Google Reader data, please <a href=\"%(gg_url)s\">sign in with google</a> first.\n"
+"    "
+msgstr ""
+"\n"
+"Pour importer vos données Google Reader, merci de <a href=\"%(gg_url)s\">vous connecter via Google</a> d'abord."
 
 #~ msgid "my flow"
 #~ msgstr "mon flux"

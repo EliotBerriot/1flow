@@ -2,51 +2,131 @@
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
+# 
 #, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-25 10:49+0200\n"
-"PO-Revision-Date: 2013-05-14 13:35+0200\n"
+"POT-Creation-Date: 2013-06-21 18:03+0200\n"
+"PO-Revision-Date: 2013-06-21 18:35+0009\n"
 "Last-Translator:   <admin@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: admin.py:124
+#: admin.py:126
 #, python-format
 msgid "Export selected %(verbose_name_plural)s to CSV"
 msgstr "Exporter les %(verbose_name_plural)s sélectionnés en CSV"
 
-#: models.py:12
+#: admin.py:156
+msgid "Groups"
+msgstr "Groupes"
+
+#: admin.py:161
+msgid "Full name"
+msgstr "Nom complet"
+
+#: admin.py:166
+msgid "Announcements?"
+msgstr "Annonces ?"
+
+#: admin.py:180
+msgid "Edit"
+msgstr "Éditer"
+
+#: admin.py:182
+msgid "Profile"
+msgstr "Profil"
+
+#: models.py:28
 msgid "Email name"
 msgstr "Nom du mail"
 
-#: models.py:14
+#: models.py:30
 msgid "Email subject"
 msgstr "Sujet du mail"
 
-#: models.py:15
+#: models.py:31
 msgid "Email body"
 msgstr "Corps du mail"
 
-#: models.py:18
+#: models.py:34
 msgid "{field_name}: {truncated_field_value}"
 msgstr "{field_name} : {truncated_field_value}"
 
-#: models.py:24
+#: models.py:40
 msgid "Email content"
 msgstr "Contenu d'email"
 
-#: models.py:25
+#: models.py:41
 msgid "Emails contents"
 msgstr "Contenus d'emails"
+
+#: models.py:83
+msgid "User name"
+msgstr "Nom d'utilisateur"
+
+#: models.py:85
+msgid "Required. letters, digits, and \"@+-_\"."
+msgstr "Obligatoire. Lettres, chiffres et « @*-_ »."
+
+#: models.py:87
+msgid "email address"
+msgstr "adresse e-mail"
+
+#: models.py:89
+msgid "Any valid email address."
+msgstr "N'importe quelle adresse valide"
+
+#: models.py:90
+msgid "first name"
+msgstr "prénom"
+
+#: models.py:91
+msgid "last name"
+msgstr "nom"
+
+#: models.py:92
+msgid "staff status"
+msgstr "Staff"
+
+#: models.py:93
+msgid "Designates whether the user can log into this admin site."
+msgstr ""
+"Indique si l'utilisateur peut se connecter sur l'interface d'administration."
+
+#: models.py:96
+msgid "active"
+msgstr "actif"
+
+#: models.py:97
+msgid ""
+"Designates whether this user should be treated as active. Unselect this "
+"instead of deleting accounts."
+msgstr ""
+"Indique si le compte est utilisable. Évite de devoir supprimer le compte."
+
+#: models.py:101
+msgid "date joined"
+msgstr "Date d'inscription"
+
+#: models.py:109
+msgid "user"
+msgstr "utilisateur"
+
+#: models.py:110
+msgid "users"
+msgstr "utilisateurs"
+
+#: models.py:113
+msgid "/users/{username}/"
+msgstr "/utilisateurs/{username}/"
 
 #: templates/404.html:5
 msgid "Resource not found"
@@ -124,12 +204,12 @@ msgstr "Merci de ré-essayer plus tard (rechargez simplement cette page)."
 #: templates/503.html:12
 msgid ""
 "If the plane stays on the ground for too long, you should be able to get <a "
-"href=\"https://twitter.com/1flow_io\">more information on our twitter feed</"
-"a>."
+"href=\"https://twitter.com/1flow_io\">more information on our twitter "
+"feed</a>."
 msgstr ""
-"Si l'avion reste au sol trop longtemps, vous devriez trouver <a href="
-"\"https://twitter.com/1flow_io\">plus d'informations sur notre flux Twitter</"
-"a>."
+"Si l'avion reste au sol trop longtemps, vous devriez trouver <a "
+"href=\"https://twitter.com/1flow_io\">plus d'informations sur notre flux "
+"Twitter</a>."
 
 #: templates/503.html:13
 msgid "Thanks for your patience."
@@ -139,13 +219,11 @@ msgstr "Merci de votre patience."
 #, python-format
 msgid ""
 "\n"
-"                            If you need assistance, you may reference this "
-"error as <code>%(sentry_id)s</code>.\n"
+"                            If you need assistance, you may reference this error as <code>%(sentry_id)s</code>.\n"
 "                        "
 msgstr ""
 "\n"
-"Si vous avez besoin d'assistance, la référence de ce plantage est la <code>"
-"%(sentry_id)s</code>."
+"Si vous avez besoin d'assistance, la référence de ce plantage est la <code>%(sentry_id)s</code>."
 
 #: templatetags/base_utils.py:105 templatetags/base_utils.py:119
 msgid "day"
@@ -214,19 +292,16 @@ msgstr "s"
 #~ msgid "Successfully unsubscribed!"
 #~ msgstr "Désinscrit(e) avec succès !"
 
-#, fuzzy
 #~ msgid ""
 #~ "\n"
 #~ "\n"
 #~ "# Unsubscribed!\n"
 #~ "\n"
-#~ "## You will not receive anything more from us at your email address "
-#~ "%(email)s.\n"
+#~ "## You will not receive anything more from us at your email address %(email)s.\n"
 #~ "\n"
 #~ "We are sad to see you jump without any parachute during the flight.\n"
 #~ "\n"
-#~ "If you change your mind, you don't need to call *Iron Man*: just float "
-#~ "gently back to [Home][] and register again.\n"
+#~ "If you change your mind, you don't need to call *Iron Man*: just float gently back to [Home][] and register again.\n"
 #~ "\n"
 #~ "  [Home]: /\n"
 #~ "\n"
@@ -236,24 +311,19 @@ msgstr "s"
 #~ "\n"
 #~ "## Vous ne recevrez plus rien de notre part.\n"
 #~ "\n"
-#~ "Nous sommes attristés de vous voir sauter sans parachute pendant le vol "
-#~ "de [1flow][home].\n"
+#~ "Nous sommes attristés de vous voir sauter sans parachute pendant le vol de [1flow][home].\n"
 #~ "\n"
-#~ "Si vous changez d'avis, vous n'avez pas besoin d'appeler *IronMan* : "
-#~ "laissez-vous simplement flotter jusqu'à la [Home][home] et ré-enregistrez-"
-#~ "vous.\n"
+#~ "Si vous changez d'avis, vous n'avez pas besoin d'appeler *IronMan* : laissez-vous simplement flotter jusqu'à la [Home][home] et ré-enregistrez-vous.\n"
 #~ "\n"
 #~ "  [home]: /\n"
 
 #~ msgid ""
 #~ "\n"
-#~ "                            If you need assistance, you may reference "
-#~ "this error as <strong>%(sentry_id)s</strong>.\n"
+#~ "                            If you need assistance, you may reference this error as <strong>%(sentry_id)s</strong>.\n"
 #~ "                        "
 #~ msgstr ""
 #~ "\n"
-#~ "Si vous avez besoin d'assistance, vous pouvez vous référer à ce plantage "
-#~ "sous le numéro <strong>%(sentry_id)s</strong>."
+#~ "Si vous avez besoin d'assistance, vous pouvez vous référer à ce plantage sous le numéro <strong>%(sentry_id)s</strong>."
 
 #~ msgid "Perhaps you could ask an Oracle®?"
 #~ msgstr "Peut-être devriez-vous interroger un Oracle® ?"
