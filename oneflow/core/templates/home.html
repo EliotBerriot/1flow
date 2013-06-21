@@ -47,14 +47,21 @@
     {% if has_google %}
         <script type="text/javascript">
             function update_gri_status() {
-                $.get("{% url 'google_reader_import_status' %}", function(data){
-                    $('#google-reader-import-status').html(data);
-                });
+                try {
+                    $.get("{% url 'google_reader_import_status' %}", function(data){
+                        $('#google-reader-import-status').html(data);
+                        if ($('#google-reader-import-status').html().indexOf("{% trans "finished" %}")>=0) {
+                            clearInterval(gri_interval);
+                        }
+                    });
+                } catch (err) {
+                    // nothing…
+                }
             }
 
             update_gri_status();
 
-            setInterval(update_gri_status, 2000);
+            var gri_interval = setInterval(update_gri_status, 5000);
         </script>
     {% endif %}
 
