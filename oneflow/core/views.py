@@ -170,7 +170,7 @@ def google_reader_import_status(request):
         if running:
             data['ETA'] = humanize.time.naturaltime(now + datetime.timedelta(
                                                     seconds=(total_reads
-                                                    - reads) * speed))
+                                                    - reads) / speed))
 
     # TODO: remove this when it's automatic
     humanize.i18n.deactivate()
