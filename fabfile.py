@@ -133,11 +133,30 @@ def production():
         'worker_high': ['worker-01.1flow.io'],
         'worker_low': [
             'worker-02.1flow.io',
-            #'worker-03.1flow.io', wait for DNS to expire…
+            'worker-03.1flow.io',
             'worker-05.1flow.io',
         ],
         #'redis': ['duncan.licorn.org'],
     })
+    env.sparks_options = {
+        'worker_concurrency': {
+            # Plenty power on Gurney.
+            'worker-02.1flow.io': 12,
+
+            # This LXC has power too.
+            'worker-03.1flow.io': 6,
+
+            # Others are quite limited, don't
+            # raise their concurrency levels too much.
+            'worker-01.1flow.io': 3,
+            'worker-05.1flow.io': 3,
+        },
+        'max_tasks_per_child': {
+            '__all__': 50,
+            'worker-03.1flow.io': 20,
+            'worker-02.1flow.io': 100,
+        }
+    }
     env.env_was_set = True
 
 
