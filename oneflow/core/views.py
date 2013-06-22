@@ -111,19 +111,20 @@ def google_reader_import_status(request):
     gri = GoogleReaderImport(request.user)
 
     running = gri.running()
+    current_lang = translation.get_language()
 
-    try:
-        # TODO: find a way to do this automatically…
-        humanize.i18n.activate(translation.get_language(),
-                               path=os.path.join(
-                               os.path.dirname(humanize.__file__),
-                               'locale'))
-    except:
-        # Humanize will crash badly if it find no gettext message file.
-        # But we shouldn't, because it's harmless in the end.
-        LOGGER.warning(u'could not switch `humanize` i18n to %s, '
-                       u'its translations will appear in english.',
-                       translation.get_language())
+    if current_lang != 'en':
+        try:
+            # TODO: find a way to do this automatically, application-wide…
+            humanize.i18n.activate(current_lang, path=os.path.join(
+                                   os.path.dirname(humanize.__file__),
+                                   'locale'))
+        except:
+            # Humanize will crash badly if it find no gettext message file.
+            # But we shouldn't, because it's harmless in the end.
+            LOGGER.warning(u'could not switch `humanize` i18n to %s, '
+                           u'its translations will appear in english.',
+                           translation.get_language())
 
     if running is None:
         data = {'status': 'not_started'}
