@@ -141,20 +141,20 @@ def production():
     env.sparks_options = {
         'worker_concurrency': {
             # Plenty power on Gurney.
-            'worker-02.1flow.io': 12,
+            'worker-02.1flow.io': 10,
 
             # This LXC has power too.
-            'worker-03.1flow.io': 5,
+            'worker-03.1flow.io': 6,
 
             # Others are quite limited, don't
             # raise their concurrency levels too much.
             'worker-01.1flow.io': 3,
-            'worker-05.1flow.io': 3,
+            'worker-05.1flow.io': 4,
         },
         'max_tasks_per_child': {
-            '__all__': 35,
-            'worker-03.1flow.io': 20,
-            'worker-02.1flow.io': 50,
+            '__all__': 100,
+            #'worker-03.1flow.io': 30,
+            #'worker-02.1flow.io': 50,
         }
     }
     env.env_was_set = True
