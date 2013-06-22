@@ -18,7 +18,7 @@
   <p>{% filter markdown %}{% blocktrans %}
 Your Google Reader import has started {{ start }}.
 
-{{ feeds }} feeds and {{ articles }} articles processed so far, {{ starred }} starred.
+{{ feeds }} feeds and {{ articles }} articles processed so far, {{ reads }} being read and {{ starred }} starred.
 
 Average import speed: {{ speed }} article(s)/minute.
 
@@ -34,7 +34,7 @@ Approximative ETA: {{ ETA }}.
   <p>{% filter markdown %}{% blocktrans %}
 Your Google Reader import finished {{ end }}, and took {{ duration }}.
 
-{{ feeds }} feeds and {{ articles }} articles imported, {{ starred }} starred.
+{{ feeds }} feeds and {{ articles }} articles imported, {{ reads }} being read and {{ starred }} starred.
 Average import speed: {{ speed }} article(s)/minute.
 
 See you very soon for the upcoming features of **1flow**!
