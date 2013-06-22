@@ -1,4 +1,4 @@
--e git+ssh://github.com/Karmak23/sparks.git@sparks-2.8.1#egg=sparks-dev
+-e git+ssh://github.com/Karmak23/sparks.git@sparks-2.8.3#egg=sparks-dev
 -e git+ssh://github.com/Karmak23/humanize.git@master#egg=humanize-dev
 -e git+ssh://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
 -e git+https://github.com/gregmuellegger/django-reset.git@4f859d9319a7bfc41484f302e96e1f880aaa67db#egg=django_reset-dev
