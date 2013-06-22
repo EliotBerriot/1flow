@@ -149,7 +149,7 @@ Just for you to know…
 
         # go to default queue.
         import_google_reader_articles.apply_async(
-            (user_id, reader, gr_feed, feed), queue='low')
+            (user_id, gr_feed, feed), queue='low')
 
         processed_feeds += 1
         gri.incr_feeds()
@@ -164,7 +164,7 @@ Just for you to know…
 
 
 @task
-def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
+def import_google_reader_articles(user_id, gr_feed, feed, since=None, wave=0):
 
     ftstamp = datetime.datetime.fromtimestamp
 
@@ -176,10 +176,7 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
 
     gri = GoogleReaderImport(django_user)
 
-    if wave:
-        gr_feed.loadMoreItems(loadLimit=GR_LOAD_LIMIT)
-    else:
-        gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT)
+    gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT, since=since)
 
     total_reads = gri.total_reads()
     date_limit  = max([gri.reg_date(), GR_OLDEST_DATE])
@@ -188,6 +185,8 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
     current     = 1
 
     continue_fetching = True
+
+    last_time_seen = None
 
     for gr_article in gr_feed.items[wave * GR_LOAD_LIMIT:]:
 
@@ -203,12 +202,11 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
                         u'import.', django_user.username)
             return
 
-        if gr_article.time:
-            # If articles don't have datetimes,
-            # we will rely on other limits to stop importing.
-            if ftstamp(gr_article.time) < date_limit:
-                continue_fetching = False
-                break
+        if ftstamp(gr_article.time) < date_limit:
+            continue_fetching = False
+            break
+
+        last_time_seen = gr_article.time
 
         LOGGER.debug(u'Importing article “%s” from feed “%s” (%s/%s, wave %s)…',
                      gr_article.title, gr_feed.title, current, total, wave + 1)
@@ -254,9 +252,9 @@ def import_google_reader_articles(user_id, reader, gr_feed, feed, wave=0):
         if gri.running():
                 if wave < config.GR_WAVE_LIMIT:
                     if continue_fetching:
-                        import_google_reader_articles.delay(user_id, reader,
-                                                            gr_feed, feed,
-                                                            wave=wave + 1)
+                        import_google_reader_articles.delay(
+                            user_id, gr_feed, feed, since=last_time_seen,
+                            wave=wave + 1)
                     else:
                         LOGGER.warning(u'Datetime limit reached on feed “%s” '
                                        u'for user %s, stopping. %s article(s) '
