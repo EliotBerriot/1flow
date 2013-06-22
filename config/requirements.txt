@@ -13,6 +13,7 @@ dj-database-url==0.2.1
 django-absolute==0.3
 django-bcrypt==0.9.2
 django-celery==3.0.17
+django-constance==0.6
 django-debug-toolbar==0.9.4
 django-grappelli==2.4.5
 django-logentry-admin==0.1.1
