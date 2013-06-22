@@ -23,7 +23,7 @@ from .gr_import import GoogleReaderImport
 #from ..base.utils import send_email_with_db_content
 
 # We don't fetch articles too far in the past, even if google has them.
-GR_OLDEST_DATE = datetime.datetime(2011, 1, 1, 0, 0)
+GR_OLDEST_DATE = datetime.datetime(2008, 1, 1, 0, 0)
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
