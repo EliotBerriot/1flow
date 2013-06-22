@@ -6,10 +6,11 @@
 
 """
 
+import os
 import logging
 import datetime
 
-from humanize import time as humanize_time
+import humanize
 
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
@@ -19,6 +20,7 @@ from django.shortcuts import render
 from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login
+from django.utils import translation
 
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_data_trigger
@@ -110,6 +112,19 @@ def google_reader_import_status(request):
 
     running = gri.running()
 
+    try:
+        # TODO: find a way to do this automatically…
+        humanize.i18n.activate(translation.get_language(),
+                               path=os.path.join(
+                               os.path.dirname(humanize.__file__),
+                               'locale'))
+    except:
+        # Humanize will crash badly if it find no gettext message file.
+        # But we shouldn't, because it's harmless in the end.
+        LOGGER.warning(u'could not switch `humanize` i18n to %s, '
+                       u'its translations will appear in english.',
+                       translation.get_language())
+
     if running is None:
         data = {'status': 'not_started'}
 
@@ -127,7 +142,7 @@ def google_reader_import_status(request):
             'starred': gri.starred(),
             'articles': articles,
             'total_reads': total_reads,
-            'start': humanize_time.naturaltime(start),
+            'start': humanize.time.naturaltime(start),
         }
 
         if running:
@@ -140,8 +155,8 @@ def google_reader_import_status(request):
 
             data.update({
                 'status': 'done',
-                'end': humanize_time.naturaltime(end),
-                'duration': humanize_time.naturaldelta(end - start),
+                'end': humanize.time.naturaltime(end),
+                'duration': humanize.time.naturaldelta(end - start),
             })
 
         def duration_since(start):
@@ -153,8 +168,11 @@ def google_reader_import_status(request):
         data['speed'] = int(speed * 60)
 
         if running:
-            data['ETA'] = humanize_time.naturaltime(now + datetime.timedelta(
+            data['ETA'] = humanize.time.naturaltime(now + datetime.timedelta(
                                                     seconds=(total_reads
                                                     - reads) * speed))
+
+    # TODO: remove this when it's automatic
+    humanize.i18n.deactivate()
 
     return render(request, 'snippets/google-reader-import-status.html', data)

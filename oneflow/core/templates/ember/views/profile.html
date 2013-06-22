@@ -1,3 +1,4 @@
+{% load markdown_deux_tags %}
 
 {%captureas next_url %}?next={% absolute "home" %}#/profile{% endcaptureas %}
 
@@ -7,9 +8,8 @@
       <div class="span10">&nbsp;</div>
     </div>
     <div class="row-fluid">
-      <div class="hero-unit span10 offset1">
+      <div class="hero-unit span10 offset1" id="profile">
         <div class="row-fluid">
-
           <div class="span6">
             <h1>{% trans "Your profile" %}</h1>
 
@@ -18,15 +18,19 @@
             {% include 'snippets/google-reader-import.html' %}
 
           </div>
-
           <div class="span6">
-
             <h1>{% trans "Social accounts" %}</h1>
 
             {% if social_auth.associated %}
               <h3>{% trans "Currently associated" %}
               </h3>
-              <ul>
+              <p class="muted small">{% filter markdown %}{% blocktrans %}
+Click to disassociate any of your accounts, but beware:
+if it's the account you're signed in, you will be
+immediately disconnected from **1flow**.
+              {% endblocktrans %}{% endfilter %}</p>
+
+              <ul class="social-auth">
                 {% for backend in social_auth.associated %}
                  {% if backend.provider == "google-oauth2" %}
                     {% captureas backend_name %}Google{% endcaptureas %}
@@ -39,7 +43,7 @@
                   {% endif %}
 
                   <li><a
-                      class="btn btn-small" href="{% url "socialauth_disconnect_individual" backend.provider backend.id %}{{next_url}}"
+                      class="btn btn-block btn-huge" href="{% url "socialauth_disconnect_individual" backend.provider backend.id %}{{next_url}}"
                   title="{% blocktrans %}Disconnect from {{ backend_name }}{% endblocktrans %}"><i
                     class="icon-signout"></i> {{backend_full_name|title}}</a></li>
 
@@ -47,13 +51,15 @@
                 {% endfor %}
               </ul>
 
+              <div class="spacer50"></div>
+
               <h3>{% trans "Associate more accounts" %}</h3>
             {% else %}
               <h3>{% trans "Associate accounts" %}</h3>
 
             {% endif %}
 
-            {% include "snippets/social_auth.html" %}
+            {% include "snippets/social-auth-signin.html" %}
 
           </div>
         </div>
