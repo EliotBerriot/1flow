@@ -1,3 +1,4 @@
+{% load markdown_deux_tags %}
 
 {% if status == 'not_started' %}
 
@@ -14,31 +15,29 @@
 
 {% elif status == 'running' %}
 
-  <p>{% blocktrans %}
-    Your Google Reader import has started {{ start }}.<br />
+  <p>{% filter markdown %}{% blocktrans %}
+Your Google Reader import has started {{ start }}.
 
-    {{ feeds }} feeds and {{ articles }} articles processed so far, {{ starred }} starred.<br />
+{{ feeds }} feeds and {{ articles }} articles processed so far, {{ starred }} starred.
 
-    Average import speed: {{ speed }} article(s)/minute.<br />
-    Approximative ETA: {{ ETA }}.<br /><br />
+Average import speed: {{ speed }} article(s)/minute.
 
-    <small>It will take longer if many users import their GR data at once.
-      This status is updated every 5 seconds. You can safely leave
-      <strong>1flow</strong> or close this window and come back later.</small><br /><br />
-
-      <small>Note: the real number of imported article will be less than the
-        processed ones, due to some duplicates present on Google Reader.</small>
-{% endblocktrans %}</p>
+Approximative ETA: {{ ETA }}.
+{% endblocktrans %}{% endfilter %}
+<p>
+<p><small>{% filter markdown %}{% blocktrans %}
+[Consult help](#/help) for more information about this import procedure.
+{% endblocktrans %}{% endfilter %}</small></p>
 
 {% else %}
 
-  <p>{% blocktrans %}
-    Your Google Reader import finished {{ end }}, and took {{ duration }}.<br />
+  <p>{% filter markdown %}{% blocktrans %}
+Your Google Reader import finished {{ end }}, and took {{ duration }}.
 
-    {{ feeds }} feeds and {{ articles }} articles imported, {{ starred }} starred.<br />
-    Average import speed: {{ speed }} article(s)/minute.<br />
+{{ feeds }} feeds and {{ articles }} articles imported, {{ starred }} starred.
+Average import speed: {{ speed }} article(s)/minute.
 
-    See you very soon for the upcoming features of <strong>1flow</strong>!
-    {% endblocktrans %}</p>
+See you very soon for the upcoming features of **1flow**!
+{% endblocktrans %}{% endfilter %}</p>
 
 {% endif %}
