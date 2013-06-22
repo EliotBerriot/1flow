@@ -3,13 +3,12 @@
 # This file is distributed under the same license as the PACKAGE package.
 # FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 # 
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-21 18:03+0200\n"
-"PO-Revision-Date: 2013-06-21 19:20+0009\n"
+"POT-Creation-Date: 2013-06-22 09:22+0200\n"
+"PO-Revision-Date: 2013-06-22 09:26+0009\n"
 "Last-Translator:   <admin@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -17,6 +16,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Language: \n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
+"X-Generator: Poedit 1.5.5\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
 #: forms.py:24
@@ -117,7 +117,7 @@ msgstr ""
 "\n"
 "Vous pouvez utiliser un compte de réseau social pour vous enregistrer en un clic sur <strong>1flow</strong>. Ceci importera automatiquement vos données dans  <strong>1flow</strong>. D'une pierre deux coups !"
 
-#: templates/signin.html:3 templates/ember/main.html:37
+#: templates/signin.html:3 templates/ember/main.html:39
 msgid "Sign in…"
 msgstr "Connexion…"
 
@@ -147,13 +147,9 @@ msgstr "Connexion !"
 msgid "Social authentication"
 msgstr "Identification sociale"
 
-#: templates/signin_error.html:3
+#: templates/signin_error.html:3 templates/signin_error.html.py:7
 msgid "Error Signin in."
 msgstr "Erreur de connexion."
-
-#: templates/signin_error.html:7
-msgid "Error Signin in.."
-msgstr ""
 
 #: templates/signin_error.html:8
 msgid "There was a problem processing your signin."
@@ -195,47 +191,51 @@ msgstr ""
 "\n"
 "Désirez-vous <a href=\"%(signin_url)s\">vous identifier à nouveau</a> avec un autre compte ?"
 
-#: templates/ember/main.html:16
+#: templates/ember/main.html:13
+msgid "1flow has not yet reached BETA status"
+msgstr "1flow n'a pas encore atteint la BETA"
+
+#: templates/ember/main.html:18
 msgid "Help"
 msgstr "Aide"
 
-#: templates/ember/main.html:24
+#: templates/ember/main.html:26
 msgid "Profile"
 msgstr "Profil"
 
-#: templates/ember/main.html:27
+#: templates/ember/main.html:29
 msgid "Django Admin."
 msgstr "Admin. Django"
 
-#: templates/ember/main.html:31
+#: templates/ember/main.html:33
 msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: templates/ember/main.html:44
+#: templates/ember/main.html:49
 msgid "flowboard"
 msgstr ""
 
-#: templates/ember/main.html:48
+#: templates/ember/main.html:50
 msgid "teams"
 msgstr "équipes"
 
-#: templates/ember/main.html:49
+#: templates/ember/main.html:51
 msgid "subscriptions"
 msgstr "abonnements"
 
-#: templates/ember/main.html:50
+#: templates/ember/main.html:52
 msgid "discovery"
 msgstr "découverte"
 
-#: templates/ember/main.html:54
+#: templates/ember/main.html:56
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: templates/ember/main.html:61
+#: templates/ember/main.html:63
 msgid "about"
 msgstr "à propos"
 
-#: templates/ember/main.html:62
+#: templates/ember/main.html:64
 msgid "contact"
 msgstr ""
 
@@ -249,41 +249,70 @@ msgstr "Non implémenté"
 msgid "This is just a waiting view. Please be patient!"
 msgstr ""
 
-#: templates/ember/views/help.html:10
+#: templates/ember/views/help.html:8
 msgid "1flow minimal help"
 msgstr "Aide minimale 1flow"
 
 #: templates/ember/views/help.html:11
 msgid ""
 "\n"
-"We are so sorry: this is the main help page, but as we still didn't reach the beta status,\n"
-"there is currently no fully-featured content.\n"
+"## Google Reader import\n"
 "\n"
-"But if you really *need* help, or to reach real people, you still have:\n"
+"This import takes places in the background. You can safely disconnect from\n"
+"**1flow** or close your brower window and come back later.\n"
+"\n"
+"Obviously, importing your data will take longer if many users import their\n"
+"own data at once. We have finites computing resources.\n"
+"\n"
+"This import status is updated every 5 seconds.\n"
+"\n"
+"The real number of imported articles will be less than the\n"
+"processed ones, due to some duplicates present on Google Reader.\n"
+"\n"
+"About the approximative ETA… Well… Given the nature of the data we fetch\n"
+"from Google, it's **very** approximative. Don't rely on it, we don't do.\n"
+"The import will probably end before the ETA.\n"
+msgstr ""
+"\n"
+"## Import Google Reader\n"
+"\n"
+"Cet import est réalisé en arrière-plan. Vous pouvez vous déconnecter de **1flow** ou fermer votre navigateur et revenir plus tard pour suivre son état.\n"
+"\n"
+"L'import de vos données sera ralenti lorsque d'autres utilisateurs lanceront la même procédure pour eux-mêmes, car nous avons des ressources informatiques limitées.\n"
+"\n"
+"L'état d'import de vos données est mis à jour toutes les 5 secondes.\n"
+"\n"
+"Le nombre réel d'articles importés pourra être inférieur à celui des \n"
+"articles traités, à cause de certaines données dupliqués chez Google.\n"
+"\n"
+"À propos de la « fin approximative »… Hé bien… Vu la nature des données que nous récupérons de Google, elle est vraiment **très** approximative ! Ne vous y fiez pas : nous ne nous y fions pas. L'import se terminera très probablement avant cette estimation. Ça faisait plaisir à notre développeur de la mettre.\n"
+
+#: templates/ember/views/help.html:31
+msgid ""
+"\n"
+"## Reaching us\n"
+"\n"
+"If you need to reach real people, you can use:\n"
 "\n"
 "- the **feedback form** (on the right), which links to our help forums,\n"
 "- the **chat** widget, to which we are connected in real time (it's not a robot!).\n"
 "\n"
-"Note: you should not use our twitter feed to contact us: we use it primarily for publishing informations and don't read it that much.\n"
-"            "
+"Note: If you use twitter to contact us, please be patient: we use it primarily\n"
+"for publishing informations and don't read it very regularly.\n"
 msgstr ""
 "\n"
-"Nous sommes quelque peu désolés : ceci est bien la page principale d'aide de <strong>1flow</strong>, mais comme nous n'avons pas encore atteint le statut officiel de beta, il n'y a pas de contenu particulier.\n"
+"## Nous joindre\n"
 "\n"
-"Mais si vous avez *vraiment* besoin d'aide ou vous si vous voulez nous joindre, vous avez à votre disposition :\n"
+"Si vous souhaitez joindre des humains, vous avez à votre disposition :\n"
 "\n"
 "- le **formulaire de feedback** (sur la droite), qui pointe vers nos forums d'aide,\n"
 "- la fenêtre de **tchat**, à la quelle nous sommes connectés en temps réel (ce n'est pas un robot!).\n"
 "\n"
-"Note : ne comptez pas trop sur Twitter pour nous contacter: nous l'utilisons principalement pour y publier des informations et ne le lisons que rarement actuellement."
+"Note : ne comptez pas trop sur Twitter dans un premier temps: nous l'utilisons principalement pour y publier des informations et ne le lisons que rarement actuellement.\n"
 
 #: templates/ember/views/index.html:8
 msgid "Welcome!"
 msgstr "Bienvenue !"
-
-#: templates/ember/views/index.html:9
-msgid "There is nothing much more ready, except the Google Reader import."
-msgstr "Pour l'instant, seul l'import Google Reader est disponible."
 
 #: templates/ember/views/profile.html:14
 msgid "Your profile"
@@ -293,24 +322,35 @@ msgstr "Profil"
 msgid "Profile data it not yet editable."
 msgstr "Les données de profil ne sont pas encore modifiables."
 
-#: templates/ember/views/profile.html:24
+#: templates/ember/views/profile.html:22
 msgid "Social accounts"
 msgstr "Comptes de réseaux sociaux"
 
-#: templates/ember/views/profile.html:27
+#: templates/ember/views/profile.html:25
 msgid "Currently associated"
 msgstr "Actuellement associés"
 
-#: templates/ember/views/profile.html:43
+#: templates/ember/views/profile.html:27
+msgid ""
+"\n"
+"Click to disassociate any of your accounts, but beware:\n"
+"if it's the account you're signed in, you will be\n"
+"immediately disconnected from **1flow**.\n"
+"              "
+msgstr ""
+"\n"
+"Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**."
+
+#: templates/ember/views/profile.html:47
 #, python-format
 msgid "Disconnect from %(backend_name)s"
 msgstr "Se déconnecter de %(backend_name)s"
 
-#: templates/ember/views/profile.html:50
+#: templates/ember/views/profile.html:56
 msgid "Associate more accounts"
 msgstr "Associer d'autres comptes"
 
-#: templates/ember/views/profile.html:52
+#: templates/ember/views/profile.html:58
 msgid "Associate accounts"
 msgstr "Associer des comptes"
 
@@ -342,11 +382,11 @@ msgstr ""
 msgid "Your teams"
 msgstr "Vos équipes"
 
-#: templates/snippets/google-reader-import-status.html:8
+#: templates/snippets/google-reader-import-status.html:9
 msgid "Import your Google Reader data"
 msgstr "Importer vos données Google Reader"
 
-#: templates/snippets/google-reader-import-status.html:10
+#: templates/snippets/google-reader-import-status.html:11
 msgid ""
 "\n"
 "      Note: after starting it, the import can take up to\n"
@@ -356,56 +396,54 @@ msgstr ""
 "\n"
 "Note : après son lancement, l'import peut mettre jusqu'à une minute avant d'importer les premiers flux & articles."
 
-#: templates/snippets/google-reader-import-status.html:17
+#: templates/snippets/google-reader-import-status.html:18
 #, python-format
 msgid ""
 "\n"
-"    Your Google Reader import has started %(start)s.<br />\n"
+"Your Google Reader import has started %(start)s.\n"
 "\n"
-"    %(feeds)s feeds and %(articles)s articles processed so far, %(starred)s starred.<br />\n"
+"%(feeds)s feeds and %(articles)s articles processed so far, %(starred)s starred.\n"
 "\n"
-"    Average import speed: %(speed)s article(s)/minute.<br />\n"
-"    Approximative ETA: %(ETA)s.<br /><br />\n"
+"Average import speed: %(speed)s article(s)/minute.\n"
 "\n"
-"    <small>It will take longer if many users import their GR data at once.\n"
-"      This status is updated every 5 seconds. You can safely leave\n"
-"      <strong>1flow</strong> or close this window and come back later.</small><br /><br />\n"
-"\n"
-"      <small>Note: the real number of imported article will be less than the\n"
-"        processed ones, due to some duplicates present on Google Reader.</small>\n"
+"Approximative ETA: %(ETA)s.\n"
 msgstr ""
 "\n"
-"Votre import Google Reader a démarré %(start)s.<br />\n"
+"Votre import Google Reader a démarré %(end)s.\n"
 "\n"
-"%(feeds)s flux et %(articles)s articles (dont %(starred)s favoris) ont déjà été traités.<br />\n"
+"%(feeds)s flux et %(articles)s articles (dont %(starred)s favoris) ont déjà été traités.\n"
 "\n"
-"Vitesse moyenne d'import : %(speed)s article(s)/minute.<br />\n"
-"Fin approximative : %(ETA)s.<br /><br />\n"
+"Vitesse moyenne d'import : %(speed)s article(s)/minute.\n"
 "\n"
-"<small>La procédure prendra plus de temps si plusieurs utilisateurs importent leur GR en même temps. L'état de l'import est mis à jour toutes les 5 secondes. Vous pouvez quitter\n"
-"<strong>1flow</strong> ou fermer cette fenêtre pour revenir plus tard.</small><br /><br />\n"
-"\n"
-"<small>Note : le nombre réel d'articles importés sera moins important que le nombre de traités, à cause de certains doublons naturellement présents sur Google Reader.</small>\n"
+"Fin approximative : %(ETA)s.\n"
 
-#: templates/snippets/google-reader-import-status.html:35
+#: templates/snippets/google-reader-import-status.html:28
+msgid ""
+"\n"
+"[Consult help](#/help) for more information about this import procedure.\n"
+msgstr ""
+"\n"
+"[Consultez l'aide](#/help) pour plus d'informations à propos de cette procédure.\n"
+
+#: templates/snippets/google-reader-import-status.html:34
 #, python-format
 msgid ""
 "\n"
-"    Your Google Reader import finished %(end)s, and took %(duration)s.<br />\n"
+"Your Google Reader import finished %(end)s, and took %(duration)s.\n"
 "\n"
-"    %(feeds)s feeds and %(articles)s articles imported, %(starred)s starred.<br />\n"
-"    Average import speed: %(speed)s article(s)/minute.<br />\n"
+"%(feeds)s feeds and %(articles)s articles imported, %(starred)s starred.\n"
+"Average import speed: %(speed)s article(s)/minute.\n"
 "\n"
-"    See you very soon for the upcoming features of <strong>1flow</strong>!\n"
-"    "
+"See you very soon for the upcoming features of **1flow**!\n"
 msgstr ""
 "\n"
-"Votre import Google Reader s'est terminé %(end)s et a duré %(duration)s.<br />\n"
+"Votre import Google Reader s'est terminé %(end)s et a duré %(duration)s.\n"
 "\n"
-"%(feeds)s flux et %(articles)s articles (dont %(starred)s favoris) ont été traités.<br />\n"
-"Vitesse moyenne d'import: %(speed)s article(s)/minute.<br />\n"
+"%(feeds)s flux et %(articles)s articles (dont %(starred)s favoris) ont été traités.\n"
 "\n"
-"À très bientôt pour la sortie des nouvelles fonctionnalités de <strong>1flow</strong> !"
+"Vitesse moyenne d'import : %(speed)s article(s)/minute.\n"
+"\n"
+"À très bientôt pour la sortie des nouvelles fonctionnalités de **1flow** !\n"
 
 #: templates/snippets/google-reader-import.html:6
 msgid "Ajax Loader Spinner"
@@ -420,6 +458,38 @@ msgid ""
 msgstr ""
 "\n"
 "Pour importer vos données Google Reader, merci de <a href=\"%(gg_url)s\">vous connecter via Google</a> d'abord."
+
+#~ msgid "There is nothing much more ready, except the Google Reader import."
+#~ msgstr "Pour l'instant, seul l'import Google Reader est disponible."
+
+#~ msgid ""
+#~ "\n"
+#~ "    Your Google Reader import has started %(start)s.<br />\n"
+#~ "\n"
+#~ "    %(feeds)s feeds and %(articles)s articles processed so far, %(starred)s starred.<br />\n"
+#~ "\n"
+#~ "    Average import speed: %(speed)s article(s)/minute.<br />\n"
+#~ "    Approximative ETA: %(ETA)s.<br /><br />\n"
+#~ "\n"
+#~ "    <small>It will take longer if many users import their GR data at once.\n"
+#~ "      This status is updated every 5 seconds. You can safely leave\n"
+#~ "      <strong>1flow</strong> or close this window and come back later.</small><br /><br />\n"
+#~ "\n"
+#~ "      <small>Note: the real number of imported article will be less than the\n"
+#~ "        processed ones, due to some duplicates present on Google Reader.</small>\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Votre import Google Reader a démarré %(start)s.<br />\n"
+#~ "\n"
+#~ "%(feeds)s flux et %(articles)s articles (dont %(starred)s favoris) ont déjà été traités.<br />\n"
+#~ "\n"
+#~ "Vitesse moyenne d'import : %(speed)s article(s)/minute.<br />\n"
+#~ "Fin approximative : %(ETA)s.<br /><br />\n"
+#~ "\n"
+#~ "<small>La procédure prendra plus de temps si plusieurs utilisateurs importent leur GR en même temps. L'état de l'import est mis à jour toutes les 5 secondes. Vous pouvez quitter\n"
+#~ "<strong>1flow</strong> ou fermer cette fenêtre pour revenir plus tard.</small><br /><br />\n"
+#~ "\n"
+#~ "<small>Note : le nombre réel d'articles importés sera moins important que le nombre de traités, à cause de certains doublons naturellement présents sur Google Reader.</small>\n"
 
 #~ msgid "my flow"
 #~ msgstr "mon flux"
