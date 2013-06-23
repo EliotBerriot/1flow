@@ -50,12 +50,14 @@
                 try {
                     $.get("{% url 'google_reader_import_status' %}", function(data){
                         $('#google-reader-import-status').html(data);
-                        if ($('#google-reader-import-status').html().indexOf("{% trans "finished" %}")>=0) {
+
+                        if (data.indexOf("{% trans "finished" %}") >= 0
+                            || data.indexOf("{% trans "Import your" %}") >= 0) {
                             clearInterval(gri_interval);
                         }
                     });
                 } catch (err) {
-                    // nothing…
+                    // just don't crash the JS in the browser.
                 }
             }
 
