@@ -12,7 +12,11 @@ import logging
 import datetime
 import simplejson as json
 
+from constance import config
 from django.conf import settings
+from django.contrib.auth import get_user_model
+
+from .models.nonrel import Article
 
 LOGGER = logging.getLogger(__name__)
 
@@ -20,7 +24,10 @@ REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
                           'localhost'), port=6379,
                           db=getattr(settings, 'REDIS_DB', 0))
 
+User = get_user_model()
+
 ftstamp = datetime.datetime.fromtimestamp
+today = datetime.date.today
 boolcast = {
     'True': True,
     'False': False,
@@ -44,7 +51,25 @@ class GoogleReaderImport(object):
     """
 
     def __init__(self, user):
-        self.key_base = 'gri:{0}'.format(user.id)
+        self.user_id      = user.id
+        self.key_base     = 'gri:{0}'.format(user.id)
+
+    @property
+    def is_active(self):
+        return today() < config.GR_END_DATE \
+            and Article.objects().count() < config.GR_STORAGE_LIMIT
+
+    @property
+    def can_import(self):
+        return User.objects.get(id=self.user_id
+                                ).profile.data.get('GR_IMPORT_ALLOWED',
+                                                   config.GR_IMPORT_ALLOWED)
+
+    @can_import.setter
+    def can_import(self, yes_no):
+        user = User.objects.get(id=self.user_id)
+        user.profile.data['GR_IMPORT_ALLOWED'] = bool(yes_no)
+        user.profile.save()
 
     @classmethod
     def __time_key(cls, key, set_time=False, time_value=None):
