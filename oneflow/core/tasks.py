@@ -164,7 +164,7 @@ Just for you to know…
 
 
 @task
-def import_google_reader_articles(user_id, gr_feed, feed, since=None, wave=0):
+def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
 
     ftstamp = datetime.datetime.fromtimestamp
 
@@ -176,19 +176,21 @@ def import_google_reader_articles(user_id, gr_feed, feed, since=None, wave=0):
 
     gri = GoogleReaderImport(django_user)
 
-    gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT, since=since)
+    if wave == 0:
+        gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT)
+
+    else:
+        gr_feed.loadMoreItems(loadLimit=GR_LOAD_LIMIT,
+                              continuation=gr_feed.continuation)
 
     total_reads = gri.total_reads()
     date_limit  = max([gri.reg_date(), GR_OLDEST_DATE])
-    grand_total = len(gr_feed.items)
-    total       = grand_total - (wave * GR_LOAD_LIMIT)
+    total       = len(gr_feed.items)
     current     = 1
 
     continue_fetching = True
 
-    last_time_seen = None
-
-    for gr_article in gr_feed.items[wave * GR_LOAD_LIMIT:]:
+    for gr_article in gr_feed.items:
 
         if gri.reads() >= total_reads:
             gri.end(set_time=True)
@@ -202,14 +204,19 @@ def import_google_reader_articles(user_id, gr_feed, feed, since=None, wave=0):
                         u'import.', django_user.username)
             return
 
-        if ftstamp(gr_article.time) < date_limit:
-            continue_fetching = False
-            break
+        if gr_article.time is None:
+            LOGGER.warning(u'Article %s (feed “%s”, user %s) has no time. '
+                           u'DATA=%s.', gr_article, gr_feed.title,
+                           django_user.username, gr_article.time,
+                           gr_article.data)
 
-        last_time_seen = gr_article.time
+        else:
+            if ftstamp(gr_article.time) < date_limit:
+                continue_fetching = False
+                break
 
-        LOGGER.debug(u'Importing article “%s” from feed “%s” (%s/%s, wave %s)…',
-                     gr_article.title, gr_feed.title, current, total, wave + 1)
+        #LOGGER.info(u'Importing article “%s” from feed “%s” (%s/%s, wave %s)…',
+        #            gr_article.title, gr_feed.title, current, total, wave + 1)
 
         try:
             Article.objects(url=gr_article.url).update_one(
@@ -218,7 +225,7 @@ def import_google_reader_articles(user_id, gr_feed, feed, since=None, wave=0):
                 set__google_reader_original_data=gr_article.data, upsert=True)
 
         except DuplicateKeyError:
-            LOGGER.warning(u'Duplicate article “%s” in feed “%s”: %s',
+            LOGGER.warning(u'Duplicate article “%s” in feed “%s”: DATA=%s',
                            gr_article.title, feed.name, gr_article.data)
 
         article = Article.objects.get(url=gr_article.url)
@@ -245,6 +252,14 @@ def import_google_reader_articles(user_id, gr_feed, feed, since=None, wave=0):
         if gr_article.starred:
             gri.incr_starred()
 
+    # Remove the read items before loading more
+    # else we leak much too much too muuuuuch…
+    gr_feed.items[:GR_LOAD_LIMIT] = []
+    # Avoid keeping strong references too…
+    gr_feed.itemsById = {}
+    # Having removed them here adds the benefit of
+    # not storing them in the celery queue :-)
+
     if total % GR_LOAD_LIMIT == 0:
         # We got a multiple of the loadLimit. Go for next wave,
         # there could be more articles than that. We must fetch to see.
@@ -253,26 +268,29 @@ def import_google_reader_articles(user_id, gr_feed, feed, since=None, wave=0):
                 if wave < config.GR_WAVE_LIMIT:
                     if continue_fetching:
                         import_google_reader_articles.delay(
-                            user_id, gr_feed, feed, since=last_time_seen,
-                            wave=wave + 1)
+                            user_id, gr_feed, feed, wave=wave + 1)
                     else:
                         LOGGER.warning(u'Datetime limit reached on feed “%s” '
                                        u'for user %s, stopping. %s article(s) '
                                        u'imported.', gr_feed.title,
-                                       django_user.username, grand_total)
+                                       django_user.username, total)
                 else:
                     LOGGER.warning(u'Wave limit reached on feed “%s”, for user '
                                    u'%s, stopping. %s article(s) imported.',
                                    gr_feed.title, django_user.username,
-                                   grand_total)
+                                   total)
         else:
             LOGGER.warning(u'Forced import stop of feed “%s” for user %s, %s '
                            u'article(s) imported.', gr_feed.title,
-                           django_user.username, grand_total)
+                           django_user.username, total)
     else:
         # We have reached the "beginning" of the feed in GR.
         # Probably one with only a few subscribers, because
         # in normal conditions, GR data is kind of unlimited.
         LOGGER.info(u'Reached beginning of feed “%s” for user %s, %s '
                     u'article(s) imported.', gr_feed.title,
-                    django_user.username, grand_total)
+                    django_user.username, total)
+
+    LOGGER.info(u'Wave %s imported %s articles of feed “%s” '
+                u' for user %s.', wave, total,
+                gr_feed.title, django_user.username)
