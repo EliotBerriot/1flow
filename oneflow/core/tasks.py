@@ -259,15 +259,20 @@ def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
     # Having removed them here adds the benefit of
     # not storing them in the celery queue :-)
 
-    if total % GR_LOAD_LIMIT == 0:
-        # We got a multiple of the loadLimit. Go for next wave,
-        # there could be more articles than that. We must fetch to see.
+    if total == GR_LOAD_LIMIT:
+        # Reaching the load limit means “Go for next wave”, because
+        # there is probably more articles. We have to fetch to see.
 
         if gri.running():
                 if wave < config.GR_WAVE_LIMIT:
                     if continue_fetching:
                         import_google_reader_articles.delay(
                             user_id, gr_feed, feed, wave=wave + 1)
+
+                        LOGGER.info(u'Wave %s imported %s articles of '
+                                    u'feed “%s” for user %s.', wave, total,
+                                    gr_feed.title, django_user.username)
+
                     else:
                         LOGGER.warning(u'Datetime limit reached on feed “%s” '
                                        u'for user %s, stopping. %s article(s) '
@@ -289,7 +294,3 @@ def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
         LOGGER.info(u'Reached beginning of feed “%s” for user %s, %s '
                     u'article(s) imported.', gr_feed.title,
                     django_user.username, total)
-
-    LOGGER.info(u'Wave %s imported %s articles of feed “%s” '
-                u' for user %s.', wave, total,
-                gr_feed.title, django_user.username)
