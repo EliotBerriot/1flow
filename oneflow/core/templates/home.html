@@ -52,7 +52,8 @@
                         $('#google-reader-import-status').html(data);
 
                         if (data.indexOf("{% trans "finished" %}") >= 0
-                            || data.indexOf("{% trans "Import your" %}") >= 0) {
+                            || data.indexOf("{% trans "Import your" %}") >= 0
+                            || data.indexOf("{% trans "not active anymore" %}") >= 0) {
                             clearInterval(gri_interval);
                         }
                     });
