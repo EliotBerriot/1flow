@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-22 09:48+0200\n"
-"PO-Revision-Date: 2013-06-22 09:49+0009\n"
+"POT-Creation-Date: 2013-06-23 15:04+0200\n"
+"PO-Revision-Date: 2013-06-23 15:08+0009\n"
 "Last-Translator:   <admin@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -79,9 +79,17 @@ msgstr "Catégories"
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/home.html:54
+#: templates/home.html:55
 msgid "finished"
 msgstr "terminé"
+
+#: templates/home.html:56
+msgid "Import your"
+msgstr "Importer vos"
+
+#: templates/home.html:57
+msgid "not active anymore"
+msgstr "n'est plus disponible"
 
 #: templates/register.html:3
 msgid "Register"
@@ -383,20 +391,29 @@ msgid "Your teams"
 msgstr "Vos équipes"
 
 #: templates/snippets/google-reader-import-status.html:9
+msgid ""
+"\n"
+"You have been accepted in **1flow** BETA program!\n"
+"  "
+msgstr ""
+"\n"
+"Vous avez été accepté(e) dans le programme BETA de **1flow** !"
+
+#: templates/snippets/google-reader-import-status.html:14
 msgid "Import your Google Reader data"
 msgstr "Importer vos données Google Reader"
 
-#: templates/snippets/google-reader-import-status.html:11
+#: templates/snippets/google-reader-import-status.html:16
 msgid ""
 "\n"
-"      Note: after starting it, the import can take up to\n"
-"      one minute before importing the first data.\n"
-"  "
+"        Note: after starting it, the import can take up to\n"
+"        one minute before importing the first data.\n"
+"    "
 msgstr ""
 "\n"
 "Note : après son lancement, l'import peut mettre jusqu'à une minute avant d'importer les premiers flux & articles."
 
-#: templates/snippets/google-reader-import-status.html:18
+#: templates/snippets/google-reader-import-status.html:23
 #, python-format
 msgid ""
 "\n"
@@ -407,6 +424,7 @@ msgid ""
 "Average import speed: %(speed)s article(s)/minute.\n"
 "\n"
 "Approximative ETA: %(ETA)s.\n"
+"  "
 msgstr ""
 "\n"
 "Votre import Google Reader a démarré %(start)s.\n"
@@ -415,17 +433,18 @@ msgstr ""
 "\n"
 "Vitesse moyenne d'import : %(speed)s article(s)/minute.\n"
 "\n"
-"Fin approximative : %(ETA)s.\n"
+"Fin approximative : %(ETA)s."
 
-#: templates/snippets/google-reader-import-status.html:28
+#: templates/snippets/google-reader-import-status.html:33
 msgid ""
 "\n"
-"[Consult help](#/help) for more information about this import procedure.\n"
+"  [Consult help](#/help) for more information about this import procedure.\n"
+"  "
 msgstr ""
 "\n"
-"[Consultez l'aide](#/help) pour plus d'informations à propos de cette procédure.\n"
+"[Consultez l'aide](#/help) pour plus d'informations à propos de cette procédure."
 
-#: templates/snippets/google-reader-import-status.html:34
+#: templates/snippets/google-reader-import-status.html:39
 #, python-format
 msgid ""
 "\n"
@@ -435,6 +454,7 @@ msgid ""
 "Average import speed: %(speed)s article(s)/minute.\n"
 "\n"
 "See you very soon for the upcoming features of **1flow**!\n"
+"  "
 msgstr ""
 "\n"
 "Votre import Google Reader s'est terminé %(end)s et a duré %(duration)s.\n"
@@ -443,11 +463,38 @@ msgstr ""
 "\n"
 "Vitesse moyenne d'import : %(speed)s article(s)/minute.\n"
 "\n"
-"À très bientôt pour la sortie des nouvelles fonctionnalités de **1flow** !\n"
+"À très bientôt pour la sortie des nouvelles fonctionnalités de **1flow** !"
+
+#: templates/snippets/google-reader-import-status.html:52
+msgid ""
+"\n"
+"Sorry, your beta invite has not yet been accepted, you cannot import\n"
+"your Google Reader data into **1flow** yet.\n"
+"\n"
+"This page will refresh itself automatically to inform you when your\n"
+"BETA account has been activated. Just let this window open, or come back\n"
+"in a few hours.\n"
+"      "
+msgstr ""
+"\n"
+"Désolé, votre invitation pour la BETA n'a pas encore été acceptée, vous ne pouvez pas encore importer vos données Google Reader dans **1flow**.\n"
+"\n"
+"Cette page se rafraichit automatiquement pour vous informer dès que votre compte a été activé pour la BETA. Laissez simplement cette fenêtre ouverte, ou revenez d'ici quelques heures."
+
+#: templates/snippets/google-reader-import-status.html:62
+msgid ""
+"\n"
+"Google Reader data import is not active anymore, either because\n"
+"Google Reader is officially closed or because we reached the limits\n"
+"of **1flow** BETA program. Sorry!\n"
+"      "
+msgstr ""
+"\n"
+"L'import des données Google Reader n'est plus disponible, soit parce que Google Reader est officiellement fermé, soit parce que les limites du programme de BETA de **1flow** ont été atteintes. Désolé !"
 
 #: templates/snippets/google-reader-import.html:6
 msgid "Ajax Loader Spinner"
-msgstr ""
+msgstr "Image de chargement Ajax"
 
 #: templates/snippets/google-reader-import.html:14
 #, python-format
