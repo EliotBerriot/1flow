@@ -89,6 +89,14 @@ def google_reader_import(request):
         info('An import is already running for your Google Reader data.')
         return HttpResponseRedirect(redirect_url)
 
+    if not gri.is_active:
+        info('Google Reader import deactivated.')
+        return HttpResponseRedirect(redirect_url)
+
+    if not gri.can_import:
+        info('Your beta invite has not yet been accepted, sorry.')
+        return HttpResponseRedirect(redirect_url)
+
     try:
         import_google_reader_data_trigger(request.user.id)
 
@@ -110,7 +118,7 @@ def google_reader_import_status(request):
 
     gri = GoogleReaderImport(request.user)
 
-    running = gri.running()
+    running      = gri.running()
     current_lang = translation.get_language()
 
     if current_lang != 'en':
@@ -125,6 +133,11 @@ def google_reader_import_status(request):
             LOGGER.warning(u'could not switch `humanize` i18n to %s, '
                            u'its translations will appear in english.',
                            translation.get_language())
+
+    #
+    # NOTE: don't test gri.is_active / gri.can_import here,
+    #       it is done in the template to inform the user.
+    #
 
     if running is None:
         data = {'status': 'not_started'}
@@ -172,6 +185,8 @@ def google_reader_import_status(request):
             data['ETA'] = humanize.time.naturaltime(now + datetime.timedelta(
                                                     seconds=(total_reads
                                                     - reads) / (speed or 1.0)))
+
+    data['gr_import'] = gri
 
     # TODO: remove this when it's automatic
     humanize.i18n.deactivate()

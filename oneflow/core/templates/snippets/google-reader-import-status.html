@@ -1,21 +1,23 @@
 {% load markdown_deux_tags %}
 
-{% if status == 'not_started' %}
+{% if gr_import.can_import %}
 
-  {% url "google_reader_import" as import_url %}
+  {% if status == 'not_started' %}
 
-  <p>
-    <a href=" {{import_url }}" class="btn btn-large btn-primary">
-    {% trans "Import your Google Reader data" %}</a>
-  </p>
-  <p>{% blocktrans %}
-      Note: after starting it, the import can take up to
-      one minute before importing the first data.
-  {% endblocktrans %}</p>
+    {% url "google_reader_import" as import_url %}
 
-{% elif status == 'running' %}
+    <p>
+      <a href=" {{import_url }}" class="btn btn-large btn-primary">
+      {% trans "Import your Google Reader data" %}</a>
+    </p>
+    <p>{% blocktrans %}
+        Note: after starting it, the import can take up to
+        one minute before importing the first data.
+    {% endblocktrans %}</p>
 
-  <p>{% filter markdown %}{% blocktrans %}
+  {% elif status == 'running' %}
+
+    <p>{% filter markdown %}{% blocktrans %}
 Your Google Reader import has started {{ start }}.
 
 {{ feeds }} feeds and {{ articles }} articles processed so far, {{ reads }} being read and {{ starred }} starred.
@@ -23,21 +25,41 @@ Your Google Reader import has started {{ start }}.
 Average import speed: {{ speed }} article(s)/minute.
 
 Approximative ETA: {{ ETA }}.
-{% endblocktrans %}{% endfilter %}
-<p>
-<p><small>{% filter markdown %}{% blocktrans %}
-[Consult help](#/help) for more information about this import procedure.
-{% endblocktrans %}{% endfilter %}</small></p>
+  {% endblocktrans %}{% endfilter %}
+  <p>
+  <p><small>{% filter markdown %}{% blocktrans %}
+  [Consult help](#/help) for more information about this import procedure.
+  {% endblocktrans %}{% endfilter %}</small></p>
 
-{% else %}
+  {% else %}
 
-  <p>{% filter markdown %}{% blocktrans %}
+    <p>{% filter markdown %}{% blocktrans %}
 Your Google Reader import finished {{ end }}, and took {{ duration }}.
 
 {{ feeds }} feeds and {{ articles }} articles imported, {{ reads }} being read and {{ starred }} starred.
 Average import speed: {{ speed }} article(s)/minute.
 
 See you very soon for the upcoming features of **1flow**!
-{% endblocktrans %}{% endfilter %}</p>
+  {% endblocktrans %}{% endfilter %}</p>
+
+  {% endif %}
+
+{% else %}
+  {% if gr_import.is_active %}
+      <p>{% filter markdown %}{% blocktrans %}
+Sorry, your beta invite has not yet been accepted, you cannot import
+your Google Reader data into **1flow** yet. Get in touch with us via
+chat or support forums for more information.
+      {% endblocktrans %}{% endfilter %}</p>
+
+  {% else %}
+      <p>{% filter markdown %}{% blocktrans %}
+Google Reader data import is not active active anymore, either because
+Google Reader is officially closed or because we reached the limits
+of **1flow** BETA program. Sorry!
+      {% endblocktrans %}{% endfilter %}</p>
+
+
+  {% endif %}
 
 {% endif %}
