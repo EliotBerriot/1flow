@@ -180,8 +180,7 @@ def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
         gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT)
 
     else:
-        gr_feed.loadMoreItems(loadLimit=GR_LOAD_LIMIT,
-                              continuation=gr_feed.continuation)
+        gr_feed.loadMoreItems(loadLimit=GR_LOAD_LIMIT)
 
     total_reads = gri.total_reads()
     date_limit  = max([gri.reg_date(), GR_OLDEST_DATE])
