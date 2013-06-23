@@ -390,16 +390,8 @@ MARKDOWN_DEUX_STYLES = {
 CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
 # CONSTANCE_REDIS_CONNECTION is to be found in db_*
 CONSTANCE_REDIS_PREFIX = 'c0s1f:'
-CONSTANCE_CONFIG = {
-    'GR_MAX_ARTICLES': (25 if DEBUG else 250000, ugettext(u'maximum number '
-                        u'of Google Reader articles imported for a user.')),
-    'GR_MAX_FEEDS': (2 if DEBUG else 1000, ugettext(u'maximum number of '
-                     u'articles imported from Google Reader for any user.')),
-    'GR_LOAD_LIMIT': (10 if DEBUG else 500, ugettext(u'maximum number of '
-                      u'articles in each wave of Google Reader feed import.')),
-    'GR_WAVE_LIMIT': (10 if DEBUG else 300, ugettext(u'maximum number of import waves for each '
-                      u'Google Reader feed.')),
-}
+# See constance_* for default configuration keys.
+
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
 
