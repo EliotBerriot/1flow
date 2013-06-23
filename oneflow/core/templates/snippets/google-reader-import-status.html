@@ -6,6 +6,9 @@
 
     {% url "google_reader_import" as import_url %}
 
+    <p>{% filter markdown %}{% blocktrans %}
+You have been accepted in **1flow** BETA program!
+  {% endblocktrans %}{% endfilter %}</p>
     <p>
       <a href=" {{import_url }}" class="btn btn-large btn-primary">
       {% trans "Import your Google Reader data" %}</a>
@@ -48,13 +51,16 @@ See you very soon for the upcoming features of **1flow**!
   {% if gr_import.is_active %}
       <p>{% filter markdown %}{% blocktrans %}
 Sorry, your beta invite has not yet been accepted, you cannot import
-your Google Reader data into **1flow** yet. Get in touch with us via
-chat or support forums for more information.
+your Google Reader data into **1flow** yet.
+
+This page will refresh itself automatically to inform you when your
+BETA account has been activated. Just let this window open, or come back
+in a few hours.
       {% endblocktrans %}{% endfilter %}</p>
 
   {% else %}
       <p>{% filter markdown %}{% blocktrans %}
-Google Reader data import is not active active anymore, either because
+Google Reader data import is not active anymore, either because
 Google Reader is officially closed or because we reached the limits
 of **1flow** BETA program. Sorry!
       {% endblocktrans %}{% endfilter %}</p>
