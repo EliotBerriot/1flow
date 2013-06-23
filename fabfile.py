@@ -152,9 +152,10 @@ def production():
             'worker-05.1flow.io': 4,
         },
         'max_tasks_per_child': {
-            '__all__': 100,
+            '__all__': 30,
             #'worker-03.1flow.io': 30,
             #'worker-02.1flow.io': 50,
+            #'worker-01.1flow.io': 5,
         }
     }
     env.env_was_set = True
