@@ -9,7 +9,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .views import (home, register,
                     google_reader_import,
                     google_reader_import_stop,
-                    google_reader_import_status)
+                    google_reader_import_status,
+                    google_reader_can_import_toggle)
 
 urlpatterns = patterns(
     'oneflow.core.views',
@@ -23,6 +24,9 @@ urlpatterns = patterns(
     url(_(r'^grstop/(?P<user_id>\d+)/$'),
         staff_member_required(google_reader_import_stop),
         name='google_reader_import_stop'),
+    url(_(r'^grtoggle/(?P<user_id>\d+)/$'),
+        staff_member_required(google_reader_can_import_toggle),
+        name='google_reader_can_import_toggle'),
     url(_(r'^grstatus/$'), login_required(google_reader_import_status),
         name='google_reader_import_status'),
 )

@@ -28,8 +28,9 @@ class GriUser(User):
 class GriOneFlowUserAdmin(UserAdmin):
 
     list_display = ('username', 'gri_subscriptions_display',
-                    'gri_articles_display', 'gri_duration_display',
-                    'gri_button_display', )
+                    'gri_articles_display', 'gri_reads_display',
+                    'gri_starred_display', 'gri_duration_display',
+                    'gri_button_display', 'can_import_display', )
 
     def has_add_permission(self, request):
         return False
@@ -38,13 +39,25 @@ class GriOneFlowUserAdmin(UserAdmin):
         gri = GoogleReaderImport(obj)
         return gri.articles() or u'—'
 
-    gri_articles_display.short_description = _(u'article imported')
+    gri_articles_display.short_description = _(u'articles')
 
     def gri_subscriptions_display(self, obj):
         gri = GoogleReaderImport(obj)
         return gri.feeds() or u'—'
 
-    gri_subscriptions_display.short_description = _(u'feeds imported')
+    gri_subscriptions_display.short_description = _(u'feeds')
+
+    def gri_reads_display(self, obj):
+        gri = GoogleReaderImport(obj)
+        return gri.reads() or u'—'
+
+    gri_reads_display.short_description = _(u'reads')
+
+    def gri_starred_display(self, obj):
+        gri = GoogleReaderImport(obj)
+        return gri.starred() or u'—'
+
+    gri_starred_display.short_description = _(u'starred')
 
     def gri_duration_display(self, obj):
 
@@ -80,7 +93,20 @@ class GriOneFlowUserAdmin(UserAdmin):
         else:
             return u'—'
 
-    gri_button_display.short_description = _(u'action')
+    gri_button_display.short_description = _(u'import')
     gri_button_display.allow_tags = True
+
+    def can_import_display(self, obj):
+        gri = GoogleReaderImport(obj)
+
+        return u'<a href="{0}">{1}</a>'.format(
+                    reverse('google_reader_can_import_toggle',
+                            kwargs={'user_id': obj.id}), _(u'deny')
+                            if gri.can_import else _(u'allow'))
+
+    can_import_display.short_description = _(u'Access')
+    can_import_display.allow_tags = True
+
+#implement reads and starreds
 
 admin.site.register(GriUser, GriOneFlowUserAdmin)

@@ -125,6 +125,17 @@ def google_reader_import(request, user_id=None):
     return HttpResponseRedirect(redirect_url)
 
 
+def google_reader_can_import_toggle(request, user_id):
+    user = User.objects.get(id=user_id)
+
+    gri = GoogleReaderImport(user)
+
+    gri.can_import = not gri.can_import
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                reverse('admin:index')))
+
+
 def google_reader_import_stop(request, user_id):
 
     user = User.objects.get(id=user_id)
