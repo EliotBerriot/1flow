@@ -6,10 +6,7 @@
 
 """
 
-import os
 import logging
-import datetime
-
 import humanize
 
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -20,7 +17,6 @@ from django.shortcuts import render
 from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login
-from django.utils import translation
 
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_data_trigger
@@ -161,34 +157,18 @@ def google_reader_import_stop(request, user_id):
 def google_reader_import_status(request):
     """ An HTML snippet view. """
 
-    gri = GoogleReaderImport(request.user.id)
-
-    running      = gri.running()
-    current_lang = translation.get_language()
-
-    if current_lang != 'en':
-        try:
-            # TODO: find a way to do this automatically, application-wide…
-            humanize.i18n.activate(current_lang, path=os.path.join(
-                                   os.path.dirname(humanize.__file__),
-                                   'locale'))
-        except:
-            # Humanize will crash badly if it find no gettext message file.
-            # But we shouldn't, because it's harmless in the end.
-            LOGGER.warning(u'could not switch `humanize` i18n to %s, '
-                           u'its translations will appear in english.',
-                           translation.get_language())
-
     #
     # NOTE: don't test gri.is_active / gri.can_import here,
     #       it is done in the template to inform the user.
     #
 
+    gri     = GoogleReaderImport(request.user.id)
+    running = gri.running()
+
     if running is None:
         data = {'status': 'not_started'}
 
     else:
-        now           = datetime.datetime.now()
         start         = gri.start()
         articles      = gri.articles()
         reads         = gri.reads()
@@ -207,46 +187,30 @@ def google_reader_import_status(request):
             'start': humanize.time.naturaltime(start),
         }
 
-        if running:
-            data.update({
-                'status' : 'running',
-            })
+        with humanize.i18n.django_language():
+            if running:
+                data.update({
+                    'status' : 'running',
+                })
 
-        else:
-            end = gri.end()
+            else:
+                end = gri.end()
 
-            data.update({
-                'status': 'done',
-                'end': humanize.time.naturaltime(end),
-                'duration': humanize.time.naturaldelta(end - start),
-            })
+                data.update({
+                    'status': 'done',
+                    'end': humanize.time.naturaltime(end),
+                    'duration': humanize.time.naturaldelta(end - start),
+                })
 
-        def duration_since(start):
-            delta = (now if running else end) - start
-            return delta.seconds + delta.microseconds / 1E6 + delta.days * 86400
+            speeds = gri.speeds()
 
-        since_start   = duration_since(start)
-        global_speed  = (articles / since_start)
-        reads_speed   = (reads    / since_start) or 1.0  # to avoid /0 errors
-        starred_speed = (starred  / since_start) or 1.0  # idem
+            data['speed'] = int(speeds.get('global') * 60)
 
-        data['speed'] = int(global_speed * 60)
+            eta = gri.eta()
 
-        if running:
-            seconds_reads   = (total_reads   - reads)   / reads_speed
-            seconds_starred = (total_starred - starred) / starred_speed
-
-            LOGGER.warning('%s %s %s', seconds_reads, seconds_starred,
-                           max(seconds_reads, seconds_starred))
-
-            # ETA is based on the slower of starred and reads.
-            data['ETA'] = humanize.time.naturaltime(now + datetime.timedelta(
-                                                    seconds=max(seconds_reads,
-                                                    seconds_starred)))
+            if eta:
+                data['ETA'] = humanize.time.naturaltime(eta)
 
     data['gr_import'] = gri
-
-    # TODO: remove this when it's automatic
-    humanize.i18n.deactivate()
 
     return render(request, 'snippets/google-reader-import-status.html', data)

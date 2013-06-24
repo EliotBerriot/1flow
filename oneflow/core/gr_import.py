@@ -26,8 +26,10 @@ REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
 
 User = get_user_model()
 
+now     = datetime.datetime.now
 ftstamp = datetime.datetime.fromtimestamp
-today = datetime.date.today
+today   = datetime.date.today
+
 boolcast = {
     'True': True,
     'False': False,
@@ -53,6 +55,7 @@ class GoogleReaderImport(object):
     def __init__(self, user_id):
         self.user_id  = user_id
         self.key_base = 'gri:{0}'.format(user_id)
+        self._speeds  = None
 
     @property
     def is_active(self):
@@ -201,3 +204,36 @@ class GoogleReaderImport(object):
 
         return GoogleReaderImport.__int_set_key(
             self.key_base + ':tstr', set_total)
+
+    def speeds(self):
+
+        def duration_since(start):
+            delta = (now() if self.running() else self.end()) - start
+            return delta.seconds + delta.microseconds / 1E6 + delta.days * 86400
+
+        since_start = duration_since(self.start())
+
+        self._speeds = {
+            # We use 'or 1.0' to avoid division by zero errors
+            'global' : (self.articles() / since_start) or 1.0,
+            'reads'  : (self.reads()    / since_start) or 1.0,
+            'starred': (self.starred()  / since_start) or 1.0,
+            'time'   : time.time()  # used for expiration check
+        }
+
+        return self._speeds
+
+    def eta(self):
+
+        if self.running():
+            if self._speeds is None or time.time() - self._speeds['time'] > 1:
+                self.speeds()
+
+            seconds_reads   = (self.total_reads()   - self.reads()
+                               ) / self._speeds['reads']
+            seconds_starred = (self.total_starred() - self.starred()
+                               ) / self._speeds['starred']
+            return now() + datetime.timedelta(seconds=max(seconds_reads,
+                                              seconds_starred))
+        else:
+            return None
