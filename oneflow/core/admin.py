@@ -43,32 +43,32 @@ class GriOneFlowUserAdmin(UserAdmin):
         return False
 
     def gri_articles_display(self, obj):
-        gri = GoogleReaderImport(obj)
-        return gri.articles() or u'—'
+
+        return GoogleReaderImport(obj.id).articles() or u'—'
 
     gri_articles_display.short_description = _(u'articles')
 
     def gri_subscriptions_display(self, obj):
-        gri = GoogleReaderImport(obj)
-        return gri.feeds() or u'—'
+
+        return GoogleReaderImport(obj.id).feeds() or u'—'
 
     gri_subscriptions_display.short_description = _(u'feeds')
 
     def gri_reads_display(self, obj):
-        gri = GoogleReaderImport(obj)
-        return gri.reads() or u'—'
+
+        return GoogleReaderImport(obj.id).reads() or u'—'
 
     gri_reads_display.short_description = _(u'reads')
 
     def gri_starred_display(self, obj):
-        gri = GoogleReaderImport(obj)
-        return gri.starred() or u'—'
+
+        return GoogleReaderImport(obj.id).starred() or u'—'
 
     gri_starred_display.short_description = _(u'starred')
 
     def gri_duration_display(self, obj):
 
-        gri = GoogleReaderImport(obj)
+        gri = GoogleReaderImport(obj.id)
 
         if gri.running():
             return naturaldelta(now() - gri.start())
@@ -82,7 +82,9 @@ class GriOneFlowUserAdmin(UserAdmin):
     gri_duration_display.short_description = _(u'import duration')
 
     def gri_button_display(self, obj):
-        gri = GoogleReaderImport(obj)
+
+        gri = GoogleReaderImport(obj.id)
+
         has_google = obj.social_auth.filter(provider=
                                             'google-oauth2').count() > 0
         if has_google:
@@ -104,14 +106,15 @@ class GriOneFlowUserAdmin(UserAdmin):
     gri_button_display.allow_tags = True
 
     def can_import_display(self, obj):
-        gri = GoogleReaderImport(obj)
+
+        gri = GoogleReaderImport(obj.id)
 
         return u'<a href="{0}">{1}</a>'.format(
                     reverse('google_reader_can_import_toggle',
                             kwargs={'user_id': obj.id}), _(u'deny')
                             if gri.can_import else _(u'allow'))
 
-    can_import_display.short_description = _(u'Access')
+    can_import_display.short_description = _(u'Permission')
     can_import_display.allow_tags = True
 
 admin.site.register(GriUser, GriOneFlowUserAdmin)

@@ -20,7 +20,6 @@ from django.shortcuts import render
 from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login
-from django.contrib.auth import get_user_model
 from django.utils import translation
 
 from .forms import FullUserCreationForm
@@ -28,7 +27,6 @@ from .tasks import import_google_reader_data_trigger
 from .gr_import import GoogleReaderImport
 
 LOGGER = logging.getLogger(__name__)
-User = get_user_model()
 
 # Avoid the very repetitive:
 #       {% load ember js compressed i18n base_utils %}
@@ -50,7 +48,7 @@ def home(request):
 
     return render(request, 'home.html', {
         'has_google': has_google,
-        'gr_import': GoogleReaderImport(request.user),
+        'gr_import': GoogleReaderImport(request.user.id),
     })
 
 
@@ -81,22 +79,22 @@ def register(request):
 def google_reader_import(request, user_id=None):
 
     if user_id is None:
-        user = request.user
-        redirect_url = reverse('home') + '#/profile'
+        user_id      = request.user.id
+        fallback_url = reverse('home') + '#/profile'
 
     else:
         if request.user.is_superuser or request.user.is_staff:
-            user = User.objects.get(id=user_id)
-            redirect_url = request.META.get('HTTP_REFERER',
-                                            reverse('admin:index'))
+            fallback_url = reverse('admin:index')
 
         else:
             return HttpResponseForbidden("Access Denied")
 
+    redirect_url = request.META.get('HTTP_REFERER', fallback_url)
+
     def info(text):
         messages.add_message(request, messages.INFO, text)
 
-    gri = GoogleReaderImport(user)
+    gri = GoogleReaderImport(user_id)
 
     if gri.running():
         info('An import is already running for your Google Reader data.')
@@ -111,7 +109,7 @@ def google_reader_import(request, user_id=None):
         return HttpResponseRedirect(redirect_url)
 
     try:
-        import_google_reader_data_trigger(user.id)
+        import_google_reader_data_trigger(request.user.id)
 
     except ObjectDoesNotExist:
         info('You are not logged into Google Oauth or you have no token.')
@@ -126,9 +124,8 @@ def google_reader_import(request, user_id=None):
 
 
 def google_reader_can_import_toggle(request, user_id):
-    user = User.objects.get(id=user_id)
 
-    gri = GoogleReaderImport(user)
+    gri = GoogleReaderImport(user_id)
 
     gri.can_import = not gri.can_import
 
@@ -138,14 +135,12 @@ def google_reader_can_import_toggle(request, user_id):
 
 def google_reader_import_stop(request, user_id):
 
-    user = User.objects.get(id=user_id)
-    redirect_url = request.META.get('HTTP_REFERER',
-                                    reverse('admin:index'))
-
     def info(text):
         messages.add_message(request, messages.INFO, text)
 
-    gri = GoogleReaderImport(user)
+    gri          = GoogleReaderImport(user_id)
+    redirect_url = request.META.get('HTTP_REFERER',
+                                    reverse('admin:index'))
 
     if gri.running():
         gri.end(True)
@@ -156,7 +151,7 @@ def google_reader_import_stop(request, user_id):
         return HttpResponseRedirect(redirect_url)
 
     if not gri.can_import:
-        info('invite not yet accepted.')
+        info('BETA invite not yet accepted.')
         return HttpResponseRedirect(redirect_url)
 
     return HttpResponseRedirect(redirect_url)
@@ -166,7 +161,7 @@ def google_reader_import_stop(request, user_id):
 def google_reader_import_status(request):
     """ An HTML snippet view. """
 
-    gri = GoogleReaderImport(request.user)
+    gri = GoogleReaderImport(request.user.id)
 
     running      = gri.running()
     current_lang = translation.get_language()

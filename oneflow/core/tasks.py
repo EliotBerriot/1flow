@@ -54,7 +54,7 @@ def import_google_reader_data_trigger(user_id):
     user.social_auth.get(
         provider='google-oauth2').tokens['access_token']
 
-    gri = GoogleReaderImport(user)
+    gri = GoogleReaderImport(user.id)
 
     # notify it will start, to avoid the
     # import button showing again on web page.
@@ -97,7 +97,7 @@ def import_google_reader_data(user_id):
     LOGGER.info('Starting Google Reader import for user %s(%s)',
                 user_infos['userEmail'], user_infos['userId'])
 
-    gri = GoogleReaderImport(django_user)
+    gri = GoogleReaderImport(django_user.id)
 
     # take note of user informations now that we have them.
     gri.start(user_infos=user_infos)
@@ -174,7 +174,7 @@ def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
 
     django_user, mongo_user = get_user_from_dbs(user_id)
 
-    gri = GoogleReaderImport(django_user)
+    gri = GoogleReaderImport(django_user.id)
 
     if wave == 0:
         gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT)

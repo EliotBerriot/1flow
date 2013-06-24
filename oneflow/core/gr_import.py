@@ -50,9 +50,9 @@ class GoogleReaderImport(object):
         them again to make the whole thing work.
     """
 
-    def __init__(self, user):
-        self.user_id      = user.id
-        self.key_base     = 'gri:{0}'.format(user.id)
+    def __init__(self, user_id):
+        self.user_id  = user_id
+        self.key_base = 'gri:{0}'.format(user_id)
 
     @property
     def is_active(self):
