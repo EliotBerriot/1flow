@@ -109,7 +109,7 @@ def google_reader_import(request, user_id=None):
         return HttpResponseRedirect(redirect_url)
 
     try:
-        import_google_reader_data_trigger(request.user.id)
+        import_google_reader_data_trigger(user_id)
 
     except ObjectDoesNotExist:
         info('You are not logged into Google Oauth or you have no token.')
