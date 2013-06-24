@@ -38,7 +38,7 @@ def get_user_from_dbs(user_id):
     return django_user, MongoUser.objects.get(django_user=django_user.id)
 
 
-def import_google_reader_data_trigger(user_id):
+def import_google_reader_data_trigger(user_id, refresh=False):
     """ This function allows to trigger the task manually,
         just pass it a user ID. It's called from the views, and we separate it
         to allow catching the access_token related errors in there.
@@ -49,32 +49,29 @@ def import_google_reader_data_trigger(user_id):
 
     user = User.objects.get(id=user_id)
 
+    if refresh:
+        # See http://django-social-auth.readthedocs.org/en/latest/use_cases.html#token-refreshing # NOQA
+        LOGGER.warning(u'Refreshing invalid access_token for user %s.',
+                       user.username)
+
+        social = user.social_auth.get(provider='google-oauth2')
+        social.refresh_token()
+
     # Try to get the token. If this fails, the caller will
     # catch the exception and will notify the user.
-    user.social_auth.get(
+    access_token = user.social_auth.get(
         provider='google-oauth2').tokens['access_token']
 
-    gri = GoogleReaderImport(user)
+    # notify the start, to instantly refresh user
+    # home and admin interface lists upon reload.
+    GoogleReaderImport(user_id).start(set_time=True)
 
-    # notify it will start, to avoid the
-    # import button showing again on web page.
-    gri.start(set_time=True)
-
-    # go to high-priority queue.
-    import_google_reader_data.apply_async((user_id, ), queue='high')
+    # Go to high-priority queue to allow parallel processing
+    import_google_reader_data.apply_async((user_id, access_token), queue='high')
 
 
 @task
-def import_google_reader_data(user_id):
-
-    now = datetime.datetime.now
-
-    GR_MAX_FEEDS = config.GR_MAX_FEEDS
-
-    django_user, mongo_user = get_user_from_dbs(user_id)
-
-    access_token = django_user.social_auth.get(
-        provider='google-oauth2').tokens['access_token']
+def import_google_reader_data(user_id, access_token):
 
     auth = OAuth2Method(settings.GOOGLE_OAUTH2_CLIENT_ID,
                         settings.GOOGLE_OAUTH2_CLIENT_SECRET)
@@ -85,19 +82,19 @@ def import_google_reader_data(user_id):
         user_infos = reader.getUserInfo()
 
     except TypeError:
-        # See http://django-social-auth.readthedocs.org/en/latest/use_cases.html#token-refreshing # NOQA
-        social = django_user.social_auth.get(provider='google-oauth2')
-        social.refresh_token()
-
-        import_google_reader_data.delay(user_id)
-        LOGGER.warning('Restarted Google Reader import for user %s, '
-                       'access_token was invalid.', django_user.username)
+        import_google_reader_data_trigger(user_id, refresh=True)
         return
 
-    LOGGER.info('Starting Google Reader import for user %s(%s)',
-                user_infos['userEmail'], user_infos['userId'])
+    now = datetime.datetime.now
 
-    gri = GoogleReaderImport(django_user)
+    GR_MAX_FEEDS = config.GR_MAX_FEEDS
+
+    django_user, mongo_user = get_user_from_dbs(user_id)
+    username = django_user.username
+
+    LOGGER.info(u'Starting Google Reader import for user %s.', username)
+
+    gri = GoogleReaderImport(user_id)
 
     # take note of user informations now that we have them.
     gri.start(user_infos=user_infos)
@@ -105,20 +102,21 @@ def import_google_reader_data(user_id):
     reader.buildSubscriptionList()
 
     total_reads, gr_register_date = reader.totalReadItems(without_date=False)
-
+    total_starred   = reader.totalStarredItems()
     total_feeds     = len(reader.feeds)
     processed_feeds = 0
 
     gri.reg_date(time.mktime(gr_register_date.timetuple()))
     gri.total_reads(total_reads)
     gri.total_feeds(total_feeds)
+    gri.total_starred(total_starred)
 
     LOGGER.info(u'Google Reader import: %s feed(s) and %s read '
                 u'article(s) to go…', total_feeds, total_reads)
 
     if total_feeds > GR_MAX_FEEDS and not settings.DEBUG:
         mail_admins('User {0} has more than {1} feeds: {2}!'.format(
-                    django_user.username, GR_MAX_FEEDS, total_feeds), """
+                    username, GR_MAX_FEEDS, total_feeds), """
 
 The GR import will be incomplete.
 
@@ -149,22 +147,22 @@ Just for you to know…
 
         # go to default queue.
         import_google_reader_articles.apply_async(
-            (user_id, gr_feed, feed), queue='low')
+            (user_id, username, gr_feed, feed), queue='low')
 
         processed_feeds += 1
         gri.incr_feeds()
 
-    LOGGER.info(u'Done importing %s feeds in %s; articles import already '
-                u'started with limits. Date: %s, max waves: %s or %s '
-                u'articles, total max articles: %s, max reads: %s.',
+    LOGGER.info(u'Imported %s feeds in %s. Articles import already '
+                u'started with limits: date: %s, %s waves of %s articles, '
+                u'max articles: %s, reads: %s, starred: %s.',
                 processed_feeds, naturaldelta(now() - gri.start()),
                 naturaltime(max([gri.reg_date(), GR_OLDEST_DATE])),
                 config.GR_WAVE_LIMIT, config.GR_LOAD_LIMIT,
-                config.GR_MAX_ARTICLES, total_reads)
+                config.GR_MAX_ARTICLES, total_reads, total_starred)
 
 
 @task
-def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
+def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
 
     ftstamp = datetime.datetime.fromtimestamp
 
@@ -172,9 +170,8 @@ def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
     GR_LOAD_LIMIT   = config.GR_LOAD_LIMIT
     GR_MAX_ARTICLES = config.GR_MAX_ARTICLES
 
-    django_user, mongo_user = get_user_from_dbs(user_id)
-
-    gri = GoogleReaderImport(django_user)
+    mongo_user = MongoUser.objects.get(django_user=user_id)
+    gri        = GoogleReaderImport(user_id)
 
     if wave == 0:
         gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT)
@@ -182,32 +179,32 @@ def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
     else:
         gr_feed.loadMoreItems(loadLimit=GR_LOAD_LIMIT)
 
-    total_reads = gri.total_reads()
-    date_limit  = max([gri.reg_date(), GR_OLDEST_DATE])
-    total       = len(gr_feed.items)
-    current     = 1
+    total_reads   = gri.total_reads()
+    total_starred = gri.total_starred()
+    date_limit    = max([gri.reg_date(), GR_OLDEST_DATE])
+    total         = len(gr_feed.items)
+    current       = 1
 
     continue_fetching = True
 
     for gr_article in gr_feed.items:
 
-        if gri.reads() >= total_reads:
+        if gri.reads() >= total_reads and gri.starred() >= total_starred:
             gri.end(set_time=True)
-            LOGGER.info(u'All read articles imported for user %s, stopping all '
-                        u'tasks in turn.', django_user.username)
+            LOGGER.info(u'All read and starred articles imported for user %s, '
+                        u'stopping all tasks in turn.', username)
             return
 
         if gri.articles() >= GR_MAX_ARTICLES:
             gri.end(set_time=True)
             LOGGER.info(u'Maximum article limit reached for user %s, stopping '
-                        u'import.', django_user.username)
+                        u'import.', username)
             return
 
         if gr_article.time is None:
             LOGGER.warning(u'Article %s (feed “%s”, user %s) has no time. '
                            u'DATA=%s.', gr_article, gr_feed.title,
-                           django_user.username, gr_article.time,
-                           gr_article.data)
+                           username, gr_article.time, gr_article.data)
 
         else:
             if ftstamp(gr_article.time) < date_limit:
@@ -267,30 +264,28 @@ def import_google_reader_articles(user_id, gr_feed, feed, wave=0):
                 if wave < config.GR_WAVE_LIMIT:
                     if continue_fetching:
                         import_google_reader_articles.delay(
-                            user_id, gr_feed, feed, wave=wave + 1)
+                            user_id, username, gr_feed, feed, wave=wave + 1)
 
                         LOGGER.info(u'Wave %s imported %s articles of '
                                     u'feed “%s” for user %s.', wave, total,
-                                    gr_feed.title, django_user.username)
+                                    gr_feed.title, username)
 
                     else:
                         LOGGER.warning(u'Datetime limit reached on feed “%s” '
                                        u'for user %s, stopping. %s article(s) '
                                        u'imported.', gr_feed.title,
-                                       django_user.username, total)
+                                       username, total)
                 else:
                     LOGGER.warning(u'Wave limit reached on feed “%s”, for user '
                                    u'%s, stopping. %s article(s) imported.',
-                                   gr_feed.title, django_user.username,
-                                   total)
+                                   gr_feed.title, username, total)
         else:
             LOGGER.warning(u'Forced import stop of feed “%s” for user %s, %s '
                            u'article(s) imported.', gr_feed.title,
-                           django_user.username, total)
+                           username, total)
     else:
         # We have reached the "beginning" of the feed in GR.
         # Probably one with only a few subscribers, because
         # in normal conditions, GR data is kind of unlimited.
         LOGGER.info(u'Reached beginning of feed “%s” for user %s, %s '
-                    u'article(s) imported.', gr_feed.title,
-                    django_user.username, total)
+                    u'article(s) imported.', gr_feed.title, username, total)

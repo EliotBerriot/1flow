@@ -310,8 +310,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     #'social_auth.context_processors.social_auth_login_redirect',
 
-    # One day, if we have some:
-    #'oneflow.base.context_processors.…',
+    'oneflow.base.context_processors.oneflow_version',
     #'oneflow.core.context_processors.…',
 )
 
@@ -477,7 +476,9 @@ LOGGING = {
         # },
         # Warning messages are sent to admin emails
         'mail_admins': {
-            'level': 'WARNING',
+            # We don't want any mail for every warning on earth.
+            #'level': 'WARNING',
+            'level': 'ERROR',
             'filters': ['require_debug_false'],
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,

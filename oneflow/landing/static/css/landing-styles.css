@@ -28,6 +28,11 @@ body {
   color: rgb(95, 95, 95);
 }
 
+.hero-unit {
+  /* override bootstrap's 200 which doesn't work well with Lato font. */
+  font-weight: 300;
+}
+
 a {
   color: rgb(50, 50, 50);
   -webkit-transition: all 300ms ease;

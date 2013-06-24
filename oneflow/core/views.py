@@ -12,7 +12,7 @@ import datetime
 
 import humanize
 
-from django.http import HttpResponseRedirect
+from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.contrib import messages
@@ -48,7 +48,7 @@ def home(request):
 
     return render(request, 'home.html', {
         'has_google': has_google,
-        'gr_import': GoogleReaderImport(request.user),
+        'gr_import': GoogleReaderImport(request.user.id),
     })
 
 
@@ -76,14 +76,25 @@ def register(request):
     return render(request, 'register.html', {'form': creation_form})
 
 
-def google_reader_import(request):
+def google_reader_import(request, user_id=None):
+
+    if user_id is None:
+        user_id      = request.user.id
+        fallback_url = reverse('home') + '#/profile'
+
+    else:
+        if request.user.is_superuser or request.user.is_staff:
+            fallback_url = reverse('admin:index')
+
+        else:
+            return HttpResponseForbidden("Access Denied")
+
+    redirect_url = request.META.get('HTTP_REFERER', fallback_url)
 
     def info(text):
         messages.add_message(request, messages.INFO, text)
 
-    redirect_url = reverse('home') + '#/profile'
-
-    gri = GoogleReaderImport(request.user)
+    gri = GoogleReaderImport(user_id)
 
     if gri.running():
         info('An import is already running for your Google Reader data.')
@@ -112,11 +123,45 @@ def google_reader_import(request):
     return HttpResponseRedirect(redirect_url)
 
 
+def google_reader_can_import_toggle(request, user_id):
+
+    gri = GoogleReaderImport(user_id)
+
+    gri.can_import = not gri.can_import
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                reverse('admin:index')))
+
+
+def google_reader_import_stop(request, user_id):
+
+    def info(text):
+        messages.add_message(request, messages.INFO, text)
+
+    gri          = GoogleReaderImport(user_id)
+    redirect_url = request.META.get('HTTP_REFERER',
+                                    reverse('admin:index'))
+
+    if gri.running():
+        gri.end(True)
+        return HttpResponseRedirect(redirect_url)
+
+    if not gri.is_active:
+        info('Google Reader import deactivated.')
+        return HttpResponseRedirect(redirect_url)
+
+    if not gri.can_import:
+        info('BETA invite not yet accepted.')
+        return HttpResponseRedirect(redirect_url)
+
+    return HttpResponseRedirect(redirect_url)
+
+
 @never_cache
 def google_reader_import_status(request):
     """ An HTML snippet view. """
 
-    gri = GoogleReaderImport(request.user)
+    gri = GoogleReaderImport(request.user.id)
 
     running      = gri.running()
     current_lang = translation.get_language()
