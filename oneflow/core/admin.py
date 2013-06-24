@@ -63,16 +63,22 @@ class GriOneFlowUserAdmin(UserAdmin):
 
     def gri_button_display(self, obj):
         gri = GoogleReaderImport(obj)
+        has_google = obj.social_auth.filter(provider=
+                                            'google-oauth2').count() > 0
+        if has_google:
+            if gri.running():
+                return u'<a href="{0}">{1}</a>'.format(
+                    reverse('google_reader_import_stop',
+                            kwargs={'user_id': obj.id}), _(u'stop'))
 
-        if gri.running():
-            return u'<a href="{0}">{1}</a>'.format(
-                reverse('google_reader_import_stop',
-                        kwargs={'user_id': obj.id}), _(u'stop'))
-
+            else:
+                return u'<a href="{0}">{1}</a>'.format(
+                    reverse('google_reader_import',
+                            kwargs={'user_id': obj.id}),
+                            _(u'start') if gri.running() is None
+                            else _(u'restart'))
         else:
-            return u'<a href="{0}">{1}</a>'.format(
-                reverse('google_reader_import', kwargs={'user_id': obj.id}),
-                _(u'start') if gri.running() is None else _(u'restart'))
+            return u'—'
 
     gri_button_display.short_description = _(u'action')
     gri_button_display.allow_tags = True
