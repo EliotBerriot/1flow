@@ -93,6 +93,11 @@
       <div class="span12">
         <h1 class="footer-title pull-left"><a href="/">1flow <span
           class="badge badge-warning badge-beta">BETA</span></a> <small class="footer-title">{{ baseline_site_subtitle }}</small></h1>
+
+        {% if user.is_authenticated and user.is_staff or user.is_superuser %}
+          <div class="pull-left copyright" style="padding-left: 100px">version {{ oneflow_version }}</div>
+        {% endif %}
+
         <div class="pull-right copyright">{% if footer_copyright %}{{ footer_copyright|markdown }}{% else %}{% trans "©2013, all right reserved | <strong>1flow</strong> team" %}{% endif %}</div>
       </div>
     </div>

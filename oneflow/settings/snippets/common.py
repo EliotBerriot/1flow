@@ -310,8 +310,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     #'social_auth.context_processors.social_auth_login_redirect',
 
-    # One day, if we have some:
-    #'oneflow.base.context_processors.…',
+    'oneflow.base.context_processors.oneflow_version',
     #'oneflow.core.context_processors.…',
 )
 
