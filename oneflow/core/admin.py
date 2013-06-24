@@ -12,13 +12,17 @@ from django.core.urlresolvers import reverse
 from humanize.time import naturaldelta
 
 from .gr_import import GoogleReaderImport
-#from .models import User
 
+# NOTE: using "from base.models import User" will generate
+# a "cannot proxy swapped model base.User" when creating the
+# GriUser class. Using `get_user_model()` works.
 User = get_user_model()
 now = datetime.datetime.now
 
 
 class GriUser(User):
+    """ Just a proxy to User model, to be able to build a list against it. """
+
     class Meta:
         proxy = True
         verbose_name = _(u'Google Reader import')
@@ -26,6 +30,8 @@ class GriUser(User):
 
 
 class GriOneFlowUserAdmin(UserAdmin):
+    """ Wrap our GoogleReaderImport class onto User accounts,
+        to be able to act on imports from the Django administration. """
 
     list_display = ('username', 'gri_subscriptions_display',
                     'gri_articles_display', 'gri_reads_display',
@@ -33,6 +39,7 @@ class GriOneFlowUserAdmin(UserAdmin):
                     'gri_button_display', 'can_import_display', )
 
     def has_add_permission(self, request):
+        # Don't display the ADD button in the Django interface.
         return False
 
     def gri_articles_display(self, obj):
@@ -106,7 +113,5 @@ class GriOneFlowUserAdmin(UserAdmin):
 
     can_import_display.short_description = _(u'Access')
     can_import_display.allow_tags = True
-
-#implement reads and starreds
 
 admin.site.register(GriUser, GriOneFlowUserAdmin)
