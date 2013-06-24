@@ -188,19 +188,22 @@ def google_reader_import_status(request):
         data = {'status': 'not_started'}
 
     else:
-        now         = datetime.datetime.now()
-        start       = gri.start()
-        articles    = gri.articles()
-        reads       = gri.reads()
-        total_reads = gri.total_reads()
+        now           = datetime.datetime.now()
+        start         = gri.start()
+        articles      = gri.articles()
+        reads         = gri.reads()
+        total_reads   = gri.total_reads()
+        starred       = gri.starred()
+        total_starred = gri.total_starred()
 
         data = {
             'feeds': gri.feeds(),
             'total_feeds': gri.total_feeds(),
             'reads': reads,
-            'starred': gri.starred(),
+            'starred': starred,
             'articles': articles,
             'total_reads': total_reads,
+            'total_starred': total_starred,
             'start': humanize.time.naturaltime(start),
         }
 
@@ -222,14 +225,24 @@ def google_reader_import_status(request):
             delta = (now if running else end) - start
             return delta.seconds + delta.microseconds / 1E6 + delta.days * 86400
 
-        speed = articles / duration_since(start)
+        since_start   = duration_since(start)
+        global_speed  = (articles / since_start)
+        reads_speed   = (reads    / since_start) or 1.0  # to avoid /0 errors
+        starred_speed = (starred  / since_start) or 1.0  # idem
 
-        data['speed'] = int(speed * 60)
+        data['speed'] = int(global_speed * 60)
 
         if running:
+            seconds_reads   = (total_reads   - reads)   / reads_speed
+            seconds_starred = (total_starred - starred) / starred_speed
+
+            LOGGER.warning('%s %s %s', seconds_reads, seconds_starred,
+                           max(seconds_reads, seconds_starred))
+
+            # ETA is based on the slower of starred and reads.
             data['ETA'] = humanize.time.naturaltime(now + datetime.timedelta(
-                                                    seconds=(total_reads
-                                                    - reads) / (speed or 1.0)))
+                                                    seconds=max(seconds_reads,
+                                                    seconds_starred)))
 
     data['gr_import'] = gri
 
