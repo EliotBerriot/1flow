@@ -173,6 +173,13 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
     mongo_user = MongoUser.objects.get(django_user=user_id)
     gri        = GoogleReaderImport(user_id)
 
+    # in case the import was stopped while this
+    # task was in the queue, just stop now.
+    if not gri.running():
+        LOGGER.warning(u'Forced auto-stop for import of feed “%s” for user %s.',
+                       gr_feed.title, username)
+        return
+
     if wave == 0:
         gr_feed.loadItems(loadLimit=GR_LOAD_LIMIT)
 
