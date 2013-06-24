@@ -196,3 +196,8 @@ class GoogleReaderImport(object):
 
         return GoogleReaderImport.__int_set_key(
             self.key_base + ':trds', set_total)
+
+    def total_starred(self, set_total=None):
+
+        return GoogleReaderImport.__int_set_key(
+            self.key_base + ':tstr', set_total)
