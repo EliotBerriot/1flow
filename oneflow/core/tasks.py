@@ -256,10 +256,11 @@ def import_google_reader_begin(user_id, access_token):
         user_infos = reader.getUserInfo()
 
     except TypeError:
-        LOGGER.error(u'Could not start Google Reader import for user %s.',
-                     username)
-        # We should not refresh, it should be done by a dedicated task.
-        #import_google_reader_trigger(user_id, refresh=True)
+        LOGGER.exception(u'Could not start Google Reader import for user %s.',
+                         username)
+        # Don't refresh, it's now done by a dedicated periodic task.
+        # If we failed, it means the problem is quite serious.
+        #       import_google_reader_trigger(user_id, refresh=True)
         return
 
     GR_MAX_FEEDS = config.GR_MAX_FEEDS
