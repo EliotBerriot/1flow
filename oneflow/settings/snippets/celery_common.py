@@ -4,6 +4,9 @@
 #       defined in these.
 #
 
+#from datetime import timedelta
+from celery.schedules import crontab
+
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_RESULT_PERSISTENT = True
 
@@ -26,3 +29,15 @@ CELERY_SEND_TASK_SENT_EVENT = True
 
 # Disabled by default and I like it, because we use Sentry for this.
 #CELERY_SEND_TASK_ERROR_EMAILS = False
+
+CELERYBEAT_SCHEDULE = {
+    # 'celery-beat-test': {
+    #     'task': 'oneflow.base.tasks.celery_beat_test',
+    #     'schedule': timedelta(seconds=15),
+    #     'schedule': crontab(minute='*'),
+    # },
+    'refresh-access-tokens': {
+        'task': 'oneflow.base.tasks.refresh_access_tokens',
+        'schedule': crontab(minute=48),
+    },
+}
