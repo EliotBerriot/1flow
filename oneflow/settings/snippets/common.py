@@ -483,9 +483,9 @@ LOGGING = {
             'class': 'django.utils.log.AdminEmailHandler',
             'include_html': True,
         },
-        # critical errors are logged to sentry
+        # WARNINGs and critical errors are logged to sentry
         'sentry': {
-            'level': 'ERROR',
+            'level': 'WARNING',
             #'filters': ['require_debug_false'],
             'class': 'raven.contrib.django.handlers.SentryHandler',
         },
