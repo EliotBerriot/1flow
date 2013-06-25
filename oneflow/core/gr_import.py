@@ -64,9 +64,16 @@ class GoogleReaderImport(object):
 
     @property
     def can_import(self):
-        return self.is_active and User.objects.get(
-            id=self.user_id).profile.data.get('GR_IMPORT_ALLOWED',
-                                              config.GR_IMPORT_ALLOWED)
+        if self.is_active:
+            data = json.loads(User.objects.get(id=self.user_id).profile.data)
+
+            try:
+                return data.get('GR_IMPORT_ALLOWED', config.GR_IMPORT_ALLOWED)
+
+            except:
+                return config.GR_IMPORT_ALLOWED
+
+        return False
 
     @can_import.setter # NOQA
     def can_import(self, yes_no):
