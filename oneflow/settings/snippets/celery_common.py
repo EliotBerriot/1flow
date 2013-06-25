@@ -5,9 +5,24 @@
 #
 
 CELERY_RESULT_BACKEND = BROKER_URL
+CELERY_RESULT_PERSISTENT = True
+
+# Allow our remote workers to get tasks faster if they have a
+# slow internet connection (yes Gurney, I'm thinking of you).
+CELERY_MESSAGE_COMPRESSION = 'gzip'
+
+# One day is already the default
+#CELERY_TASK_RESULT_EXPIRES = 86400
+
+# The current default:
+#CELERY_MAX_CACHED_RESULTS = 5000
 
 # I use these to debug kombu crashes; we get a more informative message.
 #CELERY_TASK_SERIALIZER = 'json'
 #CELERY_RESULT_SERIALIZER = 'json'
 
+CELERY_TRACK_STARTED = True
 CELERY_SEND_TASK_SENT_EVENT = True
+
+# Disabled by default and I like it, because we use Sentry for this.
+#CELERY_SEND_TASK_ERROR_EMAILS = False
