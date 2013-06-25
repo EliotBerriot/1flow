@@ -249,17 +249,20 @@ def import_google_reader_begin(user_id, access_token):
     auth.authFromAccessToken(access_token)
     reader = GoogleReader(auth)
 
+    django_user, mongo_user = get_user_from_dbs(user_id)
+    username = django_user.username
+
     try:
         user_infos = reader.getUserInfo()
 
     except TypeError:
-        import_google_reader_trigger(user_id, refresh=True)
+        LOGGER.error(u'Could not start Google Reader import for user %s.',
+                     username)
+        # We should not refresh, it should be done by a dedicated task.
+        #import_google_reader_trigger(user_id, refresh=True)
         return
 
     GR_MAX_FEEDS = config.GR_MAX_FEEDS
-
-    django_user, mongo_user = get_user_from_dbs(user_id)
-    username = django_user.username
 
     LOGGER.info(u'Starting Google Reader import for user %s.', username)
 
