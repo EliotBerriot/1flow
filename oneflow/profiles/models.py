@@ -22,13 +22,13 @@ class UserProfile(models.Model):
     email_announcements = models.BooleanField(_('Email announcements'),
                                               default=True, blank=True)
     register_request_data = JSONField(_('Register data'),
-                                      default='{}', blank=True)
+                                      default=lambda: {}, blank=True)
     last_modified = models.DateTimeField(_('Last modified'), auto_now_add=True)
     hash_code = models.CharField(_(u'Current validation code'), max_length=32,
                                  default=lambda: uuid.uuid4().hex)
 
     data = JSONField(_('profile data, as JSON'),
-                     default='{}', blank=True)
+                     default=lambda: {}, blank=True)
 
     class Meta:
         verbose_name = _(u'User profile')
