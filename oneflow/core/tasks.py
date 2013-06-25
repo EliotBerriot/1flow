@@ -141,7 +141,7 @@ def end_fetch_prematurely(kind, gri, processed, gr_article,
         gri.incr_feeds()
         return True
 
-    if kind == 'read' and gri.reads() >= gri.total_reads():
+    if kind == 'reads' and gri.reads() >= gri.total_reads():
         LOGGER.info(u'All read articles imported for user %s.', username)
         gri.incr_feeds()
         return True
@@ -347,7 +347,7 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
     articles_counter = 0
 
     for gr_article in gr_feed.items:
-        if end_fetch_prematurely('read', gri, articles_counter,
+        if end_fetch_prematurely('starred', gri, articles_counter,
                                  gr_article, gr_feed.title,
                                  username, date_limit=date_limit):
             return
@@ -404,7 +404,7 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
 
     for gr_article in gr_feed.items:
 
-        if end_fetch_prematurely('read', gri, articles_counter,
+        if end_fetch_prematurely('reads', gri, articles_counter,
                                  gr_article, gr_feed.title,
                                  username, date_limit=date_limit):
             return
