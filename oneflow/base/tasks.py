@@ -51,4 +51,5 @@ def refresh_access_tokens():
                              u'%s, forcing re-authentication at next login.',
                              user.username)
 
-                social.delete()
+                # NOT YET READY.
+                #social.delete()
