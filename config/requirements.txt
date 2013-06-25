@@ -1,6 +1,6 @@
--e git+ssh://github.com/Karmak23/sparks.git@sparks-2.8.7#egg=sparks-dev
--e git+ssh://github.com/Karmak23/humanize.git@master#egg=humanize-dev
--e git+ssh://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
+-e git+https://github.com/Karmak23/sparks.git@sparks-2.8.7#egg=sparks-dev
+-e git+https://github.com/Karmak23/humanize.git@master#egg=humanize-dev
+-e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
 -e git+https://github.com/gregmuellegger/django-reset.git@4f859d9319a7bfc41484f302e96e1f880aaa67db#egg=django_reset-dev
 -e git+https://github.com/noirbizarre/django-ember.git@2845c3ef46711320b6941c22ce8204c302d6651f#egg=django_ember-dev
 -e git+https://github.com/noirbizarre/django.js.git@5e73d284971356a127677d0d4088f68a14631080#egg=django.js-dev
