@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import simplejson as json
 
 from celery import task
 from django.contrib.auth import get_user_model
@@ -36,7 +35,7 @@ def background_post_register_actions(context):
                                if has_invites_left
                                else 'landing_waiting_list')
 
-    request_data = {
+    user.profile.register_request_data = {
         'language': meta.get('HTTP_ACCEPT_LANGUAGE', ''),
         'user_agent': meta.get('HTTP_USER_AGENT', ''),
         'encoding': meta.get('HTTP_ACCEPT_ENCODING', ''),
@@ -45,7 +44,6 @@ def background_post_register_actions(context):
         'referer': session.get('INITIAL_REFERER', ''),
     }
 
-    user.profile.register_request_data = json.dumps(request_data)
     user.profile.save()
 
     try:
