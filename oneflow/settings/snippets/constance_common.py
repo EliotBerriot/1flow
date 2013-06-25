@@ -23,7 +23,10 @@ CONSTANCE_CONFIG = {
                      u'articles imported from Google Reader for any user.')),
 
     'GR_LOAD_LIMIT': (10 if DEBUG else 500, ugettext(u'maximum number of '
-                      u'articles in each wave of Google Reader feed import.')),
+                      u'articles in each wave of Google Reader feed import. '
+                      u'WARNING: stop all imports before raising this, or '
+                      u'some data will be missed by running tasks. No such '
+                      u'problem if your lower it.')),
 
     'GR_WAVE_LIMIT': (10 if DEBUG else 1000, ugettext(u'maximum number of '
                       u'import waves for each Google Reader feed.')),
