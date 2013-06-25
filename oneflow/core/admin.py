@@ -55,7 +55,7 @@ class GriOneFlowUserAdmin(UserAdmin):
 
         number, total = gri.feeds(), gri.total_feeds()
 
-        if number == total:
+        if number >= total:
             return number or u'—'
 
         return u'%s/%s' % (number, total)
@@ -68,7 +68,7 @@ class GriOneFlowUserAdmin(UserAdmin):
 
         number, total = gri.reads(), gri.total_reads()
 
-        if number == total:
+        if number >= total:
             return number or u'—'
 
         return u'%s/%s' % (number, total)
@@ -81,7 +81,7 @@ class GriOneFlowUserAdmin(UserAdmin):
 
         number, total = gri.starred(), gri.total_starred()
 
-        if number == total:
+        if number >= total:
             return number or u'—'
 
         return u'%s/%s' % (number, total)

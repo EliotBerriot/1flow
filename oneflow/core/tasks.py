@@ -141,13 +141,13 @@ def end_fetch_prematurely(kind, gri, processed, gr_article,
         gri.incr_feeds()
         return True
 
-    if gri.reads() >= gri.total_reads():
+    if kind == 'read' and gri.reads() >= gri.total_reads():
         LOGGER.info(u'All read articles imported for user %s.', username)
+        gri.incr_feeds()
+        return True
 
-        if gri.starred() >= gri.total_starred():
-            LOGGER.info(u'All starred articles imported for user %s.', username)
-            gri.end(True)
-
+    if kind == 'starred' and gri.starred() >= gri.total_starred():
+        LOGGER.info(u'All starred articles imported for user %s.', username)
         gri.incr_feeds()
         return True
 
