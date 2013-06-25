@@ -345,8 +345,8 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
         loadMethod(loadLimit=config.GR_LOAD_LIMIT)
 
     except:
-        LOGGER.error(u'Wave %s of feed “%s” failed to load for user %s, '
-                     u'aborted.', wave, gr_feed.title, username)
+        LOGGER.exception(u'Wave %s of feed “%s” failed to load for user %s, '
+                         u'aborted.', wave, gr_feed.title, username)
         gri.incr_feeds()
         return
 
@@ -401,8 +401,8 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
         loadMethod(loadLimit=config.GR_LOAD_LIMIT)
 
     except:
-        LOGGER.error(u'Wave %s of feed “%s” failed to load for user %s, '
-                     u'aborted.', wave, gr_feed.title, username)
+        LOGGER.exception(u'Wave %s of feed “%s” failed to load for user %s, '
+                         u'aborted.', wave, gr_feed.title, username)
         gri.incr_feeds()
         return
 
