@@ -109,12 +109,12 @@ def google_reader_import(request, user_id=None):
 
     except ObjectDoesNotExist:
         info('You are not logged into Google Oauth or you have no token.')
-        return HttpResponseRedirect(reverse('home') + '#/profile')
+        return HttpResponseRedirect(redirect_url)
 
     except:
         info('Error parsing Google Oauth tokens. '
              'Please try signout and re-signin.')
-        return HttpResponseRedirect(reverse('home') + '#/profile')
+        return HttpResponseRedirect(redirect_url)
 
     return HttpResponseRedirect(redirect_url)
 
