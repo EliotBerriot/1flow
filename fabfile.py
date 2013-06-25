@@ -133,8 +133,8 @@ def production():
         'web': ['1flow.io'],
         'flower': ['worker-01.1flow.io'],
         'worker_high': ['worker-01.1flow.io'],
+        'worker_medium': ['worker-02.1flow.io'],
         'worker_low': [
-            'worker-02.1flow.io',
             'worker-03.1flow.io',
             'worker-05.1flow.io',
         ],
@@ -154,10 +154,12 @@ def production():
             'worker-05.1flow.io': 4,
         },
         'max_tasks_per_child': {
-            '__all__': 30,
-            #'worker-03.1flow.io': 30,
-            #'worker-02.1flow.io': 50,
-            #'worker-01.1flow.io': 5,
+            '__all__': 80,
+
+            # Long-lasting tasks will be recycled faster, in case they leak.
+            'worker-02.1flow.io': 40,
+
+            #'worker-01.1flow.io': 100,
         }
     }
     env.env_was_set = True

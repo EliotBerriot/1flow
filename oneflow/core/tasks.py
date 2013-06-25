@@ -79,12 +79,16 @@ def import_google_reader_trigger(user_id, refresh=False):
 
 def create_feed(gr_feed, mongo_user, subscription=True):
 
-    Feed.objects(url=gr_feed.feedUrl,
-                 site_url=gr_feed.siteUrl
-                 ).update(set__url=gr_feed.feedUrl,
-                          set__site_url=gr_feed.siteUrl,
-                          set__name=gr_feed.title,
-                          upsert=True)
+    try:
+        Feed.objects(url=gr_feed.feedUrl,
+                     site_url=gr_feed.siteUrl
+                     ).update(set__url=gr_feed.feedUrl,
+                              set__site_url=gr_feed.siteUrl,
+                              set__name=gr_feed.title,
+                              upsert=True)
+    except DuplicateKeyError:
+        LOGGER.warning(u'Duplicate feed “%s”, skipped insertion.',
+                       gr_feed.title)
 
     feed = Feed.objects.get(url=gr_feed.feedUrl, site_url=gr_feed.siteUrl)
 
