@@ -6,10 +6,7 @@
 
 """
 
-import os
 import logging
-import datetime
-
 import humanize
 
 from django.http import HttpResponseRedirect, HttpResponseForbidden
@@ -20,10 +17,9 @@ from django.shortcuts import render
 from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login
-from django.utils import translation
 
 from .forms import FullUserCreationForm
-from .tasks import import_google_reader_data_trigger
+from .tasks import import_google_reader_trigger
 from .gr_import import GoogleReaderImport
 
 LOGGER = logging.getLogger(__name__)
@@ -109,7 +105,7 @@ def google_reader_import(request, user_id=None):
         return HttpResponseRedirect(redirect_url)
 
     try:
-        import_google_reader_data_trigger(request.user.id)
+        import_google_reader_trigger(user_id)
 
     except ObjectDoesNotExist:
         info('You are not logged into Google Oauth or you have no token.')
@@ -161,79 +157,61 @@ def google_reader_import_stop(request, user_id):
 def google_reader_import_status(request):
     """ An HTML snippet view. """
 
-    gri = GoogleReaderImport(request.user.id)
-
-    running      = gri.running()
-    current_lang = translation.get_language()
-
-    if current_lang != 'en':
-        try:
-            # TODO: find a way to do this automatically, application-wide…
-            humanize.i18n.activate(current_lang, path=os.path.join(
-                                   os.path.dirname(humanize.__file__),
-                                   'locale'))
-        except:
-            # Humanize will crash badly if it find no gettext message file.
-            # But we shouldn't, because it's harmless in the end.
-            LOGGER.warning(u'could not switch `humanize` i18n to %s, '
-                           u'its translations will appear in english.',
-                           translation.get_language())
-
     #
     # NOTE: don't test gri.is_active / gri.can_import here,
     #       it is done in the template to inform the user.
     #
 
+    gri     = GoogleReaderImport(request.user.id)
+    running = gri.running()
+
     if running is None:
         data = {'status': 'not_started'}
 
     else:
-        now         = datetime.datetime.now()
-        start       = gri.start()
-        articles    = gri.articles()
-        reads       = gri.reads()
-        total_reads = gri.total_reads()
+        start         = gri.start()
+        articles      = gri.articles()
+        reads         = gri.reads()
+        total_reads   = gri.total_reads()
+        starred       = gri.starred()
+        total_starred = gri.total_starred()
 
-        data = {
-            'feeds': gri.feeds(),
-            'total_feeds': gri.total_feeds(),
-            'reads': reads,
-            'starred': gri.starred(),
-            'articles': articles,
-            'total_reads': total_reads,
-            'start': humanize.time.naturaltime(start),
-        }
+        with humanize.i18n.django_language():
 
-        if running:
-            data.update({
-                'status' : 'running',
-            })
+            data = {
+                'feeds': gri.feeds(),
+                'total_feeds': gri.total_feeds(),
+                'reads': reads,
+                'starred': starred,
+                'articles': articles,
+                'total_reads': total_reads,
+                'total_starred': total_starred,
+                'start': humanize.time.naturaltime(start),
+            }
 
-        else:
-            end = gri.end()
+            if running:
+                data.update({
+                    'status' : 'running',
+                })
 
-            data.update({
-                'status': 'done',
-                'end': humanize.time.naturaltime(end),
-                'duration': humanize.time.naturaldelta(end - start),
-            })
+            else:
+                end = gri.end()
 
-        def duration_since(start):
-            delta = (now if running else end) - start
-            return delta.seconds + delta.microseconds / 1E6 + delta.days * 86400
+                data.update({
+                    'status': 'done',
+                    'end': humanize.time.naturaltime(end),
+                    'duration': humanize.time.naturaldelta(end - start),
+                })
 
-        speed = articles / duration_since(start)
+            speeds = gri.speeds()
 
-        data['speed'] = int(speed * 60)
+            data['speed'] = int(speeds.get('global') * 60)
 
-        if running:
-            data['ETA'] = humanize.time.naturaltime(now + datetime.timedelta(
-                                                    seconds=(total_reads
-                                                    - reads) / (speed or 1.0)))
+            eta = gri.eta()
+
+            if eta:
+                data['ETA'] = humanize.time.naturaltime(eta)
 
     data['gr_import'] = gri
-
-    # TODO: remove this when it's automatic
-    humanize.i18n.deactivate()
 
     return render(request, 'snippets/google-reader-import-status.html', data)
