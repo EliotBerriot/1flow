@@ -176,18 +176,19 @@ def google_reader_import_status(request):
         starred       = gri.starred()
         total_starred = gri.total_starred()
 
-        data = {
-            'feeds': gri.feeds(),
-            'total_feeds': gri.total_feeds(),
-            'reads': reads,
-            'starred': starred,
-            'articles': articles,
-            'total_reads': total_reads,
-            'total_starred': total_starred,
-            'start': humanize.time.naturaltime(start),
-        }
-
         with humanize.i18n.django_language():
+
+            data = {
+                'feeds': gri.feeds(),
+                'total_feeds': gri.total_feeds(),
+                'reads': reads,
+                'starred': starred,
+                'articles': articles,
+                'total_reads': total_reads,
+                'total_starred': total_starred,
+                'start': humanize.time.naturaltime(start),
+            }
+
             if running:
                 data.update({
                     'status' : 'running',
