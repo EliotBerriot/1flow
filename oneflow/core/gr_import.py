@@ -66,12 +66,16 @@ class GoogleReaderImport(object):
     def can_import(self):
         if self.is_active:
 
+            user = User.objects.get(id=self.user_id)
+
             try:
-                data = json.loads(User.objects.get(
-                                  id=self.user_id).profile.data)
-                return data.get('GR_IMPORT_ALLOWED', config.GR_IMPORT_ALLOWED)
+                return user.profile.data.get('GR_IMPORT_ALLOWED',
+                                             config.GR_IMPORT_ALLOWED)
 
             except:
+                LOGGER.exception(u'Could not get `data` from user %s profile, '
+                                 u'returning configuration value %s.',
+                                 user.username, config.GR_IMPORT_ALLOWED)
                 return config.GR_IMPORT_ALLOWED
 
         return False
