@@ -48,6 +48,7 @@ def refresh_access_tokens():
 
             except:
                 LOGGER.error(u'Access token could not be refreshed for user '
-                             u'%s, forcing re-authentication at next login.')
+                             u'%s, forcing re-authentication at next login.',
+                             user.username)
 
-                # TODO: force re-auth of user at next visit.
+                social.delete()
