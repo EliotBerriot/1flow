@@ -68,7 +68,7 @@ class GoogleReaderImport(object):
             id=self.user_id).profile.data.get('GR_IMPORT_ALLOWED',
                                               config.GR_IMPORT_ALLOWED)
 
-    @can_import.setter
+    @can_import.setter # NOQA
     def can_import(self, yes_no):
         user = User.objects.get(id=self.user_id)
         user.profile.data['GR_IMPORT_ALLOWED'] = bool(yes_no)
@@ -91,7 +91,7 @@ class GoogleReaderImport(object):
             return REDIS.delete(key)
 
         if increment:
-            return REDIS.incr(key)
+            return int(REDIS.incr(key))
 
         return int(REDIS.get(key) or 0)
 
@@ -129,7 +129,7 @@ class GoogleReaderImport(object):
     def start(self, set_time=False, user_infos=None):
 
         if set_time:
-            LOGGER.debug('start reset for %s', self)
+            #LOGGER.debug('start reset for %s', self)
             self.running(set_running=True)
 
             self.feeds('reset')
@@ -139,6 +139,7 @@ class GoogleReaderImport(object):
 
             self.total_feeds(0)
             self.total_reads(0)
+            self.total_starred(0)
 
         if user_infos is not None:
             self.user_infos(user_infos)
@@ -154,12 +155,25 @@ class GoogleReaderImport(object):
 
     def reg_date(self, set_date=None):
 
-        return GoogleReaderImport.__time_key(self.key_base + ':rd',
+        return GoogleReaderImport.__time_key(self.key_base + ':regd',
+                                             set_time=set_date is not None,
+                                             time_value=set_date)
+
+    def star1_date(self, set_date=None):
+
+        return GoogleReaderImport.__time_key(self.key_base + ':stad',
                                              set_time=set_date is not None,
                                              time_value=set_date)
 
     def incr_feeds(self):
-        return self.feeds(increment=True)
+        feeds = self.feeds(increment=True)
+
+        if feeds == self.total_feeds():
+            self.end(True)
+
+        #LOGGER.debug('FEEDS: %s =? %s', feeds, self.total_feeds())
+
+        return feeds
 
     def feeds(self, increment=False):
 
@@ -188,7 +202,7 @@ class GoogleReaderImport(object):
     def starred(self, increment=False):
 
         return GoogleReaderImport.__int_incr_key(
-            self.key_base + ':str', increment)
+            self.key_base + ':sta', increment)
 
     def articles(self, increment=False):
 
@@ -203,7 +217,7 @@ class GoogleReaderImport(object):
     def total_starred(self, set_total=None):
 
         return GoogleReaderImport.__int_set_key(
-            self.key_base + ':tstr', set_total)
+            self.key_base + ':tsta', set_total)
 
     def speeds(self):
 
@@ -216,24 +230,37 @@ class GoogleReaderImport(object):
         self._speeds = {
             # We use 'or 1.0' to avoid division by zero errors
             'global' : (self.articles() / since_start) or 1.0,
-            'reads'  : (self.reads()    / since_start) or 1.0,
             'starred': (self.starred()  / since_start) or 1.0,
             'time'   : time.time()  # used for expiration check
         }
 
+        if self.reads() < self.total_reads():
+            self._speeds['reads'] = (self.reads() / since_start) or 1.0
+
         return self._speeds
 
     def eta(self):
+        """ If running, compute fetching speeds (if not already done in the
+            last second), and return the worst to get a reliable enough ETA.
+
+            If not running, don't compute anything and return ``None``.
+        """
 
         if self.running():
             if self._speeds is None or time.time() - self._speeds['time'] > 1:
                 self.speeds()
 
-            seconds_reads   = (self.total_reads()   - self.reads()
-                               ) / self._speeds['reads']
             seconds_starred = (self.total_starred() - self.starred()
                                ) / self._speeds['starred']
-            return now() + datetime.timedelta(seconds=max(seconds_reads,
-                                              seconds_starred))
+            maximums = (seconds_starred, )
+
+            if 'reads' in self._speeds:
+                seconds_reads = (self.total_reads() - self.reads()
+                                 ) / self._speeds['reads']
+                maximums += (seconds_reads, )
+            else:
+                maximums += (0.0, )
+
+            return now() + datetime.timedelta(seconds=max(*maximums))
         else:
             return None

@@ -19,7 +19,7 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login
 
 from .forms import FullUserCreationForm
-from .tasks import import_google_reader_data_trigger
+from .tasks import import_google_reader_trigger
 from .gr_import import GoogleReaderImport
 
 LOGGER = logging.getLogger(__name__)
@@ -105,7 +105,7 @@ def google_reader_import(request, user_id=None):
         return HttpResponseRedirect(redirect_url)
 
     try:
-        import_google_reader_data_trigger(user_id)
+        import_google_reader_trigger(user_id)
 
     except ObjectDoesNotExist:
         info('You are not logged into Google Oauth or you have no token.')
