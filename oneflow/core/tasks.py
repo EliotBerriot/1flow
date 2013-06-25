@@ -332,11 +332,16 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
         gri.incr_feeds()
         return
 
-    if wave == 0:
-        gr_feed.loadItems(loadLimit=config.GR_LOAD_LIMIT)
+    loadMethod = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
 
-    else:
-        gr_feed.loadMoreItems(loadLimit=config.GR_LOAD_LIMIT)
+    try:
+        loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+
+    except:
+        LOGGER.error(u'Wave %s of feed “%s” failed to load for user %s, '
+                     u'aborted.', wave, gr_feed.title, username)
+        gri.incr_feeds()
+        return
 
     total            = len(gr_feed.items)
     articles_counter = 0
@@ -383,11 +388,16 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
         gri.incr_feeds()
         return
 
-    if wave == 0:
-        gr_feed.loadItems(loadLimit=config.GR_LOAD_LIMIT)
+    loadMethod = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
 
-    else:
-        gr_feed.loadMoreItems(loadLimit=config.GR_LOAD_LIMIT)
+    try:
+        loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+
+    except:
+        LOGGER.error(u'Wave %s of feed “%s” failed to load for user %s, '
+                     u'aborted.', wave, gr_feed.title, username)
+        gri.incr_feeds()
+        return
 
     total            = len(gr_feed.items)
     articles_counter = 0

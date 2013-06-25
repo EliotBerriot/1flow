@@ -17,6 +17,7 @@ from django.shortcuts import render
 from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login
+from django.utils.translation import ugettext_lazy as _
 
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
@@ -93,28 +94,28 @@ def google_reader_import(request, user_id=None):
     gri = GoogleReaderImport(user_id)
 
     if gri.running():
-        info('An import is already running for your Google Reader data.')
+        info(_(u'An import is already running for your Google Reader data.'))
         return HttpResponseRedirect(redirect_url)
 
     if not gri.is_active:
-        info('Google Reader import deactivated.')
+        info(_(u'Google Reader import deactivated.'))
         return HttpResponseRedirect(redirect_url)
 
     if not gri.can_import:
-        info('Your beta invite has not yet been accepted, sorry.')
+        info(_(u'Your beta invite has not yet been accepted, sorry.'))
         return HttpResponseRedirect(redirect_url)
 
     try:
         import_google_reader_trigger(user_id)
 
     except ObjectDoesNotExist:
-        info('You are not logged into Google Oauth or you have no token.')
-        return HttpResponseRedirect(reverse('home') + '#/profile')
+        info(_(u'You are not logged into Google Oauth or you have no token.'))
+        return HttpResponseRedirect(redirect_url)
 
     except:
-        info('Error parsing Google Oauth tokens. '
-             'Please try signout and re-signin.')
-        return HttpResponseRedirect(reverse('home') + '#/profile')
+        info(_(u'Error parsing Google Oauth tokens. '
+             u'Please try signout and re-signin.'))
+        return HttpResponseRedirect(redirect_url)
 
     return HttpResponseRedirect(redirect_url)
 

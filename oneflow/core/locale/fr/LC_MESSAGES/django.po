@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-24 19:01+0200\n"
-"PO-Revision-Date: 2013-06-24 19:02+0009\n"
+"POT-Creation-Date: 2013-06-25 11:35+0200\n"
+"PO-Revision-Date: 2013-06-25 11:39+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -27,51 +27,59 @@ msgstr "Import Google Reader"
 msgid "Google Reader imports"
 msgstr "Imports Google Reader"
 
-#: admin.py:49
+#: admin.py:50
 msgid "articles"
 msgstr "articles"
 
-#: admin.py:55
+#: admin.py:63
 msgid "feeds"
 msgstr "flux"
 
-#: admin.py:61
+#: admin.py:76
 msgid "reads"
 msgstr "lus"
 
-#: admin.py:67
+#: admin.py:89
 msgid "starred"
 msgstr "favoris"
 
-#: admin.py:82
-msgid "import duration"
+#: admin.py:102
+msgid "executed"
+msgstr "exécuté"
+
+#: admin.py:118
+msgid "duration"
 msgstr "durée"
 
-#: admin.py:94
+#: admin.py:132
+msgid "ETA"
+msgstr "fin"
+
+#: admin.py:144
 msgid "stop"
 msgstr "arrêter"
 
-#: admin.py:100
+#: admin.py:150
 msgid "start"
 msgstr "démarrer"
 
-#: admin.py:101
+#: admin.py:151
 msgid "restart"
 msgstr "relancer"
 
-#: admin.py:105
+#: admin.py:155
 msgid "import"
 msgstr "import"
 
-#: admin.py:114
+#: admin.py:164
 msgid "deny"
 msgstr "bloquer"
 
-#: admin.py:115
+#: admin.py:165
 msgid "allow"
 msgstr "autoriser"
 
-#: admin.py:117
+#: admin.py:167
 msgid "Permission"
 msgstr "Permission"
 
@@ -126,6 +134,30 @@ msgstr "^connexion/$"
 #: urls.py:38
 msgid "^signout/$"
 msgstr "^deconnexion/$"
+
+#: views.py:97
+msgid "An import is already running for your Google Reader data."
+msgstr "Un import de vos données Google Reader est déjà en cours."
+
+#: views.py:101
+msgid "Google Reader import deactivated."
+msgstr "L'import Google Reader est désactivé."
+
+#: views.py:105
+msgid "Your beta invite has not yet been accepted, sorry."
+msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
+
+#: views.py:112
+msgid "You are not logged into Google Oauth or you have no token."
+msgstr ""
+"Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
+"d'accès."
+
+#: views.py:116
+msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
+msgstr ""
+"Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
+"déconnecter et reconnecter."
 
 #: models/nonrel.py:179
 msgid "Select whole paragraph on click"
