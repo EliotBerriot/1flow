@@ -448,6 +448,21 @@ LOGIN_ERROR_URL    = reverse_lazy('signin_error')
 SOCIAL_AUTH_EXTRA_DATA = True
 SOCIAL_AUTH_SESSION_EXPIRATION = False
 
+SOCIAL_AUTH_PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    #
+    # WARNING: `associate_by_email` is safe unless we use backends which
+    #       don't check email validity. We will have to implement email
+    #       hash_code checking when we activate our own account system.
+    #
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details'
+)
+
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
 
 LOGGING = {

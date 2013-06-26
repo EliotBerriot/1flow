@@ -51,5 +51,8 @@ def refresh_access_tokens():
                              u'%s, forcing re-authentication at next login.',
                              user.username)
 
-                # NOT YET READY.
-                #social.delete()
+                # With `associate_by_email` in the social-auth pipeline,
+                # a reconnecting user will be re-associated with his
+                # existing Django account, getting back all his preferences
+                # and 1flow data. We delete here only the association.
+                social.delete()
