@@ -36,7 +36,7 @@ def background_post_register_actions(context):
                                if has_invites_left
                                else 'landing_waiting_list')
 
-    user.register_request_data = {
+    user.register_data = {
         'language': meta.get('HTTP_ACCEPT_LANGUAGE', ''),
         'user_agent': meta.get('HTTP_USER_AGENT', ''),
         'encoding': meta.get('HTTP_ACCEPT_ENCODING', ''),

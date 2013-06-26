@@ -34,7 +34,8 @@ class AbstractUserProfile(models.Model):
     register_data = JSONField(_('Register data, as JSON'),
                               default=lambda: {}, blank=True)
     hash_codes    = JSONField(_(u'Validation codes, as JSON'),
-                              default=lambda: {}, blank=True)
+                              default=lambda: {'unsubscribe': uuid.uuid4().hex},
+                              blank=True)
     sent_emails   = JSONField(_('sent emails names, as JSON'),
                               default=lambda: {}, blank=True)
     data          = JSONField(_('Other user data, as JSON'),
@@ -63,8 +64,8 @@ class AbstractUserProfile(models.Model):
         return u'http://{0}{1}'.format(
             settings.SITE_DOMAIN, reverse('unsubscribe', kwargs={
                 'email': base64.b64encode(self.email),
-                'hash_code': self.hash_codes.setdefault(
-                'unsubscribe', uuid.uuid4().hex)}))
+                'hash_code': self.hash_codes.get('unsubscribe')
+            }))
 
 
 class UserProfile(models.Model):
