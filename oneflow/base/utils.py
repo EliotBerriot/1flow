@@ -23,7 +23,7 @@ def connect_mongoengine_signals(module_scope):
         to signals, given they follow the name pattern
         ``signal_<signal_name>_handler()``.
 
-        See https://mongoengine-odm.readthedocs.org/en/latest/guide/signals.html#overview
+        See https://mongoengine-odm.readthedocs.org/en/latest/guide/signals.html#overview # NOQA
         for a list of valid signal names.
     """
 
@@ -76,6 +76,12 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
     else:
         user = User.objects.get(id=context['user_id'])
 
+    if user.has_email_sent(email_template_name) \
+            and not kwargs.get('force', False):
+        LOGGER.info(u'User %s already received email “%s”, skipped.',
+                    user.username, email_template_name)
+        return
+
     context['user'] = user
 
     lang = context.get('language_code')
@@ -91,7 +97,7 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
         old_lang = None
 
     try:
-        context.update({'unsubscribe_url': user.profile.unsubscribe_url()})
+        context.update({'unsubscribe_url': user.unsubscribe_url()})
 
     except:
         # In case we are used without the profiles Django app.
@@ -122,8 +128,12 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
         subject=email_data.subject,
         recipients=[user.email],
         context=context,
+        # TODO: pass the log_email_sent() as post_send callable
         #post_send=post_send(user)
         **kwargs)
+
+    # TODO: remove this when log_email_sent is passed to send_mail*()
+    user.log_email_sent(email_template_name)
 
     if old_lang is not None:
         # Return to application main language

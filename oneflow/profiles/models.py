@@ -7,9 +7,55 @@ from jsonfield import JSONField
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
-from django.db.models.signals import post_save
-from django.contrib.auth import get_user_model
+#from django.db.models.signals import post_save
+#from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
+
+
+class AbstractUserProfile(models.Model):
+    """ A mixin for any User class (even not real Django `User`)
+        which adds primitives to get/set if a given email was sent
+        to the user, and various other methods based on profile data.
+
+        It's understood that the given user model which will use
+        this mixin should either have a `.data` attribute of type
+        ``JSONField``, or a `.profile.data` (JSONField too) attribute.
+
+        Using this class allow many User classes to work in a similar
+        way, be they having an dedicated profile, or not.
+    """
+    email_announcements = models.BooleanField(_('Email announcements'),
+                                              default=True, blank=True)
+    last_modified = models.DateTimeField(_('Last modified'), auto_now_add=True)
+
+    register_data = JSONField(_('Register data, as JSON'),
+                              default=lambda: {}, blank=True)
+    hash_codes    = JSONField(_(u'Validation codes, as JSON'),
+                              default=lambda: {}, blank=True)
+    sent_emails   = JSONField(_('sent emails names, as JSON'),
+                              default=lambda: {}, blank=True)
+    data          = JSONField(_('Other user data, as JSON'),
+                              default=lambda: {}, blank=True)
+
+    class Meta:
+        abstract = True
+
+    def has_email_sent(self, email_name):
+        return self.sent_emails.get('email_sent_' + email_name, False)
+
+    def log_email_sent(self, email_name):
+        return self.sent_emails.setdefault('email_sent_' + email_name, True)
+
+    def renew_hash_code(self, commit=True):
+        self.hash_code = uuid.uuid4().hex
+        if commit:
+            self.save(update_fields=('hash_code',))
+
+    def unsubscribe_url(self):
+        return u'http://{0}{1}'.format(
+            settings.SITE_DOMAIN, reverse('unsubscribe', kwargs={
+                'hash_code': self.hash_codes.setdefault(
+                'unsubscribe', uuid.uuid4().hex)}))
 
 
 class UserProfile(models.Model):
@@ -53,4 +99,4 @@ def create_user_profile(sender, instance, created, **kwargs):
         UserProfile.objects.get_or_create(user=instance)
 
 
-post_save.connect(create_user_profile, sender=get_user_model())
+#post_save.connect(create_user_profile, sender=get_user_model())

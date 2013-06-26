@@ -21,6 +21,8 @@ from django.utils import timezone
 
 from sparks.django.mail import send_mail
 
+from ..profiles.models import AbstractUserProfile
+
 
 class EmailContent(models.Model):
     __metaclass__ = TransMeta
@@ -74,7 +76,7 @@ class UserManager(BaseUserManager):
         return u
 
 
-class User(AbstractBaseUser, PermissionsMixin):
+class User(AbstractBaseUser, PermissionsMixin, AbstractUserProfile):
     """ Username, password and email are required.
         Other fields are optional. """
 
