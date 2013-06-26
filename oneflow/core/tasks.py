@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import time
+import redis
 import logging
 import datetime
 from constance import config
@@ -28,10 +29,15 @@ GR_OLDEST_DATE = datetime.datetime(2008, 1, 1, 0, 0)
 
 LOGGER = logging.getLogger(__name__)
 
+REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
+                          'localhost'), port=6379,
+                          db=getattr(settings, 'REDIS_DB', 0))
+
 User = get_user_model()
 
 ftstamp = datetime.datetime.fromtimestamp
 now     = datetime.datetime.now
+today   = datetime.date.today
 
 
 def get_user_from_dbs(user_id):
@@ -439,3 +445,30 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
                                   import_google_reader_articles,
                                   (user_id, username, gr_feed, feed),
                                   {'wave': wave + 1})
+
+
+def clean_gri_keys():
+    """ Remove all GRI obsolete keys. """
+
+    keys = REDIS.keys('gri:*:run')
+
+    users_ids = [x[0] for x in User.objects.all().values_list('id')]
+
+    for key in keys:
+        user_id = int(key.split(':')[1])
+
+        if user_id in users_ids:
+            continue
+
+        name = u'gri:%s:*' % user_id
+        LOGGER.info(u'Deleting obsolete redis keys %s…' % name)
+        names = REDIS.keys(name)
+        REDIS.delete(*names)
+
+
+@task
+def clean_obsolete_redis_keys():
+    """ Call in turn all redis-related cleaners. """
+
+    if today() <= (config.GR_END_DATE + datetime.timedelta(days=1)):
+        clean_gri_keys()
