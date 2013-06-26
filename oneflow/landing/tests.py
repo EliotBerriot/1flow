@@ -60,6 +60,24 @@ class LandingTests(TransactionTestCase):
                          'Your boarding card for the 1flow flight')
         # TODO: assertContains(mail.outbox[0].body, self.test_email)
 
+    def test_request_invite_then_unsubscribe(self):
+        """ This should send a mail, and we should able to unsubscribe. """
+
+        response = self.client.post(
+            reverse('landing_home'), {'email': self.test_email},
+            follow=True
+        )
+        self.assertEqual(response.status_code, 200)
+
+        sent_email = mail.outbox[0]
+
+        self.assertEqual(sent_email.subject,
+                         'Your boarding card for the 1flow flight')
+        # TODO: assertContains(mail.outbox[0].body, self.test_email)
+
+        # TODO: follow unsubscribe link and
+        # check in the DB that email_announcements are False
+
     def test_request_invite_lang_fr(self):
         """ This should send a mail in French. """
 

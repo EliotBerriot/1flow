@@ -12,7 +12,8 @@ from djangojs.utils import ContextSerializer
 
 from sparks.django import mail
 
-from models import EmailContent
+from ..landing.models import LandingUser
+from .models import EmailContent
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -49,6 +50,23 @@ def connect_mongoengine_signals(module_scope):
                         getattr(klass, handler_name), sender=klass)
 
 
+def get_user_and_update_context(context):
+
+    # If there is no new user, it's not a registration, we
+    # just get the context user, to fill email fields.
+
+    if 'new_user_id' in context:
+        user = LandingUser.objects.get(id=context['new_user_id'])
+        context['new_user'] = user
+
+    else:
+        user = User.objects.get(id=context['user_id'])
+
+    context['user'] = user
+
+    return user
+
+
 def send_email_with_db_content(context, email_template_name, **kwargs):
     """
 
@@ -66,15 +84,7 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
 
         return post_send_log_mail_sent
 
-    # If there is no new user, it's not a registration, we
-    # just get the context user, to fill email fields.
-    # BTW, we need to get back the real user object,
-    # because the celery task only gave us the ID.
-    if 'new_user_id' in context:
-        user = User.objects.get(id=context['new_user_id'])
-        context['new_user'] = user
-    else:
-        user = User.objects.get(id=context['user_id'])
+    user = get_user_and_update_context(context)
 
     if user.has_email_sent(email_template_name) \
             and not kwargs.get('force', False):
@@ -82,15 +92,15 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
                     user.username, email_template_name)
         return
 
-    context['user'] = user
-
     lang = context.get('language_code')
 
     if lang is not None:
         # switch to the user language
         old_lang = translation.get_language()
+
         if old_lang != lang:
             translation.activate(lang)
+
         else:
             old_lang = None
     else:

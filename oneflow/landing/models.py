@@ -27,7 +27,7 @@ class LandingContent(models.Model):
         verbose_name_plural = _(u'Landing page contents')
 
 
-class LandingUser(models.Models, AbstractUserProfile):
+class LandingUser(AbstractUserProfile):
     """ A small user model, similar to a Django user to have the same
         attributes and primitives, but not a real user account.
 
@@ -38,8 +38,29 @@ class LandingUser(models.Models, AbstractUserProfile):
     email = models.EmailField(_('email address'),  max_length=254,
                               help_text=_('Any valid email address.'))
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
-    last_modified = models.DateTimeField(_('Last modified'), auto_now_add=True)
 
     class Meta:
         verbose_name        = _(u'Landing user')
         verbose_name_plural = _(u'Landing users')
+
+    @property
+    def is_active(self):
+        return False
+
+    @property
+    def is_staff(self):
+        return False
+
+    @property
+    def is_superuser(self):
+        return False
+
+    @property
+    def username(self):
+        return self.email
+
+    def get_full_name(self):
+        return self.email
+
+    def get_short_name(self):
+        return self.email

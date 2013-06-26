@@ -19,8 +19,6 @@ from django.contrib.auth.models import (BaseUserManager,
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
 
-from sparks.django.mail import send_mail
-
 from ..profiles.models import AbstractUserProfile
 
 
@@ -124,6 +122,4 @@ class User(AbstractBaseUser, PermissionsMixin, AbstractUserProfile):
         "Returns the short name for the user."
         return self.username
 
-    def email_user(self, subject, message, from_email=None):
-        """ Sends an email to this User. """
-        send_mail(subject, message, from_email, [self.email])
+    # NOTE: self.email_user() comes from the AbstractUserProfile class
