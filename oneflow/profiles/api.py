@@ -32,15 +32,4 @@ class UserResource(ModelResource):
         resource_name = 'user'
 
 
-class UserProfileResource(ModelResource):
-
-    # NOTE: "user" won't work because it's a OneToOne field in DJango.
-    # We need "user_id". See http://stackoverflow.com/a/15609667/654755
-    user_id = fields.ForeignKey(UserResource, 'user')
-
-    class Meta(EmberMeta):
-        queryset = UserProfile.objects.all()
-        resource_name = 'user_profile'
-
-
 __all__ = ('UserResource', )
