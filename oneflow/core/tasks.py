@@ -8,6 +8,7 @@ from constance import config
 
 from humanize.time import naturaldelta, naturaltime
 
+from mongoengine.errors import OperationError
 from pymongo.errors import DuplicateKeyError
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
@@ -92,7 +93,8 @@ def create_feed(gr_feed, mongo_user, subscription=True):
                               set__site_url=gr_feed.siteUrl,
                               set__name=gr_feed.title,
                               upsert=True)
-    except DuplicateKeyError:
+
+    except (OperationError, DuplicateKeyError):
         LOGGER.warning(u'Duplicate feed “%s”, skipped insertion.',
                        gr_feed.title)
 
@@ -126,7 +128,7 @@ def create_article_and_read(article_url,
             set__date_published=ftstamp(article_time),
             set__google_reader_original_data=article_data, upsert=True)
 
-    except DuplicateKeyError:
+    except (OperationError, DuplicateKeyError):
         LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed “%s”: '
                        u'DATA=%s', article_title, article_url, feed.name,
                        article_data)
