@@ -342,7 +342,6 @@ INSTALLED_APPS = (
     'redisboard',
     'djcelery',
     'memcache_status',
-    'social_auth',
     'markdown_deux',
     'djangojs',
     'pipeline',
@@ -353,6 +352,10 @@ INSTALLED_APPS = (
     'oneflow.profiles',
     'oneflow.landing',
     'oneflow.core',
+    # OMG: order matters! as DSA depends on user model,
+    # it must come after 'oneflow.base' wich contains it.
+    # Without this, tests fail to create database!
+    'social_auth',
 )
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
