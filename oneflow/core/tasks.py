@@ -130,7 +130,14 @@ def create_article_and_read(article_url,
         LOGGER.warning(u'Duplicate article “%s” in feed “%s”: DATA=%s',
                        article_title, feed.name, article_data)
 
-    article = Article.objects.get(url=article_url)
+    try:
+        article = Article.objects.get(url=article_url)
+
+    except Article.DoesNotExist:
+        LOGGER.error(u'Article “%s” (url: %s) in feed “%s” upsert failed: '
+                     u'DATA=%s', article_title, article_url, feed.name,
+                     article_data)
+        return
 
     for mongo_user in mongo_users:
         Read.objects(article=article,
