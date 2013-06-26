@@ -50,6 +50,10 @@ def home(request):
 
 
 def register(request):
+    """ New user creation process.
+
+        DISABLED / NOT USED YET as of 20130625.
+    """
 
     creation_form = FullUserCreationForm(data=request.POST or None)
 
