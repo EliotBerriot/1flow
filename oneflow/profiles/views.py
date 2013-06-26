@@ -35,6 +35,10 @@ def unsubscribe(request, email, hash_code):
             user.renew_hash_code('unsubscribe', commit=False)
             user.save(update_fields=('hash_codes', 'email_announcements', ))
 
+            LOGGER.warning(u'%s %s (%s) just unregistered from email '
+                           u'announcements.', klass.__name__, user.username,
+                           user.id)
+
             return render(request, 'unsubscribe.html',
                           RequestContext(request, {'email': user.email}))
 
