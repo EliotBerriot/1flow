@@ -111,36 +111,39 @@ def create_feed(gr_feed, mongo_user, subscription=True):
     return feed
 
 
-def create_article_and_read(gr_article, gr_feed, feed, mongo_user):
-
+def create_article_and_read(article_url,
+                            article_title, article_content,
+                            article_time, article_data,
+                            feed, mongo_users, is_read, is_starred,
+                            categories):
     #LOGGER.info(u'Importing article “%s” from feed “%s” (%s/%s, wave %s)…',
     #     gr_article.title, gr_feed.title, articles_counter, total, wave + 1)
 
     try:
-        Article.objects(url=gr_article.url).update_one(
-            set__url=gr_article.url, set__title=gr_article.title,
-            set__feed=feed, set__content=gr_article.content,
-            set__date_published=ftstamp(gr_article.time),
-            set__google_reader_original_data=gr_article.data, upsert=True)
+        Article.objects(url=article_url).update_one(
+            set__url=article_url, set__title=article_title,
+            set__feed=feed, set__content=article_content,
+            set__date_published=ftstamp(article_time),
+            set__google_reader_original_data=article_data, upsert=True)
 
     except DuplicateKeyError:
         LOGGER.warning(u'Duplicate article “%s” in feed “%s”: DATA=%s',
-                       gr_article.title, feed.name, gr_article.data)
+                       article_title, feed.name, article_data)
 
-    article = Article.objects.get(url=gr_article.url)
-    tags = [c.label for c in gr_feed.getCategories()]
+    article = Article.objects.get(url=article_url)
 
-    Read.objects(article=article,
-                 user=mongo_user
-                 ).update(set__article=article,
-                          set__user=mongo_user,
-                          set__tags=tags,
-                          set__is_read=gr_article.read,
-                          set__date_created=ftstamp(gr_article.time),
-                          set__rating=article.default_rating +
-                          (RATINGS.STARRED if gr_article.starred
-                           else 0.0),
-                          upsert=True)
+    for mongo_user in mongo_users:
+        Read.objects(article=article,
+                     user=mongo_user
+                     ).update(set__article=article,
+                              set__user=mongo_user,
+                              set__tags=categories,
+                              set__is_read=is_read,
+                              set__date_created=ftstamp(article_time),
+                              set__rating=article.default_rating +
+                              (RATINGS.STARRED if is_starred
+                               else 0.0),
+                              upsert=True)
 
 
 def end_fetch_prematurely(kind, gri, processed, gr_article, gr_feed_title,
@@ -371,7 +374,13 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
         subscribed   = real_gr_feed in gr_feed.googleReader.feeds
         feed = create_feed(real_gr_feed, mongo_user, subscription=subscribed)
 
-        create_article_and_read(gr_article, real_gr_feed, feed, mongo_user)
+        create_article_and_read(gr_article.url, gr_article.title,
+                                gr_article.content,
+                                gr_article.time, gr_article.data,
+                                feed, [mongo_user], gr_article.read,
+                                gr_article.starred,
+                                [c.label for c
+                                in real_gr_feed.getCategories()])
 
         if not subscribed:
             gri.incr_articles()
@@ -421,6 +430,8 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
     total            = len(gr_feed.items)
     articles_counter = 0
 
+    categories = [c.label for c in gr_feed.getCategories()]
+
     for gr_article in gr_feed.items:
 
         if end_fetch_prematurely('reads', gri, articles_counter,
@@ -430,7 +441,12 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
 
         # Read articles are always imported
         if gr_article.read:
-            create_article_and_read(gr_article, gr_feed, feed, mongo_user)
+            create_article_and_read(gr_article.url, gr_article.title,
+                                    gr_article.content,
+                                    gr_article.time, gr_article.data,
+                                    feed, [mongo_user], gr_article.read,
+                                    gr_article.starred,
+                                    categories)
             gri.incr_articles()
             gri.incr_reads()
 
