@@ -5,8 +5,8 @@
 from sparks.django.settings import clone_settings
 
 clone_settings('chani', __file__, globals())
-#SITE_DOMAIN = 'dev1.1flow.io'
-SITE_DOMAIN = 'dev2.1flow.io'
+SITE_DOMAIN = 'dev1.1flow.io'
+#SITE_DOMAIN = 'dev2.1flow.io'
 #EMAIL_HOST = 'gurney'
 
 
@@ -19,11 +19,11 @@ SITE_DOMAIN = 'dev2.1flow.io'
 
 #Dev1
 
-#GOOGLE_OAUTH2_CLIENT_ID      = '494350410052-5cgau95ek6dvhnu0c1tov8j9f10b02ou.apps.googleusercontent.com'
-#GOOGLE_OAUTH2_CLIENT_SECRET  = 'qwribFAXXLHPY4_vtR-nkpFz'
+GOOGLE_OAUTH2_CLIENT_ID      = '494350410052-5cgau95ek6dvhnu0c1tov8j9f10b02ou.apps.googleusercontent.com' # NOQA
+GOOGLE_OAUTH2_CLIENT_SECRET  = 'qwribFAXXLHPY4_vtR-nkpFz'
 
 
 #dev2
 
-GOOGLE_OAUTH2_CLIENT_ID      = '494350410052-kccc59ku23u9rs9bphh2pfbkabu1lihd.apps.googleusercontent.com'
-GOOGLE_OAUTH2_CLIENT_SECRET  = 'KCjXlE9df6YiS_cZMekfh6TB'
+#GOOGLE_OAUTH2_CLIENT_ID      = '494350410052-kccc59ku23u9rs9bphh2pfbkabu1lihd.apps.googleusercontent.com' # NOQA
+#GOOGLE_OAUTH2_CLIENT_SECRET  = 'KCjXlE9df6YiS_cZMekfh6TB'
