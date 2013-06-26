@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-25 11:35+0200\n"
-"PO-Revision-Date: 2013-06-25 11:39+0009\n"
-"Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
+"POT-Creation-Date: 2013-06-26 20:40+0200\n"
+"PO-Revision-Date: 2013-06-26 20:54+0009\n"
+"Last-Translator:   <oc@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -117,11 +117,11 @@ msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
 #: urls.py:24
 msgid "^grstop/(?P<user_id>\\d+)/$"
-msgstr ""
+msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
 #: urls.py:27
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
-msgstr ""
+msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
 #: urls.py:30
 msgid "^grstatus/$"
@@ -135,25 +135,25 @@ msgstr "^connexion/$"
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:97
+#: views.py:101
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:101
+#: views.py:105
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:105
+#: views.py:109
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:112
+#: views.py:116
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:116
+#: views.py:120
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
@@ -317,7 +317,7 @@ msgstr "Déconnexion"
 
 #: templates/ember/main.html:49
 msgid "flowboard"
-msgstr ""
+msgstr "flowboard"
 
 #: templates/ember/main.html:50
 msgid "teams"
@@ -341,7 +341,7 @@ msgstr "à propos"
 
 #: templates/ember/main.html:64
 msgid "contact"
-msgstr ""
+msgstr "contact"
 
 #: templates/ember/views/discovery.html:8
 #: templates/ember/views/recommended.html:8
@@ -351,7 +351,7 @@ msgstr "Non implémenté"
 #: templates/ember/views/discovery.html:10
 #: templates/ember/views/recommended.html:10
 msgid "This is just a waiting view. Please be patient!"
-msgstr ""
+msgstr "Ceci est une vue d'attente. Soyez patient(e) !"
 
 #: templates/ember/views/help.html:8
 msgid "1flow minimal help"
@@ -464,7 +464,7 @@ msgstr "Abonnements"
 
 #: templates/ember/views/subscriptions.html:14
 msgid "Collapse"
-msgstr ""
+msgstr "Refermer"
 
 #: templates/ember/views/subscriptions.html:16
 msgid "Details"
@@ -481,6 +481,8 @@ msgid ""
 "              No subscription yet. %(add_one)s\n"
 "            "
 msgstr ""
+"\n"
+"Aucun abonnement pour l'instant. %(add_one)s"
 
 #: templates/ember/views/teams.html:4
 msgid "Your teams"
