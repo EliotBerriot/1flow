@@ -120,6 +120,7 @@ def create_article_and_read(gr_article, gr_feed, feed, mongo_user):
         Article.objects(url=gr_article.url).update_one(
             set__url=gr_article.url, set__title=gr_article.title,
             set__feed=feed, set__content=gr_article.content,
+            set__date_published=ftstamp(gr_article.time),
             set__google_reader_original_data=gr_article.data, upsert=True)
 
     except DuplicateKeyError:
