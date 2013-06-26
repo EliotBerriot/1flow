@@ -127,8 +127,9 @@ def create_article_and_read(article_url,
             set__google_reader_original_data=article_data, upsert=True)
 
     except DuplicateKeyError:
-        LOGGER.warning(u'Duplicate article “%s” in feed “%s”: DATA=%s',
-                       article_title, feed.name, article_data)
+        LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed “%s”: '
+                       u'DATA=%s', article_title, article_url, feed.name,
+                       article_data)
 
     try:
         article = Article.objects.get(url=article_url)
