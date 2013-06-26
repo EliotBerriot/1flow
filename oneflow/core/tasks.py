@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import time
+import redis
 import logging
 import datetime
 from constance import config
@@ -28,10 +29,15 @@ GR_OLDEST_DATE = datetime.datetime(2008, 1, 1, 0, 0)
 
 LOGGER = logging.getLogger(__name__)
 
+REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
+                          'localhost'), port=6379,
+                          db=getattr(settings, 'REDIS_DB', 0))
+
 User = get_user_model()
 
 ftstamp = datetime.datetime.fromtimestamp
 now     = datetime.datetime.now
+today   = datetime.date.today
 
 
 def get_user_from_dbs(user_id):
@@ -136,8 +142,8 @@ def create_article_and_read(gr_article, gr_feed, feed, mongo_user):
                           upsert=True)
 
 
-def end_fetch_prematurely(kind, gri, processed, gr_article,
-                          gr_feed_title, username, date_limit=None):
+def end_fetch_prematurely(kind, gri, processed, gr_article, gr_feed_title,
+                          username, hard_articles_limit, date_limit=None):
 
     if not gri.running():
         # Everything is stopped. Just return. Either the admin
@@ -155,13 +161,9 @@ def end_fetch_prematurely(kind, gri, processed, gr_article,
         gri.incr_feeds()
         return True
 
-    if gri.articles() >= config.GR_MAX_ARTICLES:
-        LOGGER.info(u'Maximum article limit reached by user %s, stopping '
-                    u'import.', username)
-        # Whatever remains to be imported at this point,
-        # we are out of storage space NOW. Just stop!
-        gri.end(True)
-
+    if gri.articles() >= hard_articles_limit:
+        LOGGER.info(u'Reached hard storage limit for user %s, stopping '
+                    u'import of feed “%s”.', username, gr_feed_title)
         gri.incr_feeds()
         return True
 
@@ -333,6 +335,7 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
     mongo_user = MongoUser.objects.get(django_user=user_id)
     gri        = GoogleReaderImport(user_id)
     date_limit = max([gri.reg_date(), GR_OLDEST_DATE])
+    hard_limit = config.GR_MAX_ARTICLES
 
     if not gri.running():
         # In case the import was stopped while this task was stuck in the
@@ -356,8 +359,8 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
 
     for gr_article in gr_feed.items:
         if end_fetch_prematurely('starred', gri, articles_counter,
-                                 gr_article, gr_feed.title,
-                                 username, date_limit=date_limit):
+                                 gr_article, gr_feed.title, username,
+                                 hard_limit, date_limit=date_limit):
             return
 
         # Get the origin feed, the "real" one.
@@ -371,6 +374,9 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
 
         if not subscribed:
             gri.incr_articles()
+
+        if gr_article.read:
+            gri.incr_reads()
 
         gri.incr_starred()
 
@@ -389,6 +395,8 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
     mongo_user = MongoUser.objects.get(django_user=user_id)
     gri        = GoogleReaderImport(user_id)
     date_limit = max([gri.reg_date(), GR_OLDEST_DATE])
+    # Be sure all starred articles can be fetched.
+    hard_limit = config.GR_MAX_ARTICLES - gri.total_starred()
 
     if not gri.running():
         # In case the import was stopped while this task was stuck in the
@@ -413,17 +421,22 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
     for gr_article in gr_feed.items:
 
         if end_fetch_prematurely('reads', gri, articles_counter,
-                                 gr_article, gr_feed.title,
-                                 username, date_limit=date_limit):
+                                 gr_article, gr_feed.title, username,
+                                 hard_limit, date_limit=date_limit):
             return
 
-        create_article_and_read(gr_article, gr_feed, feed, mongo_user)
-
+        # Read articles are always imported
         if gr_article.read:
+            create_article_and_read(gr_article, gr_feed, feed, mongo_user)
+            gri.incr_articles()
             gri.incr_reads()
 
+        # Unread articles are imported only if there is room for them.
+        elif gri.articles() < (hard_limit - gri.reads()):
+            create_article_and_read(gr_article, gr_feed, feed, mongo_user)
+            gri.incr_articles()
+
         articles_counter += 1
-        gri.incr_articles()
 
     empty_gr_feed(gr_feed)
 
@@ -432,3 +445,30 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
                                   import_google_reader_articles,
                                   (user_id, username, gr_feed, feed),
                                   {'wave': wave + 1})
+
+
+def clean_gri_keys():
+    """ Remove all GRI obsolete keys. """
+
+    keys = REDIS.keys('gri:*:run')
+
+    users_ids = [x[0] for x in User.objects.all().values_list('id')]
+
+    for key in keys:
+        user_id = int(key.split(':')[1])
+
+        if user_id in users_ids:
+            continue
+
+        name = u'gri:%s:*' % user_id
+        LOGGER.info(u'Deleting obsolete redis keys %s…' % name)
+        names = REDIS.keys(name)
+        REDIS.delete(*names)
+
+
+@task
+def clean_obsolete_redis_keys():
+    """ Call in turn all redis-related cleaners. """
+
+    if today() <= (config.GR_END_DATE + datetime.timedelta(days=1)):
+        clean_gri_keys()

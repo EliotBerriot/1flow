@@ -34,10 +34,15 @@ CELERYBEAT_SCHEDULE = {
     # 'celery-beat-test': {
     #     'task': 'oneflow.base.tasks.celery_beat_test',
     #     'schedule': timedelta(seconds=15),
+    #     'schedule': timedelta(seconds=5),
     #     'schedule': crontab(minute='*'),
     # },
     'refresh-access-tokens': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
         'schedule': crontab(minute=48),
+    },
+    'clean-obsolete-redis-keys': {
+        'task': 'oneflow.core.tasks.clean_obsolete_redis_keys',
+        'schedule': crontab(hour='2', minute='2'),
     },
 }
