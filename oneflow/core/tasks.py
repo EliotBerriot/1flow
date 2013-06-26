@@ -136,8 +136,8 @@ def create_article_and_read(gr_article, gr_feed, feed, mongo_user):
                           upsert=True)
 
 
-def end_fetch_prematurely(kind, gri, processed, gr_article,
-                          gr_feed_title, username, date_limit=None):
+def end_fetch_prematurely(kind, gri, processed, gr_article, gr_feed_title,
+                          username, hard_articles_limit, date_limit=None):
 
     if not gri.running():
         # Everything is stopped. Just return. Either the admin
@@ -155,13 +155,9 @@ def end_fetch_prematurely(kind, gri, processed, gr_article,
         gri.incr_feeds()
         return True
 
-    if gri.articles() >= config.GR_MAX_ARTICLES:
-        LOGGER.info(u'Maximum article limit reached by user %s, stopping '
-                    u'import.', username)
-        # Whatever remains to be imported at this point,
-        # we are out of storage space NOW. Just stop!
-        gri.end(True)
-
+    if gri.articles() >= hard_articles_limit:
+        LOGGER.info(u'Reached hard storage limit for user %s, stopping '
+                    u'import of feed “%s”.', username, gr_feed_title)
         gri.incr_feeds()
         return True
 
@@ -333,6 +329,7 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
     mongo_user = MongoUser.objects.get(django_user=user_id)
     gri        = GoogleReaderImport(user_id)
     date_limit = max([gri.reg_date(), GR_OLDEST_DATE])
+    hard_limit = config.GR_MAX_ARTICLES
 
     if not gri.running():
         # In case the import was stopped while this task was stuck in the
@@ -356,8 +353,8 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
 
     for gr_article in gr_feed.items:
         if end_fetch_prematurely('starred', gri, articles_counter,
-                                 gr_article, gr_feed.title,
-                                 username, date_limit=date_limit):
+                                 gr_article, gr_feed.title, username,
+                                 hard_limit, date_limit=date_limit):
             return
 
         # Get the origin feed, the "real" one.
@@ -389,6 +386,8 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
     mongo_user = MongoUser.objects.get(django_user=user_id)
     gri        = GoogleReaderImport(user_id)
     date_limit = max([gri.reg_date(), GR_OLDEST_DATE])
+    # Be sure all starred articles can be fetched.
+    hard_limit = config.GR_MAX_ARTICLES - gri.total_starred()
 
     if not gri.running():
         # In case the import was stopped while this task was stuck in the
@@ -413,17 +412,22 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
     for gr_article in gr_feed.items:
 
         if end_fetch_prematurely('reads', gri, articles_counter,
-                                 gr_article, gr_feed.title,
-                                 username, date_limit=date_limit):
+                                 gr_article, gr_feed.title, username,
+                                 hard_limit, date_limit=date_limit):
             return
 
-        create_article_and_read(gr_article, gr_feed, feed, mongo_user)
-
+        # Read articles are always imported
         if gr_article.read:
+            create_article_and_read(gr_article, gr_feed, feed, mongo_user)
+            gri.incr_articles()
             gri.incr_reads()
 
+        # Unread articles are imported only if there is room for them.
+        elif gri.articles() < (hard_limit - gri.reads()):
+            create_article_and_read(gr_article, gr_feed, feed, mongo_user)
+            gri.incr_articles()
+
         articles_counter += 1
-        gri.incr_articles()
 
     empty_gr_feed(gr_feed)
 
