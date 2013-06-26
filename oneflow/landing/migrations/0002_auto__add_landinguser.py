@@ -1,5 +1,8 @@
 # -*- coding: utf-8 -*-
+
+import os
 import datetime
+
 from south.db import db
 from south.v2 import SchemaMigration
 from django.db import models
@@ -22,6 +25,11 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal(u'landing', ['LandingUser'])
 
+        try:
+            os.system('./manage.py move_landing_users_to_dedicated_table')
+
+        except:
+            pass
 
     def backwards(self, orm):
         # Deleting model 'LandingUser'
