@@ -2,8 +2,22 @@
 
 from django.contrib import admin
 from django.conf import settings
-from .models import LandingContent
+from django.utils.translation import ugettext_lazy as _
+
 from sparks.django.admin import languages, truncate_field
+
+from .models import LandingContent, LandingUser
+from ..base.admin import CSVAdminMixin
+
+class LandingUserAdmin(CSVAdminMixin):
+    list_display = ('id', 'email', 'register_language_display', )
+
+    def register_language_display(self, obj):
+        return obj.register_data.get('language', u'—').split(',', 1)[0]
+
+    register_language_display.short_description = _(u'language')
+
+admin.site.register(LandingUser, LandingUserAdmin)
 
 
 if settings.FULL_ADMIN:

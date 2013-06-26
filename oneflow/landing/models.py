@@ -40,8 +40,11 @@ class LandingUser(AbstractUserProfile):
     date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
 
     class Meta:
-        verbose_name        = _(u'Landing user')
-        verbose_name_plural = _(u'Landing users')
+        verbose_name        = _(u'Landing page user')
+        verbose_name_plural = _(u'Landing page users')
+
+    def __unicode__(self):
+        return self.email
 
     @property
     def is_active(self):
