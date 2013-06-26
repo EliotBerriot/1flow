@@ -9,8 +9,16 @@ from sparks.django.admin import languages, truncate_field
 from .models import LandingContent, LandingUser
 from ..base.admin import CSVAdminMixin
 
+
 class LandingUserAdmin(CSVAdminMixin):
-    list_display = ('id', 'email', 'register_language_display', )
+    list_display = ('id', 'email', 'register_language_display', 'date_joined', )
+    list_display_links = ('id', 'email', )
+    list_filter = ('email_announcements', )
+    ordering = ('-date_joined', )
+    date_hierarchy = 'date_joined'
+    search_fields = ('email', )
+    change_list_template = "admin/change_list_filter_sidebar.html"
+    change_list_filter_template = "admin/filter_listing.html"
 
     def register_language_display(self, obj):
         return obj.register_data.get('language', u'—').split(',', 1)[0]
