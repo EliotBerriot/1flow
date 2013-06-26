@@ -183,8 +183,11 @@ def google_reader_import_status(request):
 
         with humanize.i18n.django_language():
 
+            feeds = gri.feeds()
+
             data = {
-                'feeds': gri.feeds(),
+                # -1 to avoid counting the 'starred' virtual import feed.
+                'feeds': (feeds - 1) if feeds else feeds,
                 'total_feeds': gri.total_feeds(),
                 'reads': reads,
                 'starred': starred,
