@@ -11,6 +11,7 @@ from ..base.api import common_authentication, UserObjectsOnlyAuthorization
 from .models import UserProfile
 
 LOGGER = logging.getLogger(__name__)
+
 User = get_user_model()
 
 
@@ -40,3 +41,6 @@ class UserProfileResource(ModelResource):
     class Meta(EmberMeta):
         queryset = UserProfile.objects.all()
         resource_name = 'user_profile'
+
+
+__all__ = ('UserResource', )

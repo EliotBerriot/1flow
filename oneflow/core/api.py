@@ -23,3 +23,6 @@ class SubscriptionResource(resources.MongoEngineResource):
         authorization      = UserObjectsOnlyAuthorization()
 
         #authorization = authorization.Authorization()
+
+
+__all__ = ('SubscriptionResource', )
