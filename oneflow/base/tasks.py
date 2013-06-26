@@ -47,9 +47,9 @@ def refresh_access_tokens():
                 social.refresh_token()
 
             except:
-                LOGGER.error(u'Access token could not be refreshed for user '
-                             u'%s, forcing re-authentication at next login.',
-                             user.username)
+                LOGGER.exception(u'Access token could not be refreshed for '
+                                 u'user %s, forcing re-authentication at '
+                                 u'next login.', user.username)
 
                 # With `associate_by_email` in the social-auth pipeline,
                 # a reconnecting user will be re-associated with his
