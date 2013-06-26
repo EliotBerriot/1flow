@@ -3,7 +3,6 @@
 import csv
 
 from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
 from django.contrib import admin
@@ -134,11 +133,11 @@ class OneFlowUserAdmin(UserAdmin, CSVAdminMixin):
 
     list_display = ('id', 'username', 'email', 'full_name_display',
                     'date_joined', 'last_login',
-                    'profile_email_announcements_display',
+                    'email_announcements',
                     'is_active', 'is_staff', 'is_superuser',
-                    'groups_display', 'profile_display', )
+                    'groups_display', )
     list_display_links = ('username', 'email', 'full_name_display', )
-    list_filter = ('profile__email_announcements',
+    list_filter = ('email_announcements',
                    'is_active', 'is_staff', 'is_superuser', )
     ordering = ('-date_joined',)
     date_hierarchy = 'date_joined'
@@ -159,29 +158,6 @@ class OneFlowUserAdmin(UserAdmin, CSVAdminMixin):
         return obj.get_full_name()
 
     full_name_display.short_description = _(u'Full name')
-
-    def profile_email_announcements_display(self, obj):
-        return obj.profile.email_announcements
-
-    profile_email_announcements_display.short_description = _(u'Announcements?')
-    profile_email_announcements_display.admin_order_field = 'profile__email_announcements' # NOQA
-    profile_email_announcements_display.boolean = True
-
-    def profile_display(self, obj):
-        try:
-            profile = obj.profile
-
-        except:
-            return u'—'
-
-        return u'<a href="{0}">{1}</a>'.format(
-            reverse('admin:%s_%s_change' % (profile._meta.app_label,
-                    profile._meta.module_name), args=[profile.pk]),
-                    _('Edit'))
-
-    profile_display.short_description = _(u"Profile")
-    profile_display.allow_tags = True
-
 
 admin.site.register(User, OneFlowUserAdmin)
 
