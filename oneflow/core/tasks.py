@@ -4,6 +4,7 @@ import time
 import redis
 import logging
 import datetime
+import feedparser
 from constance import config
 
 from humanize.time import naturaldelta, naturaltime
@@ -491,3 +492,53 @@ def clean_obsolete_redis_keys():
 
     if today() <= (config.GR_END_DATE + datetime.timedelta(days=1)):
         clean_gri_keys()
+
+
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••  refresh
+
+
+@task
+def feedcheck(feed):
+
+    def max_entry_date(feed):
+        entry_pub_dates = tuple(e.get('published_parsed')
+                                for e in feed.entries
+                                if e is not None)
+
+        if len(entry_pub_dates):
+            return max(entry_pub_dates)
+
+        return None
+
+    parsed_feed = feedparser.parse(feed.url)
+
+    latest_article = Article.objects.filter(
+        feed__in=(feed,)).order_by('-date_published').limit(1)
+
+    if latest_article:
+        date = latest_article[0].date_published
+    else:
+        LOGGER.warning(u'Feed "%s" (id: %s) does not contain any article!',
+                       feed.title, feed.id)
+        date = None
+
+    if date is None or datetime.datetime(
+            *parsed_feed.updated_parsed[:6]) > date:
+
+        subscribers = [
+            s.user
+            for s in Subscription.objects.filter(feed__in=(feed,))
+        ]
+
+        for article in parsed_feed.entries:
+            create_article_and_read(article.url,
+                                    article.title, article.content,
+                                    article.published_parsed, "",
+                                    feed, subscribers, False, False)
+
+
+@task
+def refresh_all_feeds():
+    feeds = Feed.objects.all()
+    for feed in feeds:
+        feedcheck.delay(feed)
