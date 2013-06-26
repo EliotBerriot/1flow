@@ -45,6 +45,7 @@ class Feed(Document):
     site_url   = URLField()
     slug       = StringField()
     restricted = BooleanField(default=False)
+    last_fetch = DateTimeField(default=datetime.datetime.now)
 
     @classmethod
     def signal_post_init_handler(cls, sender, document, **kwargs):
