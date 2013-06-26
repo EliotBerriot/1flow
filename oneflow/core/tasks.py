@@ -369,6 +369,9 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
         if not subscribed:
             gri.incr_articles()
 
+        if gr_article.read:
+            gri.incr_reads()
+
         gri.incr_starred()
 
     empty_gr_feed(gr_feed)
