@@ -462,7 +462,12 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
 
         # Unread articles are imported only if there is room for them.
         elif gri.articles() < (hard_limit - gri.reads()):
-            create_article_and_read(gr_article, gr_feed, feed, mongo_user)
+            create_article_and_read(gr_article.url, gr_article.title,
+                                    gr_article.content,
+                                    gr_article.time, gr_article.data,
+                                    feed, [mongo_user], gr_article.read,
+                                    gr_article.starred,
+                                    categories)
             gri.incr_articles()
 
         articles_counter += 1
