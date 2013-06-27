@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-26 21:05+0200\n"
-"PO-Revision-Date: 2013-06-26 21:11+0009\n"
-"Last-Translator:   <oc@1flow.net>\n"
+"POT-Creation-Date: 2013-06-27 21:37+0200\n"
+"PO-Revision-Date: 2013-06-27 21:41+0009\n"
+"Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,67 +19,67 @@ msgstr ""
 "X-Generator: Poedit 1.5.5\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: admin.py:28
+#: admin.py:29
 msgid "Google Reader import"
 msgstr "Import Google Reader"
 
-#: admin.py:29
+#: admin.py:30
 msgid "Google Reader imports"
 msgstr "Imports Google Reader"
 
-#: admin.py:50
+#: admin.py:57
 msgid "articles"
 msgstr "articles"
 
-#: admin.py:63
+#: admin.py:70
 msgid "feeds"
 msgstr "flux"
 
-#: admin.py:76
+#: admin.py:83
 msgid "reads"
 msgstr "lus"
 
-#: admin.py:89
+#: admin.py:96
 msgid "starred"
 msgstr "favoris"
 
-#: admin.py:102
+#: admin.py:109
 msgid "executed"
 msgstr "exécuté"
 
-#: admin.py:118
+#: admin.py:125
 msgid "duration"
 msgstr "durée"
 
-#: admin.py:132
+#: admin.py:139
 msgid "ETA"
 msgstr "fin"
 
-#: admin.py:144
+#: admin.py:151
 msgid "stop"
 msgstr "arrêter"
 
-#: admin.py:150
+#: admin.py:157
 msgid "start"
 msgstr "démarrer"
 
-#: admin.py:151
+#: admin.py:158
 msgid "restart"
 msgstr "relancer"
 
-#: admin.py:155
+#: admin.py:162
 msgid "import"
 msgstr "import"
 
-#: admin.py:164
+#: admin.py:171
 msgid "deny"
 msgstr "bloquer"
 
-#: admin.py:165
+#: admin.py:172
 msgid "allow"
 msgstr "autoriser"
 
-#: admin.py:167
+#: admin.py:174
 msgid "Permission"
 msgstr "Permission"
 
@@ -135,29 +135,38 @@ msgstr "^connexion/$"
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:101
+#: views.py:105
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:105
+#: views.py:109
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:109
+#: views.py:113
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:116
+#: views.py:120
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:120
+#: views.py:124
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
+
+#: views.py:130
+#, python-format
+msgid "Google Reader import started for user ID %s."
+msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
+
+#: views.py:133
+msgid "Google Reader import started."
+msgstr "L'import Google Reader a démarré."
 
 #: models/nonrel.py:179
 msgid "Select whole paragraph on click"
@@ -167,7 +176,7 @@ msgstr "Sélectionner le paragraphe entier lors du clic"
 msgid "Grows public by default"
 msgstr "Les pousses sont publiques par défaut"
 
-#: models/oldrel.py:58 models/reldb.py:215
+#: models/oldrel.py:58 models/reldb.py:208
 msgid "Categories"
 msgstr "Catégories"
 
@@ -429,31 +438,45 @@ msgstr "Les données de profil ne sont pas encore modifiables."
 msgid "Social accounts"
 msgstr "Comptes de réseaux sociaux"
 
-#: templates/ember/views/profile.html:25
+#: templates/ember/views/profile.html:26
 msgid "Currently associated"
 msgstr "Actuellement associés"
 
-#: templates/ember/views/profile.html:27
+#: templates/ember/views/profile.html:30
 msgid ""
 "\n"
 "Click to disassociate any of your accounts, but beware:\n"
 "if it's the account you're signed in, you will be\n"
 "immediately disconnected from **1flow**.\n"
-"              "
 msgstr ""
 "\n"
-"Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**."
+"Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**.\n"
 
-#: templates/ember/views/profile.html:47
+#: templates/ember/views/profile.html:36
+msgid ""
+"\n"
+"As you have currently only one social account, you cannot de-associate it\n"
+"from **1flow**: this would leave you lost in cyberspace without any way to\n"
+"find back the spaceport.\n"
+msgstr ""
+"\n"
+"Vous n'avez actuellement qu'un seul compte social ; vous ne pouvez pas le déconnecter de **1flow** : cela vous perdrait dans le cyber-espace sans aucun moyen de revenir au spacio-port. \n"
+
+#: templates/ember/views/profile.html:59
+#, python-format
+msgid "Cannot disconnect from %(backend_name)s"
+msgstr "Impossible de déconnecter %(backend_name)s"
+
+#: templates/ember/views/profile.html:65
 #, python-format
 msgid "Disconnect from %(backend_name)s"
 msgstr "Se déconnecter de %(backend_name)s"
 
-#: templates/ember/views/profile.html:56
+#: templates/ember/views/profile.html:75
 msgid "Associate more accounts"
 msgstr "Associer d'autres comptes"
 
-#: templates/ember/views/profile.html:58
+#: templates/ember/views/profile.html:77
 msgid "Associate accounts"
 msgstr "Associer des comptes"
 
