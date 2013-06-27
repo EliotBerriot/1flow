@@ -15,6 +15,13 @@
         {% if user.is_authenticated %}
           <div class="btn-group pull-right">
             {% if user.is_staff or user.is_superuser %}
+              {% if MAINTENANCE_MODE %}
+                <div class="btn btn-danger" disabled="disabled">
+                    {% trans "Maintenance" %}
+                </div>
+
+              {% endif %}
+
               <div class="btn" disabled="disabled">
                   version {{ VERSION }}
               </div>

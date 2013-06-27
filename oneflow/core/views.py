@@ -12,6 +12,7 @@ import humanize
 from django.http import HttpResponseRedirect, HttpResponseForbidden
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
+from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render
 from django.template import add_to_builtins
@@ -49,6 +50,7 @@ def home(request):
 
     return render(request, 'home.html', {
         'VERSION': VERSION,
+        'MAINTENANCE_MODE': settings.MAINTENANCE_MODE,
         'has_google': has_google,
         'social_count': social_count,
         'gr_import': GoogleReaderImport(request.user.id),
