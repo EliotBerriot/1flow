@@ -150,7 +150,7 @@ class GriOneFlowUserAdmin(UserAdmin):
                             _(u'start') if gri.running() is None
                             else _(u'restart'))
         else:
-            return u'—'
+            return u'<span style="text:decoration: line-through">GG auth</span>'
 
     gri_action_display.short_description = _(u'import')
     gri_action_display.allow_tags = True
