@@ -29,7 +29,9 @@ BASE_ROOT    = os.path.dirname(PROJECT_ROOT)
 ADMINS   = (('Olivier Cortès', 'oc@1flow.io'), )
 MANAGERS = ADMINS
 
-GRAPPELLI_ADMIN_TITLE = '1flow administration'
+from oneflow import VERSION
+
+GRAPPELLI_ADMIN_TITLE = '1flow v%s administration' % VERSION
 
 ALLOWED_HOSTS = []
 TIME_ZONE     = 'Europe/Paris'
