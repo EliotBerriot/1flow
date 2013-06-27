@@ -22,17 +22,29 @@
             <h1>{% trans "Social accounts" %}</h1>
 
             {% if social_auth.associated %}
+
               <h3>{% trans "Currently associated" %}
               </h3>
-              <p class="muted small">{% filter markdown %}{% blocktrans %}
+              <p class="muted small">
+                  {% if social_count > 1 %}
+                    {% filter markdown %}{% blocktrans %}
 Click to disassociate any of your accounts, but beware:
 if it's the account you're signed in, you will be
 immediately disconnected from **1flow**.
-              {% endblocktrans %}{% endfilter %}</p>
+{% endblocktrans %}{% endfilter %}
+                  {% else %}
+                    {% filter markdown %}{% blocktrans %}
+As you have currently only one social account, you cannot de-associate it
+from **1flow**: this would leave you lost in cyberspace without any way to
+find back the spaceport.
+{% endblocktrans %}{% endfilter %}
+
+                  {% endif %}
+              </p>
 
               <ul class="social-auth">
                 {% for backend in social_auth.associated %}
-                 {% if backend.provider == "google-oauth2" %}
+                  {% if backend.provider == "google-oauth2" %}
                     {% captureas backend_name %}Google{% endcaptureas %}
                     {% captureas backend_full_name %}{{backend|slice:'-6'}}{% endcaptureas %}
 
@@ -42,11 +54,18 @@ immediately disconnected from **1flow**.
 
                   {% endif %}
 
-                  <li><a
-                      class="btn btn-block btn-huge" href="{% url "socialauth_disconnect_individual" backend.provider backend.id %}{{next_url}}"
-                  title="{% blocktrans %}Disconnect from {{ backend_name }}{% endblocktrans %}"><i
-                    class="icon-signout"></i> {{backend_full_name|title}}</a></li>
+                  {% if social_count == 1 %}
+                    <li><a class="btn btn-block btn-huge" href="#" disabled="disabled"
+                      title="{% blocktrans %}Cannot disconnect from {{ backend_name }}{% endblocktrans %}"
+                      ><i class="icon-signout"></i> {{backend_full_name|title}}</a></li>
 
+                    {% else %}
+                      <li><a class="btn btn-block btn-huge"
+                        href="{% url "socialauth_disconnect_individual" backend.provider backend.id %}{{next_url}}"
+                        title="{% blocktrans %}Disconnect from {{ backend_name }}{% endblocktrans %}"
+                        ><i class="icon-signout"></i> {{backend_full_name|title}}</a></li>
+
+                    {% endif %}
 
                 {% endfor %}
               </ul>

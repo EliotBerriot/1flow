@@ -44,8 +44,11 @@ def home(request):
     has_google = request.user.social_auth.filter(
         provider='google-oauth2').count() > 0
 
+    social_count = request.user.social_auth.all().count()
+
     return render(request, 'home.html', {
         'has_google': has_google,
+        'social_count': social_count,
         'gr_import': GoogleReaderImport(request.user.id),
     })
 
