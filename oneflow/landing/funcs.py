@@ -2,11 +2,8 @@
 import datetime
 
 from django.conf import settings
-from django.contrib.auth import get_user_model
 
-from models import LandingContent
-
-User = get_user_model()
+from models import LandingContent, LandingUser
 
 
 def get_all_beta_data():
@@ -21,7 +18,8 @@ def get_all_beta_data():
 
 def get_beta_invites_left(only_number=False):
 
-    beta_invites_left = settings.LANDING_BETA_INVITES - User.objects.count()
+    beta_invites_left = settings.LANDING_BETA_INVITES \
+        - LandingUser.objects.count()
 
     if only_number:
         return beta_invites_left
