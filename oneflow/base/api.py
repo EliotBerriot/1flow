@@ -7,6 +7,10 @@ from tastypie.exceptions import Unauthorized
 from tastypie.authentication import (MultiAuthentication,
                                      SessionAuthentication,
                                      ApiKeyAuthentication)
+from tastypie.resources import ModelResource
+#from tastypie import fields
+
+from django.contrib.auth import get_user_model
 
 
 LOGGER = logging.getLogger(__name__)
@@ -88,3 +92,27 @@ class UserObjectsOnlyAuthorization(Authorization):
     def delete_detail(self, object_list, bundle):
         """ TODO: implement staff/superuser. """
         raise Unauthorized("Sorry, no deletes.")
+
+
+User = get_user_model()
+
+
+class EmberMeta:
+    # Ember-data expect the following 2 directives
+    always_return_data = True
+    allowed_methods    = ('get', 'post', 'put', 'delete')
+
+    # These are specific to 1flow functionnals.
+    authentication     = common_authentication
+    authorization      = UserObjectsOnlyAuthorization()
+
+
+class UserResource(ModelResource):
+
+    class Meta(EmberMeta):
+        queryset = User.objects.all()
+        resource_name = 'user'
+
+
+__all__ = ('UserObjectsOnlyAuthorization', 'EmberMeta',
+           'common_authentication', 'UserResource', )
