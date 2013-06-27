@@ -138,8 +138,10 @@ def create_article_and_read(article_url,
 
     except Article.DoesNotExist:
         LOGGER.error(u'Article “%s” (url: %s) in feed “%s” upsert failed: '
-                     u'DATA=%s', article_title, article_url, feed.name,
-                     article_data)
+                     u'DATA=%s', article_title[:40]
+                     + (article_title[:40] and u'…'),
+                     article_url[:40] + (article_url[:40] and u'…'),
+                     feed.name, article_data)
         return
 
     for mongo_user in mongo_users:
