@@ -444,14 +444,28 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
 
     loadMethod = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
 
-    try:
-        loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+    retry = 0
 
-    except:
-        LOGGER.exception(u'Wave %s of feed “%s” failed to load for user %s, '
-                         u'aborted.', wave, gr_feed.title, username)
-        gri.incr_feeds()
-        return
+    while True:
+        try:
+            loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+
+        except:
+            if retry < config.GR_MAX_RETRIES:
+                LOGGER.warning(u'Wave %s (try %s) of feed “%s” failed to load '
+                               u'for user %s, retrying…', wave, retry,
+                               gr_feed.title, username)
+                time.sleep(5)
+                retry += 1
+
+            else:
+                LOGGER.exception(u'Wave %s of feed “%s” failed to load for '
+                                 u'user %s, after %s retries, aborted.', wave,
+                                 gr_feed.title, username, retry)
+                gri.incr_feeds()
+                return
+        else:
+            break
 
     total            = len(gr_feed.items)
     articles_counter = 0
