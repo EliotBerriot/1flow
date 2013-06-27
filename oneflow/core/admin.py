@@ -25,6 +25,7 @@ class GriUser(User):
 
     class Meta:
         proxy = True
+        #fields = ('id', 'username', )
         verbose_name = _(u'Google Reader import')
         verbose_name_plural = _(u'Google Reader imports')
 
@@ -33,11 +34,17 @@ class GriOneFlowUserAdmin(UserAdmin):
     """ Wrap our GoogleReaderImport class onto User accounts,
         to be able to act on imports from the Django administration. """
 
-    list_display = ('username', 'gri_feeds_display', 'gri_articles_display',
-                    'gri_reads_display',
-                    'gri_starred_display', 'gri_executed_display',
-                    'gri_duration_display', 'gri_eta_display',
-                    'gri_action_display', 'can_import_display', )
+    list_display = ('id', 'username', 'gri_feeds_display',
+                    'gri_articles_display', 'gri_reads_display',
+                    'gri_starred_display', 'gri_executed_display',)
+                    #'gri_duration_display', 'gri_eta_display',)
+                    #'gri_action_display', 'can_import_display', )
+    list_display_links = ('id', 'username', )
+    ordering = ('-date_joined', )
+    date_hierarchy = 'date_joined'
+    search_fields = ('username', 'email', )
+    change_list_template = "admin/change_list_filter_sidebar.html"
+    change_list_filter_template = "admin/filter_listing.html"
 
     def has_add_permission(self, request):
         # Don't display the ADD button in the Django interface.
@@ -150,7 +157,7 @@ class GriOneFlowUserAdmin(UserAdmin):
                             _(u'start') if gri.running() is None
                             else _(u'restart'))
         else:
-            return u'<span style="text:decoration: line-through">GG auth</span>'
+            return u'<span style="text-decoration: line-through">OAuth2</span>'
 
     gri_action_display.short_description = _(u'import')
     gri_action_display.allow_tags = True
