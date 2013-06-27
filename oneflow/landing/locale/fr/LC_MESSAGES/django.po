@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-21 18:03+0200\n"
-"PO-Revision-Date: 2013-06-21 18:36+0009\n"
-"Last-Translator:   <admin@1flow.net>\n"
+"POT-Creation-Date: 2013-06-26 20:39+0200\n"
+"PO-Revision-Date: 2013-06-26 20:50+0009\n"
+"Last-Translator:   <oc@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -19,31 +19,55 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: models.py:12
+#: admin.py:18
+msgid "language"
+msgstr "langue"
+
+#: models.py:15
 msgid "Template variable name"
 msgstr "Nom de variable de template"
 
-#: models.py:14
+#: models.py:17
 msgid "Template variable content"
 msgstr "Contenu de variable de template"
 
-#: models.py:17
+#: models.py:20
 msgid "{field_name}: {truncated_field_value}"
 msgstr "{field_name} : {truncated_field_value}"
 
-#: models.py:23
+#: models.py:26
 msgid "Landing page content"
 msgstr "Contenu de landing page"
 
-#: models.py:24
+#: models.py:27
 msgid "Landing page contents"
 msgstr "Contenus de landing page"
+
+#: models.py:38
+msgid "email address"
+msgstr "adresse email"
+
+#: models.py:39
+msgid "Any valid email address."
+msgstr "N'importe quelle adresse valide."
+
+#: models.py:40
+msgid "date joined"
+msgstr "date d'inscription"
+
+#: models.py:43
+msgid "Landing page user"
+msgstr "Utilisateur via landing page"
+
+#: models.py:44
+msgid "Landing page users"
+msgstr "Utilisateurs via landing page"
 
 #: urls.py:9
 msgid "^thanks/(?P<already_registered>\\w+)?$"
 msgstr "^merci/(?P<already_registered>\\w+)?$"
 
-#: views.py:65
+#: views.py:48
 msgid "again"
 msgstr "encore"
 
@@ -79,7 +103,7 @@ msgstr "Connexion"
 msgid "Follow us on twitter!"
 msgstr "Suivez-nous sur Twitter !"
 
-#: templates/landing_base.html:96
+#: templates/landing_base.html:101
 msgid "©2013, all right reserved | <strong>1flow</strong> team"
 msgstr "©2013, tous droits réservés | équipe <strong>1flow</strong>"
 
