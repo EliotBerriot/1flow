@@ -35,7 +35,6 @@ urlpatterns += i18n_patterns(
     '',
     # NEVER use r'^$', this won't work as expected. Use r''.
     url(r'', include('oneflow.landing.urls')),
-    url(r'', include('oneflow.profiles.urls')),
     url(r'', include('oneflow.core.urls')),
 )
 

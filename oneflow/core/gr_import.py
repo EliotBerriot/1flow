@@ -69,8 +69,8 @@ class GoogleReaderImport(object):
             user = User.objects.get(id=self.user_id)
 
             try:
-                return user.profile.data.get('GR_IMPORT_ALLOWED',
-                                             config.GR_IMPORT_ALLOWED)
+                return user.data.get('GR_IMPORT_ALLOWED',
+                                     config.GR_IMPORT_ALLOWED)
 
             except:
                 LOGGER.exception(u'Could not get `data` from user %s profile, '
@@ -83,8 +83,8 @@ class GoogleReaderImport(object):
     @can_import.setter # NOQA
     def can_import(self, yes_no):
         user = User.objects.get(id=self.user_id)
-        user.profile.data['GR_IMPORT_ALLOWED'] = bool(yes_no)
-        user.profile.save()
+        user.data['GR_IMPORT_ALLOWED'] = bool(yes_no)
+        user.save()
 
     @classmethod
     def __time_key(cls, key, set_time=False, time_value=None):

@@ -12,7 +12,8 @@ from djangojs.utils import ContextSerializer
 
 from sparks.django import mail
 
-from models import EmailContent
+from ..landing.models import LandingUser
+from .models import EmailContent
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -23,7 +24,7 @@ def connect_mongoengine_signals(module_scope):
         to signals, given they follow the name pattern
         ``signal_<signal_name>_handler()``.
 
-        See https://mongoengine-odm.readthedocs.org/en/latest/guide/signals.html#overview
+        See https://mongoengine-odm.readthedocs.org/en/latest/guide/signals.html#overview # NOQA
         for a list of valid signal names.
     """
 
@@ -49,6 +50,23 @@ def connect_mongoengine_signals(module_scope):
                         getattr(klass, handler_name), sender=klass)
 
 
+def get_user_and_update_context(context):
+
+    # If there is no new user, it's not a registration, we
+    # just get the context user, to fill email fields.
+
+    if 'new_user_id' in context:
+        user = LandingUser.objects.get(id=context['new_user_id'])
+        context['new_user'] = user
+
+    else:
+        user = User.objects.get(id=context['user_id'])
+
+    context['user'] = user
+
+    return user
+
+
 def send_email_with_db_content(context, email_template_name, **kwargs):
     """
 
@@ -66,32 +84,30 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
 
         return post_send_log_mail_sent
 
-    # If there is no new user, it's not a registration, we
-    # just get the context user, to fill email fields.
-    # BTW, we need to get back the real user object,
-    # because the celery task only gave us the ID.
-    if 'new_user_id' in context:
-        user = User.objects.get(id=context['new_user_id'])
-        context['new_user'] = user
-    else:
-        user = User.objects.get(id=context['user_id'])
+    user = get_user_and_update_context(context)
 
-    context['user'] = user
+    if user.has_email_sent(email_template_name) \
+            and not kwargs.get('force', False):
+        LOGGER.info(u'User %s already received email “%s”, skipped.',
+                    user.username, email_template_name)
+        return
 
     lang = context.get('language_code')
 
     if lang is not None:
         # switch to the user language
         old_lang = translation.get_language()
+
         if old_lang != lang:
             translation.activate(lang)
+
         else:
             old_lang = None
     else:
         old_lang = None
 
     try:
-        context.update({'unsubscribe_url': user.profile.unsubscribe_url()})
+        context.update({'unsubscribe_url': user.unsubscribe_url()})
 
     except:
         # In case we are used without the profiles Django app.
@@ -122,8 +138,12 @@ def send_email_with_db_content(context, email_template_name, **kwargs):
         subject=email_data.subject,
         recipients=[user.email],
         context=context,
+        # TODO: pass the log_email_sent() as post_send callable
         #post_send=post_send(user)
         **kwargs)
+
+    # TODO: remove this when log_email_sent is passed to send_mail*()
+    user.log_email_sent(email_template_name)
 
     if old_lang is not None:
         # Return to application main language

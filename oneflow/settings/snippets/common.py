@@ -342,7 +342,6 @@ INSTALLED_APPS = (
     'redisboard',
     'djcelery',
     'memcache_status',
-    'social_auth',
     'markdown_deux',
     'djangojs',
     'pipeline',
@@ -353,6 +352,10 @@ INSTALLED_APPS = (
     'oneflow.profiles',
     'oneflow.landing',
     'oneflow.core',
+    # OMG: order matters! as DSA depends on user model,
+    # it must come after 'oneflow.base' wich contains it.
+    # Without this, tests fail to create database!
+    'social_auth',
 )
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
@@ -444,6 +447,21 @@ LOGIN_ERROR_URL    = reverse_lazy('signin_error')
 #SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
 SOCIAL_AUTH_EXTRA_DATA = True
 SOCIAL_AUTH_SESSION_EXPIRATION = False
+
+SOCIAL_AUTH_PIPELINE = (
+    'social_auth.backends.pipeline.social.social_auth_user',
+    #
+    # WARNING: `associate_by_email` is safe unless we use backends which
+    #       don't check email validity. We will have to implement email
+    #       hash_code checking when we activate our own account system.
+    #
+    'social_auth.backends.pipeline.associate.associate_by_email',
+    'social_auth.backends.pipeline.user.get_username',
+    'social_auth.backends.pipeline.user.create_user',
+    'social_auth.backends.pipeline.social.associate_user',
+    'social_auth.backends.pipeline.social.load_extra_data',
+    'social_auth.backends.pipeline.user.update_user_details'
+)
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
 
