@@ -147,12 +147,12 @@ def production():
             'worker-02.1flow.io': 10,
 
             # This LXC has power too.
-            'worker-03.1flow.io': 6,
+            'worker-03.1flow.io': 3,
 
             # Others are quite limited, don't
             # raise their concurrency levels too much.
-            'worker-01.1flow.io': 3,
-            'worker-05.1flow.io': 4,
+            'worker-01.1flow.io': 2,
+            'worker-05.1flow.io': 3,
         },
         'max_tasks_per_child': {
             '__all__': 80,
