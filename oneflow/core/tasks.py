@@ -138,8 +138,10 @@ def create_article_and_read(article_url,
 
     except Article.DoesNotExist:
         LOGGER.error(u'Article “%s” (url: %s) in feed “%s” upsert failed: '
-                     u'DATA=%s', article_title, article_url, feed.name,
-                     article_data)
+                     u'DATA=%s', article_title[:40]
+                     + (article_title[:40] and u'…'),
+                     article_url[:40] + (article_url[:40] and u'…'),
+                     feed.name, article_data)
         return
 
     for mongo_user in mongo_users:
@@ -359,14 +361,28 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
 
     loadMethod = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
 
-    try:
-        loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+    retry = 0
 
-    except:
-        LOGGER.exception(u'Wave %s of feed “%s” failed to load for user %s, '
-                         u'aborted.', wave, gr_feed.title, username)
-        gri.incr_feeds()
-        return
+    while True:
+        try:
+            loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+
+        except:
+            if retry < config.GR_MAX_RETRIES:
+                LOGGER.warning(u'Wave %s (try %s) of feed “%s” failed to load '
+                               u'for user %s, retrying…', wave, retry,
+                               gr_feed.title, username)
+                time.sleep(5)
+                retry += 1
+
+            else:
+                LOGGER.exception(u'Wave %s of feed “%s” failed to load for '
+                                 u'user %s, after %s retries, aborted.', wave,
+                                 gr_feed.title, username, retry)
+                gri.incr_feeds()
+                return
+        else:
+            break
 
     total            = len(gr_feed.items)
     articles_counter = 0

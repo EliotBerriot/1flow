@@ -16,7 +16,7 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from .forms import FullUserCreationForm
@@ -24,6 +24,7 @@ from .tasks import import_google_reader_trigger
 from .gr_import import GoogleReaderImport
 
 LOGGER = logging.getLogger(__name__)
+User = get_user_model()
 
 # Avoid the very repetitive:
 #       {% load ember js compressed i18n base_utils %}
@@ -121,6 +122,13 @@ def google_reader_import(request, user_id=None):
              u'Please try signout and re-signin.'))
         return HttpResponseRedirect(redirect_url)
 
+    else:
+        if request.user.is_staff or request.user.is_superuser:
+            info(_(u'Google Reader import started for user ID %s.') % user_id)
+
+        else:
+            info(_(u'Google Reader import started.'))
+
     return HttpResponseRedirect(redirect_url)
 
 
@@ -143,16 +151,19 @@ def google_reader_import_stop(request, user_id):
     redirect_url = request.META.get('HTTP_REFERER',
                                     reverse('admin:index'))
 
+    user = User.objects.get(id=user_id)
+
     if gri.running():
         gri.end(True)
+        info(u'Google Reader import stopped for user %s.' % user.username)
         return HttpResponseRedirect(redirect_url)
 
     if not gri.is_active:
-        info('Google Reader import deactivated.')
+        info(u'Google Reader import deactivated!')
         return HttpResponseRedirect(redirect_url)
 
     if not gri.can_import:
-        info('BETA invite not yet accepted.')
+        info(u'User %s not allowed to import.' % user.username)
         return HttpResponseRedirect(redirect_url)
 
     return HttpResponseRedirect(redirect_url)

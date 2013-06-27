@@ -35,6 +35,9 @@ CONSTANCE_CONFIG = {
                           u'Google Reader? Set to False if we reach limits '
                           u'too quickly.')),
 
+    'GR_MAX_RETRIES': (5, ugettext(u'How many retries to attempt if a '
+                       u'Google Reader Operation fails.')),
+
     # No need (constance handles dates correctly), but just in case:
     # time.mktime(datetime.date(2013,07,01).timetuple())
     'GR_END_DATE': (datetime.date(2013, 07, 01),
