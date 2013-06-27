@@ -36,9 +36,9 @@ class GriOneFlowUserAdmin(UserAdmin):
 
     list_display = ('id', 'username', 'gri_feeds_display',
                     'gri_articles_display', 'gri_reads_display',
-                    'gri_starred_display', 'gri_executed_display',)
-                    #'gri_duration_display', 'gri_eta_display',)
-                    #'gri_action_display', 'can_import_display', )
+                    'gri_starred_display', 'gri_executed_display',
+                    'gri_duration_display', 'gri_eta_display',
+                    'gri_action_display', 'can_import_display', )
     list_display_links = ('id', 'username', )
     ordering = ('-date_joined', )
     date_hierarchy = 'date_joined'
