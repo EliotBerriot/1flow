@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-25 11:35+0200\n"
-"PO-Revision-Date: 2013-06-25 11:39+0009\n"
-"Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
+"POT-Creation-Date: 2013-06-26 21:05+0200\n"
+"PO-Revision-Date: 2013-06-26 21:11+0009\n"
+"Last-Translator:   <oc@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -117,11 +117,11 @@ msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
 #: urls.py:24
 msgid "^grstop/(?P<user_id>\\d+)/$"
-msgstr ""
+msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
 #: urls.py:27
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
-msgstr ""
+msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
 #: urls.py:30
 msgid "^grstatus/$"
@@ -135,25 +135,25 @@ msgstr "^connexion/$"
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:97
+#: views.py:101
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:101
+#: views.py:105
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:105
+#: views.py:109
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:112
+#: views.py:116
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:116
+#: views.py:120
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
@@ -317,7 +317,7 @@ msgstr "Déconnexion"
 
 #: templates/ember/main.html:49
 msgid "flowboard"
-msgstr ""
+msgstr "flowboard"
 
 #: templates/ember/main.html:50
 msgid "teams"
@@ -341,7 +341,7 @@ msgstr "à propos"
 
 #: templates/ember/main.html:64
 msgid "contact"
-msgstr ""
+msgstr "contact"
 
 #: templates/ember/views/discovery.html:8
 #: templates/ember/views/recommended.html:8
@@ -351,7 +351,7 @@ msgstr "Non implémenté"
 #: templates/ember/views/discovery.html:10
 #: templates/ember/views/recommended.html:10
 msgid "This is just a waiting view. Please be patient!"
-msgstr ""
+msgstr "Ceci est une vue d'attente. Soyez patient(e) !"
 
 #: templates/ember/views/help.html:8
 msgid "1flow minimal help"
@@ -362,36 +362,35 @@ msgid ""
 "\n"
 "## Google Reader import\n"
 "\n"
-"This import takes places in the background. You can safely disconnect from\n"
-"**1flow** or close your brower window and come back later.\n"
+"The Google Reader import takes places in the background. You can safely\n"
+"logout of **1flow** or close your browser window without disrupting it.\n"
 "\n"
-"Obviously, importing your data will take longer if many users import their\n"
-"own data at once. We have finites computing resources.\n"
+"Importing data will take longer if many users are importing at once as we\n"
+"have finite computing resources. Your import status is updated every 5 seconds.\n"
 "\n"
-"This import status is updated every 5 seconds.\n"
+"Upon completion, the number of imported articles may be less than the number\n"
+"of processed articles due to duplicate content in Google data.\n"
 "\n"
-"The real number of imported articles will be less than the\n"
-"processed ones, due to some duplicates present on Google Reader.\n"
-"\n"
-"About the approximative ETA… Well… Given the nature of the data we fetch\n"
-"from Google, it's **very** approximative. Don't rely on it, we don't do.\n"
-"The import will probably end before the ETA.\n"
+"About the approximate ETA… Well… Given the nature of the data we fetch\n"
+"from Google, it's **very** approximate. Don't rely on it; we don't do.\n"
+"The import will probably end before the ETA. It pleased our developer\n"
+"to display it.\n"
 msgstr ""
 "\n"
 "## Import Google Reader\n"
 "\n"
-"Cet import est réalisé en arrière-plan. Vous pouvez vous déconnecter de **1flow** ou fermer votre navigateur et revenir plus tard pour suivre son état.\n"
+"Cet import est réalisé en arrière-plan. Vous pouvez vous déconnecter de **1flow** ou fermer votre navigateur sans qu'il soit perturbé.\n"
 "\n"
-"L'import de vos données sera ralenti lorsque d'autres utilisateurs lanceront la même procédure pour eux-mêmes, car nous avons des ressources informatiques limitées.\n"
+"L'import de vos données sera ralenti lorsque d'autres utilisateurs lanceront la même procédure, car nous avons des ressources informatiques limitées.\n"
 "\n"
 "L'état d'import de vos données est mis à jour toutes les 5 secondes.\n"
 "\n"
 "Le nombre réel d'articles importés pourra être inférieur à celui des \n"
-"articles traités, à cause de certaines données dupliqués chez Google.\n"
+"articles traités, à cause de certaines données dupliquées chez Google.\n"
 "\n"
-"À propos de la « fin approximative »… Hé bien… Vu la nature des données que nous récupérons de Google, elle est vraiment **très** approximative ! Ne vous y fiez pas : nous ne nous y fions pas. L'import se terminera très probablement avant cette estimation. Ça faisait plaisir à notre développeur de la mettre.\n"
+"À propos de la « fin approximative »… Hé bien… Vu la nature des données que nous récupérons de Google, elle est vraiment **très** approximative ! Ne vous y fiez pas ; nous ne nous y fions pas. L'import se terminera très probablement avant cette estimation. Ça faisait plaisir à notre développeur de la mettre.\n"
 
-#: templates/ember/views/help.html:31
+#: templates/ember/views/help.html:30
 msgid ""
 "\n"
 "## Reaching us\n"
@@ -464,7 +463,7 @@ msgstr "Abonnements"
 
 #: templates/ember/views/subscriptions.html:14
 msgid "Collapse"
-msgstr ""
+msgstr "Refermer"
 
 #: templates/ember/views/subscriptions.html:16
 msgid "Details"
@@ -481,6 +480,8 @@ msgid ""
 "              No subscription yet. %(add_one)s\n"
 "            "
 msgstr ""
+"\n"
+"Aucun abonnement pour l'instant. %(add_one)s"
 
 #: templates/ember/views/teams.html:4
 msgid "Your teams"

@@ -2,8 +2,11 @@
 
 from transmeta import TransMeta
 
-from django.utils.translation import ugettext_lazy as _
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
+from django.utils import timezone
+
+from ..profiles.models import AbstractUserProfile
 
 
 class LandingContent(models.Model):
@@ -22,3 +25,45 @@ class LandingContent(models.Model):
         translate = ('content', )
         verbose_name = _(u'Landing page content')
         verbose_name_plural = _(u'Landing page contents')
+
+
+class LandingUser(AbstractUserProfile):
+    """ A small user model, similar to a Django user to have the same
+        attributes and primitives, but not a real user account.
+
+        Used to hold the emails collected on the landing page, and a
+        little profile data.
+    """
+
+    email = models.EmailField(_('email address'),  max_length=254,
+                              help_text=_('Any valid email address.'))
+    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+
+    class Meta:
+        verbose_name        = _(u'Landing page user')
+        verbose_name_plural = _(u'Landing page users')
+
+    def __unicode__(self):
+        return self.email
+
+    @property
+    def is_active(self):
+        return False
+
+    @property
+    def is_staff(self):
+        return False
+
+    @property
+    def is_superuser(self):
+        return False
+
+    @property
+    def username(self):
+        return self.email
+
+    def get_full_name(self):
+        return self.email
+
+    def get_short_name(self):
+        return self.email

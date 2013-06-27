@@ -195,13 +195,6 @@ class NameAndSlug(models.Model):
         abstract = True
 
 
-class UserProfile(models.Model):
-
-    user = models.ForeignKey(User)
-    select_paragraph = models.BooleanField(default=False)
-    default_public = models.BooleanField(default=True)
-
-
 class Source(NameAndSlug):
     url         = models.URLField()
     description = models.CharField(max_length=2048)

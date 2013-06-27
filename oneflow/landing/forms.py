@@ -2,11 +2,11 @@
 
 from django import forms
 
-from ..base.models import User
+from .models import LandingUser
 
 
 class LandingPageForm(forms.ModelForm):
 
     class Meta:
-        model  = User
+        model  = LandingUser
         fields = ('email', )

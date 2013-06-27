@@ -24,7 +24,8 @@ for app_name in settings.INSTALLED_APPS:
             module_name = '{}.api'.format(app_name)
             apimod = importlib.import_module(module_name)
 
-            for objekt_name in dir(apimod):
+            for objekt_name in (apimod.__all__ if hasattr(
+                                apimod, '__all__') else dir(apimod)):
                 objekt = getattr(apimod, objekt_name)
                 try:
                     if issubclass(objekt, MongoEngineResource) \
@@ -41,5 +42,5 @@ for app_name in settings.INSTALLED_APPS:
                     pass
 
                 except Exception:
-                    LOGGER.warning('Exception while determining subclass '
-                                   'of %s.%s.', module_name, objekt_name)
+                    LOGGER.exception('Exception while determining subclass '
+                                     'of %s.%s.', module_name, objekt_name)

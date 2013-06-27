@@ -35,6 +35,7 @@ run_command, restart_services = sdf.run_command, sdf.restart_services
 # The Django project name
 env.project    = 'oneflow'
 env.virtualenv = '1flow'
+env.parallel   = True
 
 # WARNING: don't set `env.user` here, it creates false-negatives when
 # bare-connecting to servers manually from the current directory. Eg.:
