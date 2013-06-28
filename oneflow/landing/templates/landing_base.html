@@ -30,18 +30,13 @@
               {% if user.is_authenticated %}
                 <a class="user-login link-tooltip" href="{% url 'home' %}"
                   title="{% trans "Head to Home" %}"><i
-                    class="icon-home"></i></a>
+                    class="icon-home"></i>  {% trans "Application" %}</a>
                 <!--
                 <a class="user-login link-tooltip"
                   title="{% trans "Read our blog" %}"
                   href="http://blog.1flow.net/"><i
                     class="icon-bullhorn"></i></a>
                 -->
-                <a class="user-login link-tooltip"
-                  title="{% trans "Sign out" %}"
-                  href="{% url 'signout' %}"><i
-                    class="icon-signout"></i> {% trans "Sign out" %}</a>
-
               {% else %}
 
                 <!-- DISABLED FOR NOW

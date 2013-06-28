@@ -12,11 +12,25 @@
                 class="badge badge-warning badge-beta"
                 title="{% trans "1flow has not yet reached BETA status" %}">undisclosed</span></a></div>
 
-        {% if request.user.is_authenticated %}
+        {% if user.is_authenticated %}
           <div class="btn-group pull-right">
+            {% if user.is_staff or user.is_superuser %}
+              {% if MAINTENANCE_MODE %}
+                <div class="btn btn-danger" disabled="disabled">
+                    {% trans "Maintenance" %}
+                </div>
+
+              {% endif %}
+
+              <div class="btn" disabled="disabled">
+                  version {{ VERSION }}
+              </div>
+            {% endif %}
+
             <div class="btn">
                 {% linkto "help" %}{% trans 'Help' %}{% endlinkto %}
             </div>
+
 
             <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
               <i class="icon-user"></i> {{ request.user.username }}
