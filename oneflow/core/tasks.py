@@ -301,18 +301,14 @@ def import_google_reader_begin(user_id, access_token):
     gri.total_reads(total_reads)
     gri.total_starred(total_starred)
 
-    LOGGER.info(u'Google Reader import: %s feed(s) and %s read '
-                u'article(s) to go…', total_feeds, total_reads)
+    LOGGER.info(u'Google Reader import for user %s: %s feed(s) and %s read '
+                u'article(s) to go…', username, total_feeds, total_reads)
 
     if total_feeds > GR_MAX_FEEDS and not settings.DEBUG:
         mail_admins('User {0} has more than {1} feeds: {2}!'.format(
                     username, GR_MAX_FEEDS, total_feeds),
                     u"\n\nThe GR import will be incomplete.\n\n"
                     u"Just for you to know…\n\n")
-
-    # We need to clamp the total, else task won't finish in
-    # the case where the user has more feeds than allowed.
-    gri.total_feeds(min(total_feeds, GR_MAX_FEEDS))
 
     # We launch the starred feed import first. Launching it after the
     # standard feeds makes it being delayed until the world's end.
@@ -322,11 +318,9 @@ def import_google_reader_begin(user_id, access_token):
                                              queue='low')
 
     processed_feeds = 1
+    feeds_to_import = []
 
     for gr_feed in reader.feeds[:GR_MAX_FEEDS]:
-
-        LOGGER.info(u'Importing feed “%s” (%s/%s)…',
-                    gr_feed.title, processed_feeds + 1, total_feeds)
 
         try:
             feed = create_feed(gr_feed, mongo_user)
@@ -336,16 +330,25 @@ def import_google_reader_begin(user_id, access_token):
                              u'skipped.', gr_feed.title, username)
             continue
 
-        # go to default queue.
-        import_google_reader_articles.apply_async(
-            (user_id, username, gr_feed, feed), queue='low')
-
         processed_feeds += 1
+        feeds_to_import.append((user_id, username, gr_feed, feed))
 
-    LOGGER.info(u'Imported %s feeds in %s. Articles import already '
+        LOGGER.info(u'Imported feed “%s” (%s/%s) for user %s…',
+                    gr_feed.title, processed_feeds, total_feeds, username)
+
+    # We need to clamp the total, else task won't finish in
+    # the case where the user has more feeds than allowed.
+    #
+    gri.total_feeds(min(processed_feeds, GR_MAX_FEEDS))
+
+    for feed_args in feeds_to_import:
+        import_google_reader_articles.apply_async(feed_args, queue='low')
+
+    LOGGER.info(u'Imported %s/%s feeds in %s. Articles import already '
                 u'started with limits: date: %s, %s waves of %s articles, '
                 u'max articles: %s, reads: %s, starred: %s.',
-                processed_feeds, naturaldelta(now() - gri.start()),
+                processed_feeds, total_feeds,
+                naturaldelta(now() - gri.start()),
                 naturaltime(max([gri.reg_date(), GR_OLDEST_DATE])),
                 config.GR_WAVE_LIMIT, config.GR_LOAD_LIMIT,
                 config.GR_MAX_ARTICLES, total_reads, total_starred)
