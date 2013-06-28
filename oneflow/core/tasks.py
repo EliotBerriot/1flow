@@ -328,7 +328,13 @@ def import_google_reader_begin(user_id, access_token):
         LOGGER.info(u'Importing feed “%s” (%s/%s)…',
                     gr_feed.title, processed_feeds + 1, total_feeds)
 
-        feed = create_feed(gr_feed, mongo_user)
+        try:
+            feed = create_feed(gr_feed, mongo_user)
+
+        except Feed.DoesNotExist:
+            LOGGER.exception(u'Could not create feed “%s” for user %s, '
+                             u'skipped.', gr_feed.title, username)
+            continue
 
         # go to default queue.
         import_google_reader_articles.apply_async(
