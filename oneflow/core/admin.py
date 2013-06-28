@@ -11,6 +11,8 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
+from ..base.admin import CSVAdminMixin
+
 from .gr_import import GoogleReaderImport
 
 # NOTE: using "from base.models import User" will generate
@@ -30,7 +32,7 @@ class GriUser(User):
         verbose_name_plural = _(u'Google Reader imports')
 
 
-class GriOneFlowUserAdmin(UserAdmin):
+class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
     """ Wrap our GoogleReaderImport class onto User accounts,
         to be able to act on imports from the Django administration. """
 

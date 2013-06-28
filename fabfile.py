@@ -113,11 +113,8 @@ def preview(branch=None):
 
     if branch is None:
         env.branch = get_current_git_branch()
-
     # implicit: else: branch will be 'develop',
     # set directly from the sparks defaults.
-
-    env.sparks_options = {}
 
     # we force the user because we can login as standard user there
     env.user        = '1flow'
