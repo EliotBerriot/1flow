@@ -407,7 +407,19 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
         # which is a virtual one without an URL.
         real_gr_feed = gr_article.feed
         subscribed   = real_gr_feed in gr_feed.googleReader.feeds
-        feed = create_feed(real_gr_feed, mongo_user, subscription=subscribed)
+
+        try:
+            feed = create_feed(real_gr_feed, mongo_user,
+                               subscription=subscribed)
+
+        except Feed.DoesNotExist:
+            LOGGER.exception(u'Could not create feed “%s” for user %s, '
+                             u'skipped.', gr_feed.title, username)
+
+            # We increment anyway, else the import will not finish.
+            # TODO: We should decrease the starred total instead.
+            gri.incr_starred()
+            continue
 
         create_article_and_read(gr_article.url, gr_article.title,
                                 gr_article.content,
@@ -424,7 +436,6 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
         # accurate, but no time for better implementation.
         #if gr_article.read:
         #    gri.incr_reads()
-
         gri.incr_starred()
 
     empty_gr_feed(gr_feed)
