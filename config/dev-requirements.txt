@@ -9,4 +9,4 @@ ipython==0.13.2
 line-profiler==1.0b3
 pip-tools==0.3.4
 sqlparse==0.1.7
-Werkzeug==0.8.3
+Werkzeug==0.9.1
