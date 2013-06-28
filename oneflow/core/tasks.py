@@ -413,8 +413,8 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
                                subscription=subscribed)
 
         except Feed.DoesNotExist:
-            LOGGER.exception(u'Could not create feed “%s” for user %s, '
-                             u'skipped.', gr_feed.title, username)
+            LOGGER.exception(u'Could not create feed “%s” (from starred) for '
+                             u'user %s, skipped.', real_gr_feed.title, username)
 
             # We increment anyway, else the import will not finish.
             # TODO: We should decrease the starred total instead.
