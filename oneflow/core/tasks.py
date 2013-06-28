@@ -5,6 +5,7 @@ import redis
 import logging
 import datetime
 import feedparser
+import urllib2
 from constance import config
 
 from humanize.time import naturaldelta, naturaltime
@@ -528,6 +529,7 @@ def feedcheck(feed):
 
     parsed_feed = feedparser.parse(feed.url)
 
+
     latest_article = Article.objects.filter(
         feed__in=(feed,)).order_by('-date_published').limit(1)
 
@@ -535,7 +537,7 @@ def feedcheck(feed):
         date = latest_article[0].date_published
     else:
         LOGGER.warning(u'Feed "%s" (id: %s) does not contain any article!',
-                       feed.title, feed.id)
+                       feed.name, feed.id)
         date = None
 
     if date is None or datetime.datetime(
@@ -546,11 +548,19 @@ def feedcheck(feed):
             for s in Subscription.objects.filter(feed__in=(feed,))
         ]
 
+
         for article in parsed_feed.entries:
-            create_article_and_read(article.url,
-                                    article.title, article.content,
-                                    article.published_parsed, "",
-                                    feed, subscribers, False, False)
+            response = urllib2.urlopen(article.link)
+            html = response.read()
+
+
+
+            create_article_and_read(article.link,
+                                    article.title, getattr(article, 'content', html),
+                                    time.mktime(datetime.datetime(
+                                    *article.published_parsed[:6]).timetuple()), "",
+                                    feed, subscribers, False, False,
+                                    getattr(parsed_feed, 'tags', []))
 
 
 @task
