@@ -226,6 +226,7 @@ def testapps(remote_configuration):
 def firstdata():
     sdf.putdata('./oneflow/landing/fixtures/landing_2013-05-14_final-before-beta-opening.json') # NOQA
     sdf.putdata('./oneflow/base/fixtures/base_2013-05-14_final-before-beta-opening.json') # NOQA
+    sdf.putdata('./oneflow/fixtures/djcelery_2013-06-30_0001.json')
 
 
 @task(aliases=('first', ))

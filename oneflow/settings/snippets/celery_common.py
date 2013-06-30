@@ -5,7 +5,7 @@
 #
 
 #from datetime import timedelta
-from celery.schedules import crontab
+#from celery.schedules import crontab
 
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_RESULT_PERSISTENT = True
@@ -39,24 +39,24 @@ CELERYBEAT_SCHEDULE = {
     #     'schedule': timedelta(seconds=5),
     #     'schedule': crontab(minute='*'),
     # },
-    'refresh-access-tokens-00': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='*/4', minute='0,48'),
-    },
-    'refresh-access-tokens-12': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='3,7,11,19,23', minute=12),
-    },
-    'refresh-access-tokens-24': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='2,6,8,14,18,22', minute=24),
-    },
-    'refresh-access-tokens-36': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='1,5,9,13,17,21', minute=36),
-    },
-    'clean-obsolete-redis-keys': {
-        'task': 'oneflow.core.tasks.clean_obsolete_redis_keys',
-        'schedule': crontab(hour='2', minute='2'),
-    },
+    # 'refresh-access-tokens-00': {
+    #     'task': 'oneflow.base.tasks.refresh_access_tokens',
+    #     'schedule': crontab(hour='*/4', minute='0,48'),
+    # },
+    # 'refresh-access-tokens-12': {
+    #     'task': 'oneflow.base.tasks.refresh_access_tokens',
+    #     'schedule': crontab(hour='3,7,11,19,23', minute=12),
+    # },
+    # 'refresh-access-tokens-24': {
+    #     'task': 'oneflow.base.tasks.refresh_access_tokens',
+    #     'schedule': crontab(hour='2,6,8,14,18,22', minute=24),
+    # },
+    # 'refresh-access-tokens-36': {
+    #     'task': 'oneflow.base.tasks.refresh_access_tokens',
+    #     'schedule': crontab(hour='1,5,9,13,17,21', minute=36),
+    # },
+    # 'clean-obsolete-redis-keys': {
+    #     'task': 'oneflow.core.tasks.clean_obsolete_redis_keys',
+    #     'schedule': crontab(hour='2', minute='2'),
+    # },
 }
