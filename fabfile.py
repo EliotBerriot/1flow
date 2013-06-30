@@ -106,8 +106,8 @@ def preview(branch=None):
         'web': ['obi.1flow.io'],
         'lang': ['obi.1flow.io'],
         'flower': ['worbi.1flow.io'],
-        'worker_high': ['worbi.1flow.io'],
-        'worker_low': ['obi.1flow.io', 'worbi.1flow.io'],
+        'worker_high': ['obi.1flow.io'],
+        'worker_low': ['worbi.1flow.io'],
         #'redis': ['duncan.licorn.org'],
     })
 
@@ -226,6 +226,7 @@ def testapps(remote_configuration):
 def firstdata():
     sdf.putdata('./oneflow/landing/fixtures/landing_2013-05-14_final-before-beta-opening.json') # NOQA
     sdf.putdata('./oneflow/base/fixtures/base_2013-05-14_final-before-beta-opening.json') # NOQA
+    sdf.putdata('./oneflow/fixtures/djcelery_2013-06-30_0001.json')
 
 
 @task(aliases=('first', ))

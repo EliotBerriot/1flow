@@ -22,7 +22,7 @@ On the `10.0.3.0` network:
 - 10    worbi (preview worker)
 - 11    zero (scratch tests, single node web+worker+flower)
 - 12    twenty (idem)
-- 13    worker-02 (production worker + flower)
+- 113    worker-02 (production worker + flower)
 
 # Databases
 
