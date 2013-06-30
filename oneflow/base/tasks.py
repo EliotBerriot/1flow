@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import logging
-#import datetime
+import datetime
+import humanize
 
 from celery import task
 
@@ -12,7 +13,7 @@ LOGGER = logging.getLogger(__name__)
 User = get_user_model()
 
 #ftstamp = datetime.datetime.fromtimestamp
-#now     = datetime.datetime.now
+now     = datetime.datetime.now
 
 
 @task
@@ -27,10 +28,15 @@ def refresh_access_tokens():
         http://dev.1flow.net/webapps/1flow/group/664/
     """
 
+    start_time = now()
+
     users = User.objects.all()
 
-    #count = users.count()
     #sleep_time = 1500 / count
+    count  = users.count()
+    done   = 0
+    errors = 0
+    nosoc  = 0
 
     for user in users:
         # See http://django-social-auth.readthedocs.org/en/latest/use_cases.html#token-refreshing # NOQA
@@ -40,6 +46,7 @@ def refresh_access_tokens():
         social_accounts = user.social_auth.filter(provider='google-oauth2')
 
         if social_accounts.count() == 0:
+            nosoc += 1
             continue
 
         for social in social_accounts:
@@ -56,3 +63,11 @@ def refresh_access_tokens():
                 # existing Django account, getting back all his preferences
                 # and 1flow data. We delete here only the association.
                 social.delete()
+                errors += 1
+            else:
+                done += 1
+
+    LOGGER.warning(u'refresh_access_tokens finished, %s/%s refreshed, '
+                   u'%s error(s), %s not associated, duration: %s.',
+                   done, count, errors, nosoc,
+                   humanize.time.naturaldelta(now() - start_time))
