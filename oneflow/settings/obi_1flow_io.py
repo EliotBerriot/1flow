@@ -1,7 +1,14 @@
 # -*- coding: utf-8 -*-
 # Settings for obi.1flow.io (preview)
 
-MAIN_SERVER = '91.121.220.149'
+# If hosted on Duncan
+#MAIN_SERVER = '91.121.220.149'
+
+# If hosted on Gurney
+#MAIN_SERVER = '82.236.133.193'
+
+# Or confined to the local LXC host
+MAIN_SERVER = '10.0.3.1'
 
 from sparks.django.settings import include_snippets
 
