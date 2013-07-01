@@ -5,7 +5,6 @@ import redis
 import logging
 import datetime
 import feedparser
-import urllib2
 from constance import config
 
 from humanize.time import naturaldelta, naturaltime
@@ -128,7 +127,9 @@ def create_article_and_read(article_url,
         Article.objects(url=article_url).update_one(
             set__url=article_url, set__title=article_title,
             set__feed=feed, set__content=article_content,
-            set__date_published=ftstamp(article_time),
+            set__date_published=None
+                if article_time is None
+                else ftstamp(article_time),
             set__google_reader_original_data=article_data, upsert=True)
 
     except (OperationError, DuplicateKeyError):
@@ -154,7 +155,6 @@ def create_article_and_read(article_url,
                               set__user=mongo_user,
                               set__tags=categories,
                               set__is_read=is_read,
-                              set__date_created=ftstamp(article_time),
                               set__rating=article.default_rating +
                               (RATINGS.STARRED if is_starred
                                else 0.0),
@@ -564,53 +564,6 @@ def clean_obsolete_redis_keys():
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••  refresh
 
 
-@task
-def feedcheck(feed):
-
-    def max_entry_date(feed):
-        entry_pub_dates = tuple(e.get('published_parsed')
-                                for e in feed.entries
-                                if e is not None)
-
-        if len(entry_pub_dates):
-            return max(entry_pub_dates)
-
-        return None
-
-    parsed_feed = feedparser.parse(feed.url)
-
-
-    latest_article = Article.objects.filter(
-        feed__in=(feed,)).order_by('-date_published').limit(1)
-
-    if latest_article:
-        date = latest_article[0].date_published
-    else:
-        LOGGER.warning(u'Feed "%s" (id: %s) does not contain any article!',
-                       feed.name, feed.id)
-        date = None
-
-    if date is None or datetime.datetime(
-            *parsed_feed.updated_parsed[:6]) > date:
-
-        subscribers = [
-            s.user
-            for s in Subscription.objects.filter(feed__in=(feed,))
-        ]
-
-
-        for article in parsed_feed.entries:
-            response = urllib2.urlopen(article.link)
-            html = response.read()
-
-
-
-            create_article_and_read(article.link,
-                                    article.title, getattr(article, 'content', html),
-                                    time.mktime(datetime.datetime(
-                                    *article.published_parsed[:6]).timetuple()), "",
-                                    feed, subscribers, False, False,
-                                    getattr(parsed_feed, 'tags', []))
 
 
 @task

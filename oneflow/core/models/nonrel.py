@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 
+import time
 import datetime
 import logging
+import feedparser
 
 from celery import task
 from mongoengine import Document
@@ -51,6 +53,61 @@ class Feed(Document):
     def signal_post_init_handler(cls, sender, document, **kwargs):
         LOGGER.warning('POST INIT for %s', document)
 
+    @task
+    def refresh(self):
+
+        parsed_feed = feedparser.parse(self.url)
+
+        latest_article = Article.objects.filter(
+            feed__in=(self,)).order_by('-date_published').limit(1)
+
+        if latest_article:
+            date = latest_article[0].date_published
+        else:
+            LOGGER.warning(u'Feed "%s" (id: %s) does not contain any article!',
+                           self.name, self.id)
+            date = None
+
+        try:
+            feed_updated_date = datetime.datetime(
+                *parsed_feed.updated_parsed[:6])
+        except:
+            feed_updated_date = None
+
+        if date is None or feed_updated_date is None or feed_updated_date > date:
+
+            subscribers = [
+                s.user
+                for s in Subscription.objects.filter(feed__in=(self,))
+            ]
+
+            for article in parsed_feed.entries:
+                #response = urllib2.urlopen(article.link)
+                #html = response.read()
+                content = getattr(article, 'content', 'to be parsed')
+                tags = getattr(parsed_feed, 'tags', [])
+
+                try:
+                    published_date = time.mktime(datetime.datetime(
+                                        *article.published_parsed[:6]).timetuple())
+
+                except:
+                    published_date = None
+
+                new_article = create_article_and_read(
+                                article_url=article.link,
+                                article_title=article.title,
+                                article_content=content,
+                                article_time=published_date,
+                                article_data="",
+                                feed=self,
+                                mongo_users=subscribers,
+                                is_read=False, is_starred=False,
+                                categories=tags)
+
+                # new_article.parse.delay()
+
+
 
 class Subscription(Document):
     feed = ReferenceField('Feed')
@@ -78,13 +135,14 @@ class Article(Document):
     authors = ListField(ReferenceField('User'))
     publishers = ListField(ReferenceField('User'))
     url = URLField(unique=True)
-    date_published = DateTimeField(default=datetime.datetime.now)
+    date_published = DateTimeField()
     abstract = StringField()
     content = StringField()
     full_content = StringField(default='')
     comments = ListField(ReferenceField('Comment'))
     default_rating = FloatField(default=0.0)
     google_reader_original_data = StringField()
+    parsed = BooleanField(default=False)
 
     # A snap / a serie of snaps references the original article.
     # An article references its source (origin blog / newspaper…)
