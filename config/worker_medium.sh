@@ -14,10 +14,16 @@ case $1 in
 
             sudo apt-get install -q --yes --force-yes openjdk-7-jdk
 
-            cat >> ~/.bashrc <<EOF
-export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
-export PATH=$PATH:$JAVA_HOME
-EOF
+            # JAVA_HOME is not needed anymore with latest versions of JPype
+            #cat >> ~/.bashrc <<EOF
+            #export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
+            #export PATH=$PATH:$JAVA_HOME
+            #EOF
+
+            # We install jpype here, not in the requirements, to avoid
+            # installing the JDK (and fonts and many useless libraries)
+            # onto every possible 1flow machine.
+            pip install -e git+https://github.com/originell/jpype@master#egg=jpype-dev
 
             touch ${INSTALL_FILE}
         fi
