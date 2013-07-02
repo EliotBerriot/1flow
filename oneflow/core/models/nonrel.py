@@ -276,9 +276,9 @@ class Group(Document):
 class Article(Document):
     title = StringField(max_length=256, required=True)
     slug = StringField(max_length=256)
+    url = URLField(unique=True)
     authors = ListField(ReferenceField('User'))
     publishers = ListField(ReferenceField('User'))
-    url = URLField(unique=True)
     date_published = DateTimeField()
     abstract = StringField()
     language = StringField()
