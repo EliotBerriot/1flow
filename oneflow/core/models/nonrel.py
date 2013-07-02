@@ -220,7 +220,7 @@ class Feed(Document):
 
         else:
             latest_article = self.get_latest_article()
-            latest_date    = getattr(latest_article, 'date_published', None)
+            latest_date    = latest_article.date_published
 
             if latest_date:
                 kwargs['modified'] = latest_date
@@ -418,7 +418,7 @@ class Article(Document):
                         default_retry_delay=3600)
     def parse_full_content(self, force=False, commit=True):
 
-        if self.full_content_parsed == CONTENT_TYPE_MARKDOWN and not force:
+        if self.full_content_type == CONTENT_TYPE_MARKDOWN and not force:
             LOGGER.warning(u'Article %s has already been fully parsed.', self)
             return
 
