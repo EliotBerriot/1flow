@@ -6,20 +6,20 @@ import logging
 import datetime
 import html2text
 import feedparser
-import simplejson as json
+from readability import ParserClient
 
 try:
     from boilerpipe.extract import Extractor as BoilerPipeExtractor
 
 except ImportError:
-    BoilerPipeExtractor = None
+    BoilerPipeExtractor = None # NOQA
 
 from celery.contrib.methods import task as celery_task_method
 
 from pymongo.errors import DuplicateKeyError
 
 from mongoengine import Document
-from mongoengine.errors import OperationError, NotUniqueError
+from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 DateTimeField,
                                 ListField, StringField,
@@ -27,11 +27,12 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 ReferenceField, GenericReferenceField,
                                 EmbeddedDocumentField)
 
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text        import slugify
 
 from ...base.utils import (connect_mongoengine_signals,
-                           SimpleCacheLock, AlreadyLockedException,
+                           SimpleCacheLock,
                            HttpResponseLogProcessor, RedisStatsCounter)
 from .keyval import FeedbackDocument
 
@@ -39,7 +40,7 @@ LOGGER = logging.getLogger(__name__)
 
 feedparser.USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
 
-CONTENT_NOT_PARSED    = None  # Don't use any _() (fails) nor any lang-dependant values.
+CONTENT_NOT_PARSED    = None  # Don't use any _() (fails) nor any lang-dependant values.  # NOQA
 CONTENT_TYPE_NONE     = 0
 CONTENT_TYPE_HTML     = 1
 CONTENT_TYPE_MARKDOWN = 2
@@ -415,21 +416,53 @@ class Article(Document):
                         default_retry_delay=3600)
     def parse_full_content(self, force=False, commit=True):
 
-        if self.full_content_parsed and not force:
+        if self.full_content_parsed == CONTENT_TYPE_MARKDOWN and not force:
             LOGGER.warning(u'Article %s has already been fully parsed.', self)
+            return
 
+        elif self.full_content_type == CONTENT_TYPE_NONE:
         LOGGER.info(u'Parsing full content for article %s…', self)
 
+            API_KEY = getattr(settings, 'READABILITY_PARSER_SECRET', None)
+
+            if API_KEY in (None, ''):
+                raise self.parse_full_content.retry(exc=RuntimeError(
+                    u'READABILITY_PARSER_SECRET not defined'))
+
+            try:
+                parser_client = ParserClient(API_KEY)
+                parser_response = parser_client.get_article_content(self.url)
+                self.full_content = parser_response.content['content']
         #
         # TODO: if self.feed.options.multi_pages:
         #           run multiple calls for every page.
-        # TODO: run the readability API call…
         # TODO: create our own parser (see NewsBlur / BeautifulSoup)…
         #
+            except Exception, e:
+                # TODO: except urllib2.error: retry with longer delay.
+
+                LOGGER.exception(u'Readability extraction failed for '
+                                 u'article %s.', self)
+                raise self.parse_full_content.retry(exc=e)
+
+            self.full_content_type = CONTENT_TYPE_HTML
+
+            if commit:
+                self.save()
+
+        try:
+            self.full_content = html2text.html2text(self.full_content)
+
+        except Exception, e:
+            LOGGER.exception(u'Markdown shrink failed for article %s.', self)
+            raise self.parse_content.retry(exc=e)
+
+        self.full_content_type = CONTENT_TYPE_MARKDOWN
 
         if commit:
             self.save(validate=False)
 
+        LOGGER.info(u'Done parsing full content for article %s…', self)
         return self
 
     @classmethod
