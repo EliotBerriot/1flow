@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 
 import six
+import redis
+import urllib2
 import logging
 
 from mongoengine import Document, signals
@@ -17,6 +19,9 @@ from .models import EmailContent
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
+REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
+                          'localhost'), port=6379,
+                          db=getattr(settings, 'REDIS_DB', 0))
 
 
 def connect_mongoengine_signals(module_scope):
@@ -235,3 +240,76 @@ class JsContextSerializer(ContextSerializer):
         super(JsContextSerializer, self).handle_user(data)
 
         data['user']['id'] = self.request.user.id
+
+
+class AlreadyLockedException(Exception):
+    pass
+
+
+class SimpleCacheLock(object):
+    """ Simple lock implemented via REDIS, from http://redis.io/commands/set
+
+        At start it was implemented via Memcache, but it doesn't work on
+        development machines where cache is the DummyCache implementation.
+
+        For commodity, if the instance has a ``fetch_interval`` attribute,
+        it will be taken as the default ``expire_time`` value. If not and
+        no ``expire_time`` argument is present, 3600 will be used to avoid
+        persistent locks related problems.
+    """
+
+    def __init__(self, instance, lock_value=None, expire_time=None):
+        self.lock_id = 'scl:%s:%s' % (instance.__class__.__name__,
+                                      instance.id)
+        self.expire_time = expire_time or getattr(instance, 'fetch_interval',
+                                                  3600)
+        self.lock_value  = lock_value or 'default_lock_value'
+
+    def __enter__(self):
+        if not self.acquire():
+            raise AlreadyLockedException('already locked')
+
+    def __exit__(self, *a, **kw):
+        return self.release()
+
+    def acquire(self):
+        return REDIS.set(self.lock_id, self.lock_value,
+                         ex=self.expire_time, nx=True)
+
+    def release(self):
+        val = REDIS.get(self.lock_id)
+
+        if val == self.lock_value:
+            REDIS.delete(self.lock_id)
+            return True
+
+        return False
+
+
+class HttpResponseLogProcessor(urllib2.BaseHandler):
+        """ urllib2 handler that maintains a log of HTTP responses.
+            See http://code.google.com/p/feedparser/issues/detail?id=390
+        """
+
+        # Run after anything that's mangling headers (usually 500 or less),
+        # but before HTTPErrorProcessor (1000).
+        handler_order = 900
+
+        def __init__(self):
+            self.log = []
+
+        def http_response(self, req, response):
+            entry = {
+                "url": req.get_full_url(),
+                "status": response.getcode(),
+            }
+            location = response.info().get("Location")
+
+            if location is not None:
+                entry["location"] = location
+
+            self.log.append(entry)
+
+            return response
+
+        https_response = http_response
