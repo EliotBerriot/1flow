@@ -4,7 +4,6 @@ import time
 import redis
 import logging
 import datetime
-import feedparser
 from constance import config
 
 from humanize.time import naturaldelta, naturaltime
@@ -561,13 +560,16 @@ def clean_obsolete_redis_keys():
         clean_gri_keys()
 
 
-# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••  refresh
-
-
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Refresh RSS feeds
 
 
 @task
-def refresh_all_feeds():
-    feeds = Feed.objects.all()
+def refresh_all_feeds(limit=None):
+
+    if limit:
+        feeds = Feed.objects.all().limit(limit)
+    else:
+        feeds = Feed.objects.all()
+
     for feed in feeds:
-        feedcheck.delay(feed)
+        feed.check_refresher.delay()
