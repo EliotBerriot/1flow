@@ -32,7 +32,7 @@ from django.utils.text        import slugify
 
 from ...base.utils import (connect_mongoengine_signals,
                            SimpleCacheLock, AlreadyLockedException,
-                           HttpResponseLogProcessor)
+                           HttpResponseLogProcessor, RedisStatsCounter)
 from .keyval import FeedbackDocument
 
 LOGGER = logging.getLogger(__name__)
@@ -47,6 +47,34 @@ CONTENT_TYPE_MARKDOWN = 2
 now       = datetime.datetime.now
 #today     = datetime.date.today
 timedelta = datetime.timedelta
+
+class FeedStatsCounter(RedisStatsCounter):
+    """ This counter represents a given feed's statistics.
+
+        It will increment global feeds statistics too, so that we
+        developpers don't have to worry about 2 types of statistics
+        counters in the Feed methods / tasks.
+    """
+
+    key_base = 'feeds'
+
+    def incr_fetched(self):
+        if self.key_base != global_feed_stats.key_base:
+            global_feed_stats.incr_fetched()
+
+        return self.fetched(increment=True)
+
+    def fetched(self, increment=False):
+
+        if self.key_base != global_feed_stats.key_base:
+            # in case we want to reset.
+            global_feed_stats.fetched(increment)
+
+        return RedisStatsCounter._int_incr_key(
+            self.key_base + ':fetch', increment)
+
+# This one will keep track of all counters, globally, for all feeds.
+global_feed_stats = FeedStatsCounter()
 
 class Source(Document):
     """ The "original source" for similar articles: they have different authors,
@@ -73,6 +101,7 @@ class Feed(Document):
     site_url       = URLField()
     slug           = StringField()
     restricted     = BooleanField(default=False)
+    closed         = BooleanField(default=False)
 
     fetch_interval = IntField(default=1800)
     last_fetch     = DateTimeField(default=now)
@@ -88,7 +117,7 @@ class Feed(Document):
     def signal_post_save_handler(cls, sender, document, **kwargs):
 
         # Update the feed with current content.
-        self.refresh.delay()
+        self.refresh.apply_async()
 
     def get_latest_article(self):
 
@@ -175,7 +204,7 @@ class Feed(Document):
         # Launch the next fetcher right now, in order for the duration
         # of the current fetch not to delay the next and make the actual
         # fetch interval be longer than advertised.
-        self.refresh.apply_async(countdown=self.fetch_interval)
+        self.refresh.apply_async((), countdown=self.fetch_interval)
 
         LOGGER.info(u'Refreshing feed %s…', self)
 
