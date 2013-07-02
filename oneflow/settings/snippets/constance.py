@@ -5,6 +5,10 @@
 
 import datetime
 
+#CONSTANCE_REDIS_CONNECTION is to be found in 'snippets/databases*'
+CONSTANCE_BACKEND      = 'constance.backends.redisd.RedisBackend'
+CONSTANCE_REDIS_PREFIX = 'c0s1f:'
+
 CONSTANCE_CONFIG = {
 
     # GR_LOAD_LIMIT * GR_WAVE_LIMIT must equals GR_MAX_ARTICLES:

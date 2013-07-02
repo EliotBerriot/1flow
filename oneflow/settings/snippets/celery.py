@@ -5,7 +5,11 @@
 #
 
 #from datetime import timedelta
+import djcelery
+djcelery.setup_loader()
 from celery.schedules import crontab
+
+BROKER_URL = os.environ.get('BROKER_URL')
 
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_RESULT_PERSISTENT = True

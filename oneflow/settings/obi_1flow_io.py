@@ -1,31 +1,24 @@
 # -*- coding: utf-8 -*-
 # Settings for obi.1flow.io (preview)
 
-MAIN_SERVER = '91.121.220.149'
-
 from sparks.django.settings import include_snippets
 
 include_snippets(
     (
         '000_nobother',
-        # production: we don't debug on OBI,
-        # we need to be in "real-life-mode",
-        # as closer as possible of real production servers.
-        # Sentry will help us catch errors, anyway.
+        # we use "production". We don't debug on OBI: we need to be
+        # in "real-life-mode", as closer as possible of the real
+        # production servers. Sentry will catch all errors, anyway.
         '00_production',
         '1flow_io',
         'common',
-        'constance_common',
-        'api_keys_preview',
-        'db_common',
-        'db_preview',
-        'cache_common',
-        'cache_development',
+        'constance',
+        'api_keys',
+        'databases',
+        'cache',
+        'celery',
         'mail_production',
         # But it's a preview/test environment, still.
-        'celery_preview',
-        'celery_common',
-        'raven_preview',
         'common_preview',
         # Thus we get rosetta, and the Django Debug toolbar.
         'rosetta',
