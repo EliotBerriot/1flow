@@ -4,6 +4,7 @@
 -e git+https://github.com/Karmak23/python-boilerpipe@master#egg=boilerpipe
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-dev
 -e git+https://github.com/originell/jpype@master#egg=jpype-dev
+-e git+https://github.com/arc90/python-readability-api.git@master#egg=readability-dev
 -e git+https://github.com/gregmuellegger/django-reset.git@4f859d9319a7bfc41484f302e96e1f880aaa67db#egg=django_reset-dev
 -e git+https://github.com/noirbizarre/django-ember.git@2845c3ef46711320b6941c22ce8204c302d6651f#egg=django_ember-dev
 -e git+https://github.com/noirbizarre/django.js.git@5e73d284971356a127677d0d4088f68a14631080#egg=django.js-dev
