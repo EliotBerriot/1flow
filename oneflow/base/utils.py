@@ -22,6 +22,10 @@ from .models import EmailContent
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
 
+REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
+                                       'localhost'), port=6379,
+                          db=getattr(settings, 'REDIS_DB', 0))
+
 now     = datetime.datetime.now
 ftstamp = datetime.datetime.fromtimestamp
 today   = datetime.date.today
@@ -406,6 +410,6 @@ class RedisStatsCounter(object):
 
         return REDIS.set(key, set_running)
 
-RedisStatsCounter.REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                                           'localhost'), port=6379,
-                                            db=getattr(settings, 'REDIS_DB', 0))
+# By default take the normal REDIS connection, but still allow
+# to override it in tests via the class attribute.
+RedisStatsCounter.REDIS = REDIS
