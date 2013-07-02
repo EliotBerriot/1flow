@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import time
-import requests
 import logging
 import datetime
 import html2text
@@ -49,6 +47,7 @@ now       = datetime.datetime.now
 #today     = datetime.date.today
 timedelta = datetime.timedelta
 
+
 class FeedStatsCounter(RedisStatsCounter):
     """ This counter represents a given feed's statistics.
 
@@ -76,6 +75,7 @@ class FeedStatsCounter(RedisStatsCounter):
 
 # This one will keep track of all counters, globally, for all feeds.
 global_feed_stats = FeedStatsCounter()
+
 
 class Source(Document):
     """ The "original source" for similar articles: they have different authors,
@@ -194,8 +194,8 @@ class Feed(Document):
                             self)
                 return
 
-        if self.last_fetch is not None and self.last_fetch >= (now()
-                - timedelta(seconds=self.fetch_interval)):
+        if self.last_fetch is not None and self.last_fetch >= (
+                now() - timedelta(seconds=self.fetch_interval)):
             if force:
                 LOGGER.warning(u'Forcing refresh of recently fetched feed %s.',
                                self)
@@ -313,8 +313,8 @@ class Article(Document):
 
         for user in users:
             new_read = Read(article=self,
-                         user=user,
-                         tags=tags)
+                            user=user,
+                            tags=tags)
             try:
                 new_read.save(validate=False)
 
@@ -423,7 +423,8 @@ class Article(Document):
             return
 
         elif self.full_content_type == CONTENT_TYPE_NONE:
-        LOGGER.info(u'Parsing full content for article %s…', self)
+
+            LOGGER.info(u'Parsing full content for article %s…', self)
 
             API_KEY = getattr(settings, 'READABILITY_PARSER_SECRET', None)
 
@@ -511,9 +512,10 @@ class Read(Document):
         document.save()
 
     def __unicode__(self):
-        return _(u'%s∞%s (#%s) %s %s') % (self.user, self.article, self.id,
-                                          _(u'read') if self.is_read
-                                          else _(u'unread'), self.rating)
+        return _(u'%s∞%s (#%s) %s %s') % (
+            self.user, self.article, self.id,
+            _(u'read') if self.is_read else _(u'unread'), self.rating)
+
 
 class Comment(Document):
     TYPE_COMMENT = 1
