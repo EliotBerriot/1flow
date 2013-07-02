@@ -47,8 +47,6 @@ env.parallel   = True
 # Where is the django project located
 env.root         = '/home/1flow/www/src'
 env.environment  = 'test'
-env.pg_superuser = 'oneflow_admin'
-env.pg_superpass = 'ZQmeDuNF7b2GMC'
 env.repository   = 'git@dev.1flow.net:1flow.git'
 
 
