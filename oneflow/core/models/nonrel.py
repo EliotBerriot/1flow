@@ -118,7 +118,7 @@ class Feed(Document):
     def signal_post_save_handler(cls, sender, document, **kwargs):
 
         # Update the feed with current content.
-        self.refresh.apply_async()
+        document.refresh.delay()
 
     def get_latest_article(self):
 
@@ -190,7 +190,8 @@ class Feed(Document):
                 my_lock.release()
                 my_lock.acquire()
             else:
-                LOGGER.info(u'Refresh for %s already scheduled, aborting.', self)
+                LOGGER.info(u'Refresh for %s already scheduled, aborting.',
+                            self)
                 return
 
         if self.last_fetch is not None and self.last_fetch >= (now()
@@ -199,7 +200,8 @@ class Feed(Document):
                 LOGGER.warning(u'Forcing refresh of recently fetched feed %s.',
                                self)
             else:
-                LOGGER.info(u'Last refresh of feed %s too recent, aborting.', self)
+                LOGGER.info(u'Last refresh of feed %s too recent, aborting.',
+                            self)
                 return
 
         # Launch the next fetcher right now, in order for the duration
@@ -393,7 +395,7 @@ class Article(Document):
         #
 
         try:
-            self.content = html2text.html2text(extracted_html)
+            self.content = html2text.html2text(self.content)
 
         except Exception, e:
             LOGGER.exception(u'Markdown shrink failed for article %s.', self)
