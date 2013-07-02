@@ -6,6 +6,7 @@ DATABASES['default'] = dj_database_url.config(
 mongoengine.connect('oneflow', host=MAIN_SERVER)
 
 REDIS_DB = 0
+REDIS_TEST_DB = 9
 
 CONSTANCE_REDIS_CONNECTION = 'redis://{0}:6379/{1}'.format(
     MAIN_SERVER, REDIS_DB)
