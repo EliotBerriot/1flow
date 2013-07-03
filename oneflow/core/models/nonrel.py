@@ -408,8 +408,6 @@ class Article(Document):
     @classmethod
     def create_article(cls, title, url, feed, **kwargs):
 
-        #LOGGER.warning('trying %s', url)
-
         new_article = cls(title=title, url=url, feed=feed)
 
         try:
@@ -578,9 +576,6 @@ class Article(Document):
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
-
-        LOGGER.info('Article %s POST_SAVE', document)
-
         if kwargs.get('created', False):
             document.post_save_task.delay()
 
