@@ -521,28 +521,31 @@ class Article(Document):
                 raise self.parse_full_content.retry(exc=RuntimeError(
                     u'READABILITY_PARSER_SECRET not defined'))
 
-            try:
-                parser_client = ParserClient(API_KEY)
-                parser_response = parser_client.get_article_content(self.url)
-                self.full_content = parser_response.content['content']
+            parser_client = ParserClient(API_KEY)
 
-                #
-                # TODO: if self.feed.options.multi_pages:
-                #           run multiple calls for every page.
-                # TODO: create our own parser (see NewsBlur / BeautifulSoup)…
-                #
+            try:
+                parser_response = parser_client.get_article_content(self.url)
+
+                # TODO: except {http,urllib}.error: retry with longer delay.
 
             except Exception, e:
-                # TODO: except urllib2.error: retry with longer delay.
-                if parser_response.content.get('error', False):
-                    LOGGER.warning(u'Readability extraction failed for '
-                                   u'article %s: %s.',
-                                   parser_response.content['messages'])
-                else:
-                    LOGGER.exception(u'Readability extraction failed for '
-                                     u'article %s.', self)
-
+                LOGGER.warning('Error during Readability parse of article '
+                               '%s, retrying.', self)
                 raise self.parse_full_content.retry(exc=e)
+
+            if parser_response.content.get('error', False):
+                LOGGER.warning(u'Readability extraction failed for '
+                               u'article %s: %s.',
+                               parser_response.content['messages'])
+                raise self.parse_full_content.retry(exc=e)
+
+            self.full_content = parser_response.content['content']
+
+            #
+            # TODO: if self.feed.options.multi_pages:
+            #           run multiple calls for every page.
+            # TODO: create our own parser (see NewsBlur / BeautifulSoup)…
+            #
 
             self.full_content_type = CONTENT_TYPE_HTML
 
