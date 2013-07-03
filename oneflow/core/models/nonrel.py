@@ -207,48 +207,7 @@ class Feed(Document):
 
             self.refresh.delay()
 
-    @celery_task_method(name='Feed.refresh', queue='low')
-    def refresh(self, force=False):
-        """ Find new articles in an RSS feed.
-
-            .. note:: we don't release the lock, this is intentional. The
-                next refresh should not occur within the feed official
-                refresh interval, this would waste resources.
-        """
-
-        if self.closed:
-            LOGGER.error('Feed %s is closed. refresh aborted.', self)
-            return True
-
-        my_lock = SimpleCacheLock(self)
-
-        if not my_lock.acquire():
-            if force:
-                LOGGER.warning(u'Forcing reschedule of fetcher for feed %s.',
-                               self)
-                my_lock.release()
-                my_lock.acquire()
-            else:
-                LOGGER.info(u'Refresh for %s already scheduled, aborting.',
-                            self)
-                return
-
-        if self.last_fetch is not None and self.last_fetch >= (
-                now() - timedelta(seconds=self.fetch_interval)):
-            if force:
-                LOGGER.warning(u'Forcing refresh of recently fetched feed %s.',
-                               self)
-            else:
-                LOGGER.info(u'Last refresh of feed %s too recent, aborting.',
-                            self)
-                return
-
-        # Launch the next fetcher right now, in order for the duration
-        # of the current fetch not to delay the next and make the actual
-        # fetch interval be longer than advertised.
-        self.refresh.apply_async((), countdown=self.fetch_interval)
-
-        LOGGER.info(u'Refreshing feed %s…', self)
+    def build_refresh_kwargs(self):
 
         kwargs = {}
 
@@ -267,31 +226,96 @@ class Feed(Document):
         if self.last_etag:
             kwargs['etag'] = self.last_etag
 
+        # Circumvent https://code.google.com/p/feedparser/issues/detail?id=390
         http_logger        = HttpResponseLogProcessor()
         kwargs['referrer'] = self.site_url
         kwargs['handlers'] = [http_logger]
 
-        parsed_feed = feedparser.parse(self.url, **kwargs)
+        return kwargs, http_logger
+
+    def refresh_must_abort(self, force=False):
+        """ Returns ``True`` if one or more abort conditions is met.
+            Checks the feed cache lock, the ``last_fetch`` date, etc.
+        """
+
+        if self.closed:
+            LOGGER.error('Feed %s is closed. refresh aborted.', self)
+            return True
+
+        my_lock = SimpleCacheLock(self)
+
+        if not my_lock.acquire():
+            if force:
+                LOGGER.warning(u'Forcing reschedule of fetcher for feed %s.',
+                               self)
+                my_lock.release()
+                my_lock.acquire()
+            else:
+                LOGGER.info(u'Refresh for %s already scheduled, aborting.',
+                            self)
+                return True
+
+        if self.last_fetch is not None and self.last_fetch >= (
+                now() - timedelta(seconds=self.fetch_interval)):
+            if force:
+                LOGGER.warning(u'Forcing refresh of recently fetched feed %s.',
+                               self)
+            else:
+                LOGGER.info(u'Last refresh of feed %s too recent, aborting.',
+                            self)
+                return True
+
+        return False
+
+    @celery_task_method(name='Feed.refresh', queue='low')
+    def refresh(self, force=False):
+        """ Find new articles in an RSS feed.
+
+            .. note:: we don't release the lock, this is intentional. The
+                next refresh should not occur within the feed official
+                refresh interval, this would waste resources.
+        """
+
+        if self.refresh_must_abort(force=force):
+            return
+
+        # Launch the next fetcher right now, in order for the duration
+        # of the current fetch not to delay the next and make the actual
+        # fetch interval be longer than advertised.
+        self.refresh.apply_async((), countdown=self.fetch_interval)
+
+        LOGGER.info(u'Refreshing feed %s…', self)
+
+        feedparser_kwargs, http_logger = self.build_refresh_kwargs()
+        parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
         # In case of a redirection, just check the last hop HTTP status.
         if http_logger.log[-1]['status'] != 304:
 
             fetch_counter = FeedStatsCounter(self)
+            subscribers   = self.get_subscribers()
+            tags          = getattr(parsed_feed, 'tags', [])
 
-            # Store these for next cycle.
+            try:
+                for article in parsed_feed.entries:
+                    self.create_article_and_reads(article, subscribers, tags)
+                    fetch_counter.incr_fetched()
+
+            except Exception, e:
+                raise self.refresh.retry(exc=e)
+
+            # Store the date/etag for next cycle. Doing it after the full
+            # refresh worked ensures that in case of any exception during
+            # the loop, the retried refresh will restart on the same
+            # entries without loosing anything.
             self.last_modified = getattr(parsed_feed, 'modified', None)
             self.last_etag     = getattr(parsed_feed, 'etag', None)
-
-            subscribers = self.get_subscribers()
-            tags        = getattr(parsed_feed, 'tags', [])
-
-            for article in parsed_feed.entries:
-                self.create_article_and_reads(article, subscribers, tags)
-                fetch_counter.incr_fetched()
 
         else:
             LOGGER.info(u'No new content in feed %s', self)
 
+        # Avoid running too near refreshes. Even if the feed didn't include
+        # new items, we will not check it again until fetch_interval is spent.
         self.last_fetch = now()
         self.save()
 
