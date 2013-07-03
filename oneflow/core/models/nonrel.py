@@ -327,7 +327,7 @@ class Article(Document):
                             user=user,
                             tags=tags)
             try:
-                new_read.save(validate=False)
+                new_read.save()
 
             except (NotUniqueError, DuplicateKeyError):
                 if verbose:
@@ -414,14 +414,14 @@ class Article(Document):
 
         self.content_type = CONTENT_TYPE_MARKDOWN
 
-        # Until full content is parsed, we have at least the content.
-        self.full_content = self.content
-
         if commit:
-            self.save(validate=False)
+            self.save()
 
-        self.parse_full_content.delay()
+        # LOGGER.info(u'————————— MD version ———————————\n%s\n'
+        #             u'————————— end MD version ———————————',
+        #             self.content)
 
+        LOGGER.info(u'Done parsing content for article %s.', self)
         return self
 
     @celery_task_method(name='Article.parse_full_content',
@@ -474,7 +474,7 @@ class Article(Document):
         self.full_content_type = CONTENT_TYPE_MARKDOWN
 
         if commit:
-            self.save(validate=False)
+            self.save()
 
         LOGGER.info(u'Done parsing full content for article %s…', self)
         return self
@@ -488,7 +488,7 @@ class Article(Document):
     def post_save_task(self):
 
         self.slug = slugify(self.title)
-        self.save(validate=False)
+        self.save()
 
         self.parse_content()
 
