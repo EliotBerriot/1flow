@@ -704,6 +704,31 @@ class Preference(Document):
 
 class User(Document):
     django_user = IntField(unique=True)
+    username    = StringField()
+    first_name  = StringField()
+    last_name   = StringField()
     preferences = ReferenceField('Preference')
+
+    def __unicode__(self):
+        return u'%s #%s (Django ID: %s)' % (self.username or u'<UNKNOWN>',
+                                            self.id, self.django_user)
+
+    def get_full_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document, **kwargs):
+        if kwargs.get('created', False):
+            document.post_save_task.delay()
+
+    @celery_task_method(name='User.post_save', queue='high')
+    def post_save_task(self):
+
+        django_user = User.objects.get(id=self.django_user)
+        self.username = django_user.username
+        self.last_name = django_user.last_name
+        self.first_name = django_user.first_name
+        self.save()
+
 
 connect_mongoengine_signals(globals())
