@@ -60,6 +60,8 @@ def connect_mongoengine_signals(module_globals):
                      'cannot connect mongoengine signals!')
         return
 
+    connected = 0
+
     for key, potential_class in module_globals.items():
 
         # TODO: use ReferenceDocument and other Mongo classes if appropriate?
@@ -80,10 +82,11 @@ def connect_mongoengine_signals(module_globals):
                     getattr(signals, signal_name).connect(
                         getattr(potential_class, handler_name),
                         sender=potential_class)
-                    LOGGER.info('Connected %s.%s to signal %s of sender %s.',
-                                potential_class.__name__,
-                                handler_name, signal_name,
-                                potential_class.__name__)
+                    connected += 1
+
+    if connected:
+        LOGGER.info('Connected %s signal handlers to MongoEngine senders.',
+                    connected)
 
 
 def get_user_and_update_context(context):
