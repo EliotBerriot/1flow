@@ -567,9 +567,9 @@ def clean_obsolete_redis_keys():
 def refresh_all_feeds(limit=None):
 
     if limit:
-        feeds = Feed.objects.all().limit(limit)
+        feeds = Feed.objects.filter(closed__ne=True).limit(limit)
     else:
-        feeds = Feed.objects.all()
+        feeds = Feed.objects.filter(closed__ne=True)
 
     for feed in feeds:
         feed.check_refresher.delay()
