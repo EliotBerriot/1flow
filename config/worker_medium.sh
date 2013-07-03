@@ -4,7 +4,7 @@
 #                    custom_script, env.environment, env.virtualenv,
 #                    role_name, env.host_string))
 
-VENV=$2
+VENV=$3
 
 case $1 in
     preinstall)
