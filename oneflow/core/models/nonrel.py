@@ -307,7 +307,14 @@ class Feed(Document):
         parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
         # In case of a redirection, just check the last hop HTTP status.
-        if http_logger.log[-1]['status'] != 304:
+        try:
+            feed_status = http_logger.log[-1]['status']
+
+        except IndexError, e:
+            # The website could not be reached.
+            raise self.refresh.retry(exc=e)
+
+        if feed_status != 304:
 
             fetch_counter = FeedStatsCounter(self)
             subscribers   = self.get_subscribers()
