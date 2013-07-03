@@ -619,10 +619,9 @@ class Read(Document):
     #meta = {'max_documents': 1000, 'max_size': 2000000}
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
+    def signal_pre_save_handler(cls, sender, document, **kwargs):
 
         document.rating = document.article.default_rating
-        document.save()
 
     def __unicode__(self):
         return _(u'%s∞%s (#%s) %s %s') % (
