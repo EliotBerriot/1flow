@@ -13,6 +13,7 @@ anyjson==0.3.3
 beautifulsoup4==4.2.0
 billiard==2.7.3.28
 blinker==1.2
+boilerpipe==1.2.0
 celery==3.0.19
 chardet==2.1.1
 dj-database-url==0.2.1
