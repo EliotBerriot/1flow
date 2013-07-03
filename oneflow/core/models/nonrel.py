@@ -194,6 +194,10 @@ class Feed(Document):
     @celery_task_method(name='Feed.check_refresher', queue='medium')
     def check_refresher(self):
 
+        if self.closed:
+            LOGGER.error('Feed %s is closed. refresh aborted.', self)
+            return
+
         my_lock = SimpleCacheLock(self)
 
         if my_lock.acquire():
@@ -211,6 +215,10 @@ class Feed(Document):
                 next refresh should not occur within the feed official
                 refresh interval, this would waste resources.
         """
+
+        if self.closed:
+            LOGGER.error('Feed %s is closed. refresh aborted.', self)
+            return True
 
         my_lock = SimpleCacheLock(self)
 
