@@ -237,6 +237,8 @@ class Feed(Document):
         # In case of a redirection, just check the last hop HTTP status.
         if http_logger.log[-1]['status'] != 304:
 
+            fetch_counter = FeedStatsCounter(self)
+
             # Store these for next cycle.
             self.last_modified = getattr(parsed_feed, 'modified', None)
             self.last_etag     = getattr(parsed_feed, 'etag', None)
@@ -246,6 +248,7 @@ class Feed(Document):
 
             for article in parsed_feed.entries:
                 self.create_article_and_reads(article, subscribers, tags)
+                fetch_counter.incr_fetched()
 
         else:
             LOGGER.info(u'No new content in feed %s', self)
