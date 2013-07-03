@@ -2,8 +2,10 @@
 
 import logging
 import datetime
+import dateutil
 import html2text
 import feedparser
+
 from readability import ParserClient
 
 try:
@@ -46,6 +48,16 @@ CONTENT_TYPE_MARKDOWN = 2
 now       = datetime.datetime.now
 #today     = datetime.date.today
 timedelta = datetime.timedelta
+
+
+# ••••••••••••• issue https://code.google.com/p/feedparser/issues/detail?id=404
+
+def dateutilDateHandler(aDateString):
+    return dateutil.parser.parse(aDateString).utctimetuple()
+
+feedparser.registerDateHandler(dateutilDateHandler)
+
+# ••••••••• end issue •••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 
 
 class FeedStatsCounter(RedisStatsCounter):
