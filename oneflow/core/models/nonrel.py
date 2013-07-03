@@ -383,6 +383,11 @@ class Article(Document):
             try:
                 extractor = BoilerPipeExtractor(extractor='ArticleExtractor',
                                                 url=self.url)
+
+                # LOGGER.info(u'————————— SOURCE version ———————————\n%s\n'
+                #             u'————————— end SOURCE version ———————————',
+                #             extractor.data)
+
                 self.content = extractor.getHTML()
 
             except Exception, e:
@@ -396,6 +401,10 @@ class Article(Document):
 
             if commit:
                 self.save()
+
+            # LOGGER.info(u'————————— HTML version ———————————\n%s\n'
+            #             u'————————— end HTML version ———————————',
+            #             self.content)
 
         #
         # TODO: parse HTML links to find other 1flow articles and convert
@@ -447,22 +456,33 @@ class Article(Document):
                 parser_client = ParserClient(API_KEY)
                 parser_response = parser_client.get_article_content(self.url)
                 self.full_content = parser_response.content['content']
-        #
-        # TODO: if self.feed.options.multi_pages:
-        #           run multiple calls for every page.
-        # TODO: create our own parser (see NewsBlur / BeautifulSoup)…
-        #
+
+                #
+                # TODO: if self.feed.options.multi_pages:
+                #           run multiple calls for every page.
+                # TODO: create our own parser (see NewsBlur / BeautifulSoup)…
+                #
+
             except Exception, e:
                 # TODO: except urllib2.error: retry with longer delay.
+                if parser_response.content.get('error', False):
+                    LOGGER.warning(u'Readability extraction failed for '
+                                   u'article %s: %s.',
+                                   parser_response.content['messages'])
+                else:
+                    LOGGER.exception(u'Readability extraction failed for '
+                                     u'article %s.', self)
 
-                LOGGER.exception(u'Readability extraction failed for '
-                                 u'article %s.', self)
                 raise self.parse_full_content.retry(exc=e)
 
             self.full_content_type = CONTENT_TYPE_HTML
 
             if commit:
                 self.save()
+
+            # LOGGER.info(u'————————— HTML version ———————————\n%s\n'
+            #             u'————————— end HTML version ———————————',
+            #             self.full_content)
 
         try:
             self.full_content = html2text.html2text(self.full_content)
@@ -476,7 +496,12 @@ class Article(Document):
         if commit:
             self.save()
 
-        LOGGER.info(u'Done parsing full content for article %s…', self)
+        # LOGGER.info(u'————————— MD version ———————————\n%s\n'
+        #             u'————————— end MD version ———————————',
+        #             self.full_content)
+
+        LOGGER.info(u'Done parsing full content for article %s.', self)
+
         return self
 
     @classmethod
