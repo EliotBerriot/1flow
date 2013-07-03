@@ -154,7 +154,7 @@ class Feed(Document):
     def get_subscribers(self):
         return [
             s.user
-            for s in Subscription.objects.filter(feed__in=(self,))
+            for s in Subscription.objects.filter(feed=self)
         ]
 
     def create_article_and_reads(self, article, subscribers, tags):
@@ -362,7 +362,7 @@ class Article(Document):
     @classmethod
     def create_article(cls, title, url, feed, **kwargs):
 
-        LOGGER.warning('trying %s', url)
+        #LOGGER.warning('trying %s', url)
 
         new_article = cls(title=title, url=url, feed=feed)
 
