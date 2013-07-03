@@ -555,7 +555,8 @@ class Article(Document):
                 LOGGER.warning(u'Readability extraction failed for '
                                u'article %s: %s.',
                                parser_response.content['messages'])
-                raise self.parse_full_content.retry(exc=e)
+                raise self.parse_full_content.retry(exc=RuntimeError(
+                    'Readability extraction failed'))
 
             self.full_content = parser_response.content['content']
 
