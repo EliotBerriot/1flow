@@ -105,7 +105,7 @@ class Feed(Document):
     closed         = BooleanField(default=False)
 
     fetch_interval = IntField(default=1800)
-    last_fetch     = DateTimeField(default=now)
+    last_fetch     = DateTimeField()
 
     # Stored directly from feedparser data to avoid wasting BW.
     last_etag      = StringField()
