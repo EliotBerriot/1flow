@@ -132,10 +132,18 @@ class Feed(Document):
         # Update the feed with current content.
         document.refresh.delay()
 
+    def get_articles(self, limit=None):
+
+        if limit:
+            return Article.objects.filter(
+                feed=self).order_by('-date_published').limit(limit)
+
+        return Article.objects.filter(
+            feed=self).order_by('-date_published')
+
     def get_latest_article(self):
 
-        latest = Article.objects.filter(
-            feed__in=(self,)).order_by('-date_published').limit(1)
+        latest = self.get_articles(1)
 
         try:
             return latest[0]
