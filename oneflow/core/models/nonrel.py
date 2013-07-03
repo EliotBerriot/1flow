@@ -16,7 +16,7 @@ from celery.contrib.methods import task as celery_task_method
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Document
+from mongoengine import Document, ValidationError
 from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 DateTimeField,
@@ -305,6 +305,17 @@ class Article(Document):
 
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
+
+    def validate(self, *args, **kwargs):
+        try:
+            super(Article, self).validate(*args, **kwargs)
+
+        except ValidationError as e:
+            # Ignore errors about these fields:
+            e.errors.pop('google_reader_original_data', None)
+
+            if e.errors:
+                raise ValidationError('ValidationError', errors=e.errors)
 
     def is_origin(self):
         return isinstance(self.source, Source)
