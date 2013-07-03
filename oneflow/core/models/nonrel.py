@@ -167,6 +167,9 @@ class Feed(Document):
             feedparser_content = feedparser_content[0]
             content = feedparser_content.get('value', CONTENT_NOT_PARSED)
 
+        else:
+            content = feedparser_content
+
         try:
             date_published = datetime.datetime(
                 *article.published_parsed[:6])
