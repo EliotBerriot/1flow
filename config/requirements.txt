@@ -1,4 +1,4 @@
--e git+https://github.com/Karmak23/sparks.git@sparks-3.1.1#egg=sparks-dev
+-e git+https://github.com/Karmak23/sparks.git@sparks-3.1.3#egg=sparks-dev
 -e git+https://github.com/Karmak23/humanize.git@master#egg=humanize-dev
 -e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
 -e git+https://github.com/Karmak23/python-boilerpipe@master#egg=boilerpipe
