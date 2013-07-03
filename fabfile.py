@@ -116,6 +116,13 @@ def preview(branch=None):
     # implicit: else: branch will be 'develop',
     # set directly from the sparks defaults.
 
+    env.sparks_options = {
+        'worker_concurrency': {
+            'worbi.1flow.io': 100,
+            'obi.1flow.io': 50,
+        }
+    }
+
     # we force the user because we can login as standard user there
     env.user        = '1flow'
     env.env_was_set = True
