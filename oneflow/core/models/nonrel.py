@@ -28,8 +28,9 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 EmbeddedDocumentField)
 
 from django.conf import settings
+from django.core.mail import mail_admins
 from django.utils.translation import ugettext_lazy as _
-from django.utils.text        import slugify
+from django.utils.text import slugify
 
 from ...base.utils import (connect_mongoengine_signals,
                            SimpleCacheLock,
@@ -155,6 +156,19 @@ class Feed(Document):
 
         return Article.objects.filter(
             feed=self).order_by('-date_published')
+
+    def validate(self, *args, **kwargs):
+        try:
+            super(Feed, self).validate(*args, **kwargs)
+
+        except ValidationError as e:
+            # Ignore errors about these fields:
+            if e.errors.pop('site_url', None) is not None:
+                mail_admins('Feed {0} has a bad `site_url`'.format(self),
+                            (u"\n\n It is currently set to “ {0} ”.\n\n"
+                            u"You should fix it.\n\n").format(self.site_url))
+            if e.errors:
+                raise ValidationError('ValidationError', errors=e.errors)
 
     def get_latest_article(self):
 
