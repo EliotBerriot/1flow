@@ -6,6 +6,10 @@ import redis
 import urllib2
 import logging
 import datetime
+try:
+    import blinker
+except:
+    blinker = None # NOQA
 
 from mongoengine import Document, signals
 from django.conf import settings
@@ -42,7 +46,7 @@ boolcast = {
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper functions
 
 
-def connect_mongoengine_signals(module_scope):
+def connect_mongoengine_signals(module_globals):
     """ Automatically iterate classes of a given module and connect handlers
         to signals, given they follow the name pattern
         ``signal_<signal_name>_handler()``.
@@ -51,15 +55,19 @@ def connect_mongoengine_signals(module_scope):
         for a list of valid signal names.
     """
 
-    for key in dir(module_scope):
-        klass = getattr(module_scope, key)
+    if blinker is None:
+        LOGGER.error('blinker module is not installed, '
+                     'cannot connect mongoengine signals!')
+        return
 
-        # TODO: use ReferenceDocument and other Mongo classes.
+    for key, potential_class in module_globals.items():
+
+        # TODO: use ReferenceDocument and other Mongo classes if appropriate?
         try:
-            look_for_handlers = issubclass(Document, klass)
+            look_for_handlers = issubclass(potential_class, Document)
 
         except:
-            # klass is definitely not a class ;-)
+            # potential_class is definitely not a class/document ;-)
             continue
 
         if look_for_handlers:
@@ -68,9 +76,14 @@ def connect_mongoengine_signals(module_scope):
                                 'pre_delete', 'post_delete',
                                 'pre_bulk_insert', 'post_bulk_insert'):
                 handler_name = 'signal_{0}_handler'.format(signal_name)
-                if hasattr(klass, handler_name):
+                if hasattr(potential_class, handler_name):
                     getattr(signals, signal_name).connect(
-                        getattr(klass, handler_name), sender=klass)
+                        getattr(potential_class, handler_name),
+                        sender=potential_class)
+                    LOGGER.info('Connected %s.%s to signal %s of sender %s.',
+                                potential_class.__name__,
+                                handler_name, signal_name,
+                                potential_class.__name__)
 
 
 def get_user_and_update_context(context):
