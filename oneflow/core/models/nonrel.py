@@ -549,13 +549,15 @@ class Article(Document):
         self.slug = slugify(self.title)
         self.save()
 
-        self.parse_content()
+        self.parse_content.delay()
+        self.parse_full_content.delay()
 
         # TODO: images_fetch
         # TODO: authors_fetch
         # TODO: publishers_fetch
         # TODO: duplicates_find
-        pass
+
+        return
 
 
 class Read(Document):
