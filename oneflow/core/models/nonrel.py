@@ -576,7 +576,10 @@ class Article(Document):
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
 
-        document.post_save_task.delay()
+        LOGGER.info('Article %s POST_SAVE', document)
+
+        if kwargs.get('created', False):
+            document.post_save_task.delay()
 
     @celery_task_method(name='Article.post_save', queue='high')
     def post_save_task(self):
