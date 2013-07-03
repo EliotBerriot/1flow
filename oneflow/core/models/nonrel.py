@@ -85,6 +85,21 @@ class FeedStatsCounter(RedisStatsCounter):
         return RedisStatsCounter._int_incr_key(
             self.key_base + ':fetch', increment)
 
+    def incr_dupes(self):
+        if self.key_base != global_feed_stats.key_base:
+            global_feed_stats.incr_dupes()
+
+        return self.dupes(increment=True)
+
+    def dupes(self, increment=False):
+
+        if self.key_base != global_feed_stats.key_base:
+            # in case we want to reset.
+            global_feed_stats.dupes(increment)
+
+        return RedisStatsCounter._int_incr_key(
+            self.key_base + ':dupes', increment)
+
 # This one will keep track of all counters, globally, for all feeds.
 global_feed_stats = FeedStatsCounter()
 
@@ -190,6 +205,8 @@ class Feed(Document):
         # If the article was not created, reads creation are likely
         # to fail too. Don't display warnings, they are quite boring.
         new_article.create_reads(subscribers, tags, verbose=created)
+
+        return created
 
     @celery_task_method(name='Feed.check_refresher', queue='medium')
     def check_refresher(self):
@@ -298,8 +315,11 @@ class Feed(Document):
 
             try:
                 for article in parsed_feed.entries:
-                    self.create_article_and_reads(article, subscribers, tags)
-                    fetch_counter.incr_fetched()
+                    if self.create_article_and_reads(article,
+                                                     subscribers, tags):
+                        fetch_counter.incr_fetched()
+                    else:
+                        fetch_counter.incr_dupes()
 
             except Exception, e:
                 raise self.refresh.retry(exc=e)
@@ -312,7 +332,7 @@ class Feed(Document):
             self.last_etag     = getattr(parsed_feed, 'etag', None)
 
         else:
-            LOGGER.info(u'No new content in feed %s', self)
+            LOGGER.info(u'No new content in feed %s.', self)
 
         # Avoid running too near refreshes. Even if the feed didn't include
         # new items, we will not check it again until fetch_interval is spent.
