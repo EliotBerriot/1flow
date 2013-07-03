@@ -238,7 +238,7 @@ class Feed(Document):
         if http_logger.log[-1]['status'] != 304:
 
             # Store these for next cycle.
-            self.last_modified = parsed_feed.modified
+            self.last_modified = getattr(parsed_feed, 'modified', None)
             self.last_etag     = getattr(parsed_feed, 'etag', None)
 
             subscribers = self.get_subscribers()
