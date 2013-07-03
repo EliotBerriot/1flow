@@ -161,7 +161,11 @@ class Feed(Document):
         """ Take a feedparser item and lists of Feed subscribers and
             tags, then create the corresponding Article and Read(s). """
 
-        content = getattr(article, 'content', CONTENT_NOT_PARSED)
+        feedparser_content = getattr(article, 'content', CONTENT_NOT_PARSED)
+
+        if isinstance(feedparser_content, list):
+            feedparser_content = feedparser_content[0]
+            content = feedparser_content.get('value', CONTENT_NOT_PARSED)
 
         try:
             date_published = datetime.datetime(
@@ -174,7 +178,11 @@ class Feed(Document):
             title=article.title,
             content=content,
             date_published=date_published,
-            feed=self)
+            feed=self,
+
+            # Convert to unicode before saving,
+            # else the article won't validate.
+            feedparser_original_data=unicode(article))
 
         # If the article was not created, reads creation are likely
         # to fail too. Don't display warnings, they are quite boring.
@@ -302,7 +310,8 @@ class Article(Document):
     url = URLField(unique=True)
     authors = ListField(ReferenceField('User'))
     publishers = ListField(ReferenceField('User'))
-    date_published = DateTimeField()
+    date_published = DateTimeField()  # published on its origin website
+    date_added = DateTimeField(default=now)  # added in 1flow database
     abstract = StringField()
     language = StringField()
     text_direction = StringField()
@@ -316,6 +325,7 @@ class Article(Document):
 
     # This should go away soon, after a full re-parsing.
     google_reader_original_data = StringField()
+    feedparser_original_data    = StringField()
 
     # A snap / a serie of snaps references the original article.
     # An article references its source (origin blog / newspaper…)
@@ -336,6 +346,7 @@ class Article(Document):
         except ValidationError as e:
             # Ignore errors about these fields:
             e.errors.pop('google_reader_original_data', None)
+            e.errors.pop('feedparser_original_data', None)
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
