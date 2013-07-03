@@ -57,6 +57,7 @@ honcho==0.4.1
 html2text==3.200.3
 Jinja2==2.7
 kombu==2.5.10
+lxml==3.2.1
 manifesto==0.4.1
 markdown2==2.1.0
 MarkupSafe==0.18
