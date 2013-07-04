@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 #
 # NOTE: this snippet should come *after* the other celery_*
 #       because it uses the BROKER_URL that should have been
