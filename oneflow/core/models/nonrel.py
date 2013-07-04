@@ -313,7 +313,7 @@ class Feed(Document):
 
         return False
 
-    @celery_task_method(name='Feed.refresh', queue='low')
+    @celery_task_method(name='Feed.refresh', rate_limit='10/s', queue='low')
     def refresh(self, force=False):
         """ Find new articles in an RSS feed.
 
