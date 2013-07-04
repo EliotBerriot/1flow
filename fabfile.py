@@ -118,8 +118,9 @@ def preview(branch=None):
 
     env.sparks_options = {
         'worker_concurrency': {
-            'worbi.1flow.io': 100,
-            'obi.1flow.io': 50,
+            'worker_low': 100,
+            'worker_medium': 100,
+            'worker_high': 50,
         }
     }
 
