@@ -2,7 +2,7 @@
 # Put production machines hostnames here.
 #
 
-# ADMINS += (('Matthieu Chaignot', 'mc@1flow.net'), )
+# MANAGERS += (('Matthieu Chaignot', 'mc@1flow.io'), )
 
 ALLOWED_HOSTS += [
     '1flow.io',

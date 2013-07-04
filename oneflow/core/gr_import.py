@@ -7,22 +7,18 @@
 """
 
 import time
-import redis
 import logging
 import datetime
 import simplejson as json
 
 from constance import config
-from django.conf import settings
 from django.contrib.auth import get_user_model
+
+from ..base.utils import RedisStatsCounter
 
 from .models.nonrel import Article
 
 LOGGER = logging.getLogger(__name__)
-
-REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                          'localhost'), port=6379,
-                          db=getattr(settings, 'REDIS_DB', 0))
 
 User = get_user_model()
 
@@ -30,16 +26,8 @@ now     = datetime.datetime.now
 ftstamp = datetime.datetime.fromtimestamp
 today   = datetime.date.today
 
-boolcast = {
-    'True': True,
-    'False': False,
-    'None': None,
-    # The real None is needed in case of a non-existing key.
-    None: None
-}
 
-
-class GoogleReaderImport(object):
+class GoogleReaderImport(RedisStatsCounter):
     """ A small wrapper to get cached and up-to-date results from a GR import.
 
         We explicitely need to cast return values.
@@ -51,10 +39,11 @@ class GoogleReaderImport(object):
         for an unknown reason it made me crazy and I finally re-casted
         them again to make the whole thing work.
     """
+    key_base = 'gri'
 
     def __init__(self, user_id):
-        self.user_id  = user_id
-        self.key_base = 'gri:{0}'.format(user_id)
+        super(GoogleReaderImport, self).__init__(instance_id=user_id)
+        self.user_id  = self.instance_id
         self._speeds  = None
 
     @property
@@ -86,57 +75,14 @@ class GoogleReaderImport(object):
         user.data['GR_IMPORT_ALLOWED'] = bool(yes_no)
         user.save()
 
-    @classmethod
-    def __time_key(cls, key, set_time=False, time_value=None):
-
-        if set_time:
-            return REDIS.set(key, time.time()
-                             if time_value is None else time_value)
-
-        return ftstamp(float(REDIS.get(key) or 0.0))
-
-    @classmethod
-    def __int_incr_key(cls, key, increment=False):
-
-        if increment == 'reset':
-            # return, else we increment to 1…
-            return REDIS.delete(key)
-
-        if increment:
-            return int(REDIS.incr(key))
-
-        return int(REDIS.get(key) or 0)
-
-    @classmethod
-    def __int_set_key(cls, key, set_value=None):
-
-        if set_value is None:
-            return int(REDIS.get(key) or 0)
-
-        return REDIS.set(key, set_value)
-
     def user_infos(self, infos=None):
 
         key = self.key_base + ':uif'
 
         if infos is None:
-            return REDIS.get(key)
+            return RedisStatsCounter.REDIS.get(key)
 
-        return REDIS.set(key, json.dumps(infos))
-
-    def running(self, set_running=None):
-
-        key = self.key_base + ':run'
-
-        # Just to be sure we need to cast…
-        # LOGGER.warning('running: set=%s, value=%s type=%s',
-        #                set_running, REDIS.get(self.key_base),
-        #                type(REDIS.get(self.key_base)))
-
-        if set_running is None:
-            return boolcast[REDIS.get(key)]
-
-        return REDIS.set(key, set_running)
+        return RedisStatsCounter.REDIS.set(key, json.dumps(infos))
 
     def start(self, set_time=False, user_infos=None):
 
@@ -156,26 +102,26 @@ class GoogleReaderImport(object):
         if user_infos is not None:
             self.user_infos(user_infos)
 
-        return GoogleReaderImport.__time_key(self.key_base + ':start', set_time)
+        return RedisStatsCounter._time_key(self.key_base + ':start', set_time)
 
     def end(self, set_time=False):
 
         if self.running():
             self.running(set_running=False)
 
-        return GoogleReaderImport.__time_key(self.key_base + ':end', set_time)
+        return RedisStatsCounter._time_key(self.key_base + ':end', set_time)
 
     def reg_date(self, set_date=None):
 
-        return GoogleReaderImport.__time_key(self.key_base + ':regd',
-                                             set_time=set_date is not None,
-                                             time_value=set_date)
+        return RedisStatsCounter._time_key(self.key_base + ':regd',
+                                           set_time=set_date is not None,
+                                           time_value=set_date)
 
     def star1_date(self, set_date=None):
 
-        return GoogleReaderImport.__time_key(self.key_base + ':stad',
-                                             set_time=set_date is not None,
-                                             time_value=set_date)
+        return RedisStatsCounter._time_key(self.key_base + ':stad',
+                                           set_time=set_date is not None,
+                                           time_value=set_date)
 
     def incr_feeds(self):
         feeds = self.feeds(increment=True)
@@ -189,12 +135,12 @@ class GoogleReaderImport(object):
 
     def feeds(self, increment=False):
 
-        return GoogleReaderImport.__int_incr_key(
+        return RedisStatsCounter._int_incr_key(
             self.key_base + ':fds', increment)
 
     def total_feeds(self, set_total=None):
 
-        return GoogleReaderImport.__int_set_key(
+        return RedisStatsCounter._int_set_key(
             self.key_base + ':tfs', set_total)
 
     def incr_reads(self):
@@ -208,27 +154,27 @@ class GoogleReaderImport(object):
 
     def reads(self, increment=False):
 
-        return GoogleReaderImport.__int_incr_key(
+        return RedisStatsCounter._int_incr_key(
             self.key_base + ':rds', increment)
 
     def starred(self, increment=False):
 
-        return GoogleReaderImport.__int_incr_key(
+        return RedisStatsCounter._int_incr_key(
             self.key_base + ':sta', increment)
 
     def articles(self, increment=False):
 
-        return GoogleReaderImport.__int_incr_key(
+        return RedisStatsCounter._int_incr_key(
             self.key_base + ':arts', increment)
 
     def total_reads(self, set_total=None):
 
-        return GoogleReaderImport.__int_set_key(
+        return RedisStatsCounter._int_set_key(
             self.key_base + ':trds', set_total)
 
     def total_starred(self, set_total=None):
 
-        return GoogleReaderImport.__int_set_key(
+        return RedisStatsCounter._int_set_key(
             self.key_base + ':tsta', set_total)
 
     def speeds(self):

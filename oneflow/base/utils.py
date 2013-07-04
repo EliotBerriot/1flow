@@ -1,7 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import six
+import time
+import redis
+import urllib2
 import logging
+import datetime
+try:
+    import blinker
+except:
+    blinker = None # NOQA
 
 from mongoengine import Document, signals
 from django.conf import settings
@@ -18,8 +26,27 @@ from .models import EmailContent
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
 
+REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
+                                       'localhost'), port=6379,
+                          db=getattr(settings, 'REDIS_DB', 0))
 
-def connect_mongoengine_signals(module_scope):
+now     = datetime.datetime.now
+ftstamp = datetime.datetime.fromtimestamp
+today   = datetime.date.today
+
+boolcast = {
+    'True': True,
+    'False': False,
+    'None': None,
+    # The real None is needed in case of a non-existing key.
+    None: None
+}
+
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper functions
+
+
+def connect_mongoengine_signals(module_globals):
     """ Automatically iterate classes of a given module and connect handlers
         to signals, given they follow the name pattern
         ``signal_<signal_name>_handler()``.
@@ -28,15 +55,21 @@ def connect_mongoengine_signals(module_scope):
         for a list of valid signal names.
     """
 
-    for key in dir(module_scope):
-        klass = getattr(module_scope, key)
+    if blinker is None:
+        LOGGER.error('blinker module is not installed, '
+                     'cannot connect mongoengine signals!')
+        return
 
-        # TODO: use ReferenceDocument and other Mongo classes.
+    connected = 0
+
+    for key, potential_class in module_globals.items():
+
+        # TODO: use ReferenceDocument and other Mongo classes if appropriate?
         try:
-            look_for_handlers = issubclass(Document, klass)
+            look_for_handlers = issubclass(potential_class, Document)
 
         except:
-            # klass is definitely not a class ;-)
+            # potential_class is definitely not a class/document ;-)
             continue
 
         if look_for_handlers:
@@ -45,9 +78,15 @@ def connect_mongoengine_signals(module_scope):
                                 'pre_delete', 'post_delete',
                                 'pre_bulk_insert', 'post_bulk_insert'):
                 handler_name = 'signal_{0}_handler'.format(signal_name)
-                if hasattr(klass, handler_name):
+                if hasattr(potential_class, handler_name):
                     getattr(signals, signal_name).connect(
-                        getattr(klass, handler_name), sender=klass)
+                        getattr(potential_class, handler_name),
+                        sender=potential_class)
+                    connected += 1
+
+    if connected:
+        LOGGER.info('Connected %s signal handlers to MongoEngine senders.',
+                    connected)
 
 
 def get_user_and_update_context(context):
@@ -219,6 +258,9 @@ def request_context_celery(request, *args, **kwargs):
     return context
 
 
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper functions
+
+
 class JsContextSerializer(ContextSerializer):
     """ This class should probably move into sparks some day. """
 
@@ -235,3 +277,155 @@ class JsContextSerializer(ContextSerializer):
         super(JsContextSerializer, self).handle_user(data)
 
         data['user']['id'] = self.request.user.id
+
+
+class AlreadyLockedException(Exception):
+    """ Simple Exception to notify a caller that uses SimpleCacheLock
+        as a context manager that the lock could not be taken. """
+    pass
+
+
+class SimpleCacheLock(object):
+    """ Simple lock for multi-hosted machines workers (eg. celery).
+        Implemented via REDIS from http://redis.io/commands/set
+
+        At start it was implemented via Memcache, but it doesn't work on
+        development machines where cache is the DummyCache implementation.
+
+        For commodity, if the instance has a ``fetch_interval`` attribute,
+        it will be taken as the default ``expire_time`` value. If not and
+        no ``expire_time`` argument is present, 3600 will be used to avoid
+        persistent locks related problems.
+    """
+
+    def __init__(self, instance, lock_value=None, expire_time=None):
+        self.lock_id = 'scl:%s:%s' % (instance.__class__.__name__,
+                                      instance.id)
+        self.expire_time = expire_time or getattr(instance, 'fetch_interval',
+                                                  3600)
+        self.lock_value  = lock_value or 'default_lock_value'
+
+    def __enter__(self):
+        if not self.acquire():
+            raise AlreadyLockedException('already locked')
+
+    def __exit__(self, *a, **kw):
+        return self.release()
+
+    def acquire(self):
+        return REDIS.set(self.lock_id, self.lock_value,
+                         ex=self.expire_time, nx=True)
+
+    def release(self):
+        val = REDIS.get(self.lock_id)
+
+        if val == self.lock_value:
+            REDIS.delete(self.lock_id)
+            return True
+
+        return False
+
+
+class HttpResponseLogProcessor(urllib2.BaseHandler):
+        """ urllib2 processor that maintains a log of HTTP responses.
+            See http://code.google.com/p/feedparser/issues/detail?id=390
+            For why it exists.
+        """
+
+        # Run after anything that's mangling headers (usually 500 or less),
+        # but before HTTPErrorProcessor (1000).
+        handler_order = 900
+
+        def __init__(self):
+            self.log = []
+
+        def http_response(self, req, response):
+            entry = {
+                "url": req.get_full_url(),
+                "status": response.getcode(),
+            }
+            location = response.info().get("Location")
+
+            if location is not None:
+                entry["location"] = location
+
+            self.log.append(entry)
+
+            return response
+
+        https_response = http_response
+
+
+class RedisStatsCounter(object):
+    """ A small statistics counter implemented on top of REDIS. Meant to
+        be replaced by a full-featured StatsD implementation at some point
+        in the future.
+
+        We explicitely need to cast return values. See
+        http://stackoverflow.com/a/13060733/654755 for details. It should
+        normally not be needed (cf.
+        https://github.com/andymccurdy/redis-py#response-callbacks) but
+        for an unknown reason it drove me crazy and I finally re-casted
+        them again to make the whole thing work.
+    """
+    REDIS      = None
+    GLOBAL_KEY = 'global'
+
+    def __init__(self, *args, **kwargs):
+
+        self.instance_id = args[0] if args else RedisStatsCounter.GLOBAL_KEY
+
+        try:
+            self.key_base = '{0}:{1}'.format(self.__class__.key_base,
+                                             self.instance_id)
+        except AttributeError:
+            raise RuntimeError(u'RedisStatsCounter is kind of an abstract '
+                               u'class, you should not use it directly but '
+                               u'rather create your own stats class.')
+
+    @classmethod
+    def _time_key(cls, key, set_time=False, time_value=None):
+
+        if set_time:
+            return REDIS.set(key, time.time()
+                             if time_value is None else time_value)
+
+        return ftstamp(float(REDIS.get(key) or 0.0))
+
+    @classmethod
+    def _int_incr_key(cls, key, increment=False):
+
+        if increment == 'reset':
+            # return, else we increment to 1…
+            return REDIS.delete(key)
+
+        if increment:
+            return int(REDIS.incr(key))
+
+        return int(REDIS.get(key) or 0)
+
+    @classmethod
+    def _int_set_key(cls, key, set_value=None):
+
+        if set_value is None:
+            return int(REDIS.get(key) or 0)
+
+        return REDIS.set(key, set_value)
+
+    def running(self, set_running=None):
+
+        key = self.key_base + ':run'
+
+        # Just to be sure we need to cast…
+        # LOGGER.warning('running: set=%s, value=%s type=%s',
+        #                set_running, REDIS.get(self.key_base),
+        #                type(REDIS.get(self.key_base)))
+
+        if set_running is None:
+            return boolcast[REDIS.get(key)]
+
+        return REDIS.set(key, set_running)
+
+# By default take the normal REDIS connection, but still allow
+# to override it in tests via the class attribute.
+RedisStatsCounter.REDIS = REDIS

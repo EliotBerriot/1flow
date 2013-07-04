@@ -48,6 +48,9 @@ on the same machine as of 2013-06-07.
 - Redis-sessions is **2**,
     - on preview, **12**.
 
+- Test redis database is 9
+    - 19 on preview
+
 
 ## Installing a new node
 

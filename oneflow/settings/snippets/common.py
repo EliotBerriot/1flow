@@ -12,10 +12,9 @@ from django.core.urlresolvers import reverse_lazy
 # This is imported here to benefit to all other included snippets.
 from sparks import platform # NOQA
 
-try:
-    MAIN_SERVER
+MAIN_SERVER = os.environ.get('MAIN_SERVER', None)
 
-except NameError:
+if MAIN_SERVER is None:
     raise RuntimeError('MAIN_SERVER setting must be defined '
                        'before common.py inclusion!')
 
@@ -362,9 +361,9 @@ INSTALLED_APPS = (
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
-import djcelery
-djcelery.setup_loader()
-# BROKER and other settings are in celery_* snippets.
+RAVEN_CONFIG = {
+    'dsn': os.environ.get('RAVEN_DSN'),
+}
 
 MAINTENANCE_MODE = os.path.exists(os.path.join(BASE_ROOT, 'MAINTENANCE_MODE'))
 
@@ -391,10 +390,7 @@ MARKDOWN_DEUX_STYLES = {
     }
 }
 
-CONSTANCE_BACKEND = 'constance.backends.redisd.RedisBackend'
-# CONSTANCE_REDIS_CONNECTION is to be found in db_*
-CONSTANCE_REDIS_PREFIX = 'c0s1f:'
-# See constance_* for default configuration keys.
+# CONSTANCE_* is to be found in 'snippets/constance*'
 
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
