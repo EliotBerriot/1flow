@@ -19,6 +19,7 @@ from django.conf import settings
 from django.core.mail import mail_admins
 from django.contrib.auth import get_user_model
 
+
 from .models import RATINGS
 from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
 from .gr_import import GoogleReaderImport
@@ -125,7 +126,9 @@ def create_article_and_read(article_url,
         Article.objects(url=article_url).update_one(
             set__url=article_url, set__title=article_title,
             set__feed=feed, set__content=article_content,
-            set__date_published=ftstamp(article_time),
+            set__date_published=None
+                if article_time is None
+                else ftstamp(article_time),
             set__google_reader_original_data=article_data, upsert=True)
 
     except (OperationError, DuplicateKeyError):
@@ -151,7 +154,6 @@ def create_article_and_read(article_url,
                               set__user=mongo_user,
                               set__tags=categories,
                               set__is_read=is_read,
-                              set__date_created=ftstamp(article_time),
                               set__rating=article.default_rating +
                               (RATINGS.STARRED if is_starred
                                else 0.0),
@@ -550,9 +552,28 @@ def clean_gri_keys():
         REDIS.delete(*names)
 
 
-@task
+@task(queue='low')
 def clean_obsolete_redis_keys():
     """ Call in turn all redis-related cleaners. """
 
     if today() <= (config.GR_END_DATE + datetime.timedelta(days=1)):
         clean_gri_keys()
+
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Refresh RSS feeds
+
+
+@task(queue='high')
+def refresh_all_feeds(limit=None):
+
+    if config.FETCH_DISABLED:
+        # Do not raise any .retry(), this is a scheduled task.
+        return
+
+    if limit:
+        feeds = Feed.objects.filter(closed__ne=True).limit(limit)
+    else:
+        feeds = Feed.objects.filter(closed__ne=True)
+
+    for feed in feeds:
+        feed.check_refresher.delay()

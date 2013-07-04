@@ -47,8 +47,6 @@ env.parallel   = True
 # Where is the django project located
 env.root         = '/home/1flow/www/src'
 env.environment  = 'test'
-env.pg_superuser = 'oneflow_admin'
-env.pg_superpass = 'ZQmeDuNF7b2GMC'
 env.repository   = 'git@dev.1flow.net:1flow.git'
 
 
@@ -107,6 +105,8 @@ def preview(branch=None):
         'lang': ['obi.1flow.io'],
         'flower': ['worbi.1flow.io'],
         'worker_high': ['obi.1flow.io'],
+        # need a worker_medium for JDK/jPype
+        'worker_medium': ['worbi.1flow.io'],
         'worker_low': ['worbi.1flow.io'],
         #'redis': ['duncan.licorn.org'],
     })
@@ -115,6 +115,13 @@ def preview(branch=None):
         env.branch = get_current_git_branch()
     # implicit: else: branch will be 'develop',
     # set directly from the sparks defaults.
+    env.sparks_options = {
+        'worker_concurrency': {
+            'worker_low': 100,
+            'worker_medium': 100,
+            'worker_high': 50,
+        }
+    }
 
     # we force the user because we can login as standard user there
     env.user        = '1flow'
@@ -140,25 +147,10 @@ def production():
     })
     env.sparks_options = {
         'worker_concurrency': {
-            # Plenty power on Gurney.
-            'worker-02.1flow.io': 10,
-
-            # This LXC has power too.
-            'worker-03.1flow.io': 3,
-
-            # Others are quite limited, don't
-            # raise their concurrency levels too much.
-            'worker-01.1flow.io': 2,
-            'worker-05.1flow.io': 3,
+            'worker_high': 50,
+            'worker_medium': 500,
+            'worker_low': 100,
         },
-        'max_tasks_per_child': {
-            '__all__': 80,
-
-            # Long-lasting tasks will be recycled faster, in case they leak.
-            'worker-02.1flow.io': 40,
-
-            #'worker-01.1flow.io': 100,
-        }
     }
     env.env_was_set = True
 

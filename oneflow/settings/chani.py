@@ -15,16 +15,12 @@ include_snippets(
         #'00_production',
         '1flow_io',
         'common',
-        'constance_common',
-        'api_keys_development',
-        'db_common',
-        'db_development',
-        'cache_common',
-        'cache_development',
-        'celery_development',
-        'celery_common',
+        'constance',
+        'api_keys',
+        'databases',
+        'cache',
+        'celery',
         'mail_development',
-        'raven_development',
         'common_development',
         'rosetta',
         'djdt',
@@ -45,3 +41,4 @@ SITE_DOMAIN = 'lil.1flow.io'
 EMAIL_HOST = 'gurney'
 #EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 #EMAIL_FILE_PATH = '/tmp/1flow.mail'
+
