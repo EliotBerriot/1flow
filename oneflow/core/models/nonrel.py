@@ -256,10 +256,12 @@ class Feed(Document):
 
         else:
             latest_article = self.get_latest_article()
-            latest_date    = latest_article.date_published
 
-            if latest_date:
-                kwargs['modified'] = latest_date
+            if latest_article:
+                latest_date = latest_article.date_published
+
+                if latest_date:
+                    kwargs['modified'] = latest_date
 
         if self.last_etag:
             kwargs['etag'] = self.last_etag
