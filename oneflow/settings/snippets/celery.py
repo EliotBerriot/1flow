@@ -14,6 +14,9 @@ BROKER_URL = os.environ.get('BROKER_URL')
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_RESULT_PERSISTENT = True
 
+# Allow to recover from any unknown crash.
+CELERY_ACKS_LATE = True
+
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
 CELERY_MESSAGE_COMPRESSION = 'gzip'
@@ -45,6 +48,22 @@ CELERYBEAT_SCHEDULE = {
     #     'schedule': timedelta(seconds=5),
     #     'schedule': crontab(minute='*'),
     # },
+    #
+    # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Core tasks
+
+    'refresh-all-feeds-checker': {
+        'task': 'oneflow.core.tasks.refresh_all_feeds',
+        'schedule': crontab(hour='*/4', minute='12'),
+    },
+
+    # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Cleaning tasks
+
+    'clean-obsolete-redis-keys': {
+        'task': 'oneflow.core.tasks.clean_obsolete_redis_keys',
+        'schedule': crontab(hour='2', minute='2'),
+    },
+    # ••••••••••••••••••••••••••••••••••••••••••••••••••••• Social auth refresh
+
     'refresh-access-tokens-00': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
         'schedule': crontab(hour='*/4', minute='0,48'),
@@ -60,9 +79,5 @@ CELERYBEAT_SCHEDULE = {
     'refresh-access-tokens-36': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
         'schedule': crontab(hour='1,5,9,13,17,21', minute=36),
-    },
-    'clean-obsolete-redis-keys': {
-        'task': 'oneflow.core.tasks.clean_obsolete_redis_keys',
-        'schedule': crontab(hour='2', minute='2'),
     },
 }
