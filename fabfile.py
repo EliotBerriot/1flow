@@ -117,9 +117,9 @@ def preview(branch=None):
     # set directly from the sparks defaults.
     env.sparks_options = {
         'worker_concurrency': {
-            'worker_low': 100,
-            'worker_medium': 100,
-            'worker_high': 50,
+            'worker_low': 20,
+            'worker_medium': 40,
+            'worker_high': 10,
         }
     }
 
@@ -147,9 +147,9 @@ def production():
     })
     env.sparks_options = {
         'worker_concurrency': {
-            'worker_high': 50,
-            'worker_medium': 500,
-            'worker_low': 100,
+            'worker_high': 10,
+            'worker_medium': 40,
+            'worker_low': 20,
         },
     }
     env.env_was_set = True
