@@ -11,6 +11,36 @@ CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 
 CONSTANCE_CONFIG = {
 
+    # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
+
+
+    # SEMANTIC NOTE: we use 'disabled' (and not 'enabled') because the rss
+    # refreshing is something that is enabled in normal conditions. Stopping
+    # it is an unusual / rare action, so the setting is named accordingly.
+    'FETCH_DISABLED': (False, ugettext(u'Set this to True for maintenance '
+                       u'operations and wait for all fetchers to terminate. '
+                       u'It should take at most FETCH_DEFAULT_INTERVAL '
+                       u'seconds.')),
+
+    'FETCH_DEFAULT_INTERVAL': (3600, ugettext(u'Default feed fetch interval '
+                               u'in seconds. You can tune the interval for '
+                               u'each feed after creation.')),
+
+    # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article parsing
+
+
+    'ARTICLE_PARSING_DISABLED': (False, ugettext(u'Set this to True to '
+                                 u'suspend content parsing operations. '
+                                 u'Related tasks will remain in queue and '
+                                 u'will be retried when you enable it again.')),
+
+    'ARTICLE_FULL_PARSING_DISABLED': (False, ugettext(u'Like '
+                                      u'ARTICLE_PARSING_DISABLED, but for '
+                                      u'FULL content parsing.')),
+
+
+    # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
+
     # GR_LOAD_LIMIT * GR_WAVE_LIMIT must equals GR_MAX_ARTICLES:
     # In the worst case, a user could have only one feed containing all its
     # articles. In this case, if WAVE_LIMIT is too low, the import tasks will
