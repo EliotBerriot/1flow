@@ -104,10 +104,10 @@ def preview(branch=None):
         'web': ['obi.1flow.io'],
         'lang': ['obi.1flow.io'],
         'flower': ['worbi.1flow.io'],
-        'worker_high': ['worbi.1flow.io'],
+        'worker_high': ['obi.1flow.io'],
         # need a worker_medium for JDK/jPype
         'worker_medium': ['worbi.1flow.io'],
-        'worker_low': ['obi.1flow.io', 'worbi.1flow.io'],
+        'worker_low': ['worbi.1flow.io'],
         #'redis': ['duncan.licorn.org'],
     })
 
