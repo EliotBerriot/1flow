@@ -6,6 +6,7 @@ import dateutil
 import html2text
 import feedparser
 
+from constance import config
 from readability import ParserClient
 
 try:
@@ -132,7 +133,7 @@ class Feed(Document):
     restricted     = BooleanField(default=False)
     closed         = BooleanField(default=False)
 
-    fetch_interval = IntField(default=1800)
+    fetch_interval = IntField(default=config.FETCH_DEFAULT_INTERVAL)
     last_fetch     = DateTimeField()
 
     # Stored directly from feedparser data to avoid wasting BW.
@@ -229,6 +230,12 @@ class Feed(Document):
             LOGGER.error('Feed %s is closed. refresh aborted.', self)
             return
 
+        if config.FETCH_DISABLED:
+            # we do not raise .retry() because the global refresh
+            # task will call us again anyway at next global check.
+            LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
+            return
+
         my_lock = SimpleCacheLock(self)
 
         if my_lock.acquire():
@@ -272,6 +279,12 @@ class Feed(Document):
         if self.closed:
             LOGGER.error('Feed %s is closed. refresh aborted.', self)
             return True
+
+        if config.FETCH_DISABLED:
+            # we do not raise .retry() because the global refresh
+            # task will call us again anyway at next global check.
+            LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
+            return
 
         my_lock = SimpleCacheLock(self)
 
@@ -479,6 +492,9 @@ class Article(Document):
             LOGGER.warning(u'Article %s has already been parsed.', self)
             return
 
+        if config.ARTICLE_PARSING_DISABLED:
+            raise self.parse_content.retry(countdown=300)
+
         elif self.content_type == CONTENT_TYPE_NONE:
 
             if not BoilerPipeExtractor:
@@ -549,6 +565,9 @@ class Article(Document):
         if self.full_content_type == CONTENT_TYPE_MARKDOWN and not force:
             LOGGER.warning(u'Article %s has already been fully parsed.', self)
             return
+
+        if config.ARTICLE_PARSING_DISABLED:
+            raise self.parse_full_content.retry(countdown=300)
 
         elif self.full_content_type == CONTENT_TYPE_NONE:
 
