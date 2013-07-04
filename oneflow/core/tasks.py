@@ -552,7 +552,7 @@ def clean_gri_keys():
         REDIS.delete(*names)
 
 
-@task
+@task(queue='low')
 def clean_obsolete_redis_keys():
     """ Call in turn all redis-related cleaners. """
 
@@ -563,7 +563,7 @@ def clean_obsolete_redis_keys():
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Refresh RSS feeds
 
 
-@task
+@task(queue='high')
 def refresh_all_feeds(limit=None):
 
     if config.FETCH_DISABLED:
