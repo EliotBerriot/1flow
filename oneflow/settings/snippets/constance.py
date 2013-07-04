@@ -1,4 +1,4 @@
-
+# -*- coding: utf-8 -*-
 #
 # Default constance keys, and their values.
 #
@@ -12,7 +12,6 @@ CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 CONSTANCE_CONFIG = {
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
-
 
     # SEMANTIC NOTE: we use 'disabled' (and not 'enabled') because the rss
     # refreshing is something that is enabled in normal conditions. Stopping
