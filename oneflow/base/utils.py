@@ -373,7 +373,8 @@ class RedisStatsCounter(object):
 
     def __init__(self, *args, **kwargs):
 
-        self.instance_id = args[0] if args else RedisStatsCounter.GLOBAL_KEY
+        self.instance_id = (args[0] if isinstance(args[0], int) else args[0].id
+                            ) if args else RedisStatsCounter.GLOBAL_KEY
 
         try:
             self.key_base = '{0}:{1}'.format(self.__class__.key_base,
