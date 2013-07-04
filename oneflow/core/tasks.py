@@ -566,6 +566,10 @@ def clean_obsolete_redis_keys():
 @task
 def refresh_all_feeds(limit=None):
 
+    if config.FETCH_DISABLED:
+        # Do not raise any .retry(), this is a scheduled task.
+        return
+
     if limit:
         feeds = Feed.objects.filter(closed__ne=True).limit(limit)
     else:
