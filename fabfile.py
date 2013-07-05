@@ -128,6 +128,19 @@ def preview(branch=None):
     env.env_was_set = True
 
 
+@task(aliases=('work', ))
+def workers():
+    """ Just setup the workers roles so we can act easily on all of them. """
+
+    env.roles = ['worker', 'worker_high', 'worker_medium', 'worker_low']
+
+
+@task
+def reboot():
+    run_command("ps ax | grep 'celery.*worker' | grep -v grep "
+                "| awk '{print $1}' | sudo xargs kill ")
+
+
 @task(alias='prod')
 def production():
     # we force the user because we can login as standard user there
