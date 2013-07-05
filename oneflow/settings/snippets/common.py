@@ -6,6 +6,7 @@
 # Production will override only the needed directives.
 
 import os
+import sys
 
 from django.core.urlresolvers import reverse_lazy
 
@@ -362,7 +363,11 @@ INSTALLED_APPS = (
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
 RAVEN_CONFIG = {
-    'dsn': os.environ.get('RAVEN_DSN'),
+    # We send flower bugs to a dedicated sentry project,
+    # it pollutes us too much.
+    'dsn': os.environ.get('RAVEN_DSN_FLOWER'
+                          if 'flower' in sys.argv
+                          else 'RAVEN_DSN'),
 }
 
 MAINTENANCE_MODE = os.path.exists(os.path.join(BASE_ROOT, 'MAINTENANCE_MODE'))
