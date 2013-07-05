@@ -299,10 +299,18 @@ class SimpleCacheLock(object):
     """
 
     def __init__(self, instance, lock_value=None, expire_time=None):
-        self.lock_id = 'scl:%s:%s' % (instance.__class__.__name__,
-                                      instance.id)
-        self.expire_time = expire_time or getattr(instance, 'fetch_interval',
-                                                  3600)
+
+        if isinstance(instance, str):
+            self.lock_id = 'scl:str:%s' % instance
+            self.expire_time = expire_time or 3600
+
+        else:
+            self.lock_id = 'scl:%s:%s' % (instance.__class__.__name__,
+                                          instance.id)
+            self.expire_time = expire_time or getattr(instance,
+                                                      'fetch_interval',
+                                                      3600)
+
         self.lock_value  = lock_value or 'default_lock_value'
 
     def __enter__(self):
