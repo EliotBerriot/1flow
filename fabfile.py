@@ -136,13 +136,10 @@ def production():
     set_roledefs_and_parallel({
         'db': ['1flow.io'],
         'web': ['1flow.io'],
-        'flower': ['worker-01.1flow.io'],
-        'worker_high': ['worker-01.1flow.io'],
-        'worker_medium': ['worker-02.1flow.io'],
-        'worker_low': [
-            'worker-03.1flow.io',
-            'worker-05.1flow.io',
-        ],
+        'flower': ['worker-01.1flow.io', ],
+        'worker_high': ['worker-01.1flow.io', ],
+        'worker_medium': ['worker-03.1flow.io', ],
+        'worker_low': ['worker-05.1flow.io', ],
         #'redis': ['duncan.licorn.org'],
     })
     env.sparks_options = {
