@@ -103,12 +103,12 @@ def preview(branch=None):
         'db': ['obi.1flow.io'],
         'web': ['obi.1flow.io'],
         'lang': ['obi.1flow.io'],
+        'shell': ['worbi.1flow.io'],
         'flower': ['worbi.1flow.io'],
         'worker_high': ['obi.1flow.io'],
-        # need a worker_medium for JDK/jPype
+        # we need a worker_medium for JDK/jPype
         'worker_medium': ['worbi.1flow.io'],
         'worker_low': ['worbi.1flow.io'],
-        #'redis': ['duncan.licorn.org'],
     })
 
     if branch is None:
@@ -149,11 +149,11 @@ def production():
     set_roledefs_and_parallel({
         'db': ['1flow.io'],
         'web': ['1flow.io'],
+        'shell': ['worker-03.1flow.io', ],
         'flower': ['worker-01.1flow.io', ],
         'worker_high': ['worker-01.1flow.io', ],
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low': ['worker-05.1flow.io', ],
-        #'redis': ['duncan.licorn.org'],
     })
     env.sparks_options = {
         'worker_concurrency': {
