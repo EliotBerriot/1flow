@@ -223,7 +223,6 @@ class Feed(Document):
 
         return created
 
-    @celery_task_method(name='Feed.check_refresher', queue='medium')
     def check_refresher(self):
 
         if self.closed:

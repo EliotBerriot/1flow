@@ -576,4 +576,4 @@ def refresh_all_feeds(limit=None):
         feeds = Feed.objects.filter(closed__ne=True)
 
     for feed in feeds:
-        feed.check_refresher.delay()
+        feed.check_refresher()
