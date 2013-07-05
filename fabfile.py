@@ -144,9 +144,9 @@ def production():
     })
     env.sparks_options = {
         'worker_concurrency': {
-            'worker_high': 10,
-            'worker_medium': 40,
-            'worker_low': 20,
+            'worker_high': 50,
+            'worker_medium': 75,
+            'worker_low': 150,
         },
     }
     env.env_was_set = True
