@@ -117,9 +117,9 @@ def preview(branch=None):
     # set directly from the sparks defaults.
     env.sparks_options = {
         'worker_concurrency': {
-            'worker_low': 20,
-            'worker_medium': 40,
-            'worker_high': 10,
+            'worker_low': 10,
+            'worker_medium': 10,
+            'worker_high': 15,
         }
     }
 
