@@ -330,6 +330,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django_reset',
+    'django_shell_ipynb',
     'gunicorn',
     'south',
     'south_admin',
