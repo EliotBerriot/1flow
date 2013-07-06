@@ -16,6 +16,7 @@ except ImportError:
     BoilerPipeExtractor = None # NOQA
 
 from celery.contrib.methods import task as celery_task_method
+from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
 
@@ -408,10 +409,12 @@ class Article(Document):
     comments = ListField(ReferenceField('Comment'))
     default_rating = FloatField(default=0.0)
 
-    content      = StringField(default=CONTENT_NOT_PARSED)
-    content_type = IntField(default=CONTENT_TYPE_NONE)
-    full_content      = StringField(default=CONTENT_NOT_PARSED)
-    full_content_type = IntField(default=CONTENT_TYPE_NONE)
+    content       = StringField(default=CONTENT_NOT_PARSED)
+    content_type  = IntField(default=CONTENT_TYPE_NONE)
+    content_error = StringField()
+    full_content       = StringField(default=CONTENT_NOT_PARSED)
+    full_content_type  = IntField(default=CONTENT_TYPE_NONE)
+    full_content_error = StringField()
 
     # This should go away soon, after a full re-parsing.
     google_reader_original_data = StringField()
@@ -485,12 +488,17 @@ class Article(Document):
 
             return new_article, True
 
-    @celery_task_method(name='Article.parse_content',
-                        queue='medium', default_retry_delay=3600)
+    @celery_task_method(name='Article.parse_content', queue='medium',
+                        default_retry_delay=3600, time_limit=30)
     def parse_content(self, force=False, commit=True):
 
         if self.content_type == CONTENT_TYPE_MARKDOWN and not force:
             LOGGER.warning(u'Article %s has already been parsed.', self)
+            return
+
+        if self.content_error and not force:
+            LOGGER.warning(u'Article %s has a parsing error, aborting (%s).',
+                           self, self.content_error)
             return
 
         if config.ARTICLE_PARSING_DISABLED:
@@ -516,11 +524,21 @@ class Article(Document):
 
                 self.content = extractor.getHTML()
 
+            except SoftTimeLimitExceeded, e:
+                self.content_error = str(e)
+                self.save()
+
+                LOGGER.error(u'BoilerPipe extraction took too long for '
+                             u'article %s.', self)
+                return
+
             except Exception, e:
                 # TODO: except urllib2.error: retry with longer delay.
+                self.content_error = str(e)
+                self.save()
 
-                LOGGER.exception(u'BoilerPipe extraction failed for '
-                                 u'article %s.', self)
+                LOGGER.error(u'BoilerPipe extraction failed for article '
+                             u'%s: %s.', self, e)
                 return
 
             self.content_type = CONTENT_TYPE_HTML
@@ -544,8 +562,11 @@ class Article(Document):
             self.content = html2text.html2text(self.content)
 
         except Exception, e:
+            self.content_error = str(e)
+            self.save()
+
             LOGGER.exception(u'Markdown shrink failed for article %s.', self)
-            raise self.parse_content.retry(exc=e)
+            return
 
         self.content_type = CONTENT_TYPE_MARKDOWN
 
@@ -557,15 +578,19 @@ class Article(Document):
         #             self.content)
 
         LOGGER.info(u'Done parsing content for article %s.', self)
-        return self
 
     @celery_task_method(name='Article.parse_full_content',
                         queue='low', rate_limit='30/m',
-                        default_retry_delay=3600)
+                        default_retry_delay=3600, time_limit=30)
     def parse_full_content(self, force=False, commit=True):
 
         if self.full_content_type == CONTENT_TYPE_MARKDOWN and not force:
             LOGGER.warning(u'Article %s has already been fully parsed.', self)
+            return
+
+        if self.full_content_error and not force:
+            LOGGER.warning(u'Article %s has a full content error, aborting '
+                           u'(%s).', self, self.full_content_error)
             return
 
         if config.ARTICLE_FULL_PARSING_DISABLED:
@@ -589,12 +614,26 @@ class Article(Document):
 
                 # TODO: except {http,urllib}.error: retry with longer delay.
 
+            except SoftTimeLimitExceeded, e:
+                self.content_error = str(e)
+                self.save()
+
+                LOGGER.error(u'Readability extraction took too long for '
+                             u'article %s.', self)
+                return
+
             except Exception, e:
-                LOGGER.exception(u'Error during Readability parse of article '
-                                 u'%s', self)
+                self.full_content_error = str(e)
+                self.save()
+
+                LOGGER.error(u'Error during Readability parse of article '
+                             u'%s: %s.', self, e)
                 return
 
             if parser_response.content.get('error', False):
+                self.full_content_error = str(e)
+                self.save()
+
                 LOGGER.error(u'Readability parsing failed on their side for '
                              u'article %s: %s.', self,
                              parser_response.content['messages'])
@@ -621,8 +660,11 @@ class Article(Document):
             self.full_content = html2text.html2text(self.full_content)
 
         except Exception, e:
+            self.full_content_error = str(e)
+            self.save()
+
             LOGGER.exception(u'Markdown shrink failed for article %s.', self)
-            raise self.parse_content.retry(exc=e)
+            return
 
         self.full_content_type = CONTENT_TYPE_MARKDOWN
 
@@ -634,8 +676,6 @@ class Article(Document):
         #             self.full_content)
 
         LOGGER.info(u'Done parsing full content for article %s.', self)
-
-        return self
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
