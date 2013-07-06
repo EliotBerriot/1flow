@@ -141,6 +141,12 @@ def reboot():
                 "| awk '{print $1}' | sudo xargs kill ")
 
 
+@task
+def count():
+    run_command("ps ax | grep 'celery.*worker' | grep -v grep "
+                "| wc -l")
+
+
 @task(alias='prod')
 def production():
     # we force the user because we can login as standard user there

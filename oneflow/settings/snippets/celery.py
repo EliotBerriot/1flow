@@ -75,11 +75,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'refresh-access-tokens-12': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='3,7,11,19,23', minute=12),
+        'schedule': crontab(hour='3,7,11,15,19,23', minute=12),
     },
     'refresh-access-tokens-24': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='2,6,8,14,18,22', minute=24),
+        'schedule': crontab(hour='2,6,10,14,18,22', minute=24),
     },
     'refresh-access-tokens-36': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
