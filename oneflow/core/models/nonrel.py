@@ -567,8 +567,8 @@ class Article(Document):
             LOGGER.warning(u'Article %s has already been fully parsed.', self)
             return
 
-        if config.ARTICLE_PARSING_DISABLED:
             raise self.parse_full_content.retry(countdown=300)
+        if config.ARTICLE_FULL_PARSING_DISABLED:
 
         elif self.full_content_type == CONTENT_TYPE_NONE:
 
