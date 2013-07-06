@@ -580,7 +580,7 @@ class Article(Document):
         LOGGER.info(u'Done parsing content for article %s.', self)
 
     @celery_task_method(name='Article.parse_full_content',
-                        queue='low', rate_limit='30/m',
+                        queue='low', rate_limit='950/h',
                         default_retry_delay=3600, soft_time_limit=30)
     def parse_full_content(self, force=False, commit=True):
 
