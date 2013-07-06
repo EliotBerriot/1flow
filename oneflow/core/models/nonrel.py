@@ -494,9 +494,10 @@ class Article(Document):
             return
 
         if config.ARTICLE_PARSING_DISABLED:
-            raise self.parse_content.retry(countdown=300)
+            LOGGER.warning(u'Parsing disabled in configuration.')
+            return
 
-        elif self.content_type == CONTENT_TYPE_NONE:
+        if self.content_type == CONTENT_TYPE_NONE:
 
             if not BoilerPipeExtractor:
                 raise self.parse_content.retry(
@@ -520,7 +521,7 @@ class Article(Document):
 
                 LOGGER.exception(u'BoilerPipe extraction failed for '
                                  u'article %s.', self)
-                raise self.parse_content.retry(exc=e)
+                return
 
             self.content_type = CONTENT_TYPE_HTML
 
@@ -567,10 +568,11 @@ class Article(Document):
             LOGGER.warning(u'Article %s has already been fully parsed.', self)
             return
 
-            raise self.parse_full_content.retry(countdown=300)
         if config.ARTICLE_FULL_PARSING_DISABLED:
+            LOGGER.warning(u'Full parsing disabled in configuration.')
+            return
 
-        elif self.full_content_type == CONTENT_TYPE_NONE:
+        if self.full_content_type == CONTENT_TYPE_NONE:
 
             LOGGER.info(u'Parsing full content for article %s…', self)
 
@@ -588,16 +590,15 @@ class Article(Document):
                 # TODO: except {http,urllib}.error: retry with longer delay.
 
             except Exception, e:
-                LOGGER.warning('Error during Readability parse of article '
-                               '%s, retrying.', self)
-                raise self.parse_full_content.retry(exc=e)
+                LOGGER.exception(u'Error during Readability parse of article '
+                                 u'%s', self)
+                return
 
             if parser_response.content.get('error', False):
-                LOGGER.warning(u'Readability extraction failed for '
-                               u'article %s: %s.',
-                               parser_response.content['messages'])
-                raise self.parse_full_content.retry(exc=RuntimeError(
-                    'Readability extraction failed'))
+                LOGGER.error(u'Readability parsing failed on their side for '
+                             u'article %s: %s.', self,
+                             parser_response.content['messages'])
+                return
 
             self.full_content = parser_response.content['content']
 
@@ -650,6 +651,14 @@ class Article(Document):
         self.parse_content.delay()
         self.parse_full_content.delay()
 
+        # TODO: remove_useless_blocks, eg:
+        #       <p><a href="http://addthis.com/bookmark.php?v=250">
+        #       <img src="http://cache.addthis.com/cachefly/static/btn/
+        #       v2/lg-share-en.gif" alt="Bookmark and Share" /></a></p>
+        #
+        #       (in 51d6a1594adc895fd21c3475, see Notebook)
+        #
+        # TODO: link_replace (by our short_url_link for click statistics)
         # TODO: images_fetch
         # TODO: authors_fetch
         # TODO: publishers_fetch
