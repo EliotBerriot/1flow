@@ -489,7 +489,7 @@ class Article(Document):
             return new_article, True
 
     @celery_task_method(name='Article.parse_content', queue='medium',
-                        default_retry_delay=3600, time_limit=30)
+                        default_retry_delay=3600, soft_time_limit=30)
     def parse_content(self, force=False, commit=True):
 
         if self.content_type == CONTENT_TYPE_MARKDOWN and not force:
@@ -581,7 +581,7 @@ class Article(Document):
 
     @celery_task_method(name='Article.parse_full_content',
                         queue='low', rate_limit='30/m',
-                        default_retry_delay=3600, time_limit=30)
+                        default_retry_delay=3600, soft_time_limit=30)
     def parse_full_content(self, force=False, commit=True):
 
         if self.full_content_type == CONTENT_TYPE_MARKDOWN and not force:
