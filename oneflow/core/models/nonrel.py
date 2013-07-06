@@ -631,7 +631,7 @@ class Article(Document):
                 return
 
             if parser_response.content.get('error', False):
-                self.full_content_error = str(e)
+                self.full_content_error = parser_response.content['messages']
                 self.save()
 
                 LOGGER.error(u'Readability parsing failed on their side for '
