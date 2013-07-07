@@ -340,8 +340,15 @@ class Feed(Document):
             feed_status = http_logger.log[-1]['status']
 
         except IndexError, e:
-            # The website could not be reached.
-            raise self.refresh.retry(exc=e)
+            # The website could not be reached?
+
+            # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+            #raise self.refresh.retry(exc=e)
+
+            # NOTE: the feed refresh will be launched
+            # again by the global scheduled class.
+            LOGGER.exception('Refresh feed %s status failed.', self)
+            return e
 
         if feed_status != 304:
 
@@ -358,7 +365,13 @@ class Feed(Document):
                         fetch_counter.incr_dupes()
 
             except Exception, e:
-                raise self.refresh.retry(exc=e)
+                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+                #raise self.refresh.retry(exc=e)
+
+                # NOTE: the feed refresh will be launched
+                # again by the global scheduled class.
+                LOGGER.exception('Refresh feed %s failed.', self)
+                return e
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
@@ -508,9 +521,12 @@ class Article(Document):
         if self.content_type == CONTENT_TYPE_NONE:
 
             if not BoilerPipeExtractor:
-                raise self.parse_content.retry(
-                    exc=RuntimeError(u'BoilerPipeExtractor not found '
-                                     u'(or JPype not installed?)'))
+                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+                # raise self.parse_content.retry(
+                #     exc=RuntimeError(u'BoilerPipeExtractor not found '
+                #                      u'(or JPype not installed?)'))
+                LOGGER.critical('BoilerPipeExtractor not found!')
+                return
 
             LOGGER.info(u'Parsing content for article %s…', self)
 
@@ -537,9 +553,9 @@ class Article(Document):
                 self.content_error = str(e)
                 self.save()
 
-                LOGGER.error(u'BoilerPipe extraction failed for article '
-                             u'%s: %s.', self, e)
-                return
+                LOGGER.exception(u'BoilerPipe extraction failed for article '
+                                 u'%s.', self)
+                return e
 
             self.content_type = CONTENT_TYPE_HTML
 
@@ -566,7 +582,7 @@ class Article(Document):
             self.save()
 
             LOGGER.exception(u'Markdown shrink failed for article %s.', self)
-            return
+            return e
 
         self.content_type = CONTENT_TYPE_MARKDOWN
 
@@ -604,8 +620,11 @@ class Article(Document):
             API_KEY = getattr(settings, 'READABILITY_PARSER_SECRET', None)
 
             if API_KEY in (None, ''):
-                raise self.parse_full_content.retry(exc=RuntimeError(
-                    u'READABILITY_PARSER_SECRET not defined'))
+                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+                # raise self.parse_full_content.retry(exc=RuntimeError(
+                #     u'READABILITY_PARSER_SECRET not defined'))
+                LOGGER.critical('READABILITY_PARSER_SECRET setting not found!')
+                return
 
             parser_client = ParserClient(API_KEY)
 
@@ -626,9 +645,9 @@ class Article(Document):
                 self.full_content_error = str(e)
                 self.save()
 
-                LOGGER.error(u'Error during Readability parse of article '
-                             u'%s: %s.', self, e)
-                return
+                LOGGER.exception(u'Error during Readability parse of article '
+                                 u'%s.', self)
+                return e
 
             if parser_response.content.get('error', False):
                 self.full_content_error = parser_response.content['messages']
@@ -637,7 +656,7 @@ class Article(Document):
                 LOGGER.error(u'Readability parsing failed on their side for '
                              u'article %s: %s.', self,
                              parser_response.content['messages'])
-                return
+                return self.full_content_error
 
             self.full_content = parser_response.content['content']
 
@@ -664,7 +683,7 @@ class Article(Document):
             self.save()
 
             LOGGER.exception(u'Markdown shrink failed for article %s.', self)
-            return
+            return e
 
         self.full_content_type = CONTENT_TYPE_MARKDOWN
 
