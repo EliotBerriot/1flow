@@ -25,11 +25,17 @@ CELERY_ACKS_LATE = True
 # slow internet connection (yes Gurney, I'm thinking of you).
 CELERY_MESSAGE_COMPRESSION = 'gzip'
 
+# Avoid long running and retried tasks to be run over-and-over again.
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 43200}
+
 # One day is already the default
 #CELERY_TASK_RESULT_EXPIRES = 86400
 
-# The current default:
-#CELERY_MAX_CACHED_RESULTS = 5000
+# The default beiing 5000, we need more than this.
+CELERY_MAX_CACHED_RESULTS = 32768
+
+# NOTE: I don't know if this is compatible with upstart.
+CELERYD_POOL_RESTARTS = True
 
 # I use these to debug kombu crashes; we get a more informative message.
 #CELERY_TASK_SERIALIZER = 'json'
