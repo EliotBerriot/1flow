@@ -16,6 +16,7 @@ except ImportError:
     BoilerPipeExtractor = None # NOQA
 
 from celery.contrib.methods import task as celery_task_method
+from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
 
@@ -223,7 +224,6 @@ class Feed(Document):
 
         return created
 
-    @celery_task_method(name='Feed.check_refresher', queue='medium')
     def check_refresher(self):
 
         if self.closed:
@@ -313,7 +313,7 @@ class Feed(Document):
 
         return False
 
-    @celery_task_method(name='Feed.refresh', rate_limit='10/s', queue='low')
+    @celery_task_method(name='Feed.refresh', queue='low')  # rate_limit='10/s')
     def refresh(self, force=False):
         """ Find new articles in an RSS feed.
 
@@ -340,8 +340,15 @@ class Feed(Document):
             feed_status = http_logger.log[-1]['status']
 
         except IndexError, e:
-            # The website could not be reached.
-            raise self.refresh.retry(exc=e)
+            # The website could not be reached?
+
+            # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+            #raise self.refresh.retry(exc=e)
+
+            # NOTE: the feed refresh will be launched
+            # again by the global scheduled class.
+            LOGGER.exception('Refresh feed %s status failed.', self)
+            return e
 
         if feed_status != 304:
 
@@ -358,7 +365,13 @@ class Feed(Document):
                         fetch_counter.incr_dupes()
 
             except Exception, e:
-                raise self.refresh.retry(exc=e)
+                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+                #raise self.refresh.retry(exc=e)
+
+                # NOTE: the feed refresh will be launched
+                # again by the global scheduled class.
+                LOGGER.exception('Refresh feed %s failed.', self)
+                return e
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
@@ -409,10 +422,12 @@ class Article(Document):
     comments = ListField(ReferenceField('Comment'))
     default_rating = FloatField(default=0.0)
 
-    content      = StringField(default=CONTENT_NOT_PARSED)
-    content_type = IntField(default=CONTENT_TYPE_NONE)
-    full_content      = StringField(default=CONTENT_NOT_PARSED)
-    full_content_type = IntField(default=CONTENT_TYPE_NONE)
+    content       = StringField(default=CONTENT_NOT_PARSED)
+    content_type  = IntField(default=CONTENT_TYPE_NONE)
+    content_error = StringField()
+    full_content       = StringField(default=CONTENT_NOT_PARSED)
+    full_content_type  = IntField(default=CONTENT_TYPE_NONE)
+    full_content_error = StringField()
 
     # This should go away soon, after a full re-parsing.
     google_reader_original_data = StringField()
@@ -486,23 +501,32 @@ class Article(Document):
 
             return new_article, True
 
-    @celery_task_method(name='Article.parse_content',
-                        queue='medium', default_retry_delay=3600)
+    @celery_task_method(name='Article.parse_content', queue='medium',
+                        default_retry_delay=3600, soft_time_limit=30)
     def parse_content(self, force=False, commit=True):
 
         if self.content_type == CONTENT_TYPE_MARKDOWN and not force:
             LOGGER.warning(u'Article %s has already been parsed.', self)
             return
 
-        if config.ARTICLE_PARSING_DISABLED:
-            raise self.parse_content.retry(countdown=300)
+        if self.content_error and not force:
+            LOGGER.warning(u'Article %s has a parsing error, aborting (%s).',
+                           self, self.content_error)
+            return
 
-        elif self.content_type == CONTENT_TYPE_NONE:
+        if config.ARTICLE_PARSING_DISABLED:
+            LOGGER.warning(u'Parsing disabled in configuration.')
+            return
+
+        if self.content_type == CONTENT_TYPE_NONE:
 
             if not BoilerPipeExtractor:
-                raise self.parse_content.retry(
-                    exc=RuntimeError(u'BoilerPipeExtractor not found '
-                                     u'(or JPype not installed?)'))
+                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+                # raise self.parse_content.retry(
+                #     exc=RuntimeError(u'BoilerPipeExtractor not found '
+                #                      u'(or JPype not installed?)'))
+                LOGGER.critical('BoilerPipeExtractor not found!')
+                return
 
             LOGGER.info(u'Parsing content for article %s…', self)
 
@@ -516,12 +540,22 @@ class Article(Document):
 
                 self.content = extractor.getHTML()
 
+            except SoftTimeLimitExceeded, e:
+                self.content_error = str(e)
+                self.save()
+
+                LOGGER.error(u'BoilerPipe extraction took too long for '
+                             u'article %s.', self)
+                return
+
             except Exception, e:
                 # TODO: except urllib2.error: retry with longer delay.
+                self.content_error = str(e)
+                self.save()
 
-                LOGGER.exception(u'BoilerPipe extraction failed for '
-                                 u'article %s.', self)
-                raise self.parse_content.retry(exc=e)
+                LOGGER.exception(u'BoilerPipe extraction failed for article '
+                                 u'%s.', self)
+                return e
 
             self.content_type = CONTENT_TYPE_HTML
 
@@ -544,8 +578,11 @@ class Article(Document):
             self.content = html2text.html2text(self.content)
 
         except Exception, e:
+            self.content_error = str(e)
+            self.save()
+
             LOGGER.exception(u'Markdown shrink failed for article %s.', self)
-            raise self.parse_content.retry(exc=e)
+            return e
 
         self.content_type = CONTENT_TYPE_MARKDOWN
 
@@ -557,29 +594,37 @@ class Article(Document):
         #             self.content)
 
         LOGGER.info(u'Done parsing content for article %s.', self)
-        return self
 
     @celery_task_method(name='Article.parse_full_content',
-                        queue='low', rate_limit='30/m',
-                        default_retry_delay=3600)
+                        queue='low', rate_limit='950/h',
+                        default_retry_delay=3600, soft_time_limit=30)
     def parse_full_content(self, force=False, commit=True):
 
         if self.full_content_type == CONTENT_TYPE_MARKDOWN and not force:
             LOGGER.warning(u'Article %s has already been fully parsed.', self)
             return
 
-        if config.ARTICLE_PARSING_DISABLED:
-            raise self.parse_full_content.retry(countdown=300)
+        if self.full_content_error and not force:
+            LOGGER.warning(u'Article %s has a full content error, aborting '
+                           u'(%s).', self, self.full_content_error)
+            return
 
-        elif self.full_content_type == CONTENT_TYPE_NONE:
+        if config.ARTICLE_FULL_PARSING_DISABLED:
+            LOGGER.warning(u'Full parsing disabled in configuration.')
+            return
+
+        if self.full_content_type == CONTENT_TYPE_NONE:
 
             LOGGER.info(u'Parsing full content for article %s…', self)
 
             API_KEY = getattr(settings, 'READABILITY_PARSER_SECRET', None)
 
             if API_KEY in (None, ''):
-                raise self.parse_full_content.retry(exc=RuntimeError(
-                    u'READABILITY_PARSER_SECRET not defined'))
+                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
+                # raise self.parse_full_content.retry(exc=RuntimeError(
+                #     u'READABILITY_PARSER_SECRET not defined'))
+                LOGGER.critical('READABILITY_PARSER_SECRET setting not found!')
+                return
 
             parser_client = ParserClient(API_KEY)
 
@@ -588,17 +633,30 @@ class Article(Document):
 
                 # TODO: except {http,urllib}.error: retry with longer delay.
 
+            except SoftTimeLimitExceeded, e:
+                self.content_error = str(e)
+                self.save()
+
+                LOGGER.error(u'Readability extraction took too long for '
+                             u'article %s.', self)
+                return
+
             except Exception, e:
-                LOGGER.warning('Error during Readability parse of article '
-                               '%s, retrying.', self)
-                raise self.parse_full_content.retry(exc=e)
+                self.full_content_error = str(e)
+                self.save()
+
+                LOGGER.exception(u'Error during Readability parse of article '
+                                 u'%s.', self)
+                return e
 
             if parser_response.content.get('error', False):
-                LOGGER.warning(u'Readability extraction failed for '
-                               u'article %s: %s.',
-                               parser_response.content['messages'])
-                raise self.parse_full_content.retry(exc=RuntimeError(
-                    'Readability extraction failed'))
+                self.full_content_error = parser_response.content['messages']
+                self.save()
+
+                LOGGER.error(u'Readability parsing failed on their side for '
+                             u'article %s: %s.', self,
+                             parser_response.content['messages'])
+                return self.full_content_error
 
             self.full_content = parser_response.content['content']
 
@@ -621,8 +679,11 @@ class Article(Document):
             self.full_content = html2text.html2text(self.full_content)
 
         except Exception, e:
+            self.full_content_error = str(e)
+            self.save()
+
             LOGGER.exception(u'Markdown shrink failed for article %s.', self)
-            raise self.parse_content.retry(exc=e)
+            return e
 
         self.full_content_type = CONTENT_TYPE_MARKDOWN
 
@@ -634,8 +695,6 @@ class Article(Document):
         #             self.full_content)
 
         LOGGER.info(u'Done parsing full content for article %s.', self)
-
-        return self
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
@@ -651,6 +710,14 @@ class Article(Document):
         self.parse_content.delay()
         self.parse_full_content.delay()
 
+        # TODO: remove_useless_blocks, eg:
+        #       <p><a href="http://addthis.com/bookmark.php?v=250">
+        #       <img src="http://cache.addthis.com/cachefly/static/btn/
+        #       v2/lg-share-en.gif" alt="Bookmark and Share" /></a></p>
+        #
+        #       (in 51d6a1594adc895fd21c3475, see Notebook)
+        #
+        # TODO: link_replace (by our short_url_link for click statistics)
         # TODO: images_fetch
         # TODO: authors_fetch
         # TODO: publishers_fetch

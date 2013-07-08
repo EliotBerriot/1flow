@@ -103,12 +103,12 @@ def preview(branch=None):
         'db': ['obi.1flow.io'],
         'web': ['obi.1flow.io'],
         'lang': ['obi.1flow.io'],
+        'shell': ['worbi.1flow.io'],
         'flower': ['worbi.1flow.io'],
         'worker_high': ['obi.1flow.io'],
-        # need a worker_medium for JDK/jPype
+        # we need a worker_medium for JDK/jPype
         'worker_medium': ['worbi.1flow.io'],
         'worker_low': ['worbi.1flow.io'],
-        #'redis': ['duncan.licorn.org'],
     })
 
     if branch is None:
@@ -117,15 +117,34 @@ def preview(branch=None):
     # set directly from the sparks defaults.
     env.sparks_options = {
         'worker_concurrency': {
-            'worker_low': 20,
-            'worker_medium': 40,
-            'worker_high': 10,
+            'worker_low': 10,
+            'worker_medium': 10,
+            'worker_high': 15,
         }
     }
 
     # we force the user because we can login as standard user there
     env.user        = '1flow'
     env.env_was_set = True
+
+
+@task(aliases=('work', ))
+def workers():
+    """ Just setup the workers roles so we can act easily on all of them. """
+
+    env.roles = ['worker', 'worker_high', 'worker_medium', 'worker_low']
+
+
+@task
+def reboot():
+    run_command("ps ax | grep 'celery.*worker' | grep -v grep "
+                "| awk '{print $1}' | sudo xargs kill ")
+
+
+@task
+def count():
+    run_command("ps ax | grep 'celery.*worker' | grep -v grep "
+                "| wc -l")
 
 
 @task(alias='prod')
@@ -136,18 +155,21 @@ def production():
     set_roledefs_and_parallel({
         'db': ['1flow.io'],
         'web': ['1flow.io'],
+        'shell': ['worker-03.1flow.io', ],
         'flower': ['worker-01.1flow.io', ],
         'worker_high': ['worker-01.1flow.io', ],
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low': ['worker-05.1flow.io', ],
-        #'redis': ['duncan.licorn.org'],
     })
     env.sparks_options = {
         'worker_concurrency': {
-            'worker_high': 50,
-            'worker_medium': 75,
-            'worker_low': 150,
+            'worker_high': 20,
+            'worker_medium': 15,
+            'worker_low': 15,
         },
+        'max_tasks_per_child': {
+            '__all__': 600,
+        }
     }
     env.env_was_set = True
 

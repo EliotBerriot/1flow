@@ -24,6 +24,7 @@ from .models import RATINGS
 from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
 from .gr_import import GoogleReaderImport
 
+from ..base.utils import SimpleCacheLock
 #from ..base.utils import send_email_with_db_content
 
 # We don't fetch articles too far in the past, even if google has them.
@@ -570,10 +571,20 @@ def refresh_all_feeds(limit=None):
         # Do not raise any .retry(), this is a scheduled task.
         return
 
+    my_lock = SimpleCacheLock('refresh_all_feeds')
+
+    if not my_lock.acquire():
+        # Avoid running this task over and over again in the queue
+        # if the previous instance did not yet terminate. Happens
+        # when scheduled task runs too quickly.
+        return
+
     if limit:
         feeds = Feed.objects.filter(closed__ne=True).limit(limit)
     else:
         feeds = Feed.objects.filter(closed__ne=True)
 
     for feed in feeds:
-        feed.check_refresher.delay()
+        feed.check_refresher()
+
+    my_lock.release()

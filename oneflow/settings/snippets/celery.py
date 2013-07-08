@@ -18,15 +18,24 @@ CELERY_RESULT_PERSISTENT = True
 # Allow to recover from any unknown crash.
 CELERY_ACKS_LATE = True
 
+# Sometimes, Ask asks us to enable this to debug issues.
+#CELERY_DISABLE_RATE_LIMITS=True
+
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
 CELERY_MESSAGE_COMPRESSION = 'gzip'
 
+# Avoid long running and retried tasks to be run over-and-over again.
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 43200}
+
 # One day is already the default
 #CELERY_TASK_RESULT_EXPIRES = 86400
 
-# The current default:
-#CELERY_MAX_CACHED_RESULTS = 5000
+# The default beiing 5000, we need more than this.
+CELERY_MAX_CACHED_RESULTS = 32768
+
+# NOTE: I don't know if this is compatible with upstart.
+CELERYD_POOL_RESTARTS = True
 
 # I use these to debug kombu crashes; we get a more informative message.
 #CELERY_TASK_SERIALIZER = 'json'
@@ -72,11 +81,11 @@ CELERYBEAT_SCHEDULE = {
     },
     'refresh-access-tokens-12': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='3,7,11,19,23', minute=12),
+        'schedule': crontab(hour='3,7,11,15,19,23', minute=12),
     },
     'refresh-access-tokens-24': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='2,6,8,14,18,22', minute=24),
+        'schedule': crontab(hour='2,6,10,14,18,22', minute=24),
     },
     'refresh-access-tokens-36': {
         'task': 'oneflow.base.tasks.refresh_access_tokens',

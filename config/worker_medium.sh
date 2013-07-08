@@ -12,10 +12,14 @@ case $1 in
         sudo apt-get install -q --yes --force-yes openjdk-7-jdk
 
         # JAVA_HOME is not needed anymore with latest versions of JPype
+        #
         #cat >> ~/.bashrc <<EOF
         #export JAVA_HOME=/usr/lib/jvm/java-7-openjdk-amd64
         #export PATH=$PATH:$JAVA_HOME
         #EOF
+        #
+        # BUT STILL, some of the BoilerPipe dependancies need it,
+        # thus I have put it in ~/.env.
 
         # We install jpype here, not in the requirements, to avoid
         # installing the JDK (and fonts and many useless libraries)
