@@ -1,15 +1,16 @@
 # -*- coding: utf-8 -*-
-
-
 import datetime
 from humanize.i18n import django_language
 from humanize.time import naturaldelta, naturaltime
 
 from django.utils.translation import ugettext_lazy as _
-from django.contrib import admin
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
+
+from .models.nonrel import Feed, Article
+
+import mongoadmin as admin
 
 from ..base.admin import CSVAdminMixin
 
@@ -178,3 +179,51 @@ class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
 
 
 admin.site.register(GriUser, GriOneFlowUserAdmin)
+
+
+class FeedAdmin(admin.DocumentAdmin):
+
+    list_display = ('id', 'name', 'url',
+                    'restricted', 'closed',
+                    'fetch_interval', 'last_fetch', 'date_added',
+                    'nb_articles_last_semester_display',
+                    'nb_total_articles_display',
+                    'nb_subscribers_display', )
+    #list_display_links = ('id', 'name', )
+    #ordering = ('-date_added', )
+    #date_hierarchy = 'date_added'
+    #search_fields = ('name', 'closed', )
+    #change_list_template = "admin/change_list_filter_sidebar.html"
+    #change_list_filter_template = "admin/filter_listing.html"
+
+    @property
+    def last_six_months(self):
+        try:
+            return self._last_six_months
+        except:
+            self._last_six_months = datetime.date.today() \
+                - datetime.timedelta(days=6 * 365 / 12)
+            return self._last_six_months
+
+    def nb_articles_last_semester_display(self, obj):
+
+        return  Article.objects.filter(
+            feed=obj).filter(
+                date_published__gt=self.last_six_months).count()
+
+    nb_articles_last_semester_display.short_description = _(u'6 months')
+
+    def nb_total_articles_display(self, obj):
+
+        return Article.objects.filter(feed=obj).count()
+
+    nb_total_articles_display.short_description = _(u'total')
+
+    def nb_subscribers_display(self, obj):
+
+        return len(obj.get_subscribers())
+
+    nb_subscribers_display.short_description = _(u'subscribers')
+
+
+admin.site.register(Feed, FeedAdmin)
