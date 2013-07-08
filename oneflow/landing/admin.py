@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 
-from django.contrib import admin
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+
+from django.contrib import admin as django_admin
+import mongoadmin as admin
 
 from sparks.django.admin import languages, truncate_field
 
@@ -34,7 +36,7 @@ if settings.FULL_ADMIN:
     content_fields_displays = tuple((field + '_display')
                                     for field in content_fields_names)
 
-    class LandingContentAdmin(admin.ModelAdmin):
+    class LandingContentAdmin(django_admin.ModelAdmin):
         list_display  = ('name', ) + content_fields_displays
         search_fields = ('name', ) + content_fields_names
         ordering      = ('name', )
