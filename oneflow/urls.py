@@ -5,11 +5,21 @@ from django.conf.urls import patterns, include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.contrib import admin
+
+# We use mongoadmin, which already includes Django's admin site
+from django.contrib import admin as django_admin
+
+try:
+    django_admin.autodiscover()
+except ImportError, e:
+    raise RuntimeError("you probably need to patch Django's auth admin module "
+                       "not to auto-discover auth when User._meta.swapped. "
+                       "Original exception: %s." % e)
+
+import mongoadmin as admin
 
 from .api import v1_api
 
-admin.autodiscover()
 
 handler404 = 'oneflow.base.views.not_found_handler'
 handler500 = 'oneflow.base.views.error_handler'

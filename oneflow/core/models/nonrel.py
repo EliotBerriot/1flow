@@ -127,19 +127,21 @@ class Source(Document):
 
 class Feed(Document):
     # TODO: init
-    name           = StringField()
-    url            = URLField(unique=True)
-    site_url       = URLField()
-    slug           = StringField()
-    restricted     = BooleanField(default=False)
-    closed         = BooleanField(default=False)
+    name           = StringField(verbose_name=_(u'name'))
+    url            = URLField(unique=True, verbose_name=_(u'url'))
+    site_url       = URLField(verbose_name=_(u'web site'))
+    slug           = StringField(verbose_name=_(u'slug'))
+    restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
+    closed         = BooleanField(default=False, verbose_name=_(u'closed'))
+    date_added     = DateTimeField(default=now, verbose_name=_(u'added'))
 
-    fetch_interval = IntField(default=config.FETCH_DEFAULT_INTERVAL)
-    last_fetch     = DateTimeField()
+    fetch_interval = IntField(default=config.FETCH_DEFAULT_INTERVAL,
+                              verbose_name=_(u'fetch interval'))
+    last_fetch     = DateTimeField(verbose_name=_(u'last fetch'))
 
     # Stored directly from feedparser data to avoid wasting BW.
-    last_etag      = StringField()
-    last_modified  = StringField()
+    last_etag      = StringField(verbose_name=_(u'last etag'))
+    last_modified  = StringField(verbose_name=_(u'modified'))
 
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.name, self.id, self.url)

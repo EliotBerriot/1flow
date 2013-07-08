@@ -20,9 +20,12 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
+
 from oneflow import VERSION
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
+from .models.nonrel import Feed
+
 from .gr_import import GoogleReaderImport
 
 LOGGER = logging.getLogger(__name__)
@@ -145,6 +148,16 @@ def google_reader_can_import_toggle(request, user_id):
     gri = GoogleReaderImport(user_id)
 
     gri.can_import = not gri.can_import
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                reverse('admin:index')))
+
+
+def feed_closed_toggle(request, feed_id):
+
+    feed = Feed.objects.get(id=feed_id)
+    feed.closed = not feed.closed
+    feed.save()
 
     return HttpResponseRedirect(request.META.get('HTTP_REFERER',
                                 reverse('admin:index')))
