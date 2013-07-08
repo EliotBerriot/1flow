@@ -25,6 +25,18 @@ CONSTANCE_CONFIG = {
                                u'in seconds. You can tune the interval for '
                                u'each feed after creation.')),
 
+    # •••••••••••••••••••••••••••••••••••••••••••••••• Feed admin configuration
+
+    'FEED_ADMIN_LIST_PER_PAGE': (10, ugettext(u'How many feeds per page in '
+                                 u'the Django admin. Increase only if '
+                                 u'performance is acceptable; do NOT abuse!')),
+
+    'FEED_ADMIN_MEANINGFUL_DELTA': (6 * 365 / 12, ugettext(u'We see how many '
+                                    u'articles feeds have produced during this '
+                                    u'delta (in days), to see if we can close '
+                                    u'them or not (if they got 0 new '
+                                    u'articles).')),
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article parsing
 
 

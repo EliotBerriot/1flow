@@ -1,7 +1,10 @@
 # -*- coding: utf-8 -*-
 import datetime
+
 from humanize.i18n import django_language
 from humanize.time import naturaldelta, naturaltime
+
+from constance import config
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
@@ -183,38 +186,43 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 class FeedAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name_display', 'url',
-                    'restricted', 'closed_display',
-                    'fetch_interval', 'last_fetch_display',
-                    'date_added_display',
-                    'last_article_display',
-                    'nb_articles_last_semester_display',
-                    'nb_total_articles_display',
-                    'nb_subscribers_display', )
-    list_per_page = 10
+    list_display = ('id', 'name_display', 'url', 'restricted',
+                    'closed_display', 'fetch_interval', 'last_fetch_display',
+                    'date_added_display', 'last_article_display',
+                    'nb_articles_in_meaningful_delta_display',
+                    'nb_total_articles_display', 'nb_subscribers_display', )
+
+    list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
+
+    search_fields = ('name', 'closed', 'id',)
+
+    # The following fields don't work with mongoadmin.
+    #
     #list_display_links = ('id', , )
     #ordering = ('name', )
     #date_hierarchy = 'date_added'
-    search_fields = ('name', 'closed', 'id',)
     #change_list_template = "admin/change_list_filter_sidebar.html"
     #change_list_filter_template = "admin/filter_listing.html"
 
     @property
-    def last_six_months(self):
+    def last_meaningful_delta(self):
+        """ As an instance property to avoid re-compute it for each feed. """
+
         try:
-            return self._last_six_months
+            return self._last_meaningful_delta
         except:
-            self._last_six_months = datetime.date.today() \
-                - datetime.timedelta(days=6 * 365 / 12)
-            return self._last_six_months
+            self._last_meaningful_delta = datetime.date.today() \
+                - datetime.timedelta(days=config.FEED_ADMIN_MEANINGFUL_DELTA)
 
-    def nb_articles_last_semester_display(self, obj):
+            return self._last_meaningful_delta
 
-        return  Article.objects.filter(
+    def nb_articles_in_meaningful_delta_display(self, obj):
+
+        return Article.objects.filter(
             feed=obj).filter(
-                date_published__gt=self.last_six_months).count()
+                date_published__gt=self.last_meaningful_delta).count()
 
-    nb_articles_last_semester_display.short_description = _(u'6 months')
+    nb_articles_in_meaningful_delta_display.short_description = _(u'6 months')
 
     def nb_total_articles_display(self, obj):
 
@@ -227,7 +235,7 @@ class FeedAdmin(admin.DocumentAdmin):
         with django_language():
             return naturaltime(obj.get_latest_article().date_added)
 
-    last_article_display.short_description = _(u'last article')
+    last_article_display.short_description = _(u'latest')
 
     def date_added_display(self, obj):
 
@@ -256,7 +264,7 @@ class FeedAdmin(admin.DocumentAdmin):
                             kwargs={'feed_id': obj.id}), _(u'reopen')
                             if obj.closed else _(u'close'))
 
-    closed_display.short_description = _(u'closed')
+    closed_display.short_description = _(u'closed?')
     closed_display.allow_tags = True
 
     def name_display(self, obj):
