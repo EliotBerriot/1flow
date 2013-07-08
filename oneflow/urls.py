@@ -8,7 +8,14 @@ from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
 # We use mongoadmin, which already includes Django's admin site
 from django.contrib import admin as django_admin
-django_admin.autodiscover()
+
+try:
+    django_admin.autodiscover()
+except ImportError, e:
+    raise RuntimeError("you probably need to patch Django's auth admin module "
+                       "not to auto-discover auth when User._meta.swapped. "
+                       "Original exception: %s." % e)
+
 import mongoadmin as admin
 
 from .api import v1_api
