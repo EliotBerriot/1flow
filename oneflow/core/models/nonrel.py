@@ -127,12 +127,13 @@ class Source(Document):
 
 class Feed(Document):
     # TODO: init
-    name           = StringField()
+    name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True)
     site_url       = URLField()
     slug           = StringField()
     restricted     = BooleanField(default=False)
     closed         = BooleanField(default=False)
+    date_added = DateTimeField(default=now)  # added in 1flow database
 
     fetch_interval = IntField(default=config.FETCH_DEFAULT_INTERVAL)
     last_fetch     = DateTimeField()
