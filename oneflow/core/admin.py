@@ -183,16 +183,19 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 class FeedAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name', 'url',
-                    'restricted', 'closed',
-                    'fetch_interval', 'last_fetch', 'date_added',
+    list_display = ('id', 'name_display', 'url',
+                    'restricted', 'closed_display',
+                    'fetch_interval', 'last_fetch_display',
+                    'date_added_display',
+                    'last_article_display',
                     'nb_articles_last_semester_display',
                     'nb_total_articles_display',
                     'nb_subscribers_display', )
-    #list_display_links = ('id', 'name', )
-    #ordering = ('-date_added', )
+    list_per_page = 10
+    #list_display_links = ('id', , )
+    #ordering = ('name', )
     #date_hierarchy = 'date_added'
-    #search_fields = ('name', 'closed', )
+    search_fields = ('name', 'closed', 'id',)
     #change_list_template = "admin/change_list_filter_sidebar.html"
     #change_list_filter_template = "admin/filter_listing.html"
 
@@ -219,11 +222,50 @@ class FeedAdmin(admin.DocumentAdmin):
 
     nb_total_articles_display.short_description = _(u'total')
 
+    def last_article_display(self, obj):
+
+        with django_language():
+            return naturaltime(obj.get_latest_article().date_added)
+
+    last_article_display.short_description = _(u'last article')
+
+    def date_added_display(self, obj):
+
+        with django_language():
+            return naturaltime(obj.date_added)
+
+    date_added_display.short_description = _(u'added')
+
+    def last_fetch_display(self, obj):
+
+        with django_language():
+            return naturaltime(obj.last_fetch)
+
+    last_fetch_display.short_description = _(u'fetched')
+
     def nb_subscribers_display(self, obj):
 
         return len(obj.get_subscribers())
 
     nb_subscribers_display.short_description = _(u'subscribers')
+
+    def closed_display(self, obj):
+
+        return u'<a href="{0}">{1}</a>'.format(
+                    reverse('feed_closed_toggle',
+                            kwargs={'feed_id': obj.id}), _(u'reopen')
+                            if obj.closed else _(u'close'))
+
+    closed_display.short_description = _(u'closed')
+    closed_display.allow_tags = True
+
+    def name_display(self, obj):
+
+        return u'<a href="{0}" target="_blank">{1}</a>'.format(obj.site_url,
+                                                               obj.name)
+
+    name_display.short_description = _(u'name')
+    name_display.allow_tags = True
 
 
 admin.site.register(Feed, FeedAdmin)

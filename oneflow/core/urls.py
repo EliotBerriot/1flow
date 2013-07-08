@@ -6,6 +6,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 from .views import (home, register,
+                    feed_closed_toggle,
                     google_reader_import,
                     google_reader_import_stop,
                     google_reader_import_status,
@@ -28,6 +29,9 @@ urlpatterns = patterns(
         name='google_reader_can_import_toggle'),
     url(_(r'^grstatus/$'), login_required(google_reader_import_status),
         name='google_reader_import_status'),
+    url(_(r'^feed/(?P<feed_id>\w+)/close/toggle/$'),
+        staff_member_required(feed_closed_toggle),
+        name='feed_closed_toggle'),
 )
 
 urlpatterns += patterns(
