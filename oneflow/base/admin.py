@@ -8,11 +8,14 @@ from django.template.defaultfilters import slugify
 from django.contrib.admin.util import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User as DjangoUser
+
 
 from django.contrib import admin as django_admin
 import mongoadmin as admin
 
 from .models import EmailContent, User
+
 
 from sparks.django.admin import languages, truncate_field
 
@@ -162,6 +165,7 @@ class OneFlowUserAdmin(UserAdmin, CSVAdminMixin):
     full_name_display.short_description = _(u'Full name')
 
 admin.site.register(User, OneFlowUserAdmin)
+admin.site.unregister(DjangoUser)
 
 
 if settings.FULL_ADMIN:
