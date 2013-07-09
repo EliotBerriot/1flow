@@ -143,6 +143,8 @@ class Feed(Document):
     last_etag      = StringField(verbose_name=_(u'last etag'))
     last_modified  = StringField(verbose_name=_(u'modified'))
 
+    mail_warned    = ListField(StringField())
+
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.name, self.id, self.url)
 
@@ -166,11 +168,15 @@ class Feed(Document):
             super(Feed, self).validate(*args, **kwargs)
 
         except ValidationError as e:
-            # Ignore errors about these fields:
+
+            # Ignore/wrap errors about these fields:
             if e.errors.pop('site_url', None) is not None:
-                mail_admins('Feed {0} has a bad `site_url`'.format(self),
-                            (u"\n\n It is currently set to “ {0} ”.\n\n"
-                            u"You should fix it.\n\n").format(self.site_url))
+                if not 'bad_site_url' in self.mail_warned:
+                    mail_admins('Feed {0} has a bad `site_url`'.format(self),
+                                (u"\n\n It is currently set to “ {0} ”.\n\n"
+                                u"You should fix it.\n\n").format(self.site_url))
+                    self.mail_warned.append('bad_site_url')
+
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
 
