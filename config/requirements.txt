@@ -5,7 +5,7 @@
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-dev
 -e git+https://github.com/Karmak23/python-readability-api.git@master#egg=readability-dev
 -e git+https://github.com/cpbotha/django-shell-ipynb.git@master#egg=ipynb
--e git+https://github.com/jschrewe/django-mongoadmin.git@master#egg=mongoadmin-dev
+-e git+https://github.com/WillianPaiva/django-mongoadmin.git@master#egg=mongoadmin-dev
 -e git+https://github.com/jschrewe/django-mongodbforms.git@master#egg=mongodbforms-dev
 -e git+https://github.com/gregmuellegger/django-reset.git@4f859d9319a7bfc41484f302e96e1f880aaa67db#egg=django_reset-dev
 -e git+https://github.com/noirbizarre/django-ember.git@2845c3ef46711320b6941c22ce8204c302d6651f#egg=django_ember-dev
