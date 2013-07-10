@@ -21,6 +21,10 @@ CONSTANCE_CONFIG = {
                             u'fetchers to terminate. It should take at '
                             u'most FEED_FETCH_DEFAULT_INTERVAL seconds.')),
 
+    'FEED_FETCH_GHOST_ENABLED': (False, ugettext(u'Enable Ghost fetching or '
+                                 u'not. Disabled by default, make OSX Python '
+                                 u'crash.')),
+
     'FEED_FETCH_DEFAULT_INTERVAL': (3600, ugettext(u'Default feed fetch '
                                     u'interval in seconds. You can tune the '
                                     u'interval for each feed after creation.')),
