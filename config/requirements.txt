@@ -3,7 +3,8 @@
 -e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
 -e git+https://github.com/Karmak23/python-boilerpipe@master#egg=boilerpipe
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-dev
--e git+https://github.com/Karmak23/python-readability-api.git@master#egg=readability-dev
+-e git+https://github.com/Karmak23/soup-strainer.git@master#egg=strainer-dev
+-e git+https://github.com/jeanphix/Ghost.py.git@master#egg=Ghost-dev
 -e git+https://github.com/cpbotha/django-shell-ipynb.git@master#egg=ipynb
 -e git+https://github.com/WillianPaiva/django-mongoadmin.git@master#egg=mongoadmin-dev
 -e git+https://github.com/jschrewe/django-mongodbforms.git@master#egg=mongodbforms-dev
