@@ -3,17 +3,13 @@
 import logging
 import datetime
 import dateutil
+import requests
+import strainer
 import html2text
 import feedparser
 
+from random import randrange
 from constance import config
-from readability import ParserClient
-
-try:
-    from boilerpipe.extract import Extractor as BoilerPipeExtractor
-
-except ImportError:
-    BoilerPipeExtractor = None # NOQA
 
 from celery.contrib.methods import task as celery_task_method
 from celery.exceptions import SoftTimeLimitExceeded
@@ -29,13 +25,12 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 ReferenceField, GenericReferenceField,
                                 EmbeddedDocumentField)
 
-from django.conf import settings
 from django.core.mail import mail_admins
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 
 from ...base.utils import (connect_mongoengine_signals,
-                           SimpleCacheLock,
+                           SimpleCacheLock, AlreadyLockedException,
                            HttpResponseLogProcessor, RedisStatsCounter)
 from .keyval import FeedbackDocument
 
@@ -43,10 +38,37 @@ LOGGER = logging.getLogger(__name__)
 
 feedparser.USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
 
-CONTENT_NOT_PARSED    = None  # Don't use any _() (fails) nor any lang-dependant values.  # NOQA
+# Don't use any lang-dependant values (eg. _(u'NO CONTENT'))
+CONTENT_NOT_PARSED    = None
 CONTENT_TYPE_NONE     = 0
 CONTENT_TYPE_HTML     = 1
 CONTENT_TYPE_MARKDOWN = 2
+CONTENT_TYPE_IMAGE    = 100
+CONTENT_TYPE_VIDEO    = 200
+CONTENT_TYPES_FINAL   = (CONTENT_TYPE_MARKDOWN,
+                         CONTENT_TYPE_IMAGE, CONTENT_TYPE_VIDEO,
+                         )
+
+CONTENT_PREPARSING_NEEDS_GHOST = 1
+CONTENT_FETCH_LIKELY_MULTIPAGE = 2
+
+# MORE CONTENT_PREPARSING_NEEDS_* TO COME
+
+# These classes will be re-used inside every worker; we instanciate only once.
+STRAINER_EXTRACTOR = strainer.Strainer(parser='lxml', add_score=True)
+
+if config.FEED_FETCH_GHOST_ENABLED:
+    try:
+        import ghost
+    except:
+        ghost = None # NOQA
+    else:
+        GHOST_BROWSER = ghost.Ghost()
+
+
+else:
+    ghost = None # NOQA
+
 
 now       = datetime.datetime.now
 #today     = datetime.date.today
@@ -106,6 +128,10 @@ class FeedStatsCounter(RedisStatsCounter):
 # This one will keep track of all counters, globally, for all feeds.
 global_feed_stats = FeedStatsCounter()
 
+# Until we patch Ghost to use more than one Xvfb at the same time,
+# we are tied to ensure there is only one running at a time.
+global_ghost_lock = SimpleCacheLock('__ghost.py__')
+
 
 class Source(Document):
     """ The "original source" for similar articles: they have different authors,
@@ -135,7 +161,7 @@ class Feed(Document):
     closed         = BooleanField(default=False, verbose_name=_(u'closed'))
     date_added     = DateTimeField(default=now, verbose_name=_(u'added'))
 
-    fetch_interval = IntField(default=config.FETCH_DEFAULT_INTERVAL,
+    fetch_interval = IntField(default=config.FEED_FETCH_DEFAULT_INTERVAL,
                               verbose_name=_(u'fetch interval'))
     last_fetch     = DateTimeField(verbose_name=_(u'last fetch'))
 
@@ -145,6 +171,8 @@ class Feed(Document):
 
     mail_warned    = ListField(StringField())
 
+    options        = ListField(IntField())
+
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.name, self.id, self.url)
 
@@ -153,6 +181,9 @@ class Feed(Document):
 
         # Update the feed with current content.
         document.refresh.delay()
+
+    def has_option(self, option):
+        return option in self.options
 
     def get_articles(self, limit=None):
 
@@ -174,7 +205,8 @@ class Feed(Document):
                 if not 'bad_site_url' in self.mail_warned:
                     mail_admins('Feed {0} has a bad `site_url`'.format(self),
                                 (u"\n\n It is currently set to “ {0} ”.\n\n"
-                                u"You should fix it.\n\n").format(self.site_url))
+                                u"You should fix it.\n\n").format(
+                                self.site_url))
                     self.mail_warned.append('bad_site_url')
 
             if e.errors:
@@ -235,10 +267,10 @@ class Feed(Document):
     def check_refresher(self):
 
         if self.closed:
-            LOGGER.error('Feed %s is closed. refresh aborted.', self)
+            LOGGER.error(u'Feed %s is closed. refresh aborted.', self)
             return
 
-        if config.FETCH_DISABLED:
+        if config.FEED_FETCH_DISABLED:
             # we do not raise .retry() because the global refresh
             # task will call us again anyway at next global check.
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
@@ -251,7 +283,14 @@ class Feed(Document):
             # Release the lock and launch one.
             my_lock.release()
 
-            self.refresh.delay()
+            if config.FEED_REFRESH_RANDOMIZE:
+                self.refresh.apply_async(
+                    (), countdown=randrange((self.fetch_interval or
+                                            config.FEED_FETCH_DEFAULT_INTERVAL)
+                                            - 15))
+
+            else:
+                self.refresh.delay()
 
     def build_refresh_kwargs(self):
 
@@ -287,10 +326,10 @@ class Feed(Document):
         """
 
         if self.closed:
-            LOGGER.error('Feed %s is closed. refresh aborted.', self)
+            LOGGER.error(u'Feed %s is closed. refresh aborted.', self)
             return True
 
-        if config.FETCH_DISABLED:
+        if config.FEED_FETCH_DISABLED:
             # we do not raise .retry() because the global refresh
             # task will call us again anyway at next global check.
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
@@ -336,7 +375,8 @@ class Feed(Document):
         # Launch the next fetcher right now, in order for the duration
         # of the current fetch not to delay the next and make the actual
         # fetch interval be longer than advertised.
-        self.refresh.apply_async((), countdown=self.fetch_interval)
+        self.refresh.apply_async((), countdown=self.fetch_interval
+                                 or config.FEED_FETCH_DEFAULT_INTERVAL)
 
         LOGGER.info(u'Refreshing feed %s…', self)
 
@@ -355,7 +395,7 @@ class Feed(Document):
 
             # NOTE: the feed refresh will be launched
             # again by the global scheduled class.
-            LOGGER.exception('Refresh feed %s status failed.', self)
+            LOGGER.exception(u'Refresh feed %s status failed.', self)
             return e
 
         if feed_status != 304:
@@ -378,7 +418,7 @@ class Feed(Document):
 
                 # NOTE: the feed refresh will be launched
                 # again by the global scheduled class.
-                LOGGER.exception('Refresh feed %s failed.', self)
+                LOGGER.exception(u'Refresh feed %s failed.', self)
                 return e
 
             # Store the date/etag for next cycle. Doing it after the full
@@ -417,25 +457,46 @@ class Group(Document):
 
 
 class Article(Document):
-    title = StringField(max_length=256, required=True)
-    slug = StringField(max_length=256)
-    url = URLField(unique=True)
-    authors = ListField(ReferenceField('User'))
-    publishers = ListField(ReferenceField('User'))
-    date_published = DateTimeField()  # published on its origin website
-    date_added = DateTimeField(default=now)  # added in 1flow database
-    abstract = StringField()
-    language = StringField()
-    text_direction = StringField()
-    comments = ListField(ReferenceField('Comment'))
-    default_rating = FloatField(default=0.0)
+    title      = StringField(max_length=256, required=True,
+                             verbose_name=_(u'Title'))
+    slug       = StringField(max_length=256)
+    url        = URLField(unique=True, verbose_name=_(u'Public URL'))
 
-    content       = StringField(default=CONTENT_NOT_PARSED)
-    content_type  = IntField(default=CONTENT_TYPE_NONE)
-    content_error = StringField()
-    full_content       = StringField(default=CONTENT_NOT_PARSED)
-    full_content_type  = IntField(default=CONTENT_TYPE_NONE)
-    full_content_error = StringField()
+    # not yet.
+    #short_url  = URLField(unique=True, verbose_name=_(u'1flow URL'))
+
+    authors    = ListField(ReferenceField('User'))
+    publishers = ListField(ReferenceField('User'))
+
+    date_published = DateTimeField(verbose_name=_(u'date published'),
+                                   help_text=_(u"When the article first "
+                                               u"appeared on the publisher's "
+                                               u"website."))
+    date_added     = DateTimeField(default=now,
+                                   verbose_name=_(u'Date added'),
+                                   help_text=_(u'When the article was added '
+                                               u'to the 1flow database.'))
+
+    default_rating = FloatField(default=0.0, verbose_name=_(u'default rating'),
+                                help_text=_(u'Rating used as a base when a '
+                                            u'user has not already rated the '
+                                            u'content.'))
+    language       = StringField(verbose_name=_(u'Article language'))
+    text_direction = StringField(verbose_name=_(u'Text direction'))
+    comments       = ListField(ReferenceField('Comment'))
+
+    abstract      = StringField(verbose_name=_(u'abstract'),
+                                help_text=_(u'Small exerpt of content, '
+                                            u'if applicable'))
+    content       = StringField(default=CONTENT_NOT_PARSED,
+                                verbose_name=_(u'Content'),
+                                help_text=_(u'Article content'))
+    content_type  = IntField(default=CONTENT_TYPE_NONE,
+                             verbose_name=_(u'Content type'),
+                             help_text=_(u'Type of article content '
+                                         u'(text, image…)'))
+    content_error = StringField(verbose_name=_(u'Error'),
+                                help_text=_(u'Error when fetching content'))
 
     # This should go away soon, after a full re-parsing.
     google_reader_original_data = StringField()
@@ -445,10 +506,12 @@ class Article(Document):
     # An article references its source (origin blog / newspaper…)
     source = GenericReferenceField()
 
+    # The feed from which we got this article from. Can be ``None`` if the
+    # user snapped an article directly from a standalone web page in browser.
     feed = ReferenceField('Feed')
 
     # Avoid displaying duplicates to the user.
-    duplicates = ListField(ReferenceField('Article'))  # , null=True)
+    duplicates = ListField(ReferenceField('Article'))
 
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
@@ -509,70 +572,173 @@ class Article(Document):
 
             return new_article, True
 
-    @celery_task_method(name='Article.parse_content', queue='medium',
-                        default_retry_delay=3600, soft_time_limit=30)
-    def parse_content(self, force=False, commit=True):
+    @celery_task_method(name='Article.fetch_content', queue='medium',
+                        default_retry_delay=3600, soft_time_limit=50)
+    def fetch_content(self, force=False, commit=True):
 
-        if self.content_type == CONTENT_TYPE_MARKDOWN and not force:
-            LOGGER.warning(u'Article %s has already been parsed.', self)
+        if self.content_type in CONTENT_TYPES_FINAL and not force:
+            LOGGER.warning(u'Article %s has already been fetched.', self)
             return
 
         if self.content_error and not force:
-            LOGGER.warning(u'Article %s has a parsing error, aborting (%s).',
+            LOGGER.warning(u'Article %s has a fetching error, aborting (%s).',
                            self, self.content_error)
             return
 
-        if config.ARTICLE_PARSING_DISABLED:
-            LOGGER.warning(u'Parsing disabled in configuration.')
+        if config.ARTICLE_FETCHING_DISABLED:
+            LOGGER.warning(u'Article fetching disabled in configuration.')
             return
+
+        #
+        # TODO: implement switch based on content type.
+        #
+
+        # Testing for https://github.com/celery/celery/issues/1459
+        #
+        # LOGGER.warning('>>> %s %s RAISING!', self, self.__self__)
+        # e = RuntimeError('TESTING_RAISE')
+        # self.content_error = str(e)
+        # self.save()
+
+        # raise self.fetch_content.retry(exc=e, countdown=randrange(60))
+
+        try:
+            self.fetch_content_text(force=force, commit=commit)
+
+        except AlreadyLockedException, e:
+            # This won't work because of issue 1458, we have to fake.
+            #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
+
+            self.fetch_content.apply_async((), countdown=randrange(60))
+            return
+
+        except SoftTimeLimitExceeded, e:
+            self.content_error = str(e)
+            self.save()
+
+            LOGGER.error(u'Extraction took too long for article %s.', self)
+            raise
+
+        except Exception, e:
+            # TODO: except urllib2.error: retry with longer delay.
+            self.content_error = str(e)
+            self.save()
+
+            LOGGER.exception(u'Extraction failed for article %s.', self)
+            raise
+
+    def fetch_content_image(self, force=False, commit=True):
+
+        if config.ARTICLE_FETCHING_IMAGE_DISABLED:
+            LOGGER.warning(u'Article video fetching disabled in configuration.')
+            return
+
+    def fetch_content_video(self, force=False, commit=True):
+
+        if config.ARTICLE_FETCHING_VIDEO_DISABLED:
+            LOGGER.warning(u'Article video fetching disabled in configuration.')
+            return
+
+    def needs_ghost_preparser(self):
+
+        return config.FEED_FETCH_GHOST_ENABLED and \
+            self.feed.has_option(CONTENT_PREPARSING_NEEDS_GHOST)
+
+    def likely_multipage_content(self):
+
+        return self.feed.has_option(CONTENT_FETCH_LIKELY_MULTIPAGE)
+
+    def prepare_content_text(self, url=None):
+        """ :param:`url` should be set in the case of multipage content. """
+
+        fetch_url = url or self.url
+
+        if self.needs_ghost_preparser():
+
+            if ghost is None:
+                LOGGER.warning(u'Ghost module is not available, content of '
+                               u'article %s will be incomplete.', self)
+                return requests.get(fetch_url).content
+
+                # The lock will raise an exception if it is already acquired.
+                with global_ghost_lock:
+                    GHOST_BROWSER.open(fetch_url)
+                    page, resources = GHOST_BROWSER.wait_for_page_loaded()
+                    return page
+
+        return requests.get(fetch_url).content
+
+    def fetch_content_text(self, force=False, commit=True):
+
+        if config.ARTICLE_FETCHING_TEXT_DISABLED:
+            LOGGER.warning(u'Article text fetching disabled in configuration.')
+            return
+
+        def fetch_one_text_content(url=None):
+
+            content = self.prepare_content_text(url=url)
+
+            try:
+                LOGGER.info(u'————————— HTML version ———————————%s\n%s\n'
+                            u'————————— end HTML version ———————————',
+                            type(content), content)
+            except:
+                pass
+
+            content = STRAINER_EXTRACTOR.feed(str(content))
+
+            # TODO: remove noscript blocks ?
+            #
+            # TODO: remove ads (after noscript because they
+            #       seem to be buried down in them)
+            #       eg. <noscript><a href="http://ad.doubleclick.net/jump/clickz.us/ # NOQA
+            #       media/media-buying;page=article;artid=2280150;topcat=media;
+            #       cat=media-buying;static=;sect=site;tag=measurement;pos=txt1;
+            #       tile=8;sz=2x1;ord=123456789?" target="_blank"><img alt=""
+            #       src="http://ad.doubleclick.net/ad/clickz.us/media/media-buying; # NOQA
+            #       page=article;artid=2280150;topcat=media;cat=media-buying;
+            #       static=;sect=site;tag=measurement;pos=txt1;tile=8;sz=2x1;
+            #       ord=123456789?"/></a></noscript>
+
+            try:
+                LOGGER.info(u'————————— CLEANED version ———————————%s\n%s\n'
+                            u'————————— end CLEANED version ———————————',
+                            type(content), content)
+            except:
+                pass
+
+            return str(content)
+
+        def get_next_page_link(from_content):
+
+            #soup = bs4
+
+            return None
 
         if self.content_type == CONTENT_TYPE_NONE:
 
-            if not BoilerPipeExtractor:
-                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
-                # raise self.parse_content.retry(
-                #     exc=RuntimeError(u'BoilerPipeExtractor not found '
-                #                      u'(or JPype not installed?)'))
-                LOGGER.critical('BoilerPipeExtractor not found!')
-                return
+            LOGGER.info(u'Parsing text content for article %s…', self)
 
-            LOGGER.info(u'Parsing content for article %s…', self)
+            if self.likely_multipage_content():
+                content    = ''
+                next_link  = self.url
+                pages      = 0
 
-            try:
-                extractor = BoilerPipeExtractor(extractor='ArticleExtractor',
-                                                url=self.url)
+                while next_link is not None:
+                    pages       += 1
+                    current_page = fetch_one_text_content(next_link)
+                    content     += current_page
+                    next_link    = get_next_page_link(current_page)
 
-                # LOGGER.info(u'————————— SOURCE version ———————————\n%s\n'
-                #             u'————————— end SOURCE version ———————————',
-                #             extractor.data)
+                LOGGER.info(u'Fetched %s page(s) for article %s.', pages, self)
 
-                self.content = extractor.getHTML()
-
-            except SoftTimeLimitExceeded, e:
-                self.content_error = str(e)
-                self.save()
-
-                LOGGER.error(u'BoilerPipe extraction took too long for '
-                             u'article %s.', self)
-                return
-
-            except Exception, e:
-                # TODO: except urllib2.error: retry with longer delay.
-                self.content_error = str(e)
-                self.save()
-
-                LOGGER.exception(u'BoilerPipe extraction failed for article '
-                                 u'%s.', self)
-                return e
+            else:
+                self.content = fetch_one_text_content()
 
             self.content_type = CONTENT_TYPE_HTML
 
             if commit:
                 self.save()
-
-            # LOGGER.info(u'————————— HTML version ———————————\n%s\n'
-            #             u'————————— end HTML version ———————————',
-            #             self.content)
 
         #
         # TODO: parse HTML links to find other 1flow articles and convert
@@ -582,6 +748,28 @@ class Article(Document):
         # wants. NOTE: this is just the easy part of this idea ;-)
         #
 
+        self.convert_to_markdown(force=force, commit=commit)
+
+        LOGGER.info(u'Done parsing content for article %s.', self)
+
+    def convert_to_markdown(self, force=False, commit=True):
+
+        if config.ARTICLE_MARKDOWN_DISABLED:
+            LOGGER.warning(u'Article markdown convert disabled in '
+                           u'configuration.')
+            return
+
+        if self.content_type == CONTENT_TYPE_MARKDOWN and not force:
+            LOGGER.warning(u'Article %s already converted to Markdown.', self)
+            return
+
+        if self.content_type != CONTENT_TYPE_HTML:
+            LOGGER.warning(u'Article %s cannot be converted to Markdown, '
+                           u'it is not currently HTML.', self)
+            return
+
+        LOGGER.info(u'Converting article %s to markdown…', self)
+
         try:
             self.content = html2text.html2text(self.content)
 
@@ -589,7 +777,7 @@ class Article(Document):
             self.content_error = str(e)
             self.save()
 
-            LOGGER.exception(u'Markdown shrink failed for article %s.', self)
+            LOGGER.exception(u'Markdown convert failed for article %s.', self)
             return e
 
         self.content_type = CONTENT_TYPE_MARKDOWN
@@ -600,109 +788,6 @@ class Article(Document):
         # LOGGER.info(u'————————— MD version ———————————\n%s\n'
         #             u'————————— end MD version ———————————',
         #             self.content)
-
-        LOGGER.info(u'Done parsing content for article %s.', self)
-
-    @celery_task_method(name='Article.parse_full_content',
-                        queue='low', rate_limit='950/h',
-                        default_retry_delay=3600, soft_time_limit=30)
-    def parse_full_content(self, force=False, commit=True):
-
-        if self.full_content_type == CONTENT_TYPE_MARKDOWN and not force:
-            LOGGER.warning(u'Article %s has already been fully parsed.', self)
-            return
-
-        if self.full_content_error and not force:
-            LOGGER.warning(u'Article %s has a full content error, aborting '
-                           u'(%s).', self, self.full_content_error)
-            return
-
-        if config.ARTICLE_FULL_PARSING_DISABLED:
-            LOGGER.warning(u'Full parsing disabled in configuration.')
-            return
-
-        if self.full_content_type == CONTENT_TYPE_NONE:
-
-            LOGGER.info(u'Parsing full content for article %s…', self)
-
-            API_KEY = getattr(settings, 'READABILITY_PARSER_SECRET', None)
-
-            if API_KEY in (None, ''):
-                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
-                # raise self.parse_full_content.retry(exc=RuntimeError(
-                #     u'READABILITY_PARSER_SECRET not defined'))
-                LOGGER.critical('READABILITY_PARSER_SECRET setting not found!')
-                return
-
-            parser_client = ParserClient(API_KEY)
-
-            try:
-                parser_response = parser_client.get_article_content(self.url)
-
-                # TODO: except {http,urllib}.error: retry with longer delay.
-
-            except SoftTimeLimitExceeded, e:
-                self.content_error = str(e)
-                self.save()
-
-                LOGGER.error(u'Readability extraction took too long for '
-                             u'article %s.', self)
-                return
-
-            except Exception, e:
-                self.full_content_error = str(e)
-                self.save()
-
-                LOGGER.exception(u'Error during Readability parse of article '
-                                 u'%s.', self)
-                return e
-
-            if parser_response.content.get('error', False):
-                self.full_content_error = parser_response.content['messages']
-                self.save()
-
-                LOGGER.error(u'Readability parsing failed on their side for '
-                             u'article %s: %s.', self,
-                             parser_response.content['messages'])
-                return self.full_content_error
-
-            self.full_content = parser_response.content['content']
-
-            #
-            # TODO: if self.feed.options.multi_pages:
-            #           run multiple calls for every page.
-            # TODO: create our own parser (see NewsBlur / BeautifulSoup)…
-            #
-
-            self.full_content_type = CONTENT_TYPE_HTML
-
-            if commit:
-                self.save()
-
-            # LOGGER.info(u'————————— HTML version ———————————\n%s\n'
-            #             u'————————— end HTML version ———————————',
-            #             self.full_content)
-
-        try:
-            self.full_content = html2text.html2text(self.full_content)
-
-        except Exception, e:
-            self.full_content_error = str(e)
-            self.save()
-
-            LOGGER.exception(u'Markdown shrink failed for article %s.', self)
-            return e
-
-        self.full_content_type = CONTENT_TYPE_MARKDOWN
-
-        if commit:
-            self.save()
-
-        # LOGGER.info(u'————————— MD version ———————————\n%s\n'
-        #             u'————————— end MD version ———————————',
-        #             self.full_content)
-
-        LOGGER.info(u'Done parsing full content for article %s.', self)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
@@ -715,8 +800,12 @@ class Article(Document):
         self.slug = slugify(self.title)
         self.save()
 
-        self.parse_content.delay()
-        self.parse_full_content.delay()
+        # TODO: create short_url
+
+        self.fetch_content()
+
+        #self.parse_content.delay()
+        #self.parse_full_content.delay()
 
         # TODO: remove_useless_blocks, eg:
         #       <p><a href="http://addthis.com/bookmark.php?v=250">
@@ -727,6 +816,11 @@ class Article(Document):
         #
         # TODO: link_replace (by our short_url_link for click statistics)
         # TODO: images_fetch
+        #       eg. handle <img alt="2013-05-17_0009.jpg"
+        #           data-lazyload-src="http://www.vcsphoto.com/blog/wp-content/uploads/2013/05/2013-05-17_0009.jpg" # NOQA
+        #           src="http://www.vcsphoto.com/blog/wp-content/themes/prophoto4/images/blank.gif" # NOQA
+        #           height="1198" sidth="900"/>
+        #
         # TODO: authors_fetch
         # TODO: publishers_fetch
         # TODO: duplicates_find
