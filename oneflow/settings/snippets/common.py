@@ -32,6 +32,7 @@ MANAGERS = ADMINS
 from oneflow import VERSION
 
 GRAPPELLI_ADMIN_TITLE = '1flow v%s administration' % VERSION
+MONGOADMIN_OVERRIDE_ADMIN = True
 
 ALLOWED_HOSTS = []
 TIME_ZONE     = 'Europe/Paris'
@@ -327,6 +328,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     #'grappelli.dashboard',
     'grappelli',
+    'mongoadmin',
     'django.contrib.admin',
     'django.contrib.admindocs',
     'django_reset',

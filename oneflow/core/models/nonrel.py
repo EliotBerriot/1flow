@@ -127,19 +127,23 @@ class Source(Document):
 
 class Feed(Document):
     # TODO: init
-    name           = StringField()
-    url            = URLField(unique=True)
-    site_url       = URLField()
-    slug           = StringField()
-    restricted     = BooleanField(default=False)
-    closed         = BooleanField(default=False)
+    name           = StringField(verbose_name=_(u'name'))
+    url            = URLField(unique=True, verbose_name=_(u'url'))
+    site_url       = URLField(verbose_name=_(u'web site'))
+    slug           = StringField(verbose_name=_(u'slug'))
+    restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
+    closed         = BooleanField(default=False, verbose_name=_(u'closed'))
+    date_added     = DateTimeField(default=now, verbose_name=_(u'added'))
 
-    fetch_interval = IntField(default=config.FETCH_DEFAULT_INTERVAL)
-    last_fetch     = DateTimeField()
+    fetch_interval = IntField(default=config.FETCH_DEFAULT_INTERVAL,
+                              verbose_name=_(u'fetch interval'))
+    last_fetch     = DateTimeField(verbose_name=_(u'last fetch'))
 
     # Stored directly from feedparser data to avoid wasting BW.
-    last_etag      = StringField()
-    last_modified  = StringField()
+    last_etag      = StringField(verbose_name=_(u'last etag'))
+    last_modified  = StringField(verbose_name=_(u'modified'))
+
+    mail_warned    = ListField(StringField())
 
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.name, self.id, self.url)
@@ -164,11 +168,15 @@ class Feed(Document):
             super(Feed, self).validate(*args, **kwargs)
 
         except ValidationError as e:
-            # Ignore errors about these fields:
+
+            # Ignore/wrap errors about these fields:
             if e.errors.pop('site_url', None) is not None:
-                mail_admins('Feed {0} has a bad `site_url`'.format(self),
-                            (u"\n\n It is currently set to “ {0} ”.\n\n"
-                            u"You should fix it.\n\n").format(self.site_url))
+                if not 'bad_site_url' in self.mail_warned:
+                    mail_admins('Feed {0} has a bad `site_url`'.format(self),
+                                (u"\n\n It is currently set to “ {0} ”.\n\n"
+                                u"You should fix it.\n\n").format(self.site_url))
+                    self.mail_warned.append('bad_site_url')
+
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
 

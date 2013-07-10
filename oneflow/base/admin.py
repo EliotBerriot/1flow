@@ -5,12 +5,17 @@ import csv
 from django.conf import settings
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
-from django.contrib import admin
 from django.contrib.admin.util import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.auth.models import User as DjangoUser
+
+
+from django.contrib import admin as django_admin
+import mongoadmin as admin
 
 from .models import EmailContent, User
+
 
 from sparks.django.admin import languages, truncate_field
 
@@ -18,7 +23,7 @@ from sparks.django.admin import languages, truncate_field
 # •••••••••••••••••••••••••••••••••••••••••••••••• Helpers and abstract classes
 
 
-class NearlyReadOnlyAdmin(admin.ModelAdmin):
+class NearlyReadOnlyAdmin(django_admin.ModelAdmin):
     """ borrowed from https://code.djangoproject.com/ticket/17295
         with enhancements from http://stackoverflow.com/a/12923739/654755 """
 
@@ -39,7 +44,7 @@ class NearlyReadOnlyAdmin(admin.ModelAdmin):
         return request.user.is_superuser
 
 
-class CSVAdminMixin(admin.ModelAdmin):
+class CSVAdminMixin(django_admin.ModelAdmin):
     """
     Adds a CSV export action to an admin view.
     cf. http://djangosnippets.org/snippets/2908/
@@ -160,6 +165,7 @@ class OneFlowUserAdmin(UserAdmin, CSVAdminMixin):
     full_name_display.short_description = _(u'Full name')
 
 admin.site.register(User, OneFlowUserAdmin)
+admin.site.unregister(DjangoUser)
 
 
 if settings.FULL_ADMIN:
@@ -168,7 +174,7 @@ if settings.FULL_ADMIN:
     subject_fields_displays = tuple((field + '_display')
                                     for field in subject_fields_names)
 
-    class EmailContentAdmin(admin.ModelAdmin):
+    class EmailContentAdmin(django_admin.ModelAdmin):
         list_display  = ('name', ) + subject_fields_displays
         search_fields = ('name', ) + subject_fields_names
         ordering      = ('name', )

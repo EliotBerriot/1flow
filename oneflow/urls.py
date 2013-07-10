@@ -5,11 +5,15 @@ from django.conf.urls import patterns, include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
-from django.contrib import admin
 
 from .api import v1_api
 
+# This is our ".admin" module. it runs autodiscover() automatically.
+import admin
 admin.autodiscover()
+
+# We need to import this after Django's standard autodiscover().
+from mongoadmin import site as admin_site
 
 handler404 = 'oneflow.base.views.not_found_handler'
 handler500 = 'oneflow.base.views.error_handler'
@@ -49,8 +53,8 @@ if 'rosetta' in settings.INSTALLED_APPS:
 urlpatterns += patterns(
     '',
     url(r'^grappelli/', include('grappelli.urls')),
-    url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
-    url(r'^admin/', include(admin.site.urls)),
+    #url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
+    url(r'^admin/', include(admin_site.urls)),
 )
 
 urlpatterns += patterns(
