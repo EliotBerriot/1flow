@@ -369,7 +369,7 @@ RAVEN_CONFIG = {
     # We send flower bugs to a dedicated sentry project,
     # it pollutes us too much.
     'dsn': os.environ.get('RAVEN_DSN_FLOWER'
-                          if 'flower' in sys.argv
+                          if 'flower' in sys.argv or 'shell_ipynb' in sys.argv
                           else 'RAVEN_DSN'),
 }
 
