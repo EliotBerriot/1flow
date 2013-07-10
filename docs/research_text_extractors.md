@@ -93,4 +93,4 @@ Cons:
 ## Soup-strainer
 
 
-pip install -e git+https://github.com/rcarmo/soup-strainer.git@master#egg=soup-strainer-dev
+pip install -e git+https://github.com/rcarmo/soup-strainer.git@master#egg=strainer-dev
