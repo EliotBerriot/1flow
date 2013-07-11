@@ -280,8 +280,11 @@ def detect_encoding_from_requests_response(response):
     if getattr(response, 'encoding', None):
         return response.encoding
 
-    maybe_encoding = response.headers[
-        'content-type'].lower().split('charset=')[-1]
+    # In case the headers don't contain an content-type, we get()
+    # 'text/html' as a fallback value, which will trigger the same
+    # behaviour as having a content-type header with no charset value.
+    maybe_encoding = response.headers.get(
+        'content-type', 'text/html').lower().split('charset=')[-1]
 
     if maybe_encoding.lower() == 'text/html':
         # HTTP headers don't contain any encoding.
