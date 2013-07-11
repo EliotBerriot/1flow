@@ -35,9 +35,14 @@ from ...base.utils import (connect_mongoengine_signals,
                            HttpResponseLogProcessor, RedisStatsCounter)
 from .keyval import FeedbackDocument
 
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
+
 LOGGER = logging.getLogger(__name__)
 
 feedparser.USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+
+# Lower the default, we know good websites just work well.
+requests.adapters.DEFAULT_RETRIES = 1
 
 # Don't use any lang-dependant values (eg. _(u'NO CONTENT'))
 CONTENT_NOT_PARSED    = None
@@ -618,10 +623,18 @@ class Article(Document):
             self.fetch_content_text(force=force, commit=commit)
 
         except AlreadyLockedException, e:
-            # This won't work because of issue 1458, we have to fake.
+            # retry() won't work because of issue 1458, we have to fake.
             #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
 
-            self.fetch_content.apply_async((), countdown=randrange(60))
+            self.fetch_content.apply_async((force, commit),
+                                           countdown=randrange(60))
+            return
+
+        except requests.ConnectionError, e:
+            self.content_error = str(e)
+            self.save()
+
+            LOGGER.error(u'Connection failed while fetching article %s.', self)
             return
 
         except SoftTimeLimitExceeded, e:
