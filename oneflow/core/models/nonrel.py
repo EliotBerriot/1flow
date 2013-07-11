@@ -11,6 +11,8 @@ import feedparser
 from random import randrange
 from constance import config
 
+from xml.sax import SAXParseException
+
 from celery.contrib.methods import task as celery_task_method
 from celery.exceptions import SoftTimeLimitExceeded
 
@@ -366,6 +368,21 @@ class Feed(Document):
 
         return False
 
+    def eventually_close_feed(self, parsed_feed):
+
+        if parsed_feed.get('bozo', False):
+            exception = parsed_feed.get('bozo_exception', None)
+
+            if isinstance(exception, SAXParseException):
+                self.closed = True
+                self.save()
+
+                LOGGER.critical(u'Feed %s closed because of invalid '
+                                u'attribute (was: %s)', self, exception)
+                return True
+
+        return False
+
     @celery_task_method(name='Feed.refresh', queue='low')  # rate_limit='10/s')
     def refresh(self, force=False):
         """ Find new articles in an RSS feed.
@@ -378,16 +395,19 @@ class Feed(Document):
         if self.refresh_must_abort(force=force):
             return
 
+        LOGGER.info(u'Refreshing feed %s…', self)
+
+        feedparser_kwargs, http_logger = self.build_refresh_kwargs()
+        parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
+
+        if self.eventually_close_feed(parsed_feed):
+            return
+
         # Launch the next fetcher right now, in order for the duration
         # of the current fetch not to delay the next and make the actual
         # fetch interval be longer than advertised.
         self.refresh.apply_async((), countdown=self.fetch_interval
                                  or config.FEED_FETCH_DEFAULT_INTERVAL)
-
-        LOGGER.info(u'Refreshing feed %s…', self)
-
-        feedparser_kwargs, http_logger = self.build_refresh_kwargs()
-        parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
         # In case of a redirection, just check the last hop HTTP status.
         try:
