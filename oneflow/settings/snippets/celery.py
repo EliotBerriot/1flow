@@ -9,6 +9,14 @@
 import djcelery
 djcelery.setup_loader()
 from celery.schedules import crontab
+from kombu import Exchange, Queue
+
+CELERY_DEFAULT_QUEUE = 'medium'
+CELERY_QUEUES = (
+    Queue('high', Exchange('high'), routing_key='high'),
+    Queue('medium', Exchange('medium'), routing_key='medium'),
+    Queue('low', Exchange('low'), routing_key='low'),
+)
 
 BROKER_URL = os.environ.get('BROKER_URL')
 
