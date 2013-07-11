@@ -6,9 +6,65 @@
 #
 
 #from datetime import timedelta
-import djcelery
-djcelery.setup_loader()
-from celery.schedules import crontab
+try:
+    import djcelery
+    djcelery.setup_loader()
+    from celery.schedules import crontab
+
+    from kombu import Exchange, Queue
+except ImportError:
+    warnings.warn('Kombu not installed (yet?).', Warning)
+
+else:
+    CELERY_DEFAULT_QUEUE = 'medium'
+
+    CELERY_QUEUES = (
+        Queue('high', Exchange('high'), routing_key='high'),
+        Queue('medium', Exchange('medium'), routing_key='medium'),
+        Queue('low', Exchange('low'), routing_key='low'),
+    )
+
+    CELERYBEAT_SCHEDULE = {
+        # 'celery-beat-test': {
+        #     'task': 'oneflow.base.tasks.celery_beat_test',
+        #     'schedule': timedelta(seconds=15),
+        #     'schedule': timedelta(seconds=5),
+        #     'schedule': crontab(minute='*'),
+        # },
+        #
+        # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Core tasks
+
+        'refresh-all-feeds-checker': {
+            'task': 'oneflow.core.tasks.refresh_all_feeds',
+            'schedule': crontab(hour='*/4', minute='12'),
+        },
+
+        # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Cleaning tasks
+
+        'clean-obsolete-redis-keys': {
+            'task': 'oneflow.core.tasks.clean_obsolete_redis_keys',
+            'schedule': crontab(hour='2', minute='2'),
+        },
+
+        # ••••••••••••••••••••••••••••••••••••••••••••••••••••• Social auth refresh
+
+        'refresh-access-tokens-00': {
+            'task': 'oneflow.base.tasks.refresh_access_tokens',
+            'schedule': crontab(hour='*/4', minute='0,48'),
+        },
+        'refresh-access-tokens-12': {
+            'task': 'oneflow.base.tasks.refresh_access_tokens',
+            'schedule': crontab(hour='3,7,11,15,19,23', minute=12),
+        },
+        'refresh-access-tokens-24': {
+            'task': 'oneflow.base.tasks.refresh_access_tokens',
+            'schedule': crontab(hour='2,6,10,14,18,22', minute=24),
+        },
+        'refresh-access-tokens-36': {
+            'task': 'oneflow.base.tasks.refresh_access_tokens',
+            'schedule': crontab(hour='1,5,9,13,17,21', minute=36),
+        },
+    }
 
 BROKER_URL = os.environ.get('BROKER_URL')
 
@@ -51,44 +107,3 @@ CELERY_SEND_TASK_SENT_EVENT = True
 
 CELERYBEAT_SCHEDULER = 'djcelery.schedulers.DatabaseScheduler'
 
-CELERYBEAT_SCHEDULE = {
-    # 'celery-beat-test': {
-    #     'task': 'oneflow.base.tasks.celery_beat_test',
-    #     'schedule': timedelta(seconds=15),
-    #     'schedule': timedelta(seconds=5),
-    #     'schedule': crontab(minute='*'),
-    # },
-    #
-    # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Core tasks
-
-    'refresh-all-feeds-checker': {
-        'task': 'oneflow.core.tasks.refresh_all_feeds',
-        'schedule': crontab(hour='*/4', minute='12'),
-    },
-
-    # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Cleaning tasks
-
-    'clean-obsolete-redis-keys': {
-        'task': 'oneflow.core.tasks.clean_obsolete_redis_keys',
-        'schedule': crontab(hour='2', minute='2'),
-    },
-
-    # ••••••••••••••••••••••••••••••••••••••••••••••••••••• Social auth refresh
-
-    'refresh-access-tokens-00': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='*/4', minute='0,48'),
-    },
-    'refresh-access-tokens-12': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='3,7,11,15,19,23', minute=12),
-    },
-    'refresh-access-tokens-24': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='2,6,10,14,18,22', minute=24),
-    },
-    'refresh-access-tokens-36': {
-        'task': 'oneflow.base.tasks.refresh_access_tokens',
-        'schedule': crontab(hour='1,5,9,13,17,21', minute=36),
-    },
-}

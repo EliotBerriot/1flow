@@ -16,16 +16,26 @@ CONSTANCE_CONFIG = {
     # SEMANTIC NOTE: we use 'disabled' (and not 'enabled') because the rss
     # refreshing is something that is enabled in normal conditions. Stopping
     # it is an unusual / rare action, so the setting is named accordingly.
-    'FETCH_DISABLED': (False, ugettext(u'Set this to True for maintenance '
-                       u'operations and wait for all fetchers to terminate. '
-                       u'It should take at most FETCH_DEFAULT_INTERVAL '
-                       u'seconds.')),
+    'FEED_FETCH_DISABLED': (False, ugettext(u'Set this to True for '
+                            u'maintenance operations and wait for all '
+                            u'fetchers to terminate. It should take at '
+                            u'most FEED_FETCH_DEFAULT_INTERVAL seconds.')),
 
-    'FETCH_DEFAULT_INTERVAL': (3600, ugettext(u'Default feed fetch interval '
-                               u'in seconds. You can tune the interval for '
-                               u'each feed after creation.')),
+    'FEED_FETCH_GHOST_ENABLED': (False, ugettext(u'Enable Ghost fetching or '
+                                 u'not. Disabled by default, make OSX Python '
+                                 u'crash.')),
+
+    'FEED_FETCH_DEFAULT_INTERVAL': (3600, ugettext(u'Default feed fetch '
+                                    u'interval in seconds. You can tune the '
+                                    u'interval for each feed after creation.')),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••• Feed admin configuration
+
+    'FEED_REFRESH_RANDOMIZE': (True, ugettext(u'Set this to False if you want '
+                               u'all feeds with the same fetch interval to '
+                               u'fetch at the same time. Default is to '
+                               u'randomize the refreshs not to hammer our '
+                               u'machines.')),
 
     'FEED_ADMIN_LIST_PER_PAGE': (10, ugettext(u'How many feeds per page in '
                                  u'the Django admin. Increase only if '
@@ -39,16 +49,30 @@ CONSTANCE_CONFIG = {
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article parsing
 
+    'ARTICLE_FETCHING_DEBUG': (False, ugettext(u'Enable this to log '
+                               u'intermediate article versions. Default: '
+                                  u'not enabled in normal conditions.')),
 
-    'ARTICLE_PARSING_DISABLED': (False, ugettext(u'Set this to True to '
-                                 u'suspend content parsing operations. '
-                                 u'Related tasks will remain in queue and '
-                                 u'will be retried when you enable it again.')),
+    'ARTICLE_FETCHING_DISABLED': (False, ugettext(u'Disable or not '
+                                  u'global fetching operations for all '
+                                  u'content types. Default: '
+                                  u'enabled in normal conditions.')),
 
-    'ARTICLE_FULL_PARSING_DISABLED': (False, ugettext(u'Like '
-                                      u'ARTICLE_PARSING_DISABLED, but for '
-                                      u'FULL content parsing.')),
+    'ARTICLE_FETCHING_TEXT_DISABLED': (False, ugettext(u'Disable or not '
+                                       u'text fetching operations. Default: '
+                                       u'enabled in normal conditions.')),
 
+    'ARTICLE_FETCHING_VIDEO_DISABLED': (False, ugettext(u'Disable or not '
+                                        u'video fetching operations. Default: '
+                                        u'enabled in normal conditions.')),
+
+    'ARTICLE_FETCHING_IMAGE_DISABLED': (False, ugettext(u'Disable or not '
+                                        u'image fetching operations. Default: '
+                                        u'enabled in normal conditions.')),
+
+    'ARTICLE_MARKDOWN_DISABLED': (False, ugettext(u'Disable or not the HTML '
+                                  u'to Markdown internal conversion. '
+                                  u'Default: enabled in normal conditions.')),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
 

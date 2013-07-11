@@ -567,7 +567,7 @@ def clean_obsolete_redis_keys():
 @task(queue='high')
 def refresh_all_feeds(limit=None):
 
-    if config.FETCH_DISABLED:
+    if config.FEED_FETCH_DISABLED:
         # Do not raise any .retry(), this is a scheduled task.
         return
 
