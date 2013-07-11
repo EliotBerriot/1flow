@@ -866,7 +866,10 @@ class Article(Document):
 
         # TODO: create short_url
 
-        self.fetch_content()
+        # Manually randomize a little the fetching, to avoid
+        # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
+        # as much as possible. This is not yet a full-featured solution.
+        self.fetch_content.apply_async((), countdown=randrange(5))
 
         #self.parse_content.delay()
         #self.parse_full_content.delay()
