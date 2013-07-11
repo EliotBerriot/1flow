@@ -60,7 +60,8 @@ def connect_mongoengine_signals(module_globals):
                      'cannot connect mongoengine signals!')
         return
 
-    connected = 0
+    if __debug__:
+        connected = 0
 
     for key, potential_class in module_globals.items():
 
@@ -82,11 +83,12 @@ def connect_mongoengine_signals(module_globals):
                     getattr(signals, signal_name).connect(
                         getattr(potential_class, handler_name),
                         sender=potential_class)
-                    connected += 1
+                    if __debug__:
+                        connected += 1
 
-    if connected:
-        LOGGER.info('Connected %s signal handlers to MongoEngine senders.',
-                    connected)
+    if __debug__ and settings.DEBUG and connected:
+        LOGGER.debug('Connected %s signal handlers to MongoEngine senders.',
+                     connected)
 
 
 def get_user_and_update_context(context):
