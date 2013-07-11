@@ -1,7 +1,6 @@
 -e git+https://github.com/Karmak23/sparks.git@sparks-3.3.1#egg=sparks-dev
 -e git+https://github.com/Karmak23/humanize.git@master#egg=humanize-dev
 -e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
--e git+https://github.com/Karmak23/python-boilerpipe@master#egg=boilerpipe
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-dev
 -e git+https://github.com/Karmak23/soup-strainer.git@master#egg=strainer-dev
 -e git+https://github.com/jeanphix/Ghost.py.git@master#egg=Ghost-dev
