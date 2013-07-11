@@ -49,6 +49,10 @@ CONSTANCE_CONFIG = {
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article parsing
 
+    'ARTICLE_FETCHING_DEBUG': (False, ugettext(u'Enable this to log '
+                               u'intermediate article versions. Default: '
+                                  u'not enabled in normal conditions.')),
+
     'ARTICLE_FETCHING_DISABLED': (False, ugettext(u'Disable or not '
                                   u'global fetching operations for all '
                                   u'content types. Default: '
