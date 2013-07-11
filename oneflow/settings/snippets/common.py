@@ -7,6 +7,7 @@
 
 import os
 import sys
+import warnings
 
 from django.core.urlresolvers import reverse_lazy
 
