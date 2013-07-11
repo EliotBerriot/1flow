@@ -6,10 +6,14 @@ import redis
 import urllib2
 import logging
 import datetime
+
 try:
     import blinker
 except:
     blinker = None # NOQA
+
+from bs4 import BeautifulSoup
+from requests.packages import charade
 
 from mongoengine import Document, signals
 from django.conf import settings
@@ -259,6 +263,50 @@ def request_context_celery(request, *args, **kwargs):
 
     return context
 
+
+def detect_encoding_from_requests_response(response):
+    """ :param:`response` beiing a :module:`requests` response, this function
+        will try to detect the encoding as much as possible. Fist, the "normal"
+        response encoding will be tried, else the headers will be parsed, and
+        finally the ``<head>`` of the ``<html>`` content will be parsed. If
+        nothing succeeds, we will rly on :module:`charade` to guess from the
+        content.
+
+        .. todo:: we have to check if content-type is HTML before parsing the
+            headers. For now you should use this function only on responses
+            which you are sure they will contain HTML.
+    """
+
+    if getattr(response, 'encoding', None):
+        return response.encoding
+
+    maybe_encoding = response.headers[
+        'content-type'].lower().split('charset=')[-1]
+
+    if maybe_encoding.lower() == 'text/html':
+        # HTTP headers don't contain any encoding.
+        # Search in page head, then try to detect from data.
+
+        html_content = BeautifulSoup(response.content, 'lxml')
+
+        for meta_header in html_content.head.findAll('meta'):
+            for attribute, value in meta_header.attrs.items():
+                if attribute.lower() == 'http-equiv':
+                    if value.lower() == 'content-type':
+                        content  = meta_header.attrs.get('content')
+                        encoding = content.lower().split('charset=')[-1]
+                        break
+
+        if encoding.lower() == 'text/html':
+            # If we couldn't find an encoding in the HTML <head>,
+            # try to detect it manually wth charade. This can
+            # eventually fail, too… In this case, OMG… We are alone.
+            try:
+                return charade.detect()['encoding']
+            except:
+                return None
+
+        return encoding
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper functions
 
