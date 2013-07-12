@@ -110,24 +110,25 @@ class FeedStatsCounter(RedisStatsCounter):
 
     def fetched(self, increment=False):
 
-        if self.key_base != global_feed_stats.key_base:
-            # in case we want to reset.
-            global_feed_stats.fetched(increment)
+        # NOTE: the following code won't work work: it will
+        # increment the global counter instead of reseting it.
+        # (spotted by the test-suite 2013-07-12)
+        #
+        # if self.key_base != global_feed_stats.key_base:
+        #     # in case we want to reset.
+        #     global_feed_stats.fetched(increment)
 
         return RedisStatsCounter._int_incr_key(
             self.key_base + ':fetch', increment)
 
     def incr_dupes(self):
+
         if self.key_base != global_feed_stats.key_base:
             global_feed_stats.incr_dupes()
 
         return self.dupes(increment=True)
 
     def dupes(self, increment=False):
-
-        if self.key_base != global_feed_stats.key_base:
-            # in case we want to reset.
-            global_feed_stats.dupes(increment)
 
         return RedisStatsCounter._int_incr_key(
             self.key_base + ':dupes', increment)
