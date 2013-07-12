@@ -5,7 +5,7 @@ import redis
 import logging
 
 from django.conf import settings
-from django.test import TransactionTestCase
+from django.test import TestCase  # TransactionTestCase
 
 from oneflow.core.models.nonrel import Feed, FeedStatsCounter
 from oneflow.base.utils import RedisStatsCounter
@@ -25,7 +25,7 @@ FeedStatsCounter.REDIS  = TEST_REDIS
 TEST_REDIS.flushdb()
 
 
-class FeedStatsCounterTests(TransactionTestCase):
+class FeedStatsCounterTests(TestCase):
 
     def setUp(self):
         self.global_counter = FeedStatsCounter()
