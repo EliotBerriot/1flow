@@ -24,3 +24,8 @@ DEVSERVER_DEFAULT_PORT = 8000
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 
+NOSE_ARGS = ['--stop']
+
+import logging
+import south.logger
+logging.getLogger('south').setLevel(logging.CRITICAL)
