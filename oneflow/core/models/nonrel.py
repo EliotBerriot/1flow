@@ -228,7 +228,6 @@ class Feed(Document):
                 # WAS: if not 'bad_site_url' in self.mail_warned:
                 #           self.mail_warned.append('bad_site_url')
 
-
                 self.site_url = None
                 self.close(commit=False)
 
@@ -574,11 +573,11 @@ class Article(Document):
 
             if title_error and str(title_error).startswith(
                     'String value is too long'):
-                self.title = self.title[:50] + (self.title[:50] and u'…')
+                self.title = self.title[:1024] + (self.title[:1024] and u'…')
                 e.errors.pop('title')
 
             if e.errors:
-                raise ValidationError('ValidationError', errors=e.errors)
+                raise e
 
     def is_origin(self):
         return isinstance(self.source, Source)
