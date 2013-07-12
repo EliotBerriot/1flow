@@ -33,6 +33,7 @@ from django.utils.text import slugify
 from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
                            RedisExpiringLock, AlreadyLockedException,
+                           RedisSemaphore, NoResourceAvailableException,
                            HttpResponseLogProcessor, RedisStatsCounter)
 from .keyval import FeedbackDocument
 
@@ -175,6 +176,14 @@ class Feed(Document):
     fetch_interval = IntField(default=config.FEED_FETCH_DEFAULT_INTERVAL,
                               verbose_name=_(u'fetch interval'))
     last_fetch     = DateTimeField(verbose_name=_(u'last fetch'))
+    fetch_limit_nr = IntField(default=config.FEED_FETCH_PARALLEL_LIMIT,
+                              verbose_name=_(u'fetch limit'),
+                              help_text=_(u'The maximum number of articles '
+                                          u'that can be fetched from the feed '
+                                          u'in parallel. If less than %s, '
+                                          u'do not touch: the workers have '
+                                          u'already tuned it from real-life '
+                                          u'results.'))
 
     # Stored directly from feedparser data to avoid wasting BW.
     last_etag      = StringField(verbose_name=_(u'last etag'))
@@ -186,6 +195,26 @@ class Feed(Document):
 
     def __unicode__(self):
         return _(u'%s (#%s)') % (self.name, self.id)
+
+    @property
+    def fetch_limit(self):
+        try:
+            return self.__limit_semaphore
+
+        except AttributeError:
+            self.__limit_semaphore = RedisSemaphore(self, self.fetch_limit_nr)
+            return self.__limit_semaphore
+
+    def set_fetch_limit(self):
+
+        new_limit = self.fetch_limit.set_limit()
+        cur_limit = self.fetch_limit_nr
+
+        if cur_limit != new_limit:
+            self.fetch_limit_nr = new_limit
+            self.save()
+
+            LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
@@ -662,18 +691,29 @@ class Article(Document):
         #
         # raise self.fetch_content.retry(exc=e, countdown=randrange(60))
 
+        # retry() won't work because of issue 1458, we have to fake.
+        #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
+
         try:
-            self.fetch_content_text(force=force, commit=commit)
+            with self.feed.fetch_limit:
+                self.fetch_content_text(force=force, commit=commit)
 
-        except AlreadyLockedException, e:
-            # retry() won't work because of issue 1458, we have to fake.
-            #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
-
+        except (NoResourceAvailableException, AlreadyLockedException):
+            # TODO: use retry() when celery#1458 is solved
             self.fetch_content.apply_async((force, commit),
                                            countdown=randrange(60))
-            return
 
         except requests.ConnectionError, e:
+
+            if 'Errno 104' in str(e):
+                # Special case, we probably hit a remote parallel limit.
+                self.feed.set_fetch_limit()
+
+                # TODO: use retry() when celery#1458 is solved
+                self.fetch_content.apply_async((force, commit),
+                                               countdown=randrange(60))
+                return
+
             self.content_error = str(e)
             self.save()
 

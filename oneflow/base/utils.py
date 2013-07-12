@@ -352,15 +352,20 @@ class RedisExpiringLock(object):
         persistent locks related problems.
     """
 
+    REDIS     = None
+    key_base  = 'exl'
+    exc_class = AlreadyLockedException
+
     def __init__(self, instance, lock_value=None, expire_time=None):
 
         if isinstance(instance, str):
-            self.lock_id = 'scl:str:%s' % instance
+            self.lock_id = '%s:str:%s' % (self.key_base, instance)
             self.expire_time = expire_time or 3600
 
         else:
-            self.lock_id = 'scl:%s:%s' % (instance.__class__.__name__,
-                                          instance.id)
+            self.lock_id = '%s:%s:%s' % (self.key_base,
+                                         instance.__class__.__name__,
+                                         instance.id)
             self.expire_time = expire_time or getattr(instance,
                                                       'fetch_interval',
                                                       3600)
@@ -369,23 +374,120 @@ class RedisExpiringLock(object):
 
     def __enter__(self):
         if not self.acquire():
-            raise AlreadyLockedException('already locked')
+            raise self.exc_class()
 
     def __exit__(self, *a, **kw):
         return self.release()
 
     def acquire(self):
-        return REDIS.set(self.lock_id, self.lock_value,
-                         ex=self.expire_time, nx=True)
+        return self.REDIS.set(self.lock_id, self.lock_value,
+                              ex=self.expire_time, nx=True)
 
     def release(self):
-        val = REDIS.get(self.lock_id)
+        val = self.REDIS.get(self.lock_id)
 
         if val == self.lock_value:
-            REDIS.delete(self.lock_id)
+            self.REDIS.delete(self.lock_id)
             return True
 
         return False
+
+# By default take the normal REDIS connection, but still allow
+# to override it in tests via the class attribute.
+RedisExpiringLock.REDIS = REDIS
+
+
+class NoResourceAvailableException(Exception):
+    """ Raised by the RedisSemaphore when the limit is reached. """
+
+    pass
+
+
+class RedisSemaphore(RedisExpiringLock):
+    """ A simple but networked-machines-safe semaphore implementation.
+
+        .. warning:: as this class inherits from :class:`RedisExpiringLock`,
+            it has the automagic ability to make the semaphore expire after
+            the default expiration period.
+
+            This is OK for me because the Sem should be used to avoid
+            concurrent requests in a short period of time, and should
+            expire automatically to avoid problems with dead tasks.
+
+            But, this can be surprising, and could probably lead to
+            some frustration some day…
+    """
+
+    REDIS     = None
+    key_base  = 'rsm'
+    exc_class = NoResourceAvailableException
+
+    def __init__(self, instance, resources_number=None):
+        super(RedisSemaphore, self).__init__(instance=instance)
+
+        #
+        # NOT A GOOD Idea to reset semaphore at instanciation,
+        # parallel workers have different instances of it.
+        #
+        self.sem_limit = resources_number or 1
+
+        #LOGGER.warning('SEMinit: %s %s', self.lock_id, self.holders())
+
+    def acquire(self):
+
+        #LOGGER.warning('>> ACQUIRE before: %s', self.holders())
+
+        val = self.REDIS.incr(self.lock_id)
+
+        #LOGGER.warning('>> ACQUIRE after: %s', self.holders())
+
+        if val <= self.sem_limit:
+            return True
+
+        else:
+            #LOGGER.warning('>> WILL -1: %s', self.holders())
+
+            self.release()
+            return False
+
+    def release(self):
+
+        #LOGGER.warning('>> RELEASE before: %s', self.REDIS.get(self.lock_id))
+
+        val = self.REDIS.decr(self.lock_id)
+
+        #LOGGER.warning('>> RELEASE after: %s', val)
+
+        if val < 0:
+            # This should happen only during test, but just in case…
+            LOGGER.warning(u'Semaphore value %s is under zero (%s), resetting.',
+                           self.lock_id, val)
+            self.REDIS.set(self.lock_id, 0)
+            return False
+
+        return True
+
+    def set_limit(self, limit=None):
+
+        if limit is None:
+            limit = self.holders() + 1
+
+        if self.sem_limit != limit:
+            LOGGER.info('Semaphore %s limit changed from %s to %s.',
+                        self.lock_id, self.sem_limit, limit)
+            self.sem_limit = limit
+
+        return limit
+
+    def holders(self):
+        # LOGGER.warning('>> HOLDERS: %s %s', self.lock_id,
+        #                int(self.REDIS.get(self.lock_id) or 0))
+        return int(self.REDIS.get(self.lock_id) or 0)
+
+
+# By default take the normal REDIS connection, but still allow
+# to override it in tests via the class attribute.
+RedisSemaphore.REDIS = REDIS
 
 
 class HttpResponseLogProcessor(urllib2.BaseHandler):
@@ -431,7 +533,7 @@ class RedisStatsCounter(object):
         them again to make the whole thing work.
     """
     REDIS      = None
-    GLOBAL_KEY = 'global'
+    GLOBAL_KEY = 'gbl'
 
     def __init__(self, *args, **kwargs):
 
