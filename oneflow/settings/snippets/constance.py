@@ -47,6 +47,10 @@ CONSTANCE_CONFIG = {
                                     u'them or not (if they got 0 new '
                                     u'articles).')),
 
+    'FEED_CLOSED_WARN_LIMIT': (5, ugettext(u'Number of days during which a '
+                               u'just closed feed will be warned about to '
+                               u'site managers.')),
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article parsing
 
     'ARTICLE_FETCHING_DEBUG': (False, ugettext(u'Enable this to log '
