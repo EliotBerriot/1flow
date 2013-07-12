@@ -9,6 +9,7 @@ from constance import config
 from humanize.time import naturaldelta, naturaltime
 
 from mongoengine.errors import OperationError
+from mongoengine.queryset import Q
 from pymongo.errors import DuplicateKeyError
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
@@ -18,6 +19,8 @@ from celery import task
 from django.conf import settings
 from django.core.mail import mail_admins
 from django.contrib.auth import get_user_model
+from django.core.mail import mail_managers
+from django.utils.translation import ugettext_lazy as _
 
 
 from .models import RATINGS
@@ -38,9 +41,10 @@ REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
 
 User = get_user_model()
 
-ftstamp = datetime.datetime.fromtimestamp
-now     = datetime.datetime.now
-today   = datetime.date.today
+ftstamp   = datetime.datetime.fromtimestamp
+now       = datetime.datetime.now
+today     = datetime.date.today
+timedelta = datetime.timedelta
 
 
 def get_user_from_dbs(user_id):
@@ -588,3 +592,41 @@ def refresh_all_feeds(limit=None):
         feed.check_refresher()
 
     my_lock.release()
+
+
+@task(queue='high')
+def global_feeds_checker():
+
+    dtnow        = now()
+    limit_days   = config.FEED_CLOSED_WARN_LIMIT
+    closed_limit = dtnow - timedelta(days=limit_days)
+
+    feeds = Feed.objects(Q(closed=True)
+                         & (Q(date_closed__exists=False)
+                            or Q(date_closed__gte=closed_limit)))
+
+    count = feeds.count()
+
+    if not count:
+        LOGGER.info('No feed was closed in the last %s days.', limit_days)
+        return
+
+    mail_managers(_(u'Reminder: {0} feed(s) closed in last '
+                  u'{1} day(s)').format(count, limit_days),
+                  _(u"\n\nHere is the list, dates (if any), and reasons "
+                  u"(if any) of closing:\n\n{feed_list}\n\nYou can manually "
+                  u"reopen any of them from the admin interface.\n\n").format(
+                  feed_list='\n\n'.join(
+                  u'- %s, url: %s\n    - %s\n    - reason: %s' % (feed,
+                  feed.url, (u'closed on %s' % feed.date_closed)
+                  if feed.date_closed else u'no closing date',
+                  feed.closed_reason or
+                  u'none (or manually closed from the admin interface)')
+                  for feed in feeds)))
+
+    # Close the feeds, but after sending the mail,
+    # So that initial reason is displayed at least
+    # once to a real human.
+    for feed in feeds:
+        if feed.date_closed is None:
+            feed.close('Automatic close by periodic checker task')

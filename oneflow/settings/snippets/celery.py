@@ -70,9 +70,13 @@ CELERYBEAT_SCHEDULE = {
     #
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Core tasks
 
-    'refresh-all-feeds-checker': {
+    'refresh-all-feeds': {
         'task': 'oneflow.core.tasks.refresh_all_feeds',
-        'schedule': crontab(hour='*/4', minute='12'),
+        'schedule': crontab(hour='*/4', minute='4'),
+    },
+    'global-feeds-checker': {
+        'task': 'oneflow.core.tasks.global_feeds_checker',
+        'schedule': crontab(hour='1', minute='1'),
     },
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Cleaning tasks

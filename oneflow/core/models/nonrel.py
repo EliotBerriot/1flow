@@ -11,7 +11,7 @@ import feedparser
 from random import randrange
 from constance import config
 
-from xml.sax import SAXParseException
+#from xml.sax import SAXParseException
 
 from celery.contrib.methods import task as celery_task_method
 from celery.exceptions import SoftTimeLimitExceeded
@@ -27,7 +27,6 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 ReferenceField, GenericReferenceField,
                                 EmbeddedDocumentField)
 
-from django.core.mail import mail_admins
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 
@@ -165,9 +164,11 @@ class Feed(Document):
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
+    date_added     = DateTimeField(default=now, verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
     closed         = BooleanField(default=False, verbose_name=_(u'closed'))
-    date_added     = DateTimeField(default=now, verbose_name=_(u'added'))
+    date_closed    = DateTimeField(verbose_name=_(u'date closed'))
+    closed_reason  = StringField(verbose_name=_(u'closed reason'))
 
     fetch_interval = IntField(default=config.FEED_FETCH_DEFAULT_INTERVAL,
                               verbose_name=_(u'fetch interval'))
@@ -182,7 +183,7 @@ class Feed(Document):
     options        = ListField(IntField())
 
     def __unicode__(self):
-        return _(u'%s (#%s) from %s') % (self.name, self.id, self.url)
+        return _(u'%s (#%s)') % (self.name, self.id)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
@@ -192,6 +193,17 @@ class Feed(Document):
 
     def has_option(self, option):
         return option in self.options
+
+    def close(self, reason=None, commit=True):
+        self.closed        = True
+        self.date_closed   = now()
+        self.closed_reason = reason or u'NO REASON GIVEN'
+
+        LOGGER.critical(u'Feed %s closed with reason "%s"!',
+                        self, self.closed_reason)
+
+        if commit:
+            self.save()
 
     def get_articles(self, limit=None):
 
@@ -208,14 +220,17 @@ class Feed(Document):
 
         except ValidationError as e:
 
-            # Ignore/wrap errors about these fields:
             if e.errors.pop('site_url', None) is not None:
-                if not 'bad_site_url' in self.mail_warned:
-                    mail_admins('Feed {0} has a bad `site_url`'.format(self),
-                                (u"\n\n It is currently set to “ {0} ”.\n\n"
-                                u"You should fix it.\n\n").format(
-                                self.site_url))
-                    self.mail_warned.append('bad_site_url')
+                # Bad site URL, the feed is most probably totally unparsable.
+                # Close it. Admins will be warned about it via mail from a
+                # scheduled core task.
+                #
+                # WAS: if not 'bad_site_url' in self.mail_warned:
+                #           self.mail_warned.append('bad_site_url')
+
+
+                self.site_url = None
+                self.close(commit=False)
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
@@ -275,7 +290,7 @@ class Feed(Document):
     def check_refresher(self):
 
         if self.closed:
-            LOGGER.error(u'Feed %s is closed. refresh aborted.', self)
+            LOGGER.info(u'Feed %s is closed. refresh aborted.', self)
             return
 
         if config.FEED_FETCH_DISABLED:
@@ -334,7 +349,7 @@ class Feed(Document):
         """
 
         if self.closed:
-            LOGGER.error(u'Feed %s is closed. refresh aborted.', self)
+            LOGGER.info(u'Feed %s is closed. refresh aborted.', self)
             return True
 
         if config.FEED_FETCH_DISABLED:
@@ -368,20 +383,20 @@ class Feed(Document):
 
         return False
 
-    def eventually_close_feed(self, parsed_feed):
+    def has_feedparser_error(self, parsed_feed):
 
-        if parsed_feed.get('bozo', False):
-            exception = parsed_feed.get('bozo_exception', None)
+        return parsed_feed.get('bozo', False)
 
-            if isinstance(exception, SAXParseException):
-                self.closed = True
-                self.save()
-
-                LOGGER.critical(u'Feed %s closed because of invalid '
-                                u'attribute (was: %s)', self, exception)
-                return True
-
-        return False
+        #exception = parsed_feed.get('bozo_exception', None)
+        #
+        # Do not close for this: it can be a temporary error.
+        # if isinstance(exception, SAXParseException):
+        #     self.close(reason=str(exception))
+        #     return True
+        #
+        #return False
+        #
+        pass
 
     @celery_task_method(name='Feed.refresh', queue='low')  # rate_limit='10/s')
     def refresh(self, force=False):
@@ -400,7 +415,7 @@ class Feed(Document):
         feedparser_kwargs, http_logger = self.build_refresh_kwargs()
         parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
-        if self.eventually_close_feed(parsed_feed):
+        if self.has_feedparser_error(parsed_feed):
             return
 
         # Launch the next fetcher right now, in order for the duration
