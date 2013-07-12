@@ -17,6 +17,7 @@ from requests.packages import charade
 
 from mongoengine import Document, signals
 from django.conf import settings
+from django.db import models
 from django.template import Context, Template
 from django.utils import translation
 from django.contrib.auth import get_user_model
@@ -311,7 +312,7 @@ def detect_encoding_from_requests_response(response):
 
         return encoding
 
-# •••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper functions
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper classes
 
 
 class JsContextSerializer(ContextSerializer):
@@ -434,7 +435,14 @@ class RedisStatsCounter(object):
 
     def __init__(self, *args, **kwargs):
 
-        self.instance_id = (args[0] if isinstance(args[0], int) else args[0].id
+        # This could clash with a pure Django model because IDs overlap
+        # from one model to another. It doesn't with MongoDB documents,
+        # where IDs are unique accross the whole database.
+        if __debug__ and args:
+            assert not isinstance(args[0], models.Model)
+
+        self.instance_id = (args[0].id if isinstance(args[0], Document)
+                            else args[0]
                             ) if args else RedisStatsCounter.GLOBAL_KEY
 
         try:
@@ -449,30 +457,30 @@ class RedisStatsCounter(object):
     def _time_key(cls, key, set_time=False, time_value=None):
 
         if set_time:
-            return REDIS.set(key, time.time()
-                             if time_value is None else time_value)
+            return cls.REDIS.set(key, time.time()
+                                 if time_value is None else time_value)
 
-        return ftstamp(float(REDIS.get(key) or 0.0))
+        return ftstamp(float(cls.REDIS.get(key) or 0.0))
 
     @classmethod
     def _int_incr_key(cls, key, increment=False):
 
         if increment == 'reset':
             # return, else we increment to 1…
-            return REDIS.delete(key)
+            return cls.REDIS.delete(key)
 
         if increment:
-            return int(REDIS.incr(key))
+            return int(cls.REDIS.incr(key))
 
-        return int(REDIS.get(key) or 0)
+        return int(cls.REDIS.get(key) or 0)
 
     @classmethod
     def _int_set_key(cls, key, set_value=None):
 
         if set_value is None:
-            return int(REDIS.get(key) or 0)
+            return int(cls.REDIS.get(key) or 0)
 
-        return REDIS.set(key, set_value)
+        return cls.REDIS.set(key, set_value)
 
     def running(self, set_running=None):
 
@@ -480,13 +488,13 @@ class RedisStatsCounter(object):
 
         # Just to be sure we need to cast…
         # LOGGER.warning('running: set=%s, value=%s type=%s',
-        #                set_running, REDIS.get(self.key_base),
-        #                type(REDIS.get(self.key_base)))
+        #                set_running, self.REDIS.get(self.key_base),
+        #                type(self.REDIS.get(self.key_base)))
 
         if set_running is None:
-            return boolcast[REDIS.get(key)]
+            return boolcast[RedisStatsCounter.REDIS.get(key)]
 
-        return REDIS.set(key, set_running)
+        return RedisStatsCounter.REDIS.set(key, set_running)
 
 # By default take the normal REDIS connection, but still allow
 # to override it in tests via the class attribute.
