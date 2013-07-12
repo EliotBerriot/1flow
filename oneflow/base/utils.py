@@ -334,12 +334,12 @@ class JsContextSerializer(ContextSerializer):
 
 
 class AlreadyLockedException(Exception):
-    """ Simple Exception to notify a caller that uses SimpleCacheLock
+    """ Simple Exception to notify a caller that uses RedisExpiringLock
         as a context manager that the lock could not be taken. """
     pass
 
 
-class SimpleCacheLock(object):
+class RedisExpiringLock(object):
     """ Simple lock for multi-hosted machines workers (eg. celery).
         Implemented via REDIS from http://redis.io/commands/set
 

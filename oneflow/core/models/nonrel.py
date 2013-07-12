@@ -32,7 +32,7 @@ from django.utils.text import slugify
 
 from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
-                           SimpleCacheLock, AlreadyLockedException,
+                           RedisExpiringLock, AlreadyLockedException,
                            HttpResponseLogProcessor, RedisStatsCounter)
 from .keyval import FeedbackDocument
 
@@ -103,6 +103,7 @@ class FeedStatsCounter(RedisStatsCounter):
     key_base = 'feeds'
 
     def incr_fetched(self):
+
         if self.key_base != global_feed_stats.key_base:
             global_feed_stats.incr_fetched()
 
@@ -138,7 +139,7 @@ global_feed_stats = FeedStatsCounter()
 
 # Until we patch Ghost to use more than one Xvfb at the same time,
 # we are tied to ensure there is only one running at a time.
-global_ghost_lock = SimpleCacheLock('__ghost.py__')
+global_ghost_lock = RedisExpiringLock('__ghost.py__')
 
 
 class Source(Document):
@@ -299,7 +300,7 @@ class Feed(Document):
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
             return
 
-        my_lock = SimpleCacheLock(self)
+        my_lock = RedisExpiringLock(self)
 
         if my_lock.acquire():
             # no refresher is running.
@@ -358,7 +359,7 @@ class Feed(Document):
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
             return
 
-        my_lock = SimpleCacheLock(self)
+        my_lock = RedisExpiringLock(self)
 
         if not my_lock.acquire():
             if force:
