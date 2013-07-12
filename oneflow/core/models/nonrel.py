@@ -570,6 +570,13 @@ class Article(Document):
             e.errors.pop('google_reader_original_data', None)
             e.errors.pop('feedparser_original_data', None)
 
+            title_error = e.errors.get('title', None)
+
+            if title_error and str(title_error).startswith(
+                    'String value is too long'):
+                self.title = self.title[:50] + (self.title[:50] and u'…')
+                e.errors.pop('title')
+
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
 
