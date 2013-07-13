@@ -121,9 +121,9 @@ def preview(branch=None):
     # set directly from the sparks defaults.
     env.sparks_options = {
         'worker_concurrency': {
-            'worker_low': 10,
-            'worker_medium': 10,
-            'worker_high': 15,
+            'worker_low': 4,
+            'worker_medium': 4,
+            'worker_high': 6,
         }
     }
 
@@ -172,7 +172,8 @@ def production():
                           'worker-04.1flow.io', ],
         'worker_low': ['worker-05.1flow.io',
                        'worker-02.1flow.io',
-                       'worker-04.1flow.io', ],
+                       'worker-04.1flow.io',
+                       'worker-99.1flow.io', ],
     })
     env.sparks_options = {
         'repository': {
@@ -187,6 +188,7 @@ def production():
             'worker_low': 12,
             'worker-02.1flow.io': 10,
             'worker-04.1flow.io': 8,
+            'worker-99.1flow.io': 24,
         },
     }
     env.env_was_set = True
@@ -211,6 +213,12 @@ def zero(branch=None):
         env.branch = get_current_git_branch()
 
     env.host_string = 'zero.1flow.io'
+
+    env.sparks_options = {
+        'worker_concurrency': {
+            '__all__': 2,
+        }
+    }
 
     # env.user is set via .ssh/config
     env.env_was_set = True
