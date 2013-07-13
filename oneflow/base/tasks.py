@@ -22,7 +22,7 @@ def celery_beat_test():
     LOGGER.info(u'testing celery beat scheduler…')
 
 
-@task
+@task(queue='high')
 def refresh_access_tokens():
     """ Refresh all access_tokens in turn to avoid hitting
         http://dev.1flow.net/webapps/1flow/group/664/

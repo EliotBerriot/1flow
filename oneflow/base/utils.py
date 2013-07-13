@@ -17,6 +17,7 @@ from requests.packages import charade
 
 from mongoengine import Document, signals
 from django.conf import settings
+from django.db import models
 from django.template import Context, Template
 from django.utils import translation
 from django.contrib.auth import get_user_model
@@ -311,7 +312,7 @@ def detect_encoding_from_requests_response(response):
 
         return encoding
 
-# •••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper functions
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper classes
 
 
 class JsContextSerializer(ContextSerializer):
@@ -333,12 +334,12 @@ class JsContextSerializer(ContextSerializer):
 
 
 class AlreadyLockedException(Exception):
-    """ Simple Exception to notify a caller that uses SimpleCacheLock
+    """ Simple Exception to notify a caller that uses RedisExpiringLock
         as a context manager that the lock could not be taken. """
     pass
 
 
-class SimpleCacheLock(object):
+class RedisExpiringLock(object):
     """ Simple lock for multi-hosted machines workers (eg. celery).
         Implemented via REDIS from http://redis.io/commands/set
 
@@ -351,15 +352,20 @@ class SimpleCacheLock(object):
         persistent locks related problems.
     """
 
+    REDIS     = None
+    key_base  = 'exl'
+    exc_class = AlreadyLockedException
+
     def __init__(self, instance, lock_value=None, expire_time=None):
 
         if isinstance(instance, str):
-            self.lock_id = 'scl:str:%s' % instance
+            self.lock_id = '%s:str:%s' % (self.key_base, instance)
             self.expire_time = expire_time or 3600
 
         else:
-            self.lock_id = 'scl:%s:%s' % (instance.__class__.__name__,
-                                          instance.id)
+            self.lock_id = '%s:%s:%s' % (self.key_base,
+                                         instance.__class__.__name__,
+                                         instance.id)
             self.expire_time = expire_time or getattr(instance,
                                                       'fetch_interval',
                                                       3600)
@@ -368,23 +374,120 @@ class SimpleCacheLock(object):
 
     def __enter__(self):
         if not self.acquire():
-            raise AlreadyLockedException('already locked')
+            raise self.exc_class()
 
     def __exit__(self, *a, **kw):
         return self.release()
 
     def acquire(self):
-        return REDIS.set(self.lock_id, self.lock_value,
-                         ex=self.expire_time, nx=True)
+        return self.REDIS.set(self.lock_id, self.lock_value,
+                              ex=self.expire_time, nx=True)
 
     def release(self):
-        val = REDIS.get(self.lock_id)
+        val = self.REDIS.get(self.lock_id)
 
         if val == self.lock_value:
-            REDIS.delete(self.lock_id)
+            self.REDIS.delete(self.lock_id)
             return True
 
         return False
+
+# By default take the normal REDIS connection, but still allow
+# to override it in tests via the class attribute.
+RedisExpiringLock.REDIS = REDIS
+
+
+class NoResourceAvailableException(Exception):
+    """ Raised by the RedisSemaphore when the limit is reached. """
+
+    pass
+
+
+class RedisSemaphore(RedisExpiringLock):
+    """ A simple but networked-machines-safe semaphore implementation.
+
+        .. warning:: as this class inherits from :class:`RedisExpiringLock`,
+            it has the automagic ability to make the semaphore expire after
+            the default expiration period.
+
+            This is OK for me because the Sem should be used to avoid
+            concurrent requests in a short period of time, and should
+            expire automatically to avoid problems with dead tasks.
+
+            But, this can be surprising, and could probably lead to
+            some frustration some day…
+    """
+
+    REDIS     = None
+    key_base  = 'rsm'
+    exc_class = NoResourceAvailableException
+
+    def __init__(self, instance, resources_number=None):
+        super(RedisSemaphore, self).__init__(instance=instance)
+
+        #
+        # NOT A GOOD Idea to reset semaphore at instanciation,
+        # parallel workers have different instances of it.
+        #
+        self.sem_limit = resources_number or 1
+
+        #LOGGER.warning('SEMinit: %s %s', self.lock_id, self.holders())
+
+    def acquire(self):
+
+        #LOGGER.warning('>> ACQUIRE before: %s', self.holders())
+
+        val = self.REDIS.incr(self.lock_id)
+
+        #LOGGER.warning('>> ACQUIRE after: %s', self.holders())
+
+        if val <= self.sem_limit:
+            return True
+
+        else:
+            #LOGGER.warning('>> WILL -1: %s', self.holders())
+
+            self.release()
+            return False
+
+    def release(self):
+
+        #LOGGER.warning('>> RELEASE before: %s', self.REDIS.get(self.lock_id))
+
+        val = self.REDIS.decr(self.lock_id)
+
+        #LOGGER.warning('>> RELEASE after: %s', val)
+
+        if val < 0:
+            # This should happen only during test, but just in case…
+            LOGGER.warning(u'Semaphore value %s is under zero (%s), resetting.',
+                           self.lock_id, val)
+            self.REDIS.set(self.lock_id, 0)
+            return False
+
+        return True
+
+    def set_limit(self, limit=None):
+
+        if limit is None:
+            limit = self.holders() + 1
+
+        if self.sem_limit != limit:
+            LOGGER.info('Semaphore %s limit changed from %s to %s.',
+                        self.lock_id, self.sem_limit, limit)
+            self.sem_limit = limit
+
+        return limit
+
+    def holders(self):
+        # LOGGER.warning('>> HOLDERS: %s %s', self.lock_id,
+        #                int(self.REDIS.get(self.lock_id) or 0))
+        return int(self.REDIS.get(self.lock_id) or 0)
+
+
+# By default take the normal REDIS connection, but still allow
+# to override it in tests via the class attribute.
+RedisSemaphore.REDIS = REDIS
 
 
 class HttpResponseLogProcessor(urllib2.BaseHandler):
@@ -430,11 +533,18 @@ class RedisStatsCounter(object):
         them again to make the whole thing work.
     """
     REDIS      = None
-    GLOBAL_KEY = 'global'
+    GLOBAL_KEY = 'gbl'
 
     def __init__(self, *args, **kwargs):
 
-        self.instance_id = (args[0] if isinstance(args[0], int) else args[0].id
+        # This could clash with a pure Django model because IDs overlap
+        # from one model to another. It doesn't with MongoDB documents,
+        # where IDs are unique accross the whole database.
+        if __debug__ and args:
+            assert not isinstance(args[0], models.Model)
+
+        self.instance_id = (args[0].id if isinstance(args[0], Document)
+                            else args[0]
                             ) if args else RedisStatsCounter.GLOBAL_KEY
 
         try:
@@ -449,30 +559,30 @@ class RedisStatsCounter(object):
     def _time_key(cls, key, set_time=False, time_value=None):
 
         if set_time:
-            return REDIS.set(key, time.time()
-                             if time_value is None else time_value)
+            return cls.REDIS.set(key, time.time()
+                                 if time_value is None else time_value)
 
-        return ftstamp(float(REDIS.get(key) or 0.0))
+        return ftstamp(float(cls.REDIS.get(key) or 0.0))
 
     @classmethod
     def _int_incr_key(cls, key, increment=False):
 
         if increment == 'reset':
             # return, else we increment to 1…
-            return REDIS.delete(key)
+            return cls.REDIS.delete(key)
 
         if increment:
-            return int(REDIS.incr(key))
+            return int(cls.REDIS.incr(key))
 
-        return int(REDIS.get(key) or 0)
+        return int(cls.REDIS.get(key) or 0)
 
     @classmethod
     def _int_set_key(cls, key, set_value=None):
 
         if set_value is None:
-            return int(REDIS.get(key) or 0)
+            return int(cls.REDIS.get(key) or 0)
 
-        return REDIS.set(key, set_value)
+        return cls.REDIS.set(key, set_value)
 
     def running(self, set_running=None):
 
@@ -480,13 +590,13 @@ class RedisStatsCounter(object):
 
         # Just to be sure we need to cast…
         # LOGGER.warning('running: set=%s, value=%s type=%s',
-        #                set_running, REDIS.get(self.key_base),
-        #                type(REDIS.get(self.key_base)))
+        #                set_running, self.REDIS.get(self.key_base),
+        #                type(self.REDIS.get(self.key_base)))
 
         if set_running is None:
-            return boolcast[REDIS.get(key)]
+            return boolcast[RedisStatsCounter.REDIS.get(key)]
 
-        return REDIS.set(key, set_running)
+        return RedisStatsCounter.REDIS.set(key, set_running)
 
 # By default take the normal REDIS connection, but still allow
 # to override it in tests via the class attribute.

@@ -29,6 +29,11 @@ CONSTANCE_CONFIG = {
                                     u'interval in seconds. You can tune the '
                                     u'interval for each feed after creation.')),
 
+    'FEED_FETCH_PARALLEL_LIMIT': (100, ugettext(u'Default number of articles '
+                                  u'fetchable from the same feed at the same '
+                                  u'time. Workers should adjust the value '
+                                  u'automatically as time passes.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••• Feed admin configuration
 
     'FEED_REFRESH_RANDOMIZE': (True, ugettext(u'Set this to False if you want '

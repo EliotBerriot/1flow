@@ -32,7 +32,8 @@ from django.utils.text import slugify
 
 from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
-                           SimpleCacheLock, AlreadyLockedException,
+                           RedisExpiringLock, AlreadyLockedException,
+                           RedisSemaphore, NoResourceAvailableException,
                            HttpResponseLogProcessor, RedisStatsCounter)
 from .keyval import FeedbackDocument
 
@@ -103,6 +104,7 @@ class FeedStatsCounter(RedisStatsCounter):
     key_base = 'feeds'
 
     def incr_fetched(self):
+
         if self.key_base != global_feed_stats.key_base:
             global_feed_stats.incr_fetched()
 
@@ -110,24 +112,25 @@ class FeedStatsCounter(RedisStatsCounter):
 
     def fetched(self, increment=False):
 
-        if self.key_base != global_feed_stats.key_base:
-            # in case we want to reset.
-            global_feed_stats.fetched(increment)
+        # NOTE: the following code won't work work: it will
+        # increment the global counter instead of reseting it.
+        # (spotted by the test-suite 2013-07-12)
+        #
+        # if self.key_base != global_feed_stats.key_base:
+        #     # in case we want to reset.
+        #     global_feed_stats.fetched(increment)
 
         return RedisStatsCounter._int_incr_key(
             self.key_base + ':fetch', increment)
 
     def incr_dupes(self):
+
         if self.key_base != global_feed_stats.key_base:
             global_feed_stats.incr_dupes()
 
         return self.dupes(increment=True)
 
     def dupes(self, increment=False):
-
-        if self.key_base != global_feed_stats.key_base:
-            # in case we want to reset.
-            global_feed_stats.dupes(increment)
 
         return RedisStatsCounter._int_incr_key(
             self.key_base + ':dupes', increment)
@@ -137,7 +140,7 @@ global_feed_stats = FeedStatsCounter()
 
 # Until we patch Ghost to use more than one Xvfb at the same time,
 # we are tied to ensure there is only one running at a time.
-global_ghost_lock = SimpleCacheLock('__ghost.py__')
+global_ghost_lock = RedisExpiringLock('__ghost.py__')
 
 
 class Source(Document):
@@ -173,6 +176,14 @@ class Feed(Document):
     fetch_interval = IntField(default=config.FEED_FETCH_DEFAULT_INTERVAL,
                               verbose_name=_(u'fetch interval'))
     last_fetch     = DateTimeField(verbose_name=_(u'last fetch'))
+    fetch_limit_nr = IntField(default=config.FEED_FETCH_PARALLEL_LIMIT,
+                              verbose_name=_(u'fetch limit'),
+                              help_text=_(u'The maximum number of articles '
+                                          u'that can be fetched from the feed '
+                                          u'in parallel. If less than %s, '
+                                          u'do not touch: the workers have '
+                                          u'already tuned it from real-life '
+                                          u'results.'))
 
     # Stored directly from feedparser data to avoid wasting BW.
     last_etag      = StringField(verbose_name=_(u'last etag'))
@@ -184,6 +195,26 @@ class Feed(Document):
 
     def __unicode__(self):
         return _(u'%s (#%s)') % (self.name, self.id)
+
+    @property
+    def fetch_limit(self):
+        try:
+            return self.__limit_semaphore
+
+        except AttributeError:
+            self.__limit_semaphore = RedisSemaphore(self, self.fetch_limit_nr)
+            return self.__limit_semaphore
+
+    def set_fetch_limit(self):
+
+        new_limit = self.fetch_limit.set_limit()
+        cur_limit = self.fetch_limit_nr
+
+        if cur_limit != new_limit:
+            self.fetch_limit_nr = new_limit
+            self.save()
+
+            LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
@@ -227,7 +258,6 @@ class Feed(Document):
                 #
                 # WAS: if not 'bad_site_url' in self.mail_warned:
                 #           self.mail_warned.append('bad_site_url')
-
 
                 self.site_url = None
                 self.close(commit=False)
@@ -299,7 +329,7 @@ class Feed(Document):
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
             return
 
-        my_lock = SimpleCacheLock(self)
+        my_lock = RedisExpiringLock(self)
 
         if my_lock.acquire():
             # no refresher is running.
@@ -358,7 +388,7 @@ class Feed(Document):
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
             return
 
-        my_lock = SimpleCacheLock(self)
+        my_lock = RedisExpiringLock(self)
 
         if not my_lock.acquire():
             if force:
@@ -398,7 +428,7 @@ class Feed(Document):
         #
         pass
 
-    @celery_task_method(name='Feed.refresh', queue='low')  # rate_limit='10/s')
+    @celery_task_method(name='Feed.refresh', queue='medium')
     def refresh(self, force=False):
         """ Find new articles in an RSS feed.
 
@@ -570,8 +600,15 @@ class Article(Document):
             e.errors.pop('google_reader_original_data', None)
             e.errors.pop('feedparser_original_data', None)
 
+            title_error = e.errors.get('title', None)
+
+            if title_error and str(title_error).startswith(
+                    'String value is too long'):
+                self.title = self.title[:255] + (self.title[:255] and u'…')
+                e.errors.pop('title')
+
             if e.errors:
-                raise ValidationError('ValidationError', errors=e.errors)
+                raise e
 
     def is_origin(self):
         return isinstance(self.source, Source)
@@ -654,18 +691,29 @@ class Article(Document):
         #
         # raise self.fetch_content.retry(exc=e, countdown=randrange(60))
 
+        # retry() won't work because of issue 1458, we have to fake.
+        #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
+
         try:
-            self.fetch_content_text(force=force, commit=commit)
+            with self.feed.fetch_limit:
+                self.fetch_content_text(force=force, commit=commit)
 
-        except AlreadyLockedException, e:
-            # retry() won't work because of issue 1458, we have to fake.
-            #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
-
+        except (NoResourceAvailableException, AlreadyLockedException):
+            # TODO: use retry() when celery#1458 is solved
             self.fetch_content.apply_async((force, commit),
                                            countdown=randrange(60))
-            return
 
         except requests.ConnectionError, e:
+
+            if 'Errno 104' in str(e):
+                # Special case, we probably hit a remote parallel limit.
+                self.feed.set_fetch_limit()
+
+                # TODO: use retry() when celery#1458 is solved
+                self.fetch_content.apply_async((force, commit),
+                                               countdown=randrange(60))
+                return
+
             self.content_error = str(e)
             self.save()
 

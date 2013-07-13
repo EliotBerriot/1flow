@@ -24,13 +24,16 @@ import os
 from fabric.api import env, task, roles, local as fablocal
 
 from sparks.fabric import (with_remote_configuration,
-                           set_roledefs_and_parallel)
+                           set_roledefs_and_parallel,
+                           worker_roles)
 import sparks.django.fabfile as sdf
 
 # Make the main deployment tasks immediately accessible
 runable, deploy, fast_deploy = sdf.runable, sdf.deploy, sdf.fast_deploy
 maintenance_mode, operational_mode = sdf.maintenance_mode, sdf.operational_mode
 run_command, restart_services = sdf.run_command, sdf.restart_services
+stop, start, status = sdf.stop_services, sdf.start_services, sdf.status_services
+pick = sdf.pick
 
 # The Django project name
 env.project    = 'oneflow'
@@ -67,9 +70,10 @@ def local():
         'db': ['localhost'],
         'web': ['localhost'],
         'lang': ['localhost'],
+        'beat': ['localhost'],
+        'shell': ['localhost'],
         'flower': ['localhost'],
         'worker': ['localhost'],
-        #'redis': ['localhost'],
     })
 
     # As of sparks 2.2+, it should not be needed to set env.host_string anymore,
@@ -103,10 +107,10 @@ def preview(branch=None):
         'db': ['obi.1flow.io'],
         'web': ['obi.1flow.io'],
         'lang': ['obi.1flow.io'],
+        'beat': ['obi.1flow.io'],
         'shell': ['worbi.1flow.io'],
         'flower': ['worbi.1flow.io'],
         'worker_high': ['obi.1flow.io'],
-        # we need a worker_medium for JDK/jPype
         'worker_medium': ['worbi.1flow.io'],
         'worker_low': ['worbi.1flow.io'],
     })
@@ -132,13 +136,17 @@ def preview(branch=None):
 def workers():
     """ Just setup the workers roles so we can act easily on all of them. """
 
-    env.roles = ['worker', 'worker_high', 'worker_medium', 'worker_low']
+    #TODO: set worker_roles
+    env.roles = worker_roles[:] + ['beat']
 
 
-@task
-def reboot():
+@task(aliases=('kill', ))
+def reboot(more=False):
     run_command("ps ax | grep 'celery.*worker' | grep -v grep "
-                "| awk '{print $1}' | sudo xargs kill ")
+                "| awk '{print $1}' | sudo xargs -I% kill % || true")
+    if more:
+        run_command("ps ax | grep 'celery.*worker' | grep -v grep "
+                    "| awk '{print $1}' | sudo xargs -I% kill -9 % || true")
 
 
 @task
@@ -155,17 +163,30 @@ def production():
     set_roledefs_and_parallel({
         'db': ['1flow.io'],
         'web': ['1flow.io'],
+        'beat': ['worker-01.1flow.io', ],
         'shell': ['worker-03.1flow.io', ],
         'flower': ['worker-01.1flow.io', ],
         'worker_high': ['worker-01.1flow.io', ],
-        'worker_medium': ['worker-03.1flow.io', ],
-        'worker_low': ['worker-05.1flow.io', ],
+        'worker_medium': ['worker-03.1flow.io',
+                          'worker-02.1flow.io',
+                          'worker-04.1flow.io', ],
+        'worker_low': ['worker-05.1flow.io',
+                       'worker-02.1flow.io',
+                       'worker-04.1flow.io', ],
     })
     env.sparks_options = {
+        'repository': {
+            # We need to patch this because worker-04 is an LXC on the same
+            # physical host than dev.1flow.net, and getting from it directly
+            # doesn't work because of my NAT configuration.
+            'worker-04.1flow.io': 'git@10.0.3.110:1flow.git',
+        },
         'worker_concurrency': {
             'worker_high': 10,
-            'worker_medium': 15,
-            'worker_low': 15,
+            'worker_medium': 12,
+            'worker_low': 12,
+            'worker-02.1flow.io': 10,
+            'worker-04.1flow.io': 8,
         },
     }
     env.env_was_set = True
@@ -178,9 +199,10 @@ def zero(branch=None):
     set_roledefs_and_parallel({
         'db': ['zero.1flow.io'],
         'web': ['zero.1flow.io'],
+        'beat': ['zero.1flow.io'],
+        'shell': ['zero.1flow.io'],
         'worker': ['zero.1flow.io'],
         'flower': ['zero.1flow.io'],
-        #'redis': ['zero.1flow.io'],
     })
 
     if branch is None:
