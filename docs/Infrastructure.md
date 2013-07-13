@@ -106,3 +106,40 @@ Actions in telegraphic style:
     # DOESN'T WORK: fab -H worbi.1flow.io test deploy
     fab ${ENV} pick:${WORKER} deploy
 
+# Adding / Changing workers / queues
+
+Works since sparks 3.5.
+
+## Adding new workers to a running pool
+
+    # hack fabfile to add new queues / workers
+    fab prod pick:w1,w2 restart
+
+
+## Adding new queues to existing workers without restarting everything
+
+Works since sparks 3.6.
+
+    # hack fabfile to add new queues
+    fab prod role:queue restart
+
+
+## Removing a given queue on all workers of its type
+
+Works since sparks 3.6.
+
+    # DO NOT touch fabfile
+
+    fab prod role:queue remove
+
+    # hack fabfile to remove all references to the queue
+
+## Removing a given queue on only *some* of its workers
+
+Works since sparks 3.6.
+
+    # DO NOT touch fabfile
+
+    fab prod role:queue pick:w1 remove
+
+    # hack fabfile to remove the machine from the role
