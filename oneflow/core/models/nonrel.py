@@ -604,7 +604,7 @@ class Article(Document):
 
             if title_error and str(title_error).startswith(
                     'String value is too long'):
-                self.title = self.title[:1024] + (self.title[:1024] and u'…')
+                self.title = self.title[:255] + (self.title[:255] and u'…')
                 e.errors.pop('title')
 
             if e.errors:
