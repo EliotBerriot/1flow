@@ -185,8 +185,8 @@ def production():
             'worker_high': 10,
             'worker_medium': 12,
             'worker_low': 12,
-            'worker-02.1flow.io': 4,
-            'worker-04.1flow.io': 6,
+            'worker-02.1flow.io': 10,
+            'worker-04.1flow.io': 8,
         },
     }
     env.env_was_set = True
