@@ -67,41 +67,42 @@ Actions in telegraphic style:
     # OVH: manager
     # edit DNS entries…
 
-    # SSH: duncan
-    # edit pg_hba.conf ?
-    # edit ~groups/local_config/iptables/iptables.d/* ?
+    export ENV=production
+    export ADMIN=olive
+    export WORKER=worker-99.1flow.io
 
-    # SSH: gurney
-    sudo lxc-create -n worbi.1flow.io -t ubuntu -- -b olive
+    ssh ${MAIN_SERVER}
+    # edit pg_hba.conf ? (if not already OK via global-config)
+    # edit ~groups/local_config/iptables/iptables.d/* ? (idem)
+
+    ssh ${LXC_HOST}
+    sudo lxc-create -n ${WORKER} -t ubuntu -- -b ${ADMIN}
     # edit …/config -> lxc.network.ipv4 = …
     # edit /etc/rc.local
 
-    # LOCAL
-    # edit .ssh/config … user:olive
-    cd ~/Dropbox
+    vim ~/.ssh/config
+    # >>> User olive
+    cd ~/sources/global-config
 
     # NOTE: not needed in sparks 2.0
-    #fab -H worbi.1flow.io -- sudo apt-get -q update
+    #fab -H ${WORKER} -- sudo apt-get -q update
 
-    fab -H worbi.1flow.io tasks.lxc_base
+    fab -H ${WORKER} tasks.lxc_base_and_dev
 
-    # SSH:worbi
+    ssh ${ADMIN}@${WORKER}
     sudo adduser 1flow --force-badname
+    # pick a password for the ssh-copy-id
     sudo adduser 1flow sudo
 
     # LOCAL
-    # edit .ssh/config … user:1flow
-    ssh-copy-id worbi
-    scp .bashrc worbi:
+    vim ~/.ssh/config
+    # >>> "User 1flow"
 
-    # SSH: worbi
-    install supervisor
-
-    # LOCAL
+    ssh-copy-id ${WORKER}
+    scp ~/.bashrc ${WORKER}:
     workon 1flow
-    cd ~/sources/1flow
 
     # IF: worker
     # DOESN'T WORK: fab -H worbi.1flow.io test deploy
-    fab pick:worbi.1flow.io deploy
+    fab ${ENV} pick:${WORKER} deploy
 
