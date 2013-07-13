@@ -102,6 +102,6 @@ Actions in telegraphic style:
     cd ~/sources/1flow
 
     # IF: worker
-    fab -H worbi.1flow.io test deploy
+    # DOESN'T WORK: fab -H worbi.1flow.io test deploy
+    fab pick:worbi.1flow.io deploy
 
-    # IF: web
