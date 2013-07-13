@@ -33,7 +33,7 @@ runable, deploy, fast_deploy = sdf.runable, sdf.deploy, sdf.fast_deploy
 maintenance_mode, operational_mode = sdf.maintenance_mode, sdf.operational_mode
 run_command, restart_services = sdf.run_command, sdf.restart_services
 stop, start, status = sdf.stop_services, sdf.start_services, sdf.status_services
-pick = sdf.pick
+remove, pick = sdf.remove_services, sdf.pick
 
 # The Django project name
 env.project    = 'oneflow'
