@@ -1,4 +1,4 @@
--e git+https://github.com/Karmak23/sparks.git@sparks-3.6#egg=sparks-dev
+-e git+https://github.com/Karmak23/sparks.git@sparks-3.6.1#egg=sparks-dev
 -e git+https://github.com/Karmak23/humanize.git@master#egg=humanize-dev
 -e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-dev

@@ -123,7 +123,6 @@ Works since sparks 3.6.
     # hack fabfile to add new queues
     fab prod role:queue restart
 
-
 ## Removing a given queue on all workers of its type
 
 Works since sparks 3.6.
