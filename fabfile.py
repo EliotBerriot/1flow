@@ -188,7 +188,7 @@ def production():
             'worker_low': 10,
             'worker_fetch@worker-03.1flow.io': 2,
             'worker_fetch@worker-05.1flow.io': 2,
-            'worker-02.1flow.io': 10,
+            'worker-02.1flow.io': 8,
             'worker-04.1flow.io': 8,
             'worker-99.1flow.io': 16,
         },
