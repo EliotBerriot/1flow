@@ -588,6 +588,10 @@ def refresh_all_feeds(limit=None):
     else:
         feeds = Feed.objects.filter(closed__ne=True)
 
+    # OMG, yes !! no need for caching and
+    # cluttering CPU/memory for a one-shot thing.
+    feeds.no_cache()
+
     for feed in feeds:
         feed.check_refresher()
 
@@ -606,6 +610,10 @@ def global_feeds_checker():
                             or Q(date_closed__gte=closed_limit)))
 
     count = feeds.count()
+
+    if count > 50000:
+        # prevent CPU and memory hogging.
+        feeds.no_cache()
 
     if not count:
         LOGGER.info('No feed was closed in the last %s days.', limit_days)
