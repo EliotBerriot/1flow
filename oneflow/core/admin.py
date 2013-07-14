@@ -233,7 +233,7 @@ class FeedAdmin(admin.DocumentAdmin):
     def last_article_display(self, obj):
 
         with django_language():
-            return naturaltime(obj.get_latest_article().date_added)
+            return naturaltime(obj.latest_article__date_published)
 
     last_article_display.short_description = _(u'latest')
 

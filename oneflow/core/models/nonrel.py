@@ -337,7 +337,8 @@ class Feed(Document):
             new_article.create_reads(subscribers, tags, verbose=created)
 
         # Update the "latest date" kind-of-cache.
-        if date_published > self.latest_article__date_published:
+        if date_published and \
+                date_published > self.latest_article__date_published:
             self.latest_article__date_published = date_published
 
         return created
