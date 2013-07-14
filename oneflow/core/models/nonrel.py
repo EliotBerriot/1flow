@@ -655,7 +655,7 @@ class Article(Document):
             return new_article, True
 
     @celery_task_method(name='Article.fetch_content', queue='medium',
-                        default_retry_delay=3600, soft_time_limit=60)
+                        default_retry_delay=3600, soft_time_limit=90)
     def fetch_content(self, force=False, commit=True):
 
         if self.content_type in CONTENT_TYPES_FINAL and not force:
