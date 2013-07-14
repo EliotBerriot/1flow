@@ -29,6 +29,20 @@ CONSTANCE_CONFIG = {
                                     u'interval in seconds. You can tune the '
                                     u'interval for each feed after creation.')),
 
+    'FEED_FETCH_MIN_INTERVAL': (300, ugettext(u'The minimum interval between '
+                                u'fetches of the same feed. Warning: anything '
+                                u'under 60 will not be taken in account.')),
+
+    'FEED_FETCH_MAX_INTERVAL': (86400, ugettext(u'The maximum interval between '
+                                u'fetches of the same feed. Warning: anything '
+                                u'more than 7 days (expressed in seconds) will '
+                                u'not be taken in account.')),
+
+    'FEED_FETCH_RAISE_THRESHOLD': (10, ugettext(u'If this feed produces more '
+                                   u'new articles than this number, it will '
+                                   u'be fetched more fast than a feed that '
+                                   u'produces less. Minimum value: 5.')),
+
     'FEED_FETCH_PARALLEL_LIMIT': (100, ugettext(u'Default number of articles '
                                   u'fetchable from the same feed at the same '
                                   u'time. Workers should adjust the value '
