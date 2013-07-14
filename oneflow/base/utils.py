@@ -284,10 +284,10 @@ def detect_encoding_from_requests_response(response):
     # In case the headers don't contain an content-type, we get()
     # 'text/html' as a fallback value, which will trigger the same
     # behaviour as having a content-type header with no charset value.
-    maybe_encoding = response.headers.get(
+    encoding = response.headers.get(
         'content-type', 'text/html').lower().split('charset=')[-1]
 
-    if maybe_encoding.lower() == 'text/html':
+    if encoding.lower() == 'text/html':
         # HTTP headers don't contain any encoding.
         # Search in page head, then try to detect from data.
 
@@ -308,9 +308,9 @@ def detect_encoding_from_requests_response(response):
             try:
                 return charade.detect()['encoding']
             except:
-                return None
+                pass
 
-        return encoding
+    return None
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper classes
 
@@ -353,7 +353,7 @@ class RedisExpiringLock(object):
     """
 
     REDIS     = None
-    key_base  = 'exl'
+    key_base  = 'rxl'
     exc_class = AlreadyLockedException
 
     def __init__(self, instance, lock_value=None, expire_time=None):
@@ -370,7 +370,7 @@ class RedisExpiringLock(object):
                                                       'fetch_interval',
                                                       3600)
 
-        self.lock_value  = lock_value or 'default_lock_value'
+        self.lock_value  = lock_value or 'locked'
 
     def __enter__(self):
         if not self.acquire():
@@ -551,9 +551,10 @@ class RedisStatsCounter(object):
             self.key_base = '{0}:{1}'.format(self.__class__.key_base,
                                              self.instance_id)
         except AttributeError:
-            raise RuntimeError(u'RedisStatsCounter is kind of an abstract '
-                               u'class, you should not use it directly but '
-                               u'rather create your own stats class.')
+            raise RuntimeError(u'RedisStatsCounter is an abstract class. '
+                               u'You should not use it directly but '
+                               u'rather create your own stats class '
+                               u'with a `cls.key_base` attribute.')
 
     @classmethod
     def _time_key(cls, key, set_time=False, time_value=None):
