@@ -190,7 +190,7 @@ def production():
             'worker_fetch@worker-05.1flow.io': 2,
             'worker-02.1flow.io': 8,
             'worker-04.1flow.io': 8,
-            'worker-99.1flow.io': 16,
+            'worker-99.1flow.io': 24,
         },
     }
     env.env_was_set = True
