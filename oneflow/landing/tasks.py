@@ -9,7 +9,7 @@ from redis_sessions.session import SessionStore
 from .funcs import get_beta_invites_left
 from .models import LandingUser
 
-from ..base.utils import send_email_with_db_content
+from ..base.utils.mail import send_email_with_db_content
 
 
 LOGGER = logging.getLogger(__name__)

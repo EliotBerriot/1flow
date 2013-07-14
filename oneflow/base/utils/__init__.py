@@ -18,18 +18,12 @@ from requests.packages import charade
 from mongoengine import Document, signals
 from django.conf import settings
 from django.db import models
-from django.template import Context, Template
-from django.utils import translation
-from django.contrib.auth import get_user_model
+from django.template import Context
+
 from djangojs.utils import ContextSerializer
 
-from sparks.django import mail
-
-from ..landing.models import LandingUser
-from .models import EmailContent
 
 LOGGER = logging.getLogger(__name__)
-User = get_user_model()
 
 REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
                                        'localhost'), port=6379,
@@ -94,109 +88,6 @@ def connect_mongoengine_signals(module_globals):
     if __debug__ and settings.DEBUG and connected:
         LOGGER.debug('Connected %s signal handlers to MongoEngine senders.',
                      connected)
-
-
-def get_user_and_update_context(context):
-
-    # If there is no new user, it's not a registration, we
-    # just get the context user, to fill email fields.
-
-    if 'new_user_id' in context:
-        user = LandingUser.objects.get(id=context['new_user_id'])
-        context['new_user'] = user
-
-    else:
-        user = User.objects.get(id=context['user_id'])
-
-    context['user'] = user
-
-    return user
-
-
-def send_email_with_db_content(context, email_template_name, **kwargs):
-    """
-
-        :param context: can contain ``new_user`` in case of a new user
-            registration. If not, the ``context['user']`` will be used.
-    """
-
-    def post_send(user, email_template_name):
-        # TODO: implement me for real!
-        #   I just wrote this function the way I wanted it to act,
-        #   but user.log_email_sent() doesn't exist yet.
-
-        def post_send_log_mail_sent():
-            user.log_email_sent(email_template_name)
-
-        return post_send_log_mail_sent
-
-    user = get_user_and_update_context(context)
-
-    if user.has_email_sent(email_template_name) \
-            and not kwargs.get('force', False):
-        LOGGER.info(u'User %s already received email “%s”, skipped.',
-                    user.username, email_template_name)
-        return
-
-    lang = context.get('language_code')
-
-    if lang is not None:
-        # switch to the user language
-        old_lang = translation.get_language()
-
-        if old_lang != lang:
-            translation.activate(lang)
-
-        else:
-            old_lang = None
-    else:
-        old_lang = None
-
-    try:
-        context.update({'unsubscribe_url': user.unsubscribe_url()})
-
-    except:
-        # In case we are used without the profiles Django app.
-        LOGGER.exception('Cannot update the context with `unsubscribe_url`.')
-
-    email_data      = EmailContent.objects.get(name=email_template_name)
-    email_footer    = EmailContent.objects.get(name='email_footer')
-
-    # Pre-render templates for the mail HTML content.
-    # email subject is mapped to <title> and <h1>.
-    stemplate     = Template(email_data.subject)
-    email_subject = stemplate.render(context)
-    btemplate     = Template(email_data.body)
-    email_body    = btemplate.render(context)
-    ftemplate     = Template(email_footer.body)
-    email_footer  = ftemplate.render(context)
-
-    # Update for the second rendering pass (Markdown in Django)
-    context.update({'email_subject': email_subject,
-                   'email_body': email_body,
-                   'email_footer': email_footer})
-
-    mail.send_mail_html_from_template(
-        'emails/email_with_db_content.html',
-        # We intentionaly pass the unrendered subject string,
-        # because it will be rendered independantly in the
-        # send_mail… function (cf. there for details).
-        subject=email_data.subject,
-        recipients=[user.email],
-        context=context,
-        # TODO: pass the log_email_sent() as post_send callable
-        #post_send=post_send(user)
-        **kwargs)
-
-    # TODO: remove this when log_email_sent is passed to send_mail*()
-    user.log_email_sent(email_template_name)
-
-    if old_lang is not None:
-        # Return to application main language
-        translation.activate(old_lang)
-
-    LOGGER.info('Batched %s mail to send to %s.',
-                email_template_name, user.email)
 
 
 def request_context_celery(request, *args, **kwargs):
@@ -350,27 +241,37 @@ class RedisExpiringLock(object):
         it will be taken as the default ``expire_time`` value. If not and
         no ``expire_time`` argument is present, 3600 will be used to avoid
         persistent locks related problems.
+
+        .. note:: **this lock can be re-entrant**: just give an
+            unique :param:`lock_value` (eg. ``uuid.uuid4().hex``, to
+            name only this one…), and pass it as the only argument to
+            :meth:`acquire`. If the argument is equal to the lock value
+            then the acquire method will return ``True``. This is a poor
+            man's implementation, but should work.
     """
 
     REDIS     = None
     key_base  = 'rxl'
     exc_class = AlreadyLockedException
 
-    def __init__(self, instance, lock_value=None, expire_time=None):
+    def __init__(self, instance, lock_name=None,
+                 lock_value=None, expire_time=None):
 
         if isinstance(instance, str):
-            self.lock_id = '%s:str:%s' % (self.key_base, instance)
+            self.lock_id = '%s:str:%s:%s' % (self.key_base, instance,
+                                             lock_name or 'giant')
             self.expire_time = expire_time or 3600
 
         else:
-            self.lock_id = '%s:%s:%s' % (self.key_base,
-                                         instance.__class__.__name__,
-                                         instance.id)
+            self.lock_id = '%s:%s:%s:%s' % (self.key_base,
+                                            instance.__class__.__name__,
+                                            instance.id, lock_name or 'giant')
             self.expire_time = expire_time or getattr(instance,
                                                       'fetch_interval',
                                                       3600)
 
-        self.lock_value  = lock_value or 'locked'
+        self.lock_value  = ('locked_by:%s' % lock_value
+                            ) if lock_value else 'locked'
 
     def __enter__(self):
         if not self.acquire():
@@ -379,9 +280,22 @@ class RedisExpiringLock(object):
     def __exit__(self, *a, **kw):
         return self.release()
 
-    def acquire(self):
-        return self.REDIS.set(self.lock_id, self.lock_value,
-                              ex=self.expire_time, nx=True)
+    def acquire(self, reentrant_id=None):
+        """ We implement the re-entrant lock with a poor-man's solution:
+            In case of an already taken lock, if the new acquirer's ID
+            equals the lock_value, we return ``True``.
+
+            There is still a risk of race condition because the current
+            method is not guaranteed to run atomically, but it's small
+            in a multi-node networked environment.
+        """
+        val = self.REDIS.set(self.lock_id, self.lock_value,
+                             ex=self.expire_time, nx=True)
+
+        if reentrant_id:
+            return val or val[10:] == reentrant_id
+
+        return val
 
     def release(self):
         val = self.REDIS.get(self.lock_id)
@@ -390,6 +304,17 @@ class RedisExpiringLock(object):
             self.REDIS.delete(self.lock_id)
             return True
 
+        return False
+
+    def is_locked(self):
+        """ OMG this method costs so much,
+            and can even have a race condition.
+            Hope we don't need it too often.
+        """
+
+        if self.acquire():
+            self.release()
+            return True
         return False
 
 # By default take the normal REDIS connection, but still allow
