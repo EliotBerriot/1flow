@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import time
 import logging
 import datetime
 import dateutil
@@ -35,6 +36,7 @@ from ...base.utils import (connect_mongoengine_signals,
                            RedisExpiringLock, AlreadyLockedException,
                            RedisSemaphore, NoResourceAvailableException,
                            HttpResponseLogProcessor, RedisStatsCounter)
+from ...base.fields import DatetimeRedisDescriptor
 from .keyval import FeedbackDocument
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
@@ -193,6 +195,14 @@ class Feed(Document):
 
     options        = ListField(IntField())
 
+    # TODO: create an abstract class that will allow to not specify
+    #       the attr_name here, but make it automatically created.
+    #       This is an underlying implementation detail and doesn't
+    #       belong here.
+    latest_article__date_published = DatetimeRedisDescriptor(
+        # Default value is 5 years ealier. Should suffice to get old posts…
+        attr_name='f.la__dp', default=now() - timedelta(days=1826))
+
     def __unicode__(self):
         return _(u'%s (#%s)') % (self.name, self.id)
 
@@ -300,20 +310,35 @@ class Feed(Document):
         except:
             date_published = None
 
-        new_article, created = Article.create_article(
-            url=article.link,
-            title=article.title,
-            content=content,
-            date_published=date_published,
-            feed=self,
+        #
+        # TODO: check hasattr(link) and hasattr(title), they fail sometimes.
+        #
 
-            # Convert to unicode before saving,
-            # else the article won't validate.
-            feedparser_original_data=unicode(article))
+        try:
+            new_article, created = Article.create_article(
+                url=article.link,
+                title=article.title,
+                content=content,
+                date_published=date_published,
+                feed=self,
 
-        # If the article was not created, reads creation are likely
-        # to fail too. Don't display warnings, they are quite boring.
-        new_article.create_reads(subscribers, tags, verbose=created)
+                # Convert to unicode before saving,
+                # else the article won't validate.
+                feedparser_original_data=unicode(article))
+        except:
+            # NOTE: the feed refresh will be launched
+            # again by the global scheduled class.
+            LOGGER.exception(u'Article creation from feed %s failed.', self)
+            return False
+
+        if created:
+            # If the article was not created, reads creation are likely
+            # to fail too. Don't display warnings, they are quite boring.
+            new_article.create_reads(subscribers, tags, verbose=created)
+
+        # Update the "latest date" kind-of-cache.
+        if date_published > self.latest_article__date_published:
+            self.latest_article__date_published = date_published
 
         return created
 
@@ -355,13 +380,7 @@ class Feed(Document):
             kwargs['modified'] = self.last_modified
 
         else:
-            latest_article = self.get_latest_article()
-
-            if latest_article:
-                latest_date = latest_article.date_published
-
-                if latest_date:
-                    kwargs['modified'] = latest_date
+            kwargs['modified'] = self.latest_article__date_published
 
         if self.last_etag:
             kwargs['etag'] = self.last_etag
@@ -428,6 +447,47 @@ class Feed(Document):
         #
         pass
 
+    def __throttle_fetch_interval(self, new_articles, duplicates):
+        """ Try to adapt dynamically the fetch interval, to fetch more feeds
+            that produce a lot of entries, and less the ones that do not.
+
+            Feeds which correctly implement etags/last_modified should not
+            be affected negatively.
+
+            Feeds producing a lot should see their interval lower quickly.
+
+            Feeds producing nothing and that do not implement etags/modified
+            should suffer a lot and burn in hell like sheeps.
+        """
+
+        old_interval = self.fetch_interval
+
+        if duplicates:
+            if new_articles:
+                self.fetch_interval *= 1.25
+
+            else:
+                self.fetch_interval *= 1.5
+
+            if self.fetch_interval > min(604800,
+                                         config.FEED_FETCH_MAX_INTERVAL):
+                self.fetch_interval = config.FEED_FETCH_MAX_INTERVAL
+
+        elif new_articles:
+            if new_articles > min(5, config.FEED_FETCH_RAISE_THRESHOLD):
+                self.fetch_interval /= 1.5
+
+            else:
+                self.fetch_interval /= 1.25
+
+            if self.fetch_interval < max(60, config.FEED_FETCH_MIN_INTERVAL):
+                self.fetch_interval = config.FEED_FETCH_MIN_INTERVAL
+
+        if self.fetch_interval != old_interval:
+            LOGGER.info(u'Fetch interval changed from %s to %s for feed %s '
+                        u'(%s new article(s), %s duplicate(s)).', old_interval,
+                        self.fetch_interval, self, new_articles, duplicates)
+
     @celery_task_method(name='Feed.refresh', queue='medium')
     def refresh(self, force=False):
         """ Find new articles in an RSS feed.
@@ -448,12 +508,6 @@ class Feed(Document):
         if self.has_feedparser_error(parsed_feed):
             return
 
-        # Launch the next fetcher right now, in order for the duration
-        # of the current fetch not to delay the next and make the actual
-        # fetch interval be longer than advertised.
-        self.refresh.apply_async((), countdown=self.fetch_interval
-                                 or config.FEED_FETCH_DEFAULT_INTERVAL)
-
         # In case of a redirection, just check the last hop HTTP status.
         try:
             feed_status = http_logger.log[-1]['status']
@@ -464,33 +518,30 @@ class Feed(Document):
             # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
             #raise self.refresh.retry(exc=e)
 
-            # NOTE: the feed refresh will be launched
-            # again by the global scheduled class.
-            LOGGER.exception(u'Refresh feed %s status failed.', self)
+            # NOTE: refresh will be relaunched by the global scheduled task.
+            LOGGER.exception(u'Refresh status failed for feed %s.', self)
             return e
+
+        refresh_start = time.time()
 
         if feed_status != 304:
 
             fetch_counter = FeedStatsCounter(self)
             subscribers   = self.get_subscribers()
             tags          = getattr(parsed_feed, 'tags', [])
+            new_articles  = 0
+            duplicates    = 0
 
-            try:
-                for article in parsed_feed.entries:
-                    if self.create_article_and_reads(article,
-                                                     subscribers, tags):
-                        fetch_counter.incr_fetched()
-                    else:
-                        fetch_counter.incr_dupes()
+            for article in parsed_feed.entries:
+                if self.create_article_and_reads(article,
+                                                 subscribers, tags):
+                    fetch_counter.incr_fetched()
+                    new_articles += 1
+                else:
+                    fetch_counter.incr_dupes()
+                    duplicates += 1
 
-            except Exception, e:
-                # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
-                #raise self.refresh.retry(exc=e)
-
-                # NOTE: the feed refresh will be launched
-                # again by the global scheduled class.
-                LOGGER.exception(u'Refresh feed %s failed.', self)
-                return e
+            self.__throttle_fetch_interval(new_articles, duplicates)
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
@@ -506,6 +557,14 @@ class Feed(Document):
         # new items, we will not check it again until fetch_interval is spent.
         self.last_fetch = now()
         self.save()
+
+        # Launch the next fetcher right now; don't wait for the global
+        # checker, it's run quite infrequently. But substract the duration
+        # of the current refresh to avoid delaying the next and "slipping"
+        # a little more at every refresh.
+        self.refresh.apply_async((), countdown=(self.fetch_interval
+                                 - (time.time() - refresh_start))
+                                 or config.FEED_FETCH_DEFAULT_INTERVAL)
 
 
 class Subscription(Document):
