@@ -185,7 +185,8 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 class FeedAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name_display', 'url_display', 'restricted',
+    list_display = ('id', 'name_display', 'url_display',
+                    'restricted_display',
                     'closed_display', 'fetch_interval_display',
                     'last_fetch_display',
                     'date_added_display', 'latest_article_display',
@@ -205,27 +206,38 @@ class FeedAdmin(admin.DocumentAdmin):
     #change_list_template = "admin/change_list_filter_sidebar.html"
     #change_list_filter_template = "admin/filter_listing.html"
 
+    def restricted_display(self, obj):
+
+        return obj.restricted
+
+    restricted_display.short_description = _(u'Private?')
+    restricted_display.admin_order_field = 'restricted'
+    restricted_display.boolean = True
+
     def recent_articles_count_display(self, obj):
 
         return obj.recent_articles_count
 
     recent_articles_count_display.short_description = _(u'Recent')
-    recent_articles_count_display.admin_order_field = 'recent_articles_count'
+    #recent_articles_count_display.admin_order_field = 'recent_articles_count'
 
     def all_articles_count_display(self, obj):
 
         return obj.all_articles_count
 
     all_articles_count_display.short_description = _(u'Total')
-    all_articles_count_display.admin_order_field = 'all_articles_count'
+    #all_articles_count_display.admin_order_field = 'all_articles_count'
 
     def latest_article_display(self, obj):
+
+        if obj.closed:
+            return u'—'
 
         with django_language():
             return naturaltime(obj.latest_article_date_published)
 
     latest_article_display.short_description = _(u'Latest')
-    latest_article_display.admin_order_field = 'latest_article_date_published'
+    #latest_article_display.admin_order_field = 'latest_article_date_published'
 
     def date_added_display(self, obj):
 
@@ -237,6 +249,9 @@ class FeedAdmin(admin.DocumentAdmin):
 
     def fetch_interval_display(self, obj):
 
+        if obj.closed:
+            return u'—'
+
         with django_language():
             return naturaldelta(obj.fetch_interval)
 
@@ -244,6 +259,12 @@ class FeedAdmin(admin.DocumentAdmin):
     fetch_interval_display.admin_order_field = 'fetch_interval'
 
     def last_fetch_display(self, obj):
+
+        if obj.closed:
+            return u'—'
+
+        if obj.last_fetch is None:
+            return _(u'never')
 
         with django_language():
             return naturaltime(obj.last_fetch)
@@ -256,7 +277,7 @@ class FeedAdmin(admin.DocumentAdmin):
         return obj.subscribers_count
 
     subscribers_count_display.short_description = _(u'Subs.')
-    subscribers_count_display.admin_order_field = 'subscribers_count'
+    #subscribers_count_display.admin_order_field = 'subscribers_count'
 
     def closed_display(self, obj):
 
@@ -271,8 +292,9 @@ class FeedAdmin(admin.DocumentAdmin):
 
     def name_display(self, obj):
 
-        return u'<a href="{0}" target="_blank">{1}</a>'.format(obj.site_url,
-                                                               obj.name)
+        return u'<a href="{0}" target="_blank" {2}>{1}</a>'.format(
+            obj.site_url, obj.name, u'style="text-decoration: line-through;"'
+            if obj.closed else '')
 
     name_display.short_description = _(u'Feed name')
     name_display.allow_tags = True
@@ -280,7 +302,9 @@ class FeedAdmin(admin.DocumentAdmin):
 
     def url_display(self, obj):
 
-        return u'<a href="{0}" target="_blank">RSS/Atom</a>'.format(obj.url)
+        return u'<a href="{0}" target="_blank" {1}>RSS/Atom</a>'.format(
+            obj.url, u'style="text-decoration: line-through;"'
+            if obj.closed else '')
 
     url_display.short_description = _(u'Feed URL')
     url_display.allow_tags = True
