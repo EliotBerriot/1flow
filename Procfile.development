@@ -10,7 +10,7 @@ web: python manage.py runserver
 shell: python manage.py shell_ipynb
 flower: python manage.py celery flower --logging=warning
 celery_beat: python manage.py celery beat      --loglevel=info
-worker_high: python manage.py celery worker -E --loglevel=info --queues high      --hostname high.lil.1flow.io -c 20
-worker_medium: python manage.py celery worker -E --loglevel=info --queues medium  --hostname medium.lil.1flow.io -c 30
-worker_low: python manage.py celery worker -E --loglevel=info --queues low,celery --hostname low.lil.1flow.io -c 30
+worker_high: python manage.py celery worker -E --loglevel=info --queues high      --hostname high.lil.1flow.io -c 6
+worker_medium: python manage.py celery worker -E --loglevel=info --queues medium  --hostname medium.lil.1flow.io -c 4
+worker_low: python manage.py celery worker -E --loglevel=info --queues low,celery --hostname low.lil.1flow.io -c 4
 

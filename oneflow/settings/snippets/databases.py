@@ -8,7 +8,8 @@ DATABASES = {
 }
 
 mongoengine.connect(os.environ.get('MONGODB_NAME'),
-                    host=os.environ.get('MONGODB_HOST'))
+                    host=os.environ.get('MONGODB_HOST'),
+                    tz_aware=USE_TZ)
 
 REDIS_HOST = os.environ.get('REDIS_HOST', MAIN_SERVER)
 REDIS_PORT = int(os.environ.get('REDIS_PORT', 6379))
