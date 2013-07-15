@@ -30,18 +30,20 @@ naturaldelta = human_time.naturaldelta
 
 
 if settings.USE_TZ:
-    now      = dj_now
-    ftstamp  = lambda x: make_aware(dt_fromtimestamp(x), utc)
-    combine  = lambda x, y: make_aware(dt_combine(x, y), utc)
-    time     = lambda *args: pydatetime.time(*args, tzinfo=utc)
-    datetime = lambda *args: pydatetime.datetime(*args, tzinfo=utc)
+    now       = dj_now
+    ftstamp   = lambda x: dt_fromtimestamp(x, utc)
+    tzcombine = lambda x, y: make_aware(dt_combine(x, y), utc)
+    time      = lambda *args: pydatetime.time(*args, tzinfo=utc)
+    datetime  = lambda *args: pydatetime.datetime(*args, tzinfo=utc)
 
 else:
-    now      = pydatetime.datetime.now
-    ftstamp  = dt_fromtimestamp
-    combine  = dt_combine
-    time     = pydatetime.time
-    datetime = pydatetime.datetime
+    now       = pydatetime.datetime.now
+    ftstamp   = dt_fromtimestamp
+    tzcombine = dt_combine
+    time      = pydatetime.time
+    datetime  = pydatetime.datetime
+
+combine  = dt_combine
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• functions
@@ -55,11 +57,10 @@ def until_tomorrow_delta(time_of_tomorrow=None):
     if time_of_tomorrow is None:
         time_of_tomorrow = time(0, 0, 0)
 
-    # don't use our combine(), time_of_tomorrow is already TZ aware.
-    return dt_combine(tomorrow, time_of_tomorrow) - now()
+    return combine(tomorrow, time_of_tomorrow) - now()
 
 
 __all__ = ('today', 'timedelta', 'naturaltime', 'naturaldelta',
-           'now', 'ftstamp', 'combine', 'time', 'datetime',
+           'now', 'ftstamp', 'tzcombine', 'combine', 'time', 'datetime',
            'is_aware', 'is_naive',
            'until_tomorrow_delta', )
