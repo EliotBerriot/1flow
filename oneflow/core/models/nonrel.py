@@ -294,7 +294,7 @@ class Feed(Document):
     @property
     def subscribers(self):
 
-        return Subscription.objects.filter(feed=self)
+        return [s.user for s in Subscription.objects.filter(feed=self)]
 
     @celery_task_method(name='Feed.update_subscribers_count', queue='low')
     def update_subscribers_count(self):
@@ -388,12 +388,6 @@ class Feed(Document):
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
-
-    def get_subscribers(self):
-        return [
-            s.user
-            for s in Subscription.objects.filter(feed=self)
-        ]
 
     def create_article_and_reads(self, article, subscribers, tags):
         """ Take a feedparser item and lists of Feed subscribers and
