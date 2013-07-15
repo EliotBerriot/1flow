@@ -11,12 +11,14 @@ from oneflow.base.utils import RedisSemaphore
 
 LOGGER = logging.getLogger(__file__)
 
-TEST_REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                               'localhost'), port=6379,
-                               db=getattr(settings,
-                                          'REDIS_TEST_DB', 9))
+TEST_REDIS = redis.StrictRedis(host=settings.REDIS_TEST_HOST,
+                               port=settings.REDIS_TEST_PORT,
+                               db=settings.REDIS_TEST_DB)
+
 # Use the test database not to pollute the production/development one.
 RedisSemaphore.REDIS = TEST_REDIS
+
+TEST_REDIS.flushdb()
 
 
 class RedisSemaphoreTests(TestCase):
@@ -26,8 +28,7 @@ class RedisSemaphoreTests(TestCase):
         # NOTE: nose seems to run tests in any different order at each call.
         #       We thus have to start from scratch for each method.
         #       We wipe the REDIS test DB before starting, anyway.
-
-        TEST_REDIS.flushdb()
+        pass
 
     def test_simple_acquire_release(self):
 

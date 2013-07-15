@@ -14,7 +14,7 @@ from pymongo.errors import DuplicateKeyError
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
 
-from celery import task
+from celery import taskreldb
 
 from django.conf import settings
 from django.core.mail import mail_admins
@@ -34,9 +34,9 @@ GR_OLDEST_DATE = datetime.datetime(2008, 1, 1, 0, 0)
 
 LOGGER = logging.getLogger(__name__)
 
-REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                          'localhost'), port=6379,
-                          db=getattr(settings, 'REDIS_DB', 0))
+REDIS = redis.StrictRedis(host=settings.REDIS_HOST,
+                          port=settings.REDIS_PORT,
+                          db=settings.REDIS_DB)
 
 User = get_user_model()
 

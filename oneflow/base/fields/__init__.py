@@ -13,9 +13,9 @@ from ..utils import RedisExpiringLock, AlreadyLockedException
 
 LOGGER = logging.getLogger(__name__)
 
-REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                                       'localhost'), port=6379,
-                          db=getattr(settings, 'REDIS_DESCRIPTORS_DB', 3))
+REDIS = redis.StrictRedis(host=settings.REDIS_DESCRIPTORS_HOST,
+                          port=settings.REDIS_DESCRIPTORS_PORT,
+                          db=settings.REDIS_DESCRIPTORS_DB)
 
 now     = datetime.datetime.now
 ftstamp = datetime.datetime.fromtimestamp

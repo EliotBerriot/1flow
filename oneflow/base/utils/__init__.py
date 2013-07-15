@@ -25,9 +25,9 @@ from djangojs.utils import ContextSerializer
 
 LOGGER = logging.getLogger(__name__)
 
-REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                                       'localhost'), port=6379,
-                          db=getattr(settings, 'REDIS_DB', 0))
+REDIS = redis.StrictRedis(host=settings.REDIS_HOST,
+                          port=settings.REDIS_PORT,
+                          db=settings.REDIS_DB)
 
 now     = datetime.datetime.now
 ftstamp = datetime.datetime.fromtimestamp
