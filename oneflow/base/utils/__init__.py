@@ -293,7 +293,8 @@ class RedisExpiringLock(object):
                              ex=self.expire_time, nx=True)
 
         if reentrant_id:
-            return val or val[10:] == reentrant_id
+            if val is None:
+                return self.REDIS.get(self.lock_id)[10:] == reentrant_id
 
         return val
 
