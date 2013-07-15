@@ -270,7 +270,7 @@ class Feed(Document):
         return Article.objects.filter(
             feed=self).filter(
                 date_published__gt=today()
-                - datetime.timedelta(
+                - timedelta(
                     days=config.FEED_ADMIN_MEANINGFUL_DELTA))
 
     @celery_task_method(name='Feed.update_recent_articles_count', queue='low')
