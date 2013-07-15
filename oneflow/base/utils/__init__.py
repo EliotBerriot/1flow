@@ -311,8 +311,8 @@ class RedisExpiringLock(object):
 
         if self.acquire():
             self.release()
-            return True
-        return False
+            return False
+        return True
 
 # By default take the normal REDIS connection, but still allow
 # to override it in tests via the class attribute.
