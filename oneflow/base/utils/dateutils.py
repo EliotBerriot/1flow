@@ -4,12 +4,13 @@
 import datetime as pydatetime
 import humanize.time as human_time
 from django.conf import settings
-from django.utils.timezone import (is_aware as dj_is_aware,
-                                   is_naive as dj_is_naive,
+from django.utils.timezone import (is_aware, is_naive, # NOQA
                                    make_aware, utc,
                                    now as dj_now)
 
+
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Local aliases
+
 
 dt_combine       = pydatetime.datetime.combine
 dt_fromtimestamp = pydatetime.datetime.fromtimestamp
@@ -23,6 +24,7 @@ timedelta = pydatetime.timedelta
 
 naturaltime  = human_time.naturaltime
 naturaldelta = human_time.naturaldelta
+
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Aware aliases
 
@@ -41,23 +43,6 @@ else:
     time     = pydatetime.time
     datetime = pydatetime.datetime
 
-
-def is_naive(*args, **kwargs):
-    try:
-        return dj_is_naive(*args, **kwargs)
-
-    except AttributeError:
-        # workaround http://dev.1flow.net/webapps/1flow/group/3297/
-        return True
-
-
-def is_aware(*args, **kwargs):
-    try:
-        return dj_is_aware(*args, **kwargs)
-
-    except AttributeError:
-        # workaround http://dev.1flow.net/webapps/1flow/group/3297/
-        return False
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• functions
 
