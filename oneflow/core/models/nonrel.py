@@ -201,7 +201,8 @@ class Feed(Document):
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
-    date_added     = DateTimeField(default=now, verbose_name=_(u'date added'))
+    date_added     = DateTimeField(default=datetime.date(2013, 07, 01),
+                                   verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
     closed         = BooleanField(default=False, verbose_name=_(u'closed'))
     date_closed    = DateTimeField(verbose_name=_(u'date closed'))
