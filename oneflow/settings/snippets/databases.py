@@ -16,8 +16,9 @@ SESSION_REDIS_PREFIX = 'sss'
 mongoengine.connect(os.environ.get('MONGODB_NAME'),
                     host=os.environ.get('MONGODB_HOST'))
 
-REDIS_DB      = int(os.environ.get('REDIS_DB'))
-REDIS_TEST_DB = int(os.environ.get('REDIS_TEST_DB'))
+REDIS_DB             = int(os.environ.get('REDIS_DB'))
+REDIS_TEST_DB        = int(os.environ.get('REDIS_TEST_DB'))
+REDIS_DESCRIPTORS_DB = int(os.environ.get('REDIS_DESCRIPTORS_DB'))
 
 CONSTANCE_REDIS_CONNECTION = os.environ.get('CONSTANCE_REDIS_CONNECTION')
 
