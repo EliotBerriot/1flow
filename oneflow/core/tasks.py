@@ -14,7 +14,7 @@ from pymongo.errors import DuplicateKeyError
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
 
-from celery import taskreldb
+from celery import task
 
 from django.conf import settings
 from django.core.mail import mail_admins
