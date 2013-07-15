@@ -192,7 +192,7 @@ class FeedAdmin(admin.DocumentAdmin):
                     'date_added_display', 'latest_article_display',
                     'recent_articles_count_display',
                     'all_articles_count_display',
-                    'subscribers_count_display', )
+                    'subscriptions_count_display', )
 
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
 
@@ -272,12 +272,12 @@ class FeedAdmin(admin.DocumentAdmin):
     last_fetch_display.short_description = _(u'Refreshed')
     last_fetch_display.admin_order_field = 'last_fetch'
 
-    def subscribers_count_display(self, obj):
+    def subscriptions_count_display(self, obj):
 
-        return obj.subscribers_count
+        return obj.subscriptions_count
 
-    subscribers_count_display.short_description = _(u'Subs.')
-    #subscribers_count_display.admin_order_field = 'subscribers_count'
+    subscriptions_count_display.short_description = _(u'Subs.')
+    #subscriptions_count_display.admin_order_field = 'subscriptions_count'
 
     def closed_display(self, obj):
 

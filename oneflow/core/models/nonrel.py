@@ -178,9 +178,9 @@ def feed_recent_articles_count_default(feed, *args, **kwargs):
     return feed.recent_articles.count()
 
 
-def feed_subscribers_count_default(feed, *args, **kwargs):
+def feed_subscriptions_count_default(feed, *args, **kwargs):
 
-    return feed.subscribers.count()
+    return feed.subscriptions.count()
 
 
 class Feed(Document):
@@ -234,8 +234,8 @@ class Feed(Document):
         attr_name='f.ra_c', default=feed_recent_articles_count_default,
         set_default=True)
 
-    subscribers_count = IntRedisDescriptor(
-        attr_name='f.s_c', default=feed_subscribers_count_default,
+    subscriptions_count = IntRedisDescriptor(
+        attr_name='f.s_c', default=feed_subscriptions_count_default,
         set_default=True)
 
     @property
@@ -292,14 +292,14 @@ class Feed(Document):
         #
 
     @property
-    def subscribers(self):
+    def subscriptions(self):
 
-        return [s.user for s in Subscription.objects.filter(feed=self)]
+        return Subscription.objects.filter(feed=self)
 
-    @celery_task_method(name='Feed.update_subscribers_count', queue='low')
-    def update_subscribers_count(self):
+    @celery_task_method(name='Feed.update_subscriptions_count', queue='low')
+    def update_subscriptions_count(self):
 
-        self.subscribers_count = self.subscribers.count()
+        self.subscriptions_count = self.subscriptions.count()
 
     @property
     def all_articles(self):
@@ -629,12 +629,13 @@ class Feed(Document):
 
             fetch_counter = FeedStatsCounter(self)
             tags          = getattr(parsed_feed, 'tags', [])
+            subscribers   = [s.user for s in self.subscriptions]
             new_articles  = 0
             duplicates    = 0
 
             for article in parsed_feed.entries:
                 if self.create_article_and_reads(article,
-                                                 self.subscribers, tags):
+                                                 subscribers, tags):
                     fetch_counter.incr_fetched()
                     new_articles += 1
                 else:
