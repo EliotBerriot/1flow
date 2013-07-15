@@ -3,7 +3,6 @@
 import time
 import redis
 import logging
-import datetime
 from constance import config
 
 from humanize.time import naturaldelta, naturaltime
@@ -28,10 +27,10 @@ from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
 from .gr_import import GoogleReaderImport
 
 from ..base.utils import RedisExpiringLock
-from ..base.utils.dateutils import now, ftstamp, today, timedelta
+from ..base.utils.dateutils import now, ftstamp, today, timedelta, datetime
 
 # We don't fetch articles too far in the past, even if google has them.
-GR_OLDEST_DATE = datetime.datetime(2008, 1, 1, 0, 0)
+GR_OLDEST_DATE = datetime(2008, 1, 1)
 
 LOGGER = logging.getLogger(__name__)
 
