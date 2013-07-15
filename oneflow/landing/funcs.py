@@ -1,7 +1,8 @@
 
-import datetime
 
 from django.conf import settings
+
+from ..base.utils.dateutils import today
 
 from models import LandingContent, LandingUser
 
@@ -29,7 +30,7 @@ def get_beta_invites_left(only_number=False):
 
 def get_beta_time_left():
 
-    delta = (settings.LANDING_BETA_DATE - datetime.datetime.now())
+    delta = (settings.LANDING_BETA_DATE - today())
 
     return (('beta_time_left', delta.days * 86400 + delta.seconds), )
 

@@ -2,8 +2,6 @@
 
 import time
 import logging
-import datetime
-import dateutil
 import requests
 import strainer
 import html2text
@@ -37,7 +35,8 @@ from ...base.utils import (connect_mongoengine_signals,
                            RedisSemaphore, NoResourceAvailableException,
                            HttpResponseLogProcessor, RedisStatsCounter)
 
-from ...base.utils.dateutils import now, timedelta, until_tomorrow_delta, today
+from ...base.utils.dateutils import (now, timedelta, until_tomorrow_delta,
+                                     today, datetime)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from .keyval import FeedbackDocument
 
@@ -83,6 +82,9 @@ else:
 
 
 # ••••••••••••• issue https://code.google.com/p/feedparser/issues/detail?id=404
+
+import dateutil
+
 
 def dateutilDateHandler(aDateString):
     return dateutil.parser.parse(aDateString).utctimetuple()
@@ -187,7 +189,7 @@ class Feed(Document):
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
-    date_added     = DateTimeField(default=datetime.date(2013, 07, 01),
+    date_added     = DateTimeField(default=datetime(2013, 07, 01),
                                    verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
     closed         = BooleanField(default=False, verbose_name=_(u'closed'))
