@@ -186,7 +186,8 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 class FeedAdmin(admin.DocumentAdmin):
 
     list_display = ('id', 'name_display', 'url_display', 'restricted',
-                    'closed_display', 'fetch_interval', 'last_fetch_display',
+                    'closed_display', 'fetch_interval_display',
+                    'last_fetch_display',
                     'date_added_display', 'latest_article_display',
                     'recent_articles_count_display',
                     'all_articles_count_display',
@@ -209,12 +210,14 @@ class FeedAdmin(admin.DocumentAdmin):
         return obj.recent_articles_count
 
     recent_articles_count_display.short_description = _(u'Recent')
+    recent_articles_count_display.admin_order_field = 'recent_articles_count'
 
     def all_articles_count_display(self, obj):
 
         return obj.all_articles_count
 
     all_articles_count_display.short_description = _(u'Total')
+    all_articles_count_display.admin_order_field = 'all_articles_count'
 
     def latest_article_display(self, obj):
 
@@ -222,6 +225,7 @@ class FeedAdmin(admin.DocumentAdmin):
             return naturaltime(obj.latest_article_date_published)
 
     latest_article_display.short_description = _(u'Latest')
+    latest_article_display.admin_order_field = 'latest_article_date_published'
 
     def date_added_display(self, obj):
 
@@ -229,19 +233,30 @@ class FeedAdmin(admin.DocumentAdmin):
             return naturaltime(obj.date_added)
 
     date_added_display.short_description = _(u'Added')
+    date_added_display.admin_order_field = 'date_added'
+
+    def fetch_interval_display(self, obj):
+
+        with django_language():
+            return naturaldelta(obj.fetch_interval)
+
+    fetch_interval_display.short_description = _(u'Fetch')
+    fetch_interval_display.admin_order_field = 'fetch_interval'
 
     def last_fetch_display(self, obj):
 
         with django_language():
             return naturaltime(obj.last_fetch)
 
-    last_fetch_display.short_description = _(u'Fetched')
+    last_fetch_display.short_description = _(u'Refresh')
+    last_fetch_display.admin_order_field = 'last_fetch'
 
     def subscribers_count_display(self, obj):
 
         return obj.subscribers_count
 
     subscribers_count_display.short_description = _(u'Subs.')
+    subscribers_count_display.admin_order_field = 'subscribers_count'
 
     def closed_display(self, obj):
 
@@ -252,6 +267,7 @@ class FeedAdmin(admin.DocumentAdmin):
 
     closed_display.short_description = _(u'Closed?')
     closed_display.allow_tags = True
+    closed_display.admin_order_field = 'closed'
 
     def name_display(self, obj):
 
@@ -260,6 +276,7 @@ class FeedAdmin(admin.DocumentAdmin):
 
     name_display.short_description = _(u'Feed name')
     name_display.allow_tags = True
+    name_display.admin_order_field = 'name'
 
     def url_display(self, obj):
 
@@ -267,6 +284,7 @@ class FeedAdmin(admin.DocumentAdmin):
 
     url_display.short_description = _(u'Feed URL')
     url_display.allow_tags = True
+    url_display.admin_order_field = 'url'
 
 
 admin.site.register(Feed, FeedAdmin)
