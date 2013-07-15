@@ -634,21 +634,25 @@ class Feed(Document):
         if feed_status != 304:
 
             fetch_counter = FeedStatsCounter(self)
-            subscribers   = self.get_subscribers()
             tags          = getattr(parsed_feed, 'tags', [])
             new_articles  = 0
             duplicates    = 0
 
             for article in parsed_feed.entries:
                 if self.create_article_and_reads(article,
-                                                 subscribers, tags):
+                                                 self.subscribers, tags):
                     fetch_counter.incr_fetched()
                     new_articles += 1
                 else:
                     fetch_counter.incr_dupes()
                     duplicates += 1
 
-            self.__throttle_fetch_interval(new_articles, duplicates)
+            if not force:
+                # forcing the refresh is most often triggered by admins
+                # and developers. It should not trigger the adaptative
+                # throttling computations, because it generates a lot
+                # of false-positive duplicates, and will.
+                self.__throttle_fetch_interval(new_articles, duplicates)
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
