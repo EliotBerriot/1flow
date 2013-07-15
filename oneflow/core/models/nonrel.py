@@ -381,6 +381,11 @@ class Feed(Document):
                 self.site_url = None
                 self.close(commit=False)
 
+            if e.errors.get('url', None) is not None:
+                if self.closed:
+                    # we are closing, forget about it.
+                    e.errors.pop('url', None)
+
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
 
