@@ -8,23 +8,19 @@
 
 import time
 import logging
-import datetime
 import simplejson as json
 
 from constance import config
 from django.contrib.auth import get_user_model
 
 from ..base.utils import RedisStatsCounter
+from ..base.utils.dateutils import now, today, timedelta
 
 from .models.nonrel import Article
 
 LOGGER = logging.getLogger(__name__)
 
 User = get_user_model()
-
-now     = datetime.datetime.now
-ftstamp = datetime.datetime.fromtimestamp
-today   = datetime.date.today
 
 
 class GoogleReaderImport(RedisStatsCounter):
@@ -219,6 +215,6 @@ class GoogleReaderImport(RedisStatsCounter):
             else:
                 maximums += (0.0, )
 
-            return now() + datetime.timedelta(seconds=max(*maximums))
+            return now() + timedelta(seconds=max(*maximums))
         else:
             return None

@@ -36,7 +36,9 @@ from ...base.utils import (connect_mongoengine_signals,
                            RedisExpiringLock, AlreadyLockedException,
                            RedisSemaphore, NoResourceAvailableException,
                            HttpResponseLogProcessor, RedisStatsCounter)
-from ...base.fields import (IntRedisDescriptor, DatetimeRedisDescriptor)
+
+from ...base.utils.dateutils import now, timedelta, until_tomorrow_delta, today
+from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from .keyval import FeedbackDocument
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
@@ -78,22 +80,6 @@ if config.FEED_FETCH_GHOST_ENABLED:
 
 else:
     ghost = None # NOQA
-
-
-now       = datetime.datetime.now
-#today     = datetime.date.today
-timedelta = datetime.timedelta
-
-
-def until_tomorrow_delta(time_of_tomorrow=None):
-    """ This should probably go to ``oneflow.base.something``. """
-
-    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
-
-    if time_of_tomorrow is None:
-        time_of_tomorrow = datetime.time(0, 0, 0)
-
-    return  datetime.datetime.combine(tomorrow, time_of_tomorrow) - now()
 
 
 # ••••••••••••• issue https://code.google.com/p/feedparser/issues/detail?id=404
@@ -281,7 +267,7 @@ class Feed(Document):
     def recent_articles(self):
         return Article.objects.filter(
             feed=self).filter(
-                date_published__gt=datetime.date.today()
+                date_published__gt=today()
                 - datetime.timedelta(
                     days=config.FEED_ADMIN_MEANINGFUL_DELTA))
 
@@ -416,8 +402,7 @@ class Feed(Document):
             content = feedparser_content
 
         try:
-            date_published = datetime.datetime(
-                *article.published_parsed[:6])
+            date_published = datetime(*article.published_parsed[:6])
         except:
             date_published = None
 

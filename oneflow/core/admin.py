@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-import datetime
 
 from humanize.i18n import django_language
 from humanize.time import naturaldelta, naturaltime
@@ -16,6 +15,7 @@ from .models.nonrel import Feed
 import mongoadmin as admin
 
 from ..base.admin import CSVAdminMixin
+from ..base.utils.dateutils import now
 
 from .gr_import import GoogleReaderImport
 
@@ -23,7 +23,6 @@ from .gr_import import GoogleReaderImport
 # a "cannot proxy swapped model base.User" when creating the
 # GriUser class. Using `get_user_model()` works.
 User = get_user_model()
-now = datetime.datetime.now
 
 
 class GriUser(User):

@@ -5,7 +5,6 @@ import time
 import redis
 import urllib2
 import logging
-import datetime
 
 try:
     import blinker
@@ -22,16 +21,13 @@ from django.template import Context
 
 from djangojs.utils import ContextSerializer
 
+from .dateutils import ftstamp
 
 LOGGER = logging.getLogger(__name__)
 
 REDIS = redis.StrictRedis(host=settings.REDIS_HOST,
                           port=settings.REDIS_PORT,
                           db=settings.REDIS_DB)
-
-now     = datetime.datetime.now
-ftstamp = datetime.datetime.fromtimestamp
-today   = datetime.date.today
 
 boolcast = {
     'True': True,
