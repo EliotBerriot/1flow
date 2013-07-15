@@ -255,7 +255,7 @@ class FeedAdmin(admin.DocumentAdmin):
         with django_language():
             return naturaldelta(obj.fetch_interval)
 
-    fetch_interval_display.short_description = _(u'Fetch')
+    fetch_interval_display.short_description = _(u'Interval')
     fetch_interval_display.admin_order_field = 'fetch_interval'
 
     def last_fetch_display(self, obj):
@@ -269,7 +269,7 @@ class FeedAdmin(admin.DocumentAdmin):
         with django_language():
             return naturaltime(obj.last_fetch)
 
-    last_fetch_display.short_description = _(u'Refresh')
+    last_fetch_display.short_description = _(u'Refreshed')
     last_fetch_display.admin_order_field = 'last_fetch'
 
     def subscribers_count_display(self, obj):
