@@ -8,6 +8,7 @@
     readonly property, returning the `email`, which we use as required
     user name field.
 """
+import logging
 
 from transmeta import TransMeta
 
@@ -17,9 +18,14 @@ from django.contrib.auth.models import (BaseUserManager,
                                         AbstractBaseUser,
                                         PermissionsMixin)
 from django.utils.translation import ugettext_lazy as _
-from django.utils import timezone
 
 from ..profiles.models import AbstractUserProfile
+from ..base.utils.dateutils import now
+
+LOGGER = logging.getLogger(__name__)
+
+
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Classes
 
 
 class EmailContent(models.Model):
@@ -50,7 +56,7 @@ class UserManager(BaseUserManager):
         """ Creates and saves a User with the given username,
             email and password. """
 
-        now = timezone.now()
+        now1 = now()
 
         if not email:
             raise ValueError('User must have an email')
@@ -59,7 +65,7 @@ class UserManager(BaseUserManager):
 
         user = self.model(username=username, email=email,
                           is_active=True, is_staff=False, is_superuser=False,
-                          last_login=now, date_joined=now, **extra_fields)
+                          last_login=now1, date_joined=now1, **extra_fields)
 
         user.set_password(password)
         user.save(using=self._db)
@@ -98,7 +104,7 @@ class User(AbstractBaseUser, PermissionsMixin, AbstractUserProfile):
                                                 'should be treated as '
                                                 'active. Unselect this instead '
                                                 'of deleting accounts.'))
-    date_joined = models.DateTimeField(_('date joined'), default=timezone.now)
+    date_joined = models.DateTimeField(_('date joined'), default=now)
 
     objects = UserManager()
 

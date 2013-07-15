@@ -28,6 +28,7 @@ from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
 from .gr_import import GoogleReaderImport
 
 from ..base.utils import RedisExpiringLock
+from ..base.utils.dateutils import now, ftstamp, today, timedelta
 
 # We don't fetch articles too far in the past, even if google has them.
 GR_OLDEST_DATE = datetime.datetime(2008, 1, 1, 0, 0)
@@ -39,11 +40,6 @@ REDIS = redis.StrictRedis(host=settings.REDIS_HOST,
                           db=settings.REDIS_DB)
 
 User = get_user_model()
-
-ftstamp   = datetime.datetime.fromtimestamp
-now       = datetime.datetime.now
-today     = datetime.date.today
-timedelta = datetime.timedelta
 
 
 def get_user_from_dbs(user_id):
@@ -560,7 +556,7 @@ def clean_gri_keys():
 def clean_obsolete_redis_keys():
     """ Call in turn all redis-related cleaners. """
 
-    if today() <= (config.GR_END_DATE + datetime.timedelta(days=1)):
+    if today() <= (config.GR_END_DATE + timedelta(days=1)):
         clean_gri_keys()
 
 

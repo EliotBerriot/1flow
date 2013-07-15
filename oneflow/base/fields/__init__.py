@@ -4,22 +4,17 @@ import uuid
 import time
 import redis
 import logging
-import datetime
 
 from django.conf import settings
 
 from ..utils import RedisExpiringLock, AlreadyLockedException
-
+from ..utils.dateutils import ftstamp
 
 LOGGER = logging.getLogger(__name__)
 
 REDIS = redis.StrictRedis(host=settings.REDIS_DESCRIPTORS_HOST,
                           port=settings.REDIS_DESCRIPTORS_PORT,
                           db=settings.REDIS_DESCRIPTORS_DB)
-
-now     = datetime.datetime.now
-ftstamp = datetime.datetime.fromtimestamp
-today   = datetime.date.today
 
 
 class RedisCachedDescriptor(object):

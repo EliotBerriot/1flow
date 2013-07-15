@@ -1,19 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import logging
-import datetime
 import humanize
 
 from celery import task
 
 from django.contrib.auth import get_user_model
 
+from .utils.dateutils import now
+
 LOGGER = logging.getLogger(__name__)
 
 User = get_user_model()
-
-#ftstamp = datetime.datetime.fromtimestamp
-now     = datetime.datetime.now
 
 
 @task
