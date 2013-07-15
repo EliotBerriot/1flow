@@ -28,16 +28,15 @@ from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
 from .gr_import import GoogleReaderImport
 
 from ..base.utils import RedisExpiringLock
-#from ..base.utils import send_email_with_db_content
 
 # We don't fetch articles too far in the past, even if google has them.
 GR_OLDEST_DATE = datetime.datetime(2008, 1, 1, 0, 0)
 
 LOGGER = logging.getLogger(__name__)
 
-REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                          'localhost'), port=6379,
-                          db=getattr(settings, 'REDIS_DB', 0))
+REDIS = redis.StrictRedis(host=settings.REDIS_HOST,
+                          port=settings.REDIS_PORT,
+                          db=settings.REDIS_DB)
 
 User = get_user_model()
 

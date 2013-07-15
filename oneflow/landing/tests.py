@@ -11,7 +11,6 @@ from django.test.utils import override_settings
 from django.core.urlresolvers import reverse
 from django.utils.translation import activate
 
-#from ..base.utils import send_email_with_db_content
 
 LOGGER = logging.getLogger(__file__)
 

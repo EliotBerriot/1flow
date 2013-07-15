@@ -36,7 +36,7 @@ from ...base.utils import (connect_mongoengine_signals,
                            RedisExpiringLock, AlreadyLockedException,
                            RedisSemaphore, NoResourceAvailableException,
                            HttpResponseLogProcessor, RedisStatsCounter)
-from ...base.fields import DatetimeRedisDescriptor
+from ...base.fields import (IntRedisDescriptor, DatetimeRedisDescriptor)
 from .keyval import FeedbackDocument
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
@@ -83,6 +83,17 @@ else:
 now       = datetime.datetime.now
 #today     = datetime.date.today
 timedelta = datetime.timedelta
+
+
+def until_tomorrow_delta(time_of_tomorrow=None):
+    """ This should probably go to ``oneflow.base.something``. """
+
+    tomorrow = datetime.date.today() + datetime.timedelta(days=1)
+
+    if time_of_tomorrow is None:
+        time_of_tomorrow = datetime.time(0, 0, 0)
+
+    return  datetime.datetime.combine(tomorrow, time_of_tomorrow) - now()
 
 
 # ••••••••••••• issue https://code.google.com/p/feedparser/issues/detail?id=404
@@ -145,6 +156,9 @@ global_feed_stats = FeedStatsCounter()
 global_ghost_lock = RedisExpiringLock('__ghost.py__')
 
 
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Source
+
+
 class Source(Document):
     """ The "original source" for similar articles: they have different authors,
         different contents, but all refer to the same information, which can
@@ -163,13 +177,32 @@ class Source(Document):
     slug    = StringField()
 
 
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
+
+
+def feed_all_articles_count_default(feed, *args, **kwargs):
+
+    return feed.all_articles.count()
+
+
+def feed_recent_articles_count_default(feed, *args, **kwargs):
+
+    return feed.recent_articles.count()
+
+
+def feed_subscribers_count_default(feed, *args, **kwargs):
+
+    return feed.subscribers.count()
+
+
 class Feed(Document):
     # TODO: init
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
-    date_added     = DateTimeField(default=now, verbose_name=_(u'date added'))
+    date_added     = DateTimeField(default=datetime.date(2013, 07, 01),
+                                   verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
     closed         = BooleanField(default=False, verbose_name=_(u'closed'))
     date_closed    = DateTimeField(verbose_name=_(u'date closed'))
@@ -195,13 +228,101 @@ class Feed(Document):
 
     options        = ListField(IntField())
 
+    # ••••••••••••••••••••••••••••••• properties, cached descriptors & updaters
+
     # TODO: create an abstract class that will allow to not specify
     #       the attr_name here, but make it automatically created.
     #       This is an underlying implementation detail and doesn't
     #       belong here.
-    latest_article__date_published = DatetimeRedisDescriptor(
-        # Default value is 5 years ealier. Should suffice to get old posts…
-        attr_name='f.la__dp', default=now() - timedelta(days=1826))
+    latest_article_date_published = DatetimeRedisDescriptor(
+        # 5 years ealier should suffice to get old posts when starting import.
+        attr_name='f.la_dp', default=now() - timedelta(days=1826))
+
+    all_articles_count = IntRedisDescriptor(
+        attr_name='f.aa_c', default=feed_all_articles_count_default,
+        set_default=True)
+
+    recent_articles_count = IntRedisDescriptor(
+        attr_name='f.ra_c', default=feed_recent_articles_count_default,
+        set_default=True)
+
+    subscribers_count = IntRedisDescriptor(
+        attr_name='f.s_c', default=feed_subscribers_count_default,
+        set_default=True)
+
+    @property
+    def latest_article(self):
+
+        latest = self.get_articles(1)
+
+        try:
+            return latest[0]
+
+        except:
+            return None
+
+    @celery_task_method(name='Feed.update_latest_article_date_published',
+                        queue='low')
+    def update_latest_article_date_published(self):
+        """ This seems simple, but this operations costs a lot in MongoDB. """
+
+        try:
+            # This query should still cost less than the pure and bare
+            # `self.latest_article.date_published` which will first sort
+            # all articles of the feed before getting the first of them.
+            self.latest_article_date_published = self.recent_articles.order_by(
+                '-date_published').first().date_published
+        except:
+            # Don't worry, the default value of
+            # the descriptor should fill the gaps.
+            pass
+
+    @property
+    def recent_articles(self):
+        return Article.objects.filter(
+            feed=self).filter(
+                date_published__gt=datetime.date.today()
+                - datetime.timedelta(
+                    days=config.FEED_ADMIN_MEANINGFUL_DELTA))
+
+    @celery_task_method(name='Feed.update_recent_articles_count', queue='low')
+    def update_recent_articles_count(self, force=False):
+        """ This task is protected to run only once per day,
+            even if is called more. """
+
+        urac_lock = RedisExpiringLock(self, lock_name='urac', expire_time=86100)
+
+        if urac_lock.acquire() or force:
+            self.recent_articles_count = self.recent_articles.count()
+
+        elif not force:
+            LOGGER.warning(u'No more than one update_recent_articles_count '
+                           u'per day (feed %s).', self)
+        #
+        # Don't bother release the lock, this will
+        # ensure we are not called until tomorrow.
+        #
+
+    @property
+    def subscribers(self):
+
+        return Subscription.objects.filter(feed=self)
+
+    @celery_task_method(name='Feed.update_subscribers_count', queue='low')
+    def update_subscribers_count(self):
+
+        self.subscribers_count = self.subscribers.count()
+
+    @property
+    def all_articles(self):
+        return Article.objects.filter(feed=self)
+
+    @celery_task_method(name='Feed.update_all_articles_count', queue='low')
+    def update_all_articles_count(self):
+
+        self.all_articles_count = self.all_articles.count()
+
+    # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
     def __unicode__(self):
         return _(u'%s (#%s)') % (self.name, self.id)
@@ -275,16 +396,6 @@ class Feed(Document):
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
 
-    def get_latest_article(self):
-
-        latest = self.get_articles(1)
-
-        try:
-            return latest[0]
-
-        except:
-            return None
-
     def get_subscribers(self):
         return [
             s.user
@@ -336,10 +447,13 @@ class Feed(Document):
             # to fail too. Don't display warnings, they are quite boring.
             new_article.create_reads(subscribers, tags, verbose=created)
 
+            self.recent_articles_count += 1
+            self.all_articles_count += 1
+
         # Update the "latest date" kind-of-cache.
         if date_published and \
-                date_published > self.latest_article__date_published:
-            self.latest_article__date_published = date_published
+                date_published > self.latest_article_date_published:
+            self.latest_article_date_published = date_published
 
         return created
 
@@ -355,7 +469,7 @@ class Feed(Document):
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
             return
 
-        my_lock = RedisExpiringLock(self)
+        my_lock = RedisExpiringLock(self, lock_name='fetch')
 
         if my_lock.acquire():
             # no refresher is running.
@@ -381,7 +495,7 @@ class Feed(Document):
             kwargs['modified'] = self.last_modified
 
         else:
-            kwargs['modified'] = self.latest_article__date_published
+            kwargs['modified'] = self.latest_article_date_published
 
         if self.last_etag:
             kwargs['etag'] = self.last_etag
@@ -408,7 +522,7 @@ class Feed(Document):
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
             return
 
-        my_lock = RedisExpiringLock(self)
+        my_lock = RedisExpiringLock(self, lock_name='fetch')
 
         if not my_lock.acquire():
             if force:
@@ -551,6 +665,9 @@ class Feed(Document):
             self.last_modified = getattr(parsed_feed, 'modified', None)
             self.last_etag     = getattr(parsed_feed, 'etag', None)
 
+            self.update_recent_articles_count.apply_async(
+                (), countdown=until_tomorrow_delta().seconds)
+
         else:
             LOGGER.info(u'No new content in feed %s.', self)
 
@@ -566,6 +683,9 @@ class Feed(Document):
         self.refresh.apply_async((), countdown=(self.fetch_interval
                                  - (time.time() - refresh_start))
                                  or config.FEED_FETCH_DEFAULT_INTERVAL)
+
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
 
 
 class Subscription(Document):

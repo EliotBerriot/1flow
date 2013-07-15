@@ -12,10 +12,9 @@ from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
 
-TEST_REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                               'localhost'), port=6379,
-                               db=getattr(settings,
-                                          'REDIS_TEST_DB', 9))
+TEST_REDIS = redis.StrictRedis(host=settings.REDIS_TEST_HOST,
+                               port=settings.REDIS_TEST_PORT,
+                               db=settings.REDIS_TEST_DB)
 
 
 # Use the test database not to pollute the production/development one.

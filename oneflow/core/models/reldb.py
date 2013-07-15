@@ -16,8 +16,9 @@ from django.utils.translation import ugettext as _
 #from django.contrib.sites.models import Site
 #from django.template.defaultfilters import slugify
 
-REDIS = redis.StrictRedis(host='localhost', port=6379,
-                          db=getattr(settings, 'REDIS_DB'))
+REDIS = redis.StrictRedis(host=settings.REDIS_HOST,
+                          port=settings.REDIS_PORT,
+                          db=settings.REDIS_DB)
 
 
 class ListField(models.TextField):

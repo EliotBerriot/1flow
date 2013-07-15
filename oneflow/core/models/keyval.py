@@ -10,9 +10,9 @@ from django.contrib.auth.models import User
 
 from .fields import ListField
 
-REDIS = redis.StrictRedis(host=getattr(settings, 'REDIS_FEEDBACK_HOST',
-                          'localhost'), port=6379,
-                          db=getattr(settings, 'REDIS_DB', 0))
+REDIS = redis.StrictRedis(host=settings.REDIS_FEEDBACK_HOST,
+                          port=settings.REDIS_FEEDBACK_PORT,
+                          db=settings.REDIS_FEEDBACK_DB)
 
 
 class RedisFeedbackMixin(object):

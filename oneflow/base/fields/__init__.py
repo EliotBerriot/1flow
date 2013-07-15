@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import uuid
 import time
 import redis
 import logging
@@ -7,11 +8,14 @@ import datetime
 
 from django.conf import settings
 
+from ..utils import RedisExpiringLock, AlreadyLockedException
+
+
 LOGGER = logging.getLogger(__name__)
 
-REDIS = redis.StrictRedis(host=getattr(settings, 'MAIN_SERVER',
-                                       'localhost'), port=6379,
-                          db=getattr(settings, 'REDIS_DESCRIPTORS_DB', 3))
+REDIS = redis.StrictRedis(host=settings.REDIS_DESCRIPTORS_HOST,
+                          port=settings.REDIS_DESCRIPTORS_PORT,
+                          db=settings.REDIS_DESCRIPTORS_DB)
 
 now     = datetime.datetime.now
 ftstamp = datetime.datetime.fromtimestamp
@@ -28,11 +32,28 @@ class RedisCachedDescriptor(object):
 
         You can disable the cache by setting :param:`cache` to ``False``
         in the descriptor class (or any inherited class) constructor.
+
+        .. note:: :param:`default` can be a callable. It will be passed
+            the instance as first argument when it is called. In this
+            particular case (and only this one), the ``default`` call
+            will be protected by a network-wide re-entrant lock. Be aware
+            that the :meth:`__get__` method call can eventually raise
+            an ``AlreadyLockedException`` if there is any kind of race
+            between callers. This should be quite rare, though. But you
+            still need to cover the case.
+
+        :param set_default: in case there is no value and the default is
+            returned, store it as the new current value. Useful if your
+            default is a callable that does a lot of computations, and
+            you want to set it as a base value at some point in time.
+            Not enabled by default (eg. the default value is returned
+            but not stored).
     """
 
     REDIS = None
 
-    def __init__(self, attr_name, cls_name=None, default=None, cache=True):
+    def __init__(self, attr_name, cls_name=None, default=None,
+                 cache=True, set_default=False):
 
         #
         # As MongoDB IDs are unique accross databases and objects,
@@ -43,8 +64,10 @@ class RedisCachedDescriptor(object):
         #   a MongoDB document or not, or any way to be sure `self.key_name`
         #   is unique accross the application, to avoid nasty clashes.
         #
-        self.default  = default
-        self.cache    = cache
+        self.default     = default
+        self.cache       = cache
+        self.set_default = set_default
+        self.uuid        = uuid.uuid4().hex
 
         # NOTE: we use '_' instead of the classic ':' to be compatible
         # with the instance cache, which is a standard Python attribute.
@@ -108,11 +131,60 @@ class RedisCachedDescriptor(object):
             val = self.REDIS.get(self.key_name % instance.id)
 
             if val is None:
-                # could be 'return self.default or None', but
-                # default is already None if there is no default…
+                if callable(self.default):
+                    # We are in a Multi-node environment. Protect the default
+                    # value computation against parallel execution, else the
+                    # callers could get bad results.
+                    val = self.__protected_default(instance)
+
+                    if self.set_default:
+                        self.__set__(instance, val)
+
+                    return val
+
+                if self.set_default:
+                    self.__set__(instance, self.default)
+
                 return self.default
 
             return self.to_python(val)
+
+    def __protected_default(self, instance):
+        """ This method is the only part which uses a network-enabled
+            re-entrant lock, to avoid the extra resources cost in case
+            of a non-callable default value. """
+
+        my_lock = RedisExpiringLock(instance, lock_name=self.cache_key,
+                                    lock_value=self.uuid)
+
+        if my_lock.acquire(reentrant_id=self.uuid):
+            try:
+                return self.default(instance)
+
+            finally:
+                my_lock.release()
+        else:
+            # Gosh, the lock is taken. Wait for release() and return
+            # another __get__() call once the holder releases it. The new
+            # __get__() will either return the database value if now set,
+            # or re-run a default() call if we are not lucky. But in this
+            # particular case, we will have protected ourselves with the
+            # re-entrant lock to be sure this will succeed.
+
+            while my_lock.is_locked():
+                # The lock *will* expire at some time.
+                # No need for complex conditions here.
+                time.sleep(0.5)
+
+            # Be sure that we don't get into a dead-lock, or any bad loop.
+            if my_lock.acquire(reentrant_id=self.uuid):
+                try:
+                    return self.__get__(instance)
+                finally:
+                    my_lock.release()
+            else:
+                raise AlreadyLockedException(
+                    'Too much effort required to get the lock.')
 
     def __set__(self, instance, value):
 
@@ -143,9 +215,35 @@ class RedisCachedDescriptor(object):
 RedisCachedDescriptor.REDIS = REDIS
 
 
+class IntRedisDescriptor(RedisCachedDescriptor):
+    """ Integer specific version of the
+        generic :class:`RedisCachedDescriptor`.
+
+        See :class:`RedisCachedDescriptor` for generic descriptor information
+        (like callable default values and network-wide locking semantics).
+    """
+
+    def to_python(self, value):
+
+        try:
+            return int(value)
+
+        except TypeError:
+            return None
+
+    #
+    # NOTE: no need for a to_redis() method.
+    #       Already covered by base class.
+    #
+
+
 class DatetimeRedisDescriptor(RedisCachedDescriptor):
     """ Datetime specific version of the
-        generic :class:`RedisCachedDescriptor`. """
+        generic :class:`RedisCachedDescriptor`.
+
+        See :class:`RedisCachedDescriptor` for generic descriptor information
+        (like callable default values and network-wide locking semantics).
+    """
 
     def to_python(self, value):
 

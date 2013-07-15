@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
-from .models.nonrel import Feed, Article
+from .models.nonrel import Feed
 
 import mongoadmin as admin
 
@@ -186,11 +186,12 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 class FeedAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name_display', 'url', 'restricted',
+    list_display = ('id', 'name_display', 'url_display', 'restricted',
                     'closed_display', 'fetch_interval', 'last_fetch_display',
-                    'date_added_display', 'last_article_display',
-                    'nb_articles_in_meaningful_delta_display',
-                    'nb_total_articles_display', 'nb_subscribers_display', )
+                    'date_added_display', 'latest_article_display',
+                    'recent_articles_count_display',
+                    'all_articles_count_display',
+                    'subscribers_count_display', )
 
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
 
@@ -204,58 +205,44 @@ class FeedAdmin(admin.DocumentAdmin):
     #change_list_template = "admin/change_list_filter_sidebar.html"
     #change_list_filter_template = "admin/filter_listing.html"
 
-    @property
-    def last_meaningful_delta(self):
-        """ As an instance property to avoid re-compute it for each feed. """
+    def recent_articles_count_display(self, obj):
 
-        try:
-            return self._last_meaningful_delta
-        except:
-            self._last_meaningful_delta = datetime.date.today() \
-                - datetime.timedelta(days=config.FEED_ADMIN_MEANINGFUL_DELTA)
+        return obj.recent_articles_count
 
-            return self._last_meaningful_delta
+    recent_articles_count_display.short_description = _(u'Recent')
 
-    def nb_articles_in_meaningful_delta_display(self, obj):
+    def all_articles_count_display(self, obj):
 
-        return Article.objects.filter(
-            feed=obj).filter(
-                date_published__gt=self.last_meaningful_delta).count()
+        return obj.all_articles_count
 
-    nb_articles_in_meaningful_delta_display.short_description = _(u'6 months')
+    all_articles_count_display.short_description = _(u'Total')
 
-    def nb_total_articles_display(self, obj):
-
-        return Article.objects.filter(feed=obj).count()
-
-    nb_total_articles_display.short_description = _(u'total')
-
-    def last_article_display(self, obj):
+    def latest_article_display(self, obj):
 
         with django_language():
-            return naturaltime(obj.latest_article__date_published)
+            return naturaltime(obj.latest_article_date_published)
 
-    last_article_display.short_description = _(u'latest')
+    latest_article_display.short_description = _(u'Latest')
 
     def date_added_display(self, obj):
 
         with django_language():
             return naturaltime(obj.date_added)
 
-    date_added_display.short_description = _(u'added')
+    date_added_display.short_description = _(u'Added')
 
     def last_fetch_display(self, obj):
 
         with django_language():
             return naturaltime(obj.last_fetch)
 
-    last_fetch_display.short_description = _(u'fetched')
+    last_fetch_display.short_description = _(u'Fetched')
 
-    def nb_subscribers_display(self, obj):
+    def subscribers_count_display(self, obj):
 
-        return len(obj.get_subscribers())
+        return obj.subscribers_count
 
-    nb_subscribers_display.short_description = _(u'subscribers')
+    subscribers_count_display.short_description = _(u'Subs.')
 
     def closed_display(self, obj):
 
@@ -264,7 +251,7 @@ class FeedAdmin(admin.DocumentAdmin):
                             kwargs={'feed_id': obj.id}), _(u'reopen')
                             if obj.closed else _(u'close'))
 
-    closed_display.short_description = _(u'closed?')
+    closed_display.short_description = _(u'Closed?')
     closed_display.allow_tags = True
 
     def name_display(self, obj):
@@ -272,8 +259,15 @@ class FeedAdmin(admin.DocumentAdmin):
         return u'<a href="{0}" target="_blank">{1}</a>'.format(obj.site_url,
                                                                obj.name)
 
-    name_display.short_description = _(u'name')
+    name_display.short_description = _(u'Feed name')
     name_display.allow_tags = True
+
+    def url_display(self, obj):
+
+        return u'<a href="{0}" target="_blank">RSS/Atom</a>'.format(obj.url)
+
+    url_display.short_description = _(u'Feed URL')
+    url_display.allow_tags = True
 
 
 admin.site.register(Feed, FeedAdmin)
