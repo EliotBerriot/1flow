@@ -139,6 +139,18 @@ class FeedStatsCounter(RedisStatsCounter):
         return RedisStatsCounter._int_incr_key(
             self.key_base + ':dupes', increment)
 
+    def incr_mutualized(self):
+
+        if self.key_base != global_feed_stats.key_base:
+            global_feed_stats.incr_mutualized()
+
+        return self.mutualized(increment=True)
+
+    def mutualized(self, increment=False):
+
+        return RedisStatsCounter._int_incr_key(
+            self.key_base + ':mutual', increment)
+
 # This one will keep track of all counters, globally, for all feeds.
 global_feed_stats = FeedStatsCounter()
 
@@ -685,6 +697,9 @@ class Feed(Document):
                 elif created is False:
                     fetch_counter.incr_dupes()
                     duplicates += 1
+
+                else:
+                    fetch_counter.incr_mutualized()
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
