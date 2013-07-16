@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import time
 import redis
 import logging
-from constance import config
+import time as pytime
 
-from humanize.time import naturaldelta, naturaltime
+from constance import config
 
 from mongoengine.errors import OperationError
 from mongoengine.queryset import Q
@@ -27,7 +26,8 @@ from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
 from .gr_import import GoogleReaderImport
 
 from ..base.utils import RedisExpiringLock
-from ..base.utils.dateutils import now, ftstamp, today, timedelta, datetime
+from ..base.utils.dateutils import (now, ftstamp, today, timedelta, datetime,
+                                    naturaldelta, naturaltime)
 
 # We don't fetch articles too far in the past, even if google has them.
 GR_OLDEST_DATE = datetime(2008, 1, 1)
@@ -297,8 +297,8 @@ def import_google_reader_begin(user_id, access_token):
     total_starred, star1_date = reader.totalStarredItems(without_date=False)
     total_feeds               = len(reader.feeds) + 1  # +1 for 'starred'
 
-    gri.reg_date(time.mktime(reg_date.timetuple()))
-    gri.star1_date(time.mktime(star1_date.timetuple()))
+    gri.reg_date(pytime.mktime(reg_date.timetuple()))
+    gri.star1_date(pytime.mktime(star1_date.timetuple()))
     gri.total_reads(total_reads)
     gri.total_starred(total_starred)
 
@@ -382,7 +382,7 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
                 LOGGER.warning(u'Wave %s (try %s) of feed “%s” failed to load '
                                u'for user %s, retrying…', wave, retry,
                                gr_feed.title, username)
-                time.sleep(5)
+                pytime.sleep(5)
                 retry += 1
 
             else:
@@ -476,7 +476,7 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
                 LOGGER.warning(u'Wave %s (try %s) of feed “%s” failed to load '
                                u'for user %s, retrying…', wave, retry,
                                gr_feed.title, username)
-                time.sleep(5)
+                pytime.sleep(5)
                 retry += 1
 
             else:
@@ -555,9 +555,13 @@ def clean_gri_keys():
 def clean_obsolete_redis_keys():
     """ Call in turn all redis-related cleaners. """
 
+    start_time = pytime.time()
+
     if today() <= (config.GR_END_DATE + timedelta(days=1)):
         clean_gri_keys()
 
+    LOGGER.info(u'clean_obsolete_redis_keys(): finished in %s.',
+                naturaldelta(pytime.time() - start_time))
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Refresh RSS feeds
 
@@ -575,6 +579,7 @@ def refresh_all_feeds(limit=None):
         # Avoid running this task over and over again in the queue
         # if the previous instance did not yet terminate. Happens
         # when scheduled task runs too quickly.
+        LOGGER.info(u'refresh_all_feeds() is already locked, aborting.')
         return
 
     if limit:
@@ -582,14 +587,17 @@ def refresh_all_feeds(limit=None):
     else:
         feeds = Feed.objects.filter(closed__ne=True)
 
-    # OMG, yes !! no need for caching and
-    # cluttering CPU/memory for a one-shot thing.
+    # No need for caching and cluttering CPU/memory for a one-shot thing.
     feeds.no_cache()
+    start_time = pytime.time()
 
     for feed in feeds:
         feed.check_refresher()
 
     my_lock.release()
+
+    LOGGER.info(u'Checked %s feed(s) in %s.', feeds.count(),
+                naturaldelta(pytime.time() - start_time))
 
 
 @task(queue='high')
@@ -605,8 +613,9 @@ def global_feeds_checker():
 
     count = feeds.count()
 
-    if count > 50000:
+    if count > 10000:
         # prevent CPU and memory hogging.
+        LOGGER.info(u'Switching query to no_cache(), this will take longer.')
         feeds.no_cache()
 
     if not count:
@@ -626,9 +635,14 @@ def global_feeds_checker():
                   u'none (or manually closed from the admin interface)')
                   for feed in feeds)))
 
+    start_time = pytime.time()
+
     # Close the feeds, but after sending the mail,
     # So that initial reason is displayed at least
     # once to a real human.
     for feed in feeds:
         if feed.date_closed is None:
             feed.close('Automatic close by periodic checker task')
+
+    LOGGER.info('Closed %s feeds in %s.', count,
+                naturaldelta(pytime.time() - start_time))

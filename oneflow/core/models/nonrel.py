@@ -37,7 +37,7 @@ from ...base.utils import (connect_mongoengine_signals,
                            HttpResponseLogProcessor, RedisStatsCounter)
 
 from ...base.utils.dateutils import (now, timedelta, until_tomorrow_delta,
-                                     today, datetime)
+                                     today, datetime, naturaldelta)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from .keyval import FeedbackDocument
 
@@ -413,6 +413,7 @@ class Feed(Document):
 
         try:
             date_published = datetime(*article.published_parsed[:6])
+
         except:
             date_published = None
 
@@ -440,16 +441,16 @@ class Feed(Document):
             self.recent_articles_count += 1
             self.all_articles_count += 1
 
+        # Update the "latest date" kind-of-cache.
+        if date_published is not None and \
+                date_published > self.latest_article_date_published:
+            self.latest_article_date_published = date_published
+
         # Even if the article wasn't created, we need to create reads.
         # In the case of "global" and "sub" feeds, the article will be
         # fetched only once, but all subscribers of all feeds must be
         # connected to it, to be able to read it.
         new_article.create_reads(subscribers, tags, verbose=created)
-
-        # Update the "latest date" kind-of-cache.
-        if date_published and \
-                date_published > self.latest_article_date_published:
-            self.latest_article_date_published = date_published
 
         return created
 
@@ -473,13 +474,20 @@ class Feed(Document):
             my_lock.release()
 
             if config.FEED_REFRESH_RANDOMIZE:
-                self.refresh.apply_async(
-                    (), countdown=randrange((self.fetch_interval or
-                                            config.FEED_FETCH_DEFAULT_INTERVAL)
-                                            - 15))
+
+                countdown = randrange((self.fetch_interval or
+                                      config.FEED_FETCH_DEFAULT_INTERVAL) - 15)
+
+                self.refresh.apply_async((), countdown=countdown)
+
+                LOGGER.info(u'Programmed %srefresh of feed %s in %s.',
+                            u'randomized ' if config.FEED_FETCH_DEFAULT_INTERVAL
+                            else u'', self, naturaldelta(countdown))
 
             else:
                 self.refresh.delay()
+                LOGGER.info(u'Launched refresh task of feed '
+                            u'%s in the background.', self)
 
     def build_refresh_kwargs(self):
 
@@ -853,8 +861,8 @@ class Article(Document):
 
             return new_article, True
 
-    @celery_task_method(name='Article.fetch_content', queue='medium',
-                        default_retry_delay=3600, soft_time_limit=90)
+    @celery_task_method(name='Article.fetch_content', queue='low',
+                        default_retry_delay=3600, soft_time_limit=120)
     def fetch_content(self, force=False, commit=True):
 
         if self.content_type in CONTENT_TYPES_FINAL and not force:
