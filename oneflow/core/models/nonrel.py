@@ -327,6 +327,14 @@ class Feed(Document):
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
+    def safe_reload(self):
+        """ Because it fails if no object present. """
+
+        try:
+            self.reload()
+        except:
+            pass
+
     # Doesn't seem to work, because Grappelli doesn't pick up Mongo classes.
     #
     # @staticmethod
@@ -375,6 +383,8 @@ class Feed(Document):
 
         if commit:
             self.save()
+
+        self.safe_reload()
 
     def get_articles(self, limit=None):
 
@@ -671,6 +681,10 @@ class Feed(Document):
                 refresh interval, this would waste resources.
         """
 
+        # In tasks, doing this is often useful, if
+        # the task waited a long time before running.
+        self.safe_reload()
+
         if self.refresh_must_abort(force=force):
             return
 
@@ -874,6 +888,14 @@ class Article(Document):
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
 
+    def safe_reload(self):
+        """ Because it fails if no object present. """
+
+        try:
+            self.reload()
+        except:
+            pass
+
     def validate(self, *args, **kwargs):
         try:
             super(Article, self).validate(*args, **kwargs)
@@ -961,6 +983,10 @@ class Article(Document):
     @celery_task_method(name='Article.fetch_content', queue='low',
                         default_retry_delay=3600, soft_time_limit=120)
     def fetch_content(self, force=False, commit=True):
+
+        # In tasks, doing this is often useful, if
+        # the task waited a long time before running.
+        self.safe_reload()
 
         if self.content_type in CONTENT_TYPES_FINAL and not force:
             LOGGER.warning(u'Article %s has already been fetched.', self)
