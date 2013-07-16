@@ -197,7 +197,9 @@ class FeedAdmin(admin.DocumentAdmin):
     list_display_links = ('id', 'name', )
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
     search_fields = ('id', 'name', 'url', 'site_url', 'closed', )
-    ordering = ('-last_fetch', )
+
+    # Setting this makes the whole thing unsortable…
+    #ordering = ('-last_fetch', )
 
     # The following fields don't work with mongoadmin.
     #
