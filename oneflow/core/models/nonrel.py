@@ -698,10 +698,12 @@ class Feed(Document):
         parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
         if self.has_feedparser_error(parsed_feed):
-            self.error(parsed_feed.get('bozo_exception', None)
-                       or u'Generic feedparser error (no exception '
-                       u'supplied)')
-            return
+            error = parsed_feed.get('bozo_exception', None)
+
+            # Charset declaration problems are harmless (until they are not).
+            if error and not str(error).startswith('document declared as'):
+                self.error(error)
+                return
 
         # In case of a redirection, just check the last hop HTTP status.
         try:
