@@ -429,19 +429,22 @@ class Feed(Document):
                 # Convert to unicode before saving,
                 # else the article won't validate.
                 feedparser_original_data=unicode(article))
+
         except:
-            # NOTE: the feed refresh will be launched
-            # again by the global scheduled class.
-            LOGGER.exception(u'Article creation from feed %s failed.', self)
+            # NOTE: duplication handling is already
+            # taken care of in Article.create_article().
+            LOGGER.exception(u'Article creation failed in feed %s.', self)
             return False
 
         if created:
-            # If the article was not created, reads creation are likely
-            # to fail too. Don't display warnings, they are quite boring.
-            new_article.create_reads(subscribers, tags, verbose=created)
-
             self.recent_articles_count += 1
             self.all_articles_count += 1
+
+        # Even if the article wasn't created, we need to create reads.
+        # In the case of "global" and "sub" feeds, the article will be
+        # fetched only once, but all subscribers of all feeds must be
+        # connected to it, to be able to read it.
+        new_article.create_reads(subscribers, tags, verbose=created)
 
         # Update the "latest date" kind-of-cache.
         if date_published and \
