@@ -139,6 +139,18 @@ class FeedStatsCounter(RedisStatsCounter):
         return RedisStatsCounter._int_incr_key(
             self.key_base + ':dupes', increment)
 
+    def incr_mutualized(self):
+
+        if self.key_base != global_feed_stats.key_base:
+            global_feed_stats.incr_mutualized()
+
+        return self.mutualized(increment=True)
+
+    def mutualized(self, increment=False):
+
+        return RedisStatsCounter._int_incr_key(
+            self.key_base + ':mutual', increment)
+
 # This one will keep track of all counters, globally, for all feeds.
 global_feed_stats = FeedStatsCounter()
 
@@ -216,7 +228,7 @@ class Feed(Document):
     last_modified  = StringField(verbose_name=_(u'modified'))
 
     mail_warned    = ListField(StringField())
-
+    errors         = ListField(StringField())
     options        = ListField(IntField())
 
     # ••••••••••••••••••••••••••••••• properties, cached descriptors & updaters
@@ -315,6 +327,14 @@ class Feed(Document):
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
+    def safe_reload(self):
+        """ Because it fails if no object present. """
+
+        try:
+            self.reload()
+        except:
+            pass
+
     # Doesn't seem to work, because Grappelli doesn't pick up Mongo classes.
     #
     # @staticmethod
@@ -364,6 +384,8 @@ class Feed(Document):
         if commit:
             self.save()
 
+        self.safe_reload()
+
     def get_articles(self, limit=None):
 
         if limit:
@@ -390,13 +412,37 @@ class Feed(Document):
                 self.site_url = None
                 self.close(commit=False)
 
-            if e.errors.get('url', None) is not None:
-                if self.closed:
-                    # we are closing, forget about it.
-                    e.errors.pop('url', None)
+            url_error = e.errors.pop('url', None)
+
+            if url_error is not None:
+                if not self.closed:
+                    self.close(str(url_error), commit=False)
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
+
+    def error(self, message):
+        """ Take note of an error, close the feed and return ``True`` if a
+            maximum is reached, else ``False``. """
+
+        LOGGER.error(u'Error encountered on feed %s: %s.', self, message)
+
+        # Put the errors more recent first.
+        self.errors.insert(0, u'%s @@%s' % (message, now().isoformat()))
+
+        if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
+            self.close(u'Too many errors on the feed. Last was: %s'
+                       % self.errors[0], commit=False)
+
+            LOGGER.critical(u'Too many errors on feed %s, closed.', self)
+
+            # Keep only the most recent errors.
+            self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
+            self.save()
+            return True
+
+        self.save()
+        return False
 
     def create_article_and_reads(self, article, subscribers, tags):
         """ Take a feedparser item and lists of Feed subscribers and
@@ -433,7 +479,7 @@ class Feed(Document):
                 title=getattr(article, 'title', u' '),
                 content=content,
                 date_published=date_published,
-                feed=self,
+                feeds=[self],
 
                 # Convert to unicode before saving,
                 # else the article won't validate.
@@ -445,7 +491,9 @@ class Feed(Document):
             LOGGER.exception(u'Article creation failed in feed %s.', self)
             return False
 
-        if created:
+        mutualized = not created and self in new_article.feeds
+
+        if created or mutualized:
             self.recent_articles_count += 1
             self.all_articles_count += 1
 
@@ -455,12 +503,12 @@ class Feed(Document):
             self.latest_article_date_published = date_published
 
         # Even if the article wasn't created, we need to create reads.
-        # In the case of "global" and "sub" feeds, the article will be
-        # fetched only once, but all subscribers of all feeds must be
-        # connected to it, to be able to read it.
+        # In the case of a mutualized article, it will be fetched only
+        # once, but all subscribers of all feeds must be connected to
+        # it to be able to read it.
         new_article.create_reads(subscribers, tags, verbose=created)
 
-        return created
+        return created or None if mutualized else False
 
     def check_refresher(self):
 
@@ -483,8 +531,7 @@ class Feed(Document):
 
             if config.FEED_REFRESH_RANDOMIZE:
 
-                countdown = randrange((self.fetch_interval or
-                                      config.FEED_FETCH_DEFAULT_INTERVAL) - 15)
+                countdown = randrange(self.fetch_interval / 10)
 
                 self.refresh.apply_async((), countdown=countdown)
 
@@ -625,7 +672,7 @@ class Feed(Document):
         else:
             # no duplicates (feed uses etag/last_mod) but no new articles.
             # lower a little the speed ?
-            interval *= 1.25
+            interval *= 1.125
 
         return interval
 
@@ -638,6 +685,10 @@ class Feed(Document):
                 refresh interval, this would waste resources.
         """
 
+        # In tasks, doing this is often useful, if
+        # the task waited a long time before running.
+        self.safe_reload()
+
         if self.refresh_must_abort(force=force):
             return
 
@@ -647,6 +698,9 @@ class Feed(Document):
         parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
         if self.has_feedparser_error(parsed_feed):
+            self.error(parsed_feed.get('bozo_exception', None)
+                       or u'Generic feedparser error (no exception '
+                       u'supplied)')
             return
 
         # In case of a redirection, just check the last hop HTTP status.
@@ -674,13 +728,18 @@ class Feed(Document):
             duplicates    = 0
 
             for article in parsed_feed.entries:
-                if self.create_article_and_reads(article,
-                                                 subscribers, tags):
+                created = self.create_article_and_reads(article, subscribers,
+                                                        tags)
+                if created:
                     fetch_counter.incr_fetched()
                     new_articles += 1
-                else:
+
+                elif created is False:
                     fetch_counter.incr_dupes()
                     duplicates += 1
+
+                else:
+                    fetch_counter.incr_mutualized()
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
@@ -812,13 +871,34 @@ class Article(Document):
 
     # The feed from which we got this article from. Can be ``None`` if the
     # user snapped an article directly from a standalone web page in browser.
+    # TODO: remove this in favor of `.feeds`.
     feed = ReferenceField('Feed')
+
+    feeds = ListField(ReferenceField('Feed'))
+
+    #
+    # TODO: activate this on feed > feeds migration
+    # @property
+    # def feed(self):
+    #     """ return the first available feed. """
+    #     try:
+    #         return self.feeds[0]
+    #     except IndexError:
+    #         return None
 
     # Avoid displaying duplicates to the user.
     duplicates = ListField(ReferenceField('Article'))
 
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
+
+    def safe_reload(self):
+        """ Because it fails if no object present. """
+
+        try:
+            self.reload()
+        except:
+            pass
 
     def validate(self, *args, **kwargs):
         try:
@@ -859,7 +939,7 @@ class Article(Document):
                 LOGGER.exception(u'Could not save read %s!', new_read)
 
     @classmethod
-    def create_article(cls, title, url, feed, **kwargs):
+    def create_article(cls, title, url, feeds, **kwargs):
 
         if url is None:
             reset_url = True
@@ -869,16 +949,20 @@ class Article(Document):
         else:
             reset_url = False
 
-        new_article = cls(title=title, url=url, feed=feed)
+        new_article = cls(title=title, url=url)
 
         try:
             new_article.save()
 
         except (DuplicateKeyError, NotUniqueError):
-            LOGGER.warning(u'Duplicate article “%s” (url: %s) from feed “%s”!',
-                           title, url, feed.name)
+            LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
+                           title, url, u', '.join(unicode(f) for f in feeds))
 
-            return cls.objects.get(url=url), False
+            new_article = cls.objects.get(url=url)
+            new_article.update(add_to_set__feeds=feeds)
+            new_article.reload()
+
+            return new_article, False
 
         else:
             if kwargs:
@@ -893,14 +977,22 @@ class Article(Document):
                 new_article.orphaned = True
                 new_article.save()
 
-            LOGGER.info(u'Created %sarticle %s in feed %s.', u'orphaned '
-                        if reset_url else u'', new_article, feed)
+            new_article.update(add_to_set__feeds=feeds)
+            new_article.reload()
+
+            LOGGER.info(u'Created %sarticle %s in feed(s) %s.', u'orphaned '
+                        if reset_url else u'', new_article,
+                        u', '.join(unicode(f) for f in feeds))
 
             return new_article, True
 
     @celery_task_method(name='Article.fetch_content', queue='low',
                         default_retry_delay=3600, soft_time_limit=120)
     def fetch_content(self, force=False, commit=True):
+
+        # In tasks, doing this is often useful, if
+        # the task waited a long time before running.
+        self.safe_reload()
 
         if self.content_type in CONTENT_TYPES_FINAL and not force:
             LOGGER.warning(u'Article %s has already been fetched.', self)
@@ -1003,12 +1095,22 @@ class Article(Document):
 
     def needs_ghost_preparser(self):
 
-        return config.FEED_FETCH_GHOST_ENABLED and \
-            self.feed.has_option(CONTENT_PREPARSING_NEEDS_GHOST)
+        try:
+            return config.FEED_FETCH_GHOST_ENABLED and \
+                self.feed.has_option(CONTENT_PREPARSING_NEEDS_GHOST)
+
+        except AttributeError:
+            # self.feed can be None…
+            return False
 
     def likely_multipage_content(self):
 
-        return self.feed.has_option(CONTENT_FETCH_LIKELY_MULTIPAGE)
+        try:
+            return self.feed.has_option(CONTENT_FETCH_LIKELY_MULTIPAGE)
+
+        except AttributeError:
+            # self.feed can be None…
+            return False
 
     def get_next_page_link(self, from_content):
         """ Try to find a “next page” link in the partial content given as
@@ -1325,6 +1427,7 @@ class SnapPreference(Document):
 
 class NotificationPreference(Document):
     """ Email and other web notifications preferences. """
+    pass
 
 
 class Preference(Document):

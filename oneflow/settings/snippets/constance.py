@@ -25,6 +25,10 @@ CONSTANCE_CONFIG = {
                                  u'not. Disabled by default, make OSX Python '
                                  u'crash.')),
 
+    'FEED_FETCH_MAX_ERRORS': (30, ugettext(u'The maximum number of errors '
+                              u'a feed can meet before beiing automatically '
+                              u'closed.')),
+
     'FEED_FETCH_DEFAULT_INTERVAL': (3600, ugettext(u'Default feed fetch '
                                     u'interval in seconds. You can tune the '
                                     u'interval for each feed after creation.')),

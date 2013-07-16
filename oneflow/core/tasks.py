@@ -124,7 +124,7 @@ def create_article_and_read(article_url,
     try:
         Article.objects(url=article_url).update_one(
             set__url=article_url, set__title=article_title,
-            set__feed=feed, set__content=article_content,
+            add_to_set__feeds=feed, set__content=article_content,
             set__date_published=None
                 if article_time is None
                 else ftstamp(article_time),
@@ -582,10 +582,10 @@ def refresh_all_feeds(limit=None):
         LOGGER.info(u'refresh_all_feeds() is already locked, aborting.')
         return
 
+    feeds = Feed.objects.filter(closed__ne=True)
+
     if limit:
-        feeds = Feed.objects.filter(closed__ne=True).limit(limit)
-    else:
-        feeds = Feed.objects.filter(closed__ne=True)
+        feeds = feeds.limit(limit)
 
     # No need for caching and cluttering CPU/memory for a one-shot thing.
     feeds.no_cache()
