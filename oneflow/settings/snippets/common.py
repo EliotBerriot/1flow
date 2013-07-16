@@ -32,7 +32,8 @@ MANAGERS = ADMINS
 
 from oneflow import VERSION
 
-GRAPPELLI_ADMIN_TITLE = '1flow v%s administration' % VERSION
+GRAPPELLI_ADMIN_TITLE = u'1flow v%s administration%s' % (VERSION, u' — DEVEL'
+                                                         if DEBUG else u'')
 MONGOADMIN_OVERRIDE_ADMIN = True
 
 ALLOWED_HOSTS = []
