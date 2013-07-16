@@ -582,10 +582,10 @@ def refresh_all_feeds(limit=None):
         LOGGER.info(u'refresh_all_feeds() is already locked, aborting.')
         return
 
+    feeds = Feed.objects.filter(closed__ne=True)
+
     if limit:
-        feeds = Feed.objects.filter(closed__ne=True).limit(limit)
-    else:
-        feeds = Feed.objects.filter(closed__ne=True)
+        feeds = feeds.limit(limit)
 
     # No need for caching and cluttering CPU/memory for a one-shot thing.
     feeds.no_cache()
