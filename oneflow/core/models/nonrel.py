@@ -953,10 +953,11 @@ class Article(Document):
             LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
                            title, url, u', '.join(unicode(f) for f in feeds))
 
+            new_article = cls.objects.get(url=url)
             new_article.update(add_to_set__feeds=feeds)
             new_article.reload()
 
-            return cls.objects.get(url=url), False
+            return new_article, False
 
         else:
             if kwargs:
