@@ -1089,12 +1089,22 @@ class Article(Document):
 
     def needs_ghost_preparser(self):
 
-        return config.FEED_FETCH_GHOST_ENABLED and \
-            self.feed.has_option(CONTENT_PREPARSING_NEEDS_GHOST)
+        try:
+            return config.FEED_FETCH_GHOST_ENABLED and \
+                self.feed.has_option(CONTENT_PREPARSING_NEEDS_GHOST)
+
+        except AttributeError:
+            # self.feed can be None…
+            return False
 
     def likely_multipage_content(self):
 
-        return self.feed.has_option(CONTENT_FETCH_LIKELY_MULTIPAGE)
+        try:
+            return self.feed.has_option(CONTENT_FETCH_LIKELY_MULTIPAGE)
+
+        except AttributeError:
+            # self.feed can be None…
+            return False
 
     def get_next_page_link(self, from_content):
         """ Try to find a “next page” link in the partial content given as
