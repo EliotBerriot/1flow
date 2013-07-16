@@ -526,8 +526,7 @@ class Feed(Document):
 
             if config.FEED_REFRESH_RANDOMIZE:
 
-                countdown = randrange((self.fetch_interval or
-                                      config.FEED_FETCH_DEFAULT_INTERVAL) - 15)
+                countdown = randrange(self.fetch_interval / 10)
 
                 self.refresh.apply_async((), countdown=countdown)
 
