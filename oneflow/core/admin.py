@@ -185,7 +185,7 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 class FeedAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name_display', 'url_display',
+    list_display = ('id', 'name', 'url_display',
                     'restricted_display',
                     'closed_display', 'fetch_interval_display',
                     'last_fetch_display',
@@ -194,17 +194,38 @@ class FeedAdmin(admin.DocumentAdmin):
                     'all_articles_count_display',
                     'subscriptions_count_display', )
 
+    list_display_links = ('id', 'name', )
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
-
-    search_fields = ('name', 'closed', 'id',)
+    search_fields = ('id', 'name', 'url', 'site_url', 'closed', )
+    ordering = ('-last_fetch', )
 
     # The following fields don't work with mongoadmin.
     #
-    #list_display_links = ('id', , )
-    #ordering = ('name', )
+    #list_filter = ('closed', 'last_fetch', 'recent_articles__count', )
     #date_hierarchy = 'date_added'
     #change_list_template = "admin/change_list_filter_sidebar.html"
-    #change_list_filter_template = "admin/filter_listing.html"
+    change_list_filter_template = "admin/filter_listing.html"
+
+    # def name_display(self, obj):
+
+    #     return u'<a href="{0}" target="_blank" {2}>{1}</a>'.format(
+    #         obj.site_url, obj.name, u'style="text-decoration: line-through;"'
+    #         if obj.closed else '')
+
+    # name_display.short_description = _(u'Feed name')
+    # name_display.allow_tags = True
+    # name_display.admin_order_field = 'name'
+
+    def url_display(self, obj):
+
+        return (u'<a href="{0}" target="_blank" {2}>RSS</a> '
+                u'<a href="{1}" target="_blank" {1}>www</a>'.format(
+                obj.url, obj.site_url, u'style="text-decoration: line-through;"'
+                if obj.closed else ''))
+
+    url_display.short_description = _(u'URLs')
+    url_display.allow_tags = True
+    url_display.admin_order_field = 'url'
 
     def restricted_display(self, obj):
 
@@ -289,26 +310,6 @@ class FeedAdmin(admin.DocumentAdmin):
     closed_display.short_description = _(u'Closed?')
     closed_display.allow_tags = True
     closed_display.admin_order_field = 'closed'
-
-    def name_display(self, obj):
-
-        return u'<a href="{0}" target="_blank" {2}>{1}</a>'.format(
-            obj.site_url, obj.name, u'style="text-decoration: line-through;"'
-            if obj.closed else '')
-
-    name_display.short_description = _(u'Feed name')
-    name_display.allow_tags = True
-    name_display.admin_order_field = 'name'
-
-    def url_display(self, obj):
-
-        return u'<a href="{0}" target="_blank" {1}>RSS/Atom</a>'.format(
-            obj.url, u'style="text-decoration: line-through;"'
-            if obj.closed else '')
-
-    url_display.short_description = _(u'Feed URL')
-    url_display.allow_tags = True
-    url_display.admin_order_field = 'url'
 
 
 admin.site.register(Feed, FeedAdmin)
