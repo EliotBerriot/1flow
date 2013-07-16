@@ -420,7 +420,9 @@ class Feed(Document):
         try:
             new_article, created = Article.create_article(
                 url=article.link,
-                title=article.title,
+                # We *NEED* a title, but as we have no article.lang yet,
+                # it must be language independant as much as possible.
+                title=getattr(article, 'title', u' '),
                 content=content,
                 date_published=date_published,
                 feed=self,
