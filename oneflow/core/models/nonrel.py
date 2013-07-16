@@ -312,6 +312,12 @@ class Feed(Document):
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
+    # Doesn't seem to work, because Grappelli doesn't pick up Mongo classes.
+    #
+    # @staticmethod
+    # def autocomplete_search_fields():
+    #     return ('name__icontains', 'url__icontains', 'site_url__icontains', )
+
     def __unicode__(self):
         return _(u'%s (#%s)') % (self.name, self.id)
 
