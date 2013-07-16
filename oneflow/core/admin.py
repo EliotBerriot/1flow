@@ -196,7 +196,7 @@ class FeedAdmin(admin.DocumentAdmin):
 
     list_display_links = ('id', 'name', )
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
-    search_fields = ('id', 'name', 'url', 'site_url', 'closed', )
+    search_fields = ('name', 'url', 'site_url', 'closed', )
 
     # Setting this makes the whole thing unsortable…
     #ordering = ('-last_fetch', )
