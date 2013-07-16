@@ -426,17 +426,21 @@ class Feed(Document):
 
         LOGGER.error(u'Error encountered on feed %s: %s.', self, message)
 
-        self.errors.append(u'%s: %s' % (now().isoformat(), message))
+        # Put the errors more recent first.
+        self.errors.insert(0, u'%s: %s' % (now().isoformat(), message))
 
         if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
             self.close(u'Too many errors on the feed. Last was: %s'
-                       % self.errors[-1], commit=False)
+                       % self.errors[0], commit=False)
 
             LOGGER.critical(u'Too many errors on feed %s, closed.', self)
 
+            # Keep only the most recent errors.
             self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
+            self.save()
             return True
 
+        self.save()
         return False
 
     def create_article_and_reads(self, article, subscribers, tags):
