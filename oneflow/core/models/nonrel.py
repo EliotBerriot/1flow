@@ -419,7 +419,15 @@ class Feed(Document):
 
         try:
             new_article, created = Article.create_article(
-                url=getattr(article, 'link', None),
+                # Sometimes feedparser gives us URLs with spaces in them.
+                # Using the full `urlquote()` on an already url-quoted URL
+                # could be very destructive, thus we patch only this case.
+                #
+                # If there is no `.link`, we get '' to be able to `replace()`,
+                # but in fine `None` is a more regular "no value" mean. Sorry
+                # for the weird '' or None that just does the job.
+                url=getattr(article, 'link', '').replace(' ', '%20') or None,
+
                 # We *NEED* a title, but as we have no article.lang yet,
                 # it must be language independant as much as possible.
                 title=getattr(article, 'title', u' '),
@@ -853,7 +861,8 @@ class Article(Document):
                 new_article.save()
 
             if reset_url:
-                new_article.url = ARTICLE_ORPHANED_BASE + new_article.id
+                new_article.url = \
+                    ARTICLE_ORPHANED_BASE + unicode(new_article.id)
                 new_article.orphaned = True
                 new_article.save()
 
