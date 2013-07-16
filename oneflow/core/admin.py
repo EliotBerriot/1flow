@@ -185,7 +185,7 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 class FeedAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name', 'url_display',
+    list_display = ('id', 'name', 'errors_display', 'url_display',
                     'restricted_display',
                     'closed_display', 'fetch_interval_display',
                     'last_fetch_display',
@@ -228,6 +228,21 @@ class FeedAdmin(admin.DocumentAdmin):
     url_display.short_description = _(u'URLs')
     url_display.allow_tags = True
     url_display.admin_order_field = 'url'
+
+    def errors_display(self, obj):
+
+        if obj.closed:
+            return u'—'
+
+        if obj.errors:
+            return _(u'<span title="Last 3 errors:\n{0}">{1}</span>').format(
+                    '\n'.join(obj.errors[:3]), len(obj.errors))
+
+        return u'—'
+
+    errors_display.short_description = _(u'Errors')
+    errors_display.allow_tags = True
+    errors_display.admin_order_field = 'url'
 
     def restricted_display(self, obj):
 
@@ -304,10 +319,13 @@ class FeedAdmin(admin.DocumentAdmin):
 
     def closed_display(self, obj):
 
-        return u'<a href="{0}">{1}</a>'.format(
+        return u'<a title="{2}" href="{0}">{1}</a>'.format(
                     reverse('feed_closed_toggle',
                             kwargs={'feed_id': obj.id}), _(u'reopen')
-                            if obj.closed else _(u'close'))
+                            if obj.closed else _(u'close'),
+                            u'Closed on {0} because of: {1}'.format(
+                            obj.date_closed, obj.closed_reason) if obj.closed
+                            else _(u'The feed is open'))
 
     closed_display.short_description = _(u'Closed?')
     closed_display.allow_tags = True
