@@ -853,7 +853,8 @@ class Article(Document):
                 new_article.save()
 
             if reset_url:
-                new_article.url = ARTICLE_ORPHANED_BASE + new_article.id
+                new_article.url = \
+                    ARTICLE_ORPHANED_BASE + unicode(new_article.id)
                 new_article.orphaned = True
                 new_article.save()
 
