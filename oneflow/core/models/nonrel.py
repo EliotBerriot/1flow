@@ -574,7 +574,8 @@ class Feed(Document):
         #
         pass
 
-    def __throttle_fetch_interval(self, new_articles, duplicates):
+    @staticmethod
+    def throttle_fetch_interval(interval, news, duplicates, etag, modified):
         """ Try to adapt dynamically the fetch interval, to fetch more feeds
             that produce a lot of entries, and less the ones that do not.
 
@@ -585,35 +586,48 @@ class Feed(Document):
 
             Feeds producing nothing and that do not implement etags/modified
             should suffer a lot and burn in hell like sheeps.
+
+            This is a static method to allow better testing from outside the
+            class.
         """
 
-        old_interval = self.fetch_interval
-
         if duplicates:
-            if new_articles:
-                self.fetch_interval *= 1.25
+            # If there are duplicates, either the feed doesn't use
+            # etag/last_mod [correctly], either its a master/subfeed
+            # for which articles have already been fetched by a peer.
+
+            if etag or modified:
+                if news:
+                    interval *= 1.125
+
+                else:
+                    interval *= 1.25
+            else:
+                if news:
+                    interval *= 1.25
+
+                else:
+                    interval *= 1.5
+
+            if interval > min(604800, config.FEED_FETCH_MAX_INTERVAL):
+                interval = config.FEED_FETCH_MAX_INTERVAL
+
+        elif news:
+            if news > min(5, config.FEED_FETCH_RAISE_THRESHOLD):
+                interval /= 1.5
 
             else:
-                self.fetch_interval *= 1.5
+                interval /= 1.25
 
-            if self.fetch_interval > min(604800,
-                                         config.FEED_FETCH_MAX_INTERVAL):
-                self.fetch_interval = config.FEED_FETCH_MAX_INTERVAL
+            if interval < max(60, config.FEED_FETCH_MIN_INTERVAL):
+                interval = config.FEED_FETCH_MIN_INTERVAL
 
-        elif new_articles:
-            if new_articles > min(5, config.FEED_FETCH_RAISE_THRESHOLD):
-                self.fetch_interval /= 1.5
+        else:
+            # no duplicates (feed uses etag/last_mod) but no new articles.
+            # lower a little the speed ?
+            interval *= 1.25
 
-            else:
-                self.fetch_interval /= 1.25
-
-            if self.fetch_interval < max(60, config.FEED_FETCH_MIN_INTERVAL):
-                self.fetch_interval = config.FEED_FETCH_MIN_INTERVAL
-
-        if self.fetch_interval != old_interval:
-            LOGGER.info(u'Fetch interval changed from %s to %s for feed %s '
-                        u'(%s new article(s), %s duplicate(s)).', old_interval,
-                        self.fetch_interval, self, new_articles, duplicates)
+        return interval
 
     @celery_task_method(name='Feed.refresh', queue='medium')
     def refresh(self, force=False):
@@ -668,19 +682,32 @@ class Feed(Document):
                     fetch_counter.incr_dupes()
                     duplicates += 1
 
-            if not force:
-                # forcing the refresh is most often triggered by admins
-                # and developers. It should not trigger the adaptative
-                # throttling computations, because it generates a lot
-                # of false-positive duplicates, and will.
-                self.__throttle_fetch_interval(new_articles, duplicates)
-
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
             # the loop, the retried refresh will restart on the same
             # entries without loosing anything.
             self.last_modified = getattr(parsed_feed, 'modified', None)
             self.last_etag     = getattr(parsed_feed, 'etag', None)
+
+            if not force:
+                # forcing the refresh is most often triggered by admins
+                # and developers. It should not trigger the adaptative
+                # throttling computations, because it generates a lot
+                # of false-positive duplicates, and will.
+
+                new_interval = Feed.throttle_fetch_interval(self.fetch_interval,
+                                                            new_articles,
+                                                            duplicates,
+                                                            self.last_etag,
+                                                            self.last_modified)
+
+                if new_interval != self.fetch_interval:
+                    LOGGER.info(u'Fetch interval changed from %s to %s '
+                                u'for feed %s (%s new article(s), %s '
+                                u'duplicate(s)).', self.fetch_interval,
+                                new_interval, self, new_articles, duplicates)
+
+                    self.fetch_interval = new_interval
 
             self.update_recent_articles_count.apply_async(
                 (), countdown=until_tomorrow_delta().seconds)
