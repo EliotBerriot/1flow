@@ -31,7 +31,16 @@ class UserObjectsOnlyAuthorization(Authorization):
         if user.is_staff or user.is_superuser:
             return object_list
 
-        return object_list.filter(user=user)
+        try:
+            return object_list.filter(user=user)
+
+        except:
+            # In case we are accessing the `User` model,
+            # it has no 'user' field, we need to check the ID.
+            #
+            # TODO: make this a dedicated authorisation
+            #       class for our `UserResource` class.
+            return object_list.filter(id=user.id)
 
     def read_detail(self, object_list, bundle):
         # Is the requested object owned by the user?
