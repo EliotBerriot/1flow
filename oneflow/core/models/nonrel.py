@@ -460,7 +460,9 @@ class Feed(Document):
         # connected to it, to be able to read it.
         new_article.create_reads(subscribers, tags, verbose=created)
 
-        return created
+        # False means "duplicate", None means not
+        # created and not a duplicate of *this* feed.
+        return created or False if self == new_article.feed else None
 
     def check_refresher(self):
 
@@ -674,11 +676,13 @@ class Feed(Document):
             duplicates    = 0
 
             for article in parsed_feed.entries:
-                if self.create_article_and_reads(article,
-                                                 subscribers, tags):
+                created = self.create_article_and_reads(article, subscribers,
+                                                        tags)
+                if created:
                     fetch_counter.incr_fetched()
                     new_articles += 1
-                else:
+
+                elif created is False:
                     fetch_counter.incr_dupes()
                     duplicates += 1
 
