@@ -916,7 +916,13 @@ class Article(Document):
         #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
 
         try:
-            with self.feed.fetch_limit:
+            if self.feed:
+                with self.feed.fetch_limit:
+                    self.fetch_content_text(force=force, commit=commit)
+            else:
+                #
+                # TODO: implement the fetch limit by website…
+                #
                 self.fetch_content_text(force=force, commit=commit)
 
         except (NoResourceAvailableException, AlreadyLockedException):
