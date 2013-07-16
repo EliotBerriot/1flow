@@ -124,7 +124,7 @@ def create_article_and_read(article_url,
     try:
         Article.objects(url=article_url).update_one(
             set__url=article_url, set__title=article_title,
-            set__feed=feed, set__content=article_content,
+            add_to_set__feeds=feed, set__content=article_content,
             set__date_published=None
                 if article_time is None
                 else ftstamp(article_time),

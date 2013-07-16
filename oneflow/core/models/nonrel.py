@@ -445,7 +445,7 @@ class Feed(Document):
                 title=getattr(article, 'title', u' '),
                 content=content,
                 date_published=date_published,
-                feed=self,
+                feeds=[self],
 
                 # Convert to unicode before saving,
                 # else the article won't validate.
@@ -457,7 +457,9 @@ class Feed(Document):
             LOGGER.exception(u'Article creation failed in feed %s.', self)
             return False
 
-        if created:
+        mutualized = not created and self in new_article.feeds
+
+        if created or mutualized:
             self.recent_articles_count += 1
             self.all_articles_count += 1
 
@@ -467,14 +469,12 @@ class Feed(Document):
             self.latest_article_date_published = date_published
 
         # Even if the article wasn't created, we need to create reads.
-        # In the case of "global" and "sub" feeds, the article will be
-        # fetched only once, but all subscribers of all feeds must be
-        # connected to it, to be able to read it.
+        # In the case of a mutualized article, it will be fetched only
+        # once, but all subscribers of all feeds must be connected to
+        # it to be able to read it.
         new_article.create_reads(subscribers, tags, verbose=created)
 
-        # False means "duplicate", None means not
-        # created and not a duplicate of *this* feed.
-        return created or False if self == new_article.feed else None
+        return created or None if mutualized else False
 
     def check_refresher(self):
 
@@ -831,7 +831,20 @@ class Article(Document):
 
     # The feed from which we got this article from. Can be ``None`` if the
     # user snapped an article directly from a standalone web page in browser.
+    # TODO: remove this in favor of `.feeds`.
     feed = ReferenceField('Feed')
+
+    feeds = ListField(ReferenceField('Feed'))
+
+    #
+    # TODO: activate this on feed > feeds migration
+    # @property
+    # def feed(self):
+    #     """ return the first available feed. """
+    #     try:
+    #         return self.feeds[0]
+    #     except IndexError:
+    #         return None
 
     # Avoid displaying duplicates to the user.
     duplicates = ListField(ReferenceField('Article'))
@@ -878,7 +891,7 @@ class Article(Document):
                 LOGGER.exception(u'Could not save read %s!', new_read)
 
     @classmethod
-    def create_article(cls, title, url, feed, **kwargs):
+    def create_article(cls, title, url, feeds, **kwargs):
 
         if url is None:
             reset_url = True
@@ -888,14 +901,17 @@ class Article(Document):
         else:
             reset_url = False
 
-        new_article = cls(title=title, url=url, feed=feed)
+        new_article = cls(title=title, url=url)
 
         try:
             new_article.save()
 
         except (DuplicateKeyError, NotUniqueError):
-            LOGGER.warning(u'Duplicate article “%s” (url: %s) from feed “%s”!',
-                           title, url, feed.name)
+            LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
+                           title, url, ', '.join(feeds))
+
+            new_article.update(add_to_set__feeds=feeds)
+            new_article.reload()
 
             return cls.objects.get(url=url), False
 
@@ -912,8 +928,11 @@ class Article(Document):
                 new_article.orphaned = True
                 new_article.save()
 
-            LOGGER.info(u'Created %sarticle %s in feed %s.', u'orphaned '
-                        if reset_url else u'', new_article, feed)
+            new_article.update(add_to_set__feeds=feeds)
+            new_article.reload()
+
+            LOGGER.info(u'Created %sarticle %s in feed(s) %s.', u'orphaned '
+                        if reset_url else u'', new_article, ', '.join(feeds))
 
             return new_article, True
 
@@ -1344,6 +1363,7 @@ class SnapPreference(Document):
 
 class NotificationPreference(Document):
     """ Email and other web notifications preferences. """
+    pass
 
 
 class Preference(Document):
