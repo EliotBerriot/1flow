@@ -866,7 +866,8 @@ class Article(Document):
                 new_article.orphaned = True
                 new_article.save()
 
-            LOGGER.info(u'Created article %s in feed %s.', new_article, feed)
+            LOGGER.info(u'Created %sarticle %s in feed %s.', u'orphaned '
+                        if reset_url else u'', new_article, feed)
 
             return new_article, True
 
