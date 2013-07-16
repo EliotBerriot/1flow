@@ -4,10 +4,12 @@
 import redis
 import logging
 
+from constance import config
+
 from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 
-from oneflow.core.models.nonrel import Feed, FeedStatsCounter
+from oneflow.core.models import Feed, FeedStatsCounter
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -68,3 +70,130 @@ class FeedStatsCounterTests(TestCase):
         self.assertEquals(self.t2.fetched(), 6)
 
         self.assertEquals(self.global_counter.fetched(), 3)
+
+
+class ThrottleIntervalTest(TestCase):
+
+    def test_lower_interval_with_etag_or_modified(self):
+
+        t = Feed.throttle_fetch_interval
+
+        some_news = 10
+        no_dupe   = 0
+
+        self.assertEquals(t(1000, some_news, no_dupe, 'etag', 'last_modified'),
+                          666.6666666666666)
+        self.assertEquals(t(1000, some_news, no_dupe, '', 'last_modified'),
+                          666.6666666666666)
+        self.assertEquals(t(1000, some_news, no_dupe, None, 'last_modified'),
+                          666.6666666666666)
+
+        self.assertEquals(t(1000, some_news, no_dupe, 'etag', ''),
+                          666.6666666666666)
+        self.assertEquals(t(1000, some_news, no_dupe, 'etag', None),
+                          666.6666666666666)
+
+    def test_raise_interval_with_etag_or_modified(self):
+
+        t = Feed.throttle_fetch_interval
+
+        some_news = 10
+        no_news   = 0
+        a_dupe    = 1
+
+        # news, but a dupe > raise-
+
+        self.assertEquals(t(1000, some_news, a_dupe, 'etag', 'last_modified'),
+                          1125)
+        self.assertEquals(t(1000, some_news, a_dupe, '', 'last_modified'),
+                          1125)
+        self.assertEquals(t(1000, some_news, a_dupe, None, 'last_modified'),
+                          1125)
+
+        self.assertEquals(t(1000, some_news, a_dupe, 'etag', ''),   1125)
+        self.assertEquals(t(1000, some_news, a_dupe, 'etag', None), 1125)
+
+        # no news, a dupe > raise+
+
+        self.assertEquals(t(1000, no_news, a_dupe, 'etag', 'last_modified'),
+                          1250)
+        self.assertEquals(t(1000, no_news, a_dupe, '', 'last_modified'),
+                          1250)
+        self.assertEquals(t(1000, no_news, a_dupe, None, 'last_modified'),
+                          1250)
+
+        self.assertEquals(t(1000, no_news, a_dupe, 'etag', ''),   1250)
+        self.assertEquals(t(1000, no_news, a_dupe, 'etag', None), 1250)
+
+    def test_lowering_interval_without_etag_nor_modified(self):
+
+        t = Feed.throttle_fetch_interval
+
+        some_news = 10
+        no_dupe   = 0
+
+        # news, no dupes > raise+ (etag don't count)
+
+        self.assertEquals(t(1000, some_news, no_dupe, '', ''),
+                          666.6666666666666)
+        self.assertEquals(t(1000, some_news, no_dupe, None, None),
+                          666.6666666666666)
+
+    def test_raising_interval_without_etag_nor_modified(self):
+
+        t = Feed.throttle_fetch_interval
+
+        some_news = 10
+        no_news   = 0
+        a_dupe    = 1
+
+        self.assertEquals(t(1000, some_news, a_dupe, '', ''), 1250)
+        self.assertEquals(t(1000, some_news, a_dupe, None, None), 1250)
+
+        self.assertEquals(t(1000, no_news, a_dupe, '', ''), 1500)
+        self.assertEquals(t(1000, no_news, a_dupe, None, None), 1500)
+
+    def test_less_news(self):
+
+        t = Feed.throttle_fetch_interval
+
+        more_news = config.FEED_FETCH_RAISE_THRESHOLD + 5
+        less_news = config.FEED_FETCH_RAISE_THRESHOLD - 5
+        just_one  = 1
+
+        a_dupe  = 1
+        no_dupe = 0
+
+        self.assertEquals(t(1000, just_one, a_dupe, 'etag', ''),   1125)
+        self.assertEquals(t(1000, less_news, a_dupe, 'etag', None), 1125)
+        self.assertEquals(t(1000, more_news, a_dupe, 'etag', None), 1125)
+
+        self.assertEquals(t(1000, just_one, no_dupe, 'etag', ''),   800)
+        self.assertEquals(t(1000, less_news, no_dupe, 'etag', None), 800)
+        self.assertEquals(t(1000, more_news, no_dupe, 'etag', None),
+                          666.6666666666666)
+
+    def test_limits(self):
+
+        t = Feed.throttle_fetch_interval
+
+        some_news = 10
+        no_news   = 0
+        a_dupe    = 1
+        no_dupe   = 0
+
+        # new articles already at max stay at max.
+        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news, a_dupe,
+                          '', ''), config.FEED_FETCH_MAX_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news, a_dupe,
+                          'etag', ''), config.FEED_FETCH_MAX_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news, a_dupe,
+                          None, 'last_mod'), config.FEED_FETCH_MAX_INTERVAL)
+
+        # dupes at min stays at min
+        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news, no_dupe,
+                          '', ''), config.FEED_FETCH_MIN_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news, no_dupe,
+                          'etag', None), config.FEED_FETCH_MIN_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news, no_dupe,
+                          '', 'last_mod'), config.FEED_FETCH_MIN_INTERVAL)
