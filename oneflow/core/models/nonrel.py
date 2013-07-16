@@ -625,7 +625,7 @@ class Feed(Document):
         else:
             # no duplicates (feed uses etag/last_mod) but no new articles.
             # lower a little the speed ?
-            interval *= 1.25
+            interval *= 1.125
 
         return interval
 
