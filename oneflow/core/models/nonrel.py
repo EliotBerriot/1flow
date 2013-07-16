@@ -228,7 +228,7 @@ class Feed(Document):
     last_modified  = StringField(verbose_name=_(u'modified'))
 
     mail_warned    = ListField(StringField())
-
+    errors         = ListField(StringField())
     options        = ListField(IntField())
 
     # ••••••••••••••••••••••••••••••• properties, cached descriptors & updaters
@@ -409,6 +409,25 @@ class Feed(Document):
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
+
+    def error(self, message):
+        """ Take note of an error, close the feed and return ``True`` if a
+            maximum is reached, else ``False``. """
+
+        LOGGER.error(u'Error encountered on feed %s: %s.', self, message)
+
+        self.errors.append(u'%s: %s' % (now().isoformat(), message))
+
+        if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
+            self.close(u'Too many errors on the feed. Last was: %s'
+                       % self.errors[-1], commit=False)
+
+            LOGGER.critical(u'Too many errors on feed %s, closed.', self)
+
+            self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
+            return True
+
+        return False
 
     def create_article_and_reads(self, article, subscribers, tags):
         """ Take a feedparser item and lists of Feed subscribers and
@@ -661,6 +680,9 @@ class Feed(Document):
         parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
         if self.has_feedparser_error(parsed_feed):
+            self.error(parsed_feed.get('bozo_exception', None)
+                       or u'Generic feedparser error (no exception '
+                       u'supplied)')
             return
 
         # In case of a redirection, just check the last hop HTTP status.
