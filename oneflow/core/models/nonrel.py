@@ -866,7 +866,8 @@ class Article(Document):
                 new_article.orphaned = True
                 new_article.save()
 
-            LOGGER.info(u'Created article %s in feed %s.', new_article, feed)
+            LOGGER.info(u'Created %sarticle %s in feed %s.', u'orphaned '
+                        if reset_url else u'', new_article, feed)
 
             return new_article, True
 
@@ -1180,16 +1181,16 @@ class Article(Document):
         self.slug = slugify(self.title)
         self.save()
 
-        # TODO: create short_url
-
-        # Manually randomize a little the fetching, to avoid
+        # Manually randomize a little the fetching in 5 seconds, to avoid
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
-        # as much as possible. This is not yet a full-featured solution.
-        self.fetch_content.apply_async((), countdown=randrange(5))
+        # as much as possible. This is not yet a full-featured solution,
+        # but it's completed byt the `fetch_limit` semaphore on the Feed.
+        if not self.orphaned:
+            self.fetch_content.apply_async((), countdown=randrange(5))
 
-        #self.parse_content.delay()
-        #self.parse_full_content.delay()
-
+        #
+        # TODO: create short_url
+        #
         # TODO: remove_useless_blocks, eg:
         #       <p><a href="http://addthis.com/bookmark.php?v=250">
         #       <img src="http://cache.addthis.com/cachefly/static/btn/
@@ -1206,7 +1207,8 @@ class Article(Document):
         #
         # TODO: authors_fetch
         # TODO: publishers_fetch
-        # TODO: duplicates_find
+        # TODO: duplicates_find (content wise)
+        #
 
         return
 
