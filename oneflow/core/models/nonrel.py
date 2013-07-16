@@ -37,7 +37,7 @@ from ...base.utils import (connect_mongoengine_signals,
                            HttpResponseLogProcessor, RedisStatsCounter)
 
 from ...base.utils.dateutils import (now, timedelta, until_tomorrow_delta,
-                                     today, datetime)
+                                     today, datetime, naturaldelta)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from .keyval import FeedbackDocument
 
@@ -473,13 +473,20 @@ class Feed(Document):
             my_lock.release()
 
             if config.FEED_REFRESH_RANDOMIZE:
-                self.refresh.apply_async(
-                    (), countdown=randrange((self.fetch_interval or
-                                            config.FEED_FETCH_DEFAULT_INTERVAL)
-                                            - 15))
+
+                countdown = randrange((self.fetch_interval or
+                                      config.FEED_FETCH_DEFAULT_INTERVAL) - 15)
+
+                self.refresh.apply_async((), countdown=countdown)
+
+                LOGGER.info(u'Programmed %srefresh of feed %s in %s.',
+                            u'randomized ' if config.FEED_FETCH_DEFAULT_INTERVAL
+                            else u'', self, naturaldelta(countdown))
 
             else:
                 self.refresh.delay()
+                LOGGER.info(u'Launched refresh task of feed '
+                            u'%s in the background.', self)
 
     def build_refresh_kwargs(self):
 
