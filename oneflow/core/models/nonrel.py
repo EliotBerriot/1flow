@@ -951,7 +951,7 @@ class Article(Document):
 
         except (DuplicateKeyError, NotUniqueError):
             LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
-                           title, url, ', '.join(feeds))
+                           title, url, u', '.join(unicode(f) for f in feeds))
 
             new_article.update(add_to_set__feeds=feeds)
             new_article.reload()
@@ -975,7 +975,8 @@ class Article(Document):
             new_article.reload()
 
             LOGGER.info(u'Created %sarticle %s in feed(s) %s.', u'orphaned '
-                        if reset_url else u'', new_article, ', '.join(feeds))
+                        if reset_url else u'', new_article,
+                        u', '.join(unicode(f) for f in feeds))
 
             return new_article, True
 
