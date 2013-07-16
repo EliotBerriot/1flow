@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import uuid
 import time
 import logging
 import requests
@@ -64,6 +65,8 @@ CONTENT_PREPARSING_NEEDS_GHOST = 1
 CONTENT_FETCH_LIKELY_MULTIPAGE = 2
 
 # MORE CONTENT_PREPARSING_NEEDS_* TO COME
+
+ARTICLE_ORPHANED_BASE = u'http://1flow.io/orphaned/article/'
 
 # These classes will be re-used inside every worker; we instanciate only once.
 STRAINER_EXTRACTOR = strainer.Strainer(parser='lxml', add_score=True)
@@ -413,13 +416,9 @@ class Feed(Document):
         except:
             date_published = None
 
-        #
-        # TODO: check hasattr(link) and hasattr(title), they fail sometimes.
-        #
-
         try:
             new_article, created = Article.create_article(
-                url=article.link,
+                url=getattr(article, 'link', None),
                 # We *NEED* a title, but as we have no article.lang yet,
                 # it must be language independant as much as possible.
                 title=getattr(article, 'title', u' '),
@@ -717,6 +716,11 @@ class Article(Document):
     # not yet.
     #short_url  = URLField(unique=True, verbose_name=_(u'1flow URL'))
 
+    orphaned   = BooleanField(default=False, verbose_name=_(u'Orphaned'),
+                              help_text=_(u'This article has no public URL '
+                                          u'anymore, or is unfetchable for '
+                                          u'some reason.'))
+
     word_count = IntField(verbose_name=_(u'Word count'))
 
     authors    = ListField(ReferenceField('User'))
@@ -811,6 +815,14 @@ class Article(Document):
     @classmethod
     def create_article(cls, title, url, feed, **kwargs):
 
+        if url is None:
+            reset_url = True
+            # Even for a temporary action, we need something unique…
+            url = ARTICLE_ORPHANED_BASE + uuid.uuid4().hex
+
+        else:
+            reset_url = False
+
         new_article = cls(title=title, url=url, feed=feed)
 
         try:
@@ -827,6 +839,11 @@ class Article(Document):
                 for key, value in kwargs.items():
                     setattr(new_article, key, value)
 
+                new_article.save()
+
+            if reset_url:
+                new_article.url = ARTICLE_ORPHANED_BASE + new_article.id
+                new_article.orphaned = True
                 new_article.save()
 
             LOGGER.info(u'Created article %s in feed %s.', new_article, feed)
@@ -853,6 +870,10 @@ class Article(Document):
 
         if config.ARTICLE_FETCHING_DISABLED:
             LOGGER.warning(u'Article fetching disabled in configuration.')
+            return
+
+        if self.orphaned:
+            LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
             return
 
         #
