@@ -413,6 +413,7 @@ class Feed(Document):
 
         try:
             date_published = datetime(*article.published_parsed[:6])
+
         except:
             date_published = None
 
@@ -440,16 +441,16 @@ class Feed(Document):
             self.recent_articles_count += 1
             self.all_articles_count += 1
 
+        # Update the "latest date" kind-of-cache.
+        if date_published is not None and \
+                date_published > self.latest_article_date_published:
+            self.latest_article_date_published = date_published
+
         # Even if the article wasn't created, we need to create reads.
         # In the case of "global" and "sub" feeds, the article will be
         # fetched only once, but all subscribers of all feeds must be
         # connected to it, to be able to read it.
         new_article.create_reads(subscribers, tags, verbose=created)
-
-        # Update the "latest date" kind-of-cache.
-        if date_published and \
-                date_published > self.latest_article_date_published:
-            self.latest_article_date_published = date_published
 
         return created
 
