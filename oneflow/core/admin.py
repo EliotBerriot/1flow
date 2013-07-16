@@ -1,7 +1,8 @@
 # -*- coding: utf-8 -*-
 
+import dateutil.parser
+
 from humanize.i18n import django_language
-from humanize.time import naturaldelta, naturaltime
 
 from constance import config
 
@@ -15,7 +16,7 @@ from .models.nonrel import Feed
 import mongoadmin as admin
 
 from ..base.admin import CSVAdminMixin
-from ..base.utils.dateutils import now
+from ..base.utils.dateutils import now, naturaldelta, naturaltime
 
 from .gr_import import GoogleReaderImport
 
@@ -235,14 +236,21 @@ class FeedAdmin(admin.DocumentAdmin):
             return u'—'
 
         if obj.errors:
-            return _(u'<span title="Last 3 errors:\n{0}">{1}</span>').format(
-                    '\n'.join(obj.errors[:3]), len(obj.errors))
+            last3 = [z.rsplit('@@', 1) for z in obj.errors[:3]]
+
+            with django_language():
+                return _(u'<span title="Last 3 errors:\n{0}" '
+                         u'style="cursor: pointer">'
+                         u'{1} error(s)</span>').format(u'\n'.join(
+                             _(u'%s: %s') % (naturaltime(
+                                 dateutil.parser.parse(y)), x)
+                             for x, y in last3), len(obj.errors))
 
         return u'—'
 
     errors_display.short_description = _(u'Errors')
     errors_display.allow_tags = True
-    errors_display.admin_order_field = 'url'
+    errors_display.admin_order_field = 'errors'
 
     def restricted_display(self, obj):
 
