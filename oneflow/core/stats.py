@@ -26,6 +26,8 @@ def feed_distribution_by_last_fetch():
     loop_count    = 0
     fetched_feeds = 0
     delta_lengths = (
+        timedelta(seconds=config.FEED_FETCH_DEFAULT_INTERVAL / 6),
+        timedelta(seconds=config.FEED_FETCH_DEFAULT_INTERVAL / 2),
         timedelta(seconds=config.FEED_FETCH_DEFAULT_INTERVAL),
         timedelta(seconds=config.FEED_FETCH_DEFAULT_INTERVAL * 2),
         timedelta(seconds=config.FEED_FETCH_DEFAULT_INTERVAL * 6),
