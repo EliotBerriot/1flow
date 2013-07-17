@@ -34,8 +34,10 @@ from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
                            RedisExpiringLock, AlreadyLockedException,
                            RedisSemaphore, NoResourceAvailableException,
-                           HttpResponseLogProcessor, RedisStatsCounter)
+                           HttpResponseLogProcessor, RedisStatsCounter,
+                           StopProcessingException)
 
+from ...base.utils.http import clean_url
 from ...base.utils.dateutils import (now, timedelta, until_tomorrow_delta,
                                      today, datetime, naturaldelta)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
@@ -491,11 +493,6 @@ class Feed(Document):
                 # for the weird '' or None that just does the job.
                 url=getattr(article, 'link', '').replace(' ', '%20') or None,
 
-                #
-                # TODO: absolutize() link. Eg. get the final target of:
-                # http://feedproxy.google.com/~r/francaistechcrunch/~3/hEIhLwVyEEI/
-                #
-
                 # We *NEED* a title, but as we have no article.lang yet,
                 # it must be language independant as much as possible.
                 title=getattr(article, 'title', u' '),
@@ -848,10 +845,13 @@ class Group(Document):
 
 
 class Article(Document):
-    title      = StringField(max_length=256, required=True,
-                             verbose_name=_(u'Title'))
-    slug       = StringField(max_length=256)
-    url        = URLField(unique=True, verbose_name=_(u'Public URL'))
+    title        = StringField(max_length=256, required=True,
+                               verbose_name=_(u'Title'))
+    slug         = StringField(max_length=256)
+    url          = URLField(unique=True, verbose_name=_(u'Public URL'))
+    url_absolute = BooleanField(default=False, verbose_name=_(u'Absolute URL'),
+                                help_text=_(u'The article URL has already been '
+                                            u'successfully absolutized.'))
     pages_urls = ListField(URLField(), verbose_name=_(u'Next pages URLs'),
                            help_text=_(u'In case of a multi-pages article, '
                                        u'other pages URLs will be here.'))
@@ -926,6 +926,13 @@ class Article(Document):
     # Avoid displaying duplicates to the user.
     duplicates = ListField(ReferenceField('Article'))
 
+    # Allow quick find of duplicates if we ever want to delete them.
+    is_duplicate = BooleanField(default=False, verbose_name=_(u'Duplicate'),
+                                help_text=_(u'This article is a duplicate of '
+                                            u'another, even if they have '
+                                            u'different URLs (eg. one can be '
+                                            u'short, the other not).'))
+
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
 
@@ -958,6 +965,155 @@ class Article(Document):
 
     def is_origin(self):
         return isinstance(self.source, Source)
+
+    @property
+    def reads(self):
+        return Read.objects.filter(article=self)
+
+    @celery_task_method(name='Article.absolutize_url', queue='medium',
+                        default_retry_delay=3600)
+    def absolutize_url(self, requests_response=None, force=False):
+        """ Make the current article URL absolute. Eg. transform:
+
+            http://feedproxy.google.com/~r/francaistechcrunch/~3/hEIhLwVyEEI/
+
+            into:
+
+            http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29 # NOQA
+
+            and then remove all these F*G utm_* parameters to get a clean
+            final URL for the current article.
+
+            Returns ``True`` if the operation succeeded, ``False`` if the
+            absolutization pointed out that the current article is a
+            duplicate of another. In this case the caller should stop its
+            processing because the current article will be marked for deletion.
+
+            Can also return ``None`` if absolutizing is disabled globally
+            in ``constance`` configuration.
+        """
+
+        # Another example: http://rss.lefigaro.fr/~r/lefigaro/laune/~3/7jgyrQ-PmBA/story01.htm # NOQA
+
+        if self.url_absolute and not force:
+            LOGGER.warning(u'URL of article %s is already absolute!', self)
+            return True
+
+        if config.ARTICLE_ABSOLUTIZING_DISABLED:
+            LOGGER.warning(u'Absolutizing disabled by configuration, aborting.')
+            return
+
+        if requests_response is None:
+            try:
+                requests_response = requests.get(self.url)
+
+            except requests.ConnectionError, e:
+
+                if 'Errno 104' in str(e):
+                    # Special case, we probably hit a remote parallel limit.
+                    self.feed.set_fetch_limit()
+
+                # re-raise for the caller to eventually
+                # retry() the whole operation.
+                raise
+
+            # Any other exception will raise, too. This is intentional.
+
+        if not requests_response.ok or requests_response.status_code != 200:
+            raise Exception(u'Failed to get absolute URL of "%s": %s - %s',
+                            self.url, requests_response.status,
+                            requests_response.reason)
+
+        #
+        # NOTE: we could also get it eventually from r.headers['link'],
+        #       which contains '<another_url>'. We need to strip out
+        #       the '<>', and re-absolutize this link, because in the
+        #       example it's another redirector. Also r.links is a good
+        #       candidate but in the example I used, it contains the
+        #       shortlink, which must be re-resolved too.
+        #
+        #       So: as we already are at the final address *now*, no need
+        #       bothering re-following another which would lead us to the
+        #       the same final place.
+        #
+
+        final_url = clean_url(requests_response.url)
+
+        if final_url != self.url:
+            old_url  = self.url
+
+            self.url = final_url
+            self.url_absolute = True
+
+            try:
+                self.save()
+
+            except (NotUniqueError, DuplicateKeyError):
+                original = Article.objects.get(url=final_url)
+                LOGGER.critical(u'Article %s is a duplicate of %s, '
+                                u'registering as such.', self, original)
+
+                original.register_duplicate.delay(self)
+                return False
+
+            # Any other exception will raise. This is intentional.
+            else:
+                LOGGER.info(u'Article %s (#%s) succesfully absolutized URL '
+                            u'from %s to %s.', self.title, self.id,
+                            old_url, final_url)
+
+        elif not self.url_absolute:
+            # Don't do the job twice.
+            self.url_absolute = True
+            self.save()
+
+        return True
+
+    @celery_task_method(name='Article.register_duplicate', queue='low',
+                        default_retry_delay=3600)
+    def register_duplicate(self, duplicate):
+        """ register :param:`duplicate` as a duplicate content of myself.
+
+            redirect/modify all reads and feeds links to me, keeping all
+            attributes as they are.
+        """
+
+        # The duplicate will most probably be deleted at some time.
+        duplicate.is_duplicate = True
+        duplicate.save()
+
+        self.update(add_to_set__duplicates=duplicate)
+
+        # Thus, the current article replaces it completely in the chain.
+
+        for feed in duplicate.feeds:
+            try:
+                self.update(add_to_set__feeds=feed)
+
+            except:
+                # We have to continue to replace reads,
+                # and reload() at the end of the method.
+                LOGGER.exception(u'Could not add feed %s to feeds of '
+                                 u'article %s!', feed, self)
+
+        for read in duplicate.reads:
+            read.article = self
+
+            try:
+                read.save()
+
+            except (NotUniqueError, DuplicateKeyError):
+                # Already registered, simply delete the read.
+                read.delete()
+
+            except:
+                LOGGER.exception(u'Could not replace current article in '
+                                 u'read %s by %s!', read, self)
+
+        LOGGER.info(u'Article %s has been marked as duplicate of %s and '
+                    u'can now be deleted if wanted.', duplicate, self)
+
+        self.reload()
 
     def create_reads(self, users, tags, verbose=True):
 
@@ -1094,6 +1250,11 @@ class Article(Document):
             self.fetch_content.apply_async((force, commit),
                                            countdown=randrange(60))
 
+        except StopProcessingException, e:
+            LOGGER.error(u'Stopping processing or article %s on behalf of '
+                         u'an internal caller: %s.', e)
+            return
+
         except requests.ConnectionError, e:
 
             if 'Errno 104' in str(e):
@@ -1168,7 +1329,13 @@ class Article(Document):
     def prepare_content_text(self, url=None):
         """ :param:`url` should be set in the case of multipage content. """
 
-        fetch_url = url or self.url
+        if url is None:
+            fetch_url = self.url
+            absolutize = True
+
+        else:
+            fetch_url = url
+            absolutize = False
 
         if self.needs_ghost_preparser():
 
@@ -1189,6 +1356,14 @@ class Article(Document):
 
         response = requests.get(fetch_url)
         encoding = detect_encoding_from_requests_response(response)
+
+        # We do this here to avoid get()ing the URL more than once
+        # and generating more traffic on the target website.
+        if absolutize:
+            if not self.absolutize_url(response):
+                raise StopProcessingException(u'absolutize() reported we '
+                                              u'are a duplicate of some '
+                                              u'other article.')
 
         return response.content, encoding
 
