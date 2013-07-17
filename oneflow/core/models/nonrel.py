@@ -625,10 +625,22 @@ class Feed(Document):
 
     def has_feedparser_error(self, parsed_feed):
 
-        return parsed_feed.get('bozo', False)
+        if parsed_feed.get('bozo', None) is None:
+            return False
 
-        #exception = parsed_feed.get('bozo_exception', None)
-        #
+        error = parsed_feed.get('bozo_exception', None)
+
+        # Charset declaration problems are harmless (until they are not).
+        if str(error).startswith('document declared as'):
+            LOGGER.warning('Feed %s: %s', self, error)
+            return False
+
+        # currently, I've encountered no error fatal to feedparser.
+        return False
+
+        # Thus, no need for this yet, but it's ready.
+        #self.error(u'feedparser error %s', str(error))
+
         # Do not close for this: it can be a temporary error.
         # if isinstance(exception, SAXParseException):
         #     self.close(reason=str(exception))
