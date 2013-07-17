@@ -996,7 +996,10 @@ class Article(Document):
                            title, url, u', '.join(unicode(f) for f in feeds))
 
             new_article = cls.objects.get(url=url)
-            new_article.update(add_to_set__feeds=feeds)
+
+            for feed in feeds:
+                new_article.update(add_to_set__feeds=feed)
+
             new_article.reload()
 
             return new_article, False
@@ -1006,15 +1009,20 @@ class Article(Document):
                 for key, value in kwargs.items():
                     setattr(new_article, key, value)
 
+                # Need to save because we will reload just after.
                 new_article.save()
 
             if reset_url:
                 new_article.url = \
                     ARTICLE_ORPHANED_BASE + unicode(new_article.id)
                 new_article.orphaned = True
+
+                # Need to save because we will reload just after.
                 new_article.save()
 
-            new_article.update(add_to_set__feeds=feeds)
+            for feed in feeds:
+                new_article.update(add_to_set__feeds=feed)
+
             new_article.reload()
 
             LOGGER.info(u'Created %sarticle %s in feed(s) %s.', u'orphaned '
