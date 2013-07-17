@@ -421,14 +421,26 @@ class Feed(Document):
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
 
-    def error(self, message):
-        """ Take note of an error, close the feed and return ``True`` if a
-            maximum is reached, else ``False``. """
+    def error(self, message, commit=True, last_fetch=False):
+        """ Take note of an error. If the maximum number of errors is reached,
+            close the feed and return ``True``; else just return ``False``.
 
-        LOGGER.error(u'Error encountered on feed %s: %s.', self, message)
+            :param last_fetch: as a commodity, set this to ``True`` if you
+                want this method to update the :attr:`last_fetch` attribute
+                with the value of ``now()`` (UTC). Default: ``False``.
+
+            :param commit: as in any other Django DB-related method, set
+                this to ``False`` if you don't want this method to call
+                ``self.save()``. Default: ``True``.
+        """
+
+        LOGGER.error(u'Error on feed %s: %s.', self, message)
 
         # Put the errors more recent first.
         self.errors.insert(0, u'%s @@%s' % (message, now().isoformat()))
+
+        if last_fetch:
+            self.last_fetch = now()
 
         if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
             self.close(u'Too many errors on the feed. Last was: %s'
@@ -438,10 +450,15 @@ class Feed(Document):
 
             # Keep only the most recent errors.
             self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
-            self.save()
+
+            if commit:
+                self.save()
+
             return True
 
-        self.save()
+        if commit:
+            self.save()
+
         return False
 
     def create_article_and_reads(self, article, subscribers, tags):
@@ -608,10 +625,22 @@ class Feed(Document):
 
     def has_feedparser_error(self, parsed_feed):
 
-        return parsed_feed.get('bozo', False)
+        if parsed_feed.get('bozo', None) is None:
+            return False
 
-        #exception = parsed_feed.get('bozo_exception', None)
-        #
+        error = parsed_feed.get('bozo_exception', None)
+
+        # Charset declaration problems are harmless (until they are not).
+        if str(error).startswith('document declared as'):
+            LOGGER.warning('Feed %s: %s', self, error)
+            return False
+
+        # currently, I've encountered no error fatal to feedparser.
+        return False
+
+        # Thus, no need for this yet, but it's ready.
+        #self.error(u'feedparser error %s', str(error))
+
         # Do not close for this: it can be a temporary error.
         # if isinstance(exception, SAXParseException):
         #     self.close(reason=str(exception))
@@ -697,32 +726,36 @@ class Feed(Document):
         feedparser_kwargs, http_logger = self.build_refresh_kwargs()
         parsed_feed = feedparser.parse(self.url, **feedparser_kwargs)
 
-        if self.has_feedparser_error(parsed_feed):
-            error = parsed_feed.get('bozo_exception', None)
-
-            # Charset declaration problems are harmless (until they are not).
-            if error and not str(error).startswith('document declared as'):
-                self.error(error)
-                return
-
         # In case of a redirection, just check the last hop HTTP status.
         try:
             feed_status = http_logger.log[-1]['status']
 
         except IndexError, e:
-            # The website could not be reached?
+            # The website could not be reached? Network
+            # unavailable? on my production server???
 
             # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
             #raise self.refresh.retry(exc=e)
+            self.error(str(e), last_fetch=True)
+            return
 
-            # NOTE: refresh will be relaunched by the global scheduled task.
-            LOGGER.exception(u'Refresh status failed for feed %s.', self)
-            return e
+        # Stop on HTTP errors before stopping on feedparser errors,
+        # because he is much more lenient in many conditions.
+        if feed_status in (400, 401, 402, 403, 404, 500, 502, 503):
+            self.error(u'HTTP error %s' % str(http_logger.log[-1]),
+                       last_fetch=True)
+            return
+
+        if self.has_feedparser_error(parsed_feed):
+            # the method will have already call self.error().
+            return
 
         refresh_start = time.time()
 
-        if feed_status != 304:
+        if feed_status == 304:
+            LOGGER.info(u'No new content in feed %s.', self)
 
+        else:
             fetch_counter = FeedStatsCounter(self)
             tags          = getattr(parsed_feed, 'tags', [])
             subscribers   = [s.user for s in self.subscriptions]
@@ -772,9 +805,6 @@ class Feed(Document):
 
             self.update_recent_articles_count.apply_async(
                 (), countdown=until_tomorrow_delta().seconds)
-
-        else:
-            LOGGER.info(u'No new content in feed %s.', self)
 
         # Avoid running too near refreshes. Even if the feed didn't include
         # new items, we will not check it again until fetch_interval is spent.
