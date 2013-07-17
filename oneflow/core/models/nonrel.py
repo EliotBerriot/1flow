@@ -491,6 +491,11 @@ class Feed(Document):
                 # for the weird '' or None that just does the job.
                 url=getattr(article, 'link', '').replace(' ', '%20') or None,
 
+                #
+                # TODO: absolutize() link. Eg. get the final target of:
+                # http://feedproxy.google.com/~r/francaistechcrunch/~3/hEIhLwVyEEI/
+                #
+
                 # We *NEED* a title, but as we have no article.lang yet,
                 # it must be language independant as much as possible.
                 title=getattr(article, 'title', u' '),
