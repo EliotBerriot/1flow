@@ -421,14 +421,26 @@ class Feed(Document):
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
 
-    def error(self, message):
-        """ Take note of an error, close the feed and return ``True`` if a
-            maximum is reached, else ``False``. """
+    def error(self, message, commit=True, last_fetch=False):
+        """ Take note of an error. If the maximum number of errors is reached,
+            close the feed and return ``True``; else just return ``False``.
 
-        LOGGER.error(u'Error encountered on feed %s: %s.', self, message)
+            :param last_fetch: as a commodity, set this to ``True`` if you
+                want this method to update the :attr:`last_fetch` attribute
+                with the value of ``now()`` (UTC). Default: ``False``.
+
+            :param commit: as in any other Django DB-related method, set
+                this to ``False`` if you don't want this method to call
+                ``self.save()``. Default: ``True``.
+        """
+
+        LOGGER.error(u'Error on feed %s: %s.', self, message)
 
         # Put the errors more recent first.
         self.errors.insert(0, u'%s @@%s' % (message, now().isoformat()))
+
+        if last_fetch:
+            self.last_fetch = now()
 
         if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
             self.close(u'Too many errors on the feed. Last was: %s'
@@ -438,10 +450,15 @@ class Feed(Document):
 
             # Keep only the most recent errors.
             self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
-            self.save()
+
+            if commit:
+                self.save()
+
             return True
 
-        self.save()
+        if commit:
+            self.save()
+
         return False
 
     def create_article_and_reads(self, article, subscribers, tags):
