@@ -600,7 +600,7 @@ class Feed(Document):
             # we do not raise .retry() because the global refresh
             # task will call us again anyway at next global check.
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
-            return
+            return True
 
         my_lock = RedisExpiringLock(self, lock_name='fetch')
 
