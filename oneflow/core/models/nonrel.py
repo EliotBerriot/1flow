@@ -48,6 +48,7 @@ from .keyval import FeedbackDocument
 LOGGER = logging.getLogger(__name__)
 
 feedparser.USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+REQUEST_BASE_HEADERS  = {'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' } # NOQA
 
 # Lower the default, we know good websites just work well.
 requests.adapters.DEFAULT_RETRIES = 1
@@ -1009,7 +1010,8 @@ class Article(Document):
 
         if requests_response is None:
             try:
-                requests_response = requests.get(self.url)
+                requests_response = requests.get(self.url,
+                                                 headers=REQUEST_BASE_HEADERS)
 
             except requests.ConnectionError, e:
 
@@ -1357,7 +1359,8 @@ class Article(Document):
             if ghost is None:
                 LOGGER.warning(u'Ghost module is not available, content of '
                                u'article %s will be incomplete.', self)
-                return requests.get(fetch_url).content
+                return requests.get(fetch_url,
+                                    headers=REQUEST_BASE_HEADERS).content
 
                 # The lock will raise an exception if it is already acquired.
                 with global_ghost_lock:
@@ -1369,7 +1372,7 @@ class Article(Document):
                     #
                     return page
 
-        response = requests.get(fetch_url)
+        response = requests.get(fetch_url, headers=REQUEST_BASE_HEADERS)
         encoding = detect_encoding_from_requests_response(response)
 
         # We do this here to avoid get()ing the URL more than once
