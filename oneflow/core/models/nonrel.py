@@ -1141,6 +1141,8 @@ class Article(Document):
 
         # Thus, the current article replaces it completely in the chain.
 
+        need_reload = False
+
         for feed in duplicate.feeds:
             try:
                 self.update(add_to_set__feeds=feed)
@@ -1150,6 +1152,11 @@ class Article(Document):
                 # and reload() at the end of the method.
                 LOGGER.exception(u'Could not add feed %s to feeds of '
                                  u'article %s!', feed, self)
+            else:
+                need_reload = True
+
+        if need_reload:
+            self.safe_reload()
 
         for read in duplicate.reads:
             read.article = self
@@ -1305,7 +1312,7 @@ class Article(Document):
 
         except StopProcessingException, e:
             LOGGER.error(u'Stopping processing or article %s on behalf of '
-                         u'an internal caller: %s.', e)
+                         u'an internal caller: %s.', self, e)
             return
 
         except requests.ConnectionError, e:
