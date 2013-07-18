@@ -923,15 +923,15 @@ class Article(Document):
     #     except IndexError:
     #         return None
 
-    # Avoid displaying duplicates to the user.
-    duplicates = ListField(ReferenceField('Article'))
-
     # Allow quick find of duplicates if we ever want to delete them.
-    is_duplicate = BooleanField(default=False, verbose_name=_(u'Duplicate'),
-                                help_text=_(u'This article is a duplicate of '
-                                            u'another, even if they have '
-                                            u'different URLs (eg. one can be '
-                                            u'short, the other not).'))
+    duplicate_of = ReferenceField('Article', verbose_name=_(u'Duplicate of'),
+                                  help_text=_(u'This article is a duplicate of '
+                                              u'another, which is referenced '
+                                              u'here. Even if they have '
+                                              u'different URLs (eg. one can be '
+                                              u'shortened, the other not), '
+                                              u'they lead to the same final '
+                                              u'destination on the web.'))
 
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
@@ -1003,6 +1003,10 @@ class Article(Document):
             LOGGER.warning(u'Absolutizing disabled by configuration, aborting.')
             return
 
+        # ALL celery task methods need to reload the instance in case
+        # we added new attributes before the object was pickled to a task.
+        self.safe_reload()
+
         if requests_response is None:
             try:
                 requests_response = requests.get(self.url)
@@ -1058,7 +1062,7 @@ class Article(Document):
 
             # Any other exception will raise. This is intentional.
             else:
-                LOGGER.info(u'Article %s (#%s) succesfully absolutized URL '
+                LOGGER.info(u'Article %s (#%s) successfully absolutized URL '
                             u'from %s to %s.', self.title, self.id,
                             old_url, final_url)
 
@@ -1071,18 +1075,31 @@ class Article(Document):
 
     @celery_task_method(name='Article.register_duplicate', queue='low',
                         default_retry_delay=3600)
-    def register_duplicate(self, duplicate):
+    def register_duplicate(self, duplicate, force=False):
         """ register :param:`duplicate` as a duplicate content of myself.
 
             redirect/modify all reads and feeds links to me, keeping all
             attributes as they are.
         """
 
-        # The duplicate will most probably be deleted at some time.
-        duplicate.is_duplicate = True
-        duplicate.save()
+        # ALL celery task methods need to reload the instance in case
+        # we added new attributes before the object was pickled to a task.
+        self.safe_reload()
+        duplicate.safe_reload()
 
-        self.update(add_to_set__duplicates=duplicate)
+        if duplicate.duplicate_of:
+            if duplicate.duplicate_of != self:
+                # This should not happen IRL.
+                LOGGER.critical(u'Article %s is already a duplicate of '
+                                u'another article, not %s. ABORTING.')
+                return
+
+        LOGGER.info(u'Registering article %s as duplicate of %s…',
+                    duplicate, self)
+
+        # The duplicate will most probably be deleted at some time.
+        duplicate.duplicate_of = self
+        duplicate.save()
 
         # Thus, the current article replaces it completely in the chain.
 
@@ -1110,10 +1127,8 @@ class Article(Document):
                 LOGGER.exception(u'Could not replace current article in '
                                  u'read %s by %s!', read, self)
 
-        LOGGER.info(u'Article %s has been marked as duplicate of %s and '
-                    u'can now be deleted if wanted.', duplicate, self)
-
-        self.reload()
+        LOGGER.info(u'Article %s successfully registered as duplicate '
+                    u'of %s and can be deleted if wanted.', duplicate, self)
 
     def create_reads(self, users, tags, verbose=True):
 
@@ -1562,7 +1577,7 @@ class Article(Document):
         #
         # TODO: authors_fetch
         # TODO: publishers_fetch
-        # TODO: duplicates_find (content wise)
+        # TODO: duplicates_find (content wise, not URL wise)
         #
 
         return
