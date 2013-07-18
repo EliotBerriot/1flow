@@ -1084,6 +1084,10 @@ class Article(Document):
 
             except (NotUniqueError, DuplicateKeyError):
                 original = Article.objects.get(url=final_url)
+
+                # Just to display the right "old" one in sentry errors and logs.
+                self.url = old_url
+
                 LOGGER.info(u'Article %s is a duplicate of %s, '
                             u'registering as such.', self, original)
 
