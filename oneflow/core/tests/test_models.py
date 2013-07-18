@@ -37,8 +37,12 @@ class FeedStatsCounterTests(TestCase):
         self.global_counter = FeedStatsCounter()
         self.t1 = FeedStatsCounter('test1')
         self.t2 = FeedStatsCounter('test2')
-        self.t3 = FeedStatsCounter(Feed.objects()[0])
-        self.t4 = FeedStatsCounter(Feed.objects()[1])
+
+        f3 = Feed(url='http://test-feed3.com').save()
+        f4 = Feed(url='http://test-feed4.com').save()
+
+        self.t3 = FeedStatsCounter(f3)
+        self.t4 = FeedStatsCounter(f4)
 
     def test_feed_stats_counters(self):
 
