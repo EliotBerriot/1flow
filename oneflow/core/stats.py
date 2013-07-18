@@ -79,7 +79,7 @@ def feed_distribution_by_last_fetch():
 
     results['meta'] = {'fetched_feeds': fetched_feeds,
                        'open_feeds_count': open_feeds_count,
-                       'duration': timedelta(pytime.time() - start_time),
+                       'duration': pytime.time() - start_time,
                        'loop_count': loop_count}
 
     return results
@@ -161,7 +161,7 @@ def article_current_numbers():
         'error2_articles_count': error2_articles.count(),
         'html_articles_count': html_articles.count(),
         'markdown_articles_count': markdown_articles.count(),
-        'meta': {'duration': timedelta(pytime.time() - start_time)}
+        'meta': {'duration': pytime.time() - start_time}
     }
 
 
