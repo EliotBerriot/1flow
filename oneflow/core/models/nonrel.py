@@ -11,6 +11,7 @@ import feedparser
 from random import randrange
 from constance import config
 
+from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
 
 from celery.contrib.methods import task as celery_task_method
@@ -971,6 +972,31 @@ class Article(Document):
     def reads(self):
         return Read.objects.filter(article=self)
 
+    def absolutize_url_post_process(self, requests_response):
+
+        url = requests_response.url
+
+        proto, remaining = url.split('://')
+        hostname_port, remaining = remaining.split('/', 1)
+
+        if 'feedportal.com' in hostname_port:
+            # Sometimes the redirect chain breaks and gives us
+            # a F*G page with links in many languages "click here
+            # to continue".
+            bsoup = BeautifulSoup(requests_response.content)
+            for anchor in bsoup.findAll('a'):
+                if u'here to continue' in anchor.text:
+                    return clean_url(anchor['href'])
+
+            # If we come here, feed portal template has probably changed.
+            # Developers should be noticed about it.
+            LOGGER.critical(u'Feedportal post-processing failed '
+                            u'for article %s!', self)
+
+        # if nothing matched before, just clean the
+        # last URL we got. Better than nothing.
+        return clean_url(requests_response.url)
+
     @celery_task_method(name='Article.absolutize_url', queue='medium',
                         default_retry_delay=3600)
     def absolutize_url(self, requests_response=None, force=False):
@@ -1043,7 +1069,7 @@ class Article(Document):
         #       the same final place.
         #
 
-        final_url = clean_url(requests_response.url)
+        final_url = self.absolutize_url_post_process(requests_response)
 
         if final_url != self.url:
             old_url  = self.url
