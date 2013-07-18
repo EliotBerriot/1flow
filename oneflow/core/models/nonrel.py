@@ -1155,7 +1155,7 @@ class Article(Document):
 
             except:
                 LOGGER.exception(u'Could not replace current article in '
-                                 u'read %s by %s!', read, self)
+                                 u'read %s by %s!' % (read, self))
 
         LOGGER.info(u'Article %s successfully registered as duplicate '
                     u'of %s and can be deleted if wanted.', duplicate, self)
