@@ -2,10 +2,15 @@
 
 import re
 
-UTM_RE = re.compile(r'[?&]?utm_[^=]+=[^&]+', re.I)
+UTM_RE  = re.compile(r'[&]?utm_[^=]+(=[^&]*)?', re.I)
+XTOR_RE = re.compile(r'[&#]?xtor(=[^&]*)?', re.I)
+LAST_RE = re.compile(r'[?&#]*$', re.I)
 
 
 def clean_url(url):
     """ Remove all ``utm_*`` ad-related stuff, and more. """
 
-    return UTM_RE.sub(u'', url).replace(u'#xtor=RSS-1', u'')
+    return LAST_RE.sub(u'',
+                       UTM_RE.sub(u'',
+                       XTOR_RE.sub(u'',
+                       url)))
