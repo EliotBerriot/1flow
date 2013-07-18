@@ -11,8 +11,7 @@ from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 #from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, FeedStatsCounter, Read
-from oneflow.core.models.nonrel import User
+from oneflow.core.models import Feed, Article, FeedStatsCounter, Read, User
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -279,9 +278,5 @@ class ArticleDuplicateTest(TestCase):
     def test_register_duplicate_not_again(self):
 
         self.article1.register_duplicate(self.article2)
-
-        # self.assertRaises(RuntimeError,
-        #                   self.article3.register_duplicate,
-        #                   self.article2)
 
         self.assertEquals(self.article2.duplicate_of, self.article1)
