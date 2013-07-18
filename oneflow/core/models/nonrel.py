@@ -587,7 +587,7 @@ class Feed(Document):
 
         return kwargs, http_logger
 
-    def refresh_must_abort(self, force=False):
+    def refresh_must_abort(self, force=False, commit=True):
         """ Returns ``True`` if one or more abort conditions is met.
             Checks the feed cache lock, the ``last_fetch`` date, etc.
         """
@@ -1259,6 +1259,10 @@ class Article(Document):
             LOGGER.warning(u'Article %s has already been fetched.', self)
             return
 
+        if config.ARTICLE_FETCHING_DISABLED:
+            LOGGER.warning(u'Article fetching disabled in configuration.')
+            return
+
         if self.content_error:
             if force:
                 self.content_error = None
@@ -1268,10 +1272,6 @@ class Article(Document):
                 LOGGER.warning(u'Article %s has a fetching error, aborting '
                                u'(%s).', self, self.content_error)
                 return
-
-        if config.ARTICLE_FETCHING_DISABLED:
-            LOGGER.warning(u'Article fetching disabled in configuration.')
-            return
 
         if self.orphaned:
             LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
