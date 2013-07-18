@@ -1084,8 +1084,8 @@ class Article(Document):
 
             except (NotUniqueError, DuplicateKeyError):
                 original = Article.objects.get(url=final_url)
-                LOGGER.critical(u'Article %s is a duplicate of %s, '
-                                u'registering as such.', self, original)
+                LOGGER.info(u'Article %s is a duplicate of %s, '
+                            u'registering as such.', self, original)
 
                 original.register_duplicate.delay(self)
                 return False
@@ -1120,8 +1120,9 @@ class Article(Document):
         if duplicate.duplicate_of:
             if duplicate.duplicate_of != self:
                 # This should not happen IRL.
-                LOGGER.critical(u'Article %s is already a duplicate of '
-                                u'another article, not %s. ABORTING.')
+                LOGGER.warning(u'Article %s is already a duplicate of '
+                               u'another article, not %s. ABORTING.',
+                               duplicate, duplicate.duplicate_of)
                 return
 
         LOGGER.info(u'Registering article %s as duplicate of %s…',
