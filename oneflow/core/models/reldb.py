@@ -7,7 +7,7 @@ from jsonfield import JSONField
 
 from django.db import models
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 
 #from django.db.models import Q
@@ -19,6 +19,8 @@ from django.utils.translation import ugettext as _
 REDIS = redis.StrictRedis(host=settings.REDIS_HOST,
                           port=settings.REDIS_PORT,
                           db=settings.REDIS_DB)
+
+DjangoUser = get_user_model()
 
 
 class ListField(models.TextField):
@@ -100,8 +102,8 @@ class Feedback(models.Model):
             return new_score
 
     def feedback_get(self, positive=None, resolve=False):
-        """ Return either one or two lists of the Users (if :param:`resolve`
-            is ``True``) or just their IDs.
+        """ Return either one or two lists of the DjangoUsers (
+            if :param:`resolve` is ``True``) or just their IDs.
 
             :param positive: a boolean indicating if you want the user who
                 provided positive or negative feedback on the current
@@ -125,8 +127,8 @@ class Feedback(models.Model):
             )
 
             if resolve:
-                return (User.objects.filter(id__in=positive_list),
-                        User.objects.filter(id__in=negative_list))
+                return (DjangoUser.objects.filter(id__in=positive_list),
+                        DjangoUser.objects.filter(id__in=negative_list))
 
             return positive_list, negative_list
 
@@ -134,7 +136,7 @@ class Feedback(models.Model):
             ids = REDIS.smembers(score_key + '+' if positive else '-')
 
             if resolve:
-                return User.objects.filter(id__in=ids)
+                return DjangoUser.objects.filter(id__in=ids)
 
             return ids
 
@@ -223,7 +225,7 @@ class Information(Feedback):
     author   = models.ForeignKey(Author)
     content  = models.TextField()
     abstract = models.TextField()
-    grows    = models.ManyToManyField(User, through='Grow')
+    grows    = models.ManyToManyField(DjangoUser, through='Grow')
     category = models.ForeignKey(Category)
 
     # TODO: add different dates… (creation, … ??)
@@ -244,12 +246,12 @@ class Grow(Feedback):
 
     # TODO: finish this model
     information = models.ForeignKey(Information)
-    user        = models.ForeignKey(User)
+    user        = models.ForeignKey(DjangoUser)
     is_public   = models.BooleanField(default=grow_default_public_status)
 
 
 class Comment(Feedback, Hierarchy):
     """ """
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(DjangoUser)
     grow = models.ForeignKey(Grow)

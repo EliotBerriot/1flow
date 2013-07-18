@@ -587,7 +587,7 @@ class Feed(Document):
 
         return kwargs, http_logger
 
-    def refresh_must_abort(self, force=False):
+    def refresh_must_abort(self, force=False, commit=True):
         """ Returns ``True`` if one or more abort conditions is met.
             Checks the feed cache lock, the ``last_fetch`` date, etc.
         """
@@ -600,7 +600,7 @@ class Feed(Document):
             # we do not raise .retry() because the global refresh
             # task will call us again anyway at next global check.
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
-            return
+            return True
 
         my_lock = RedisExpiringLock(self, lock_name='fetch')
 
@@ -856,6 +856,8 @@ class Article(Document):
     url_absolute = BooleanField(default=False, verbose_name=_(u'Absolute URL'),
                                 help_text=_(u'The article URL has already been '
                                             u'successfully absolutized.'))
+    url_error  = StringField(verbose_name=_(u'URL fetch error'),
+                             help_text=_(u'Error when absolutizing the URL'))
     pages_urls = ListField(URLField(), verbose_name=_(u'Next pages URLs'),
                            help_text=_(u'In case of a multi-pages article, '
                                        u'other pages URLs will be here.'))
@@ -974,6 +976,28 @@ class Article(Document):
     def reads(self):
         return Read.objects.filter(article=self)
 
+    def absolutize_url_must_abort(self, force=False, commit=True):
+
+        if config.ARTICLE_ABSOLUTIZING_DISABLED:
+            LOGGER.warning(u'Absolutizing disabled by configuration, aborting.')
+            return True
+
+        if self.url_absolute and not force:
+            LOGGER.warning(u'URL of article %s is already absolute!', self)
+            return True
+
+        if self.url_error:
+            if force:
+                self.url_error = None
+                if commit:
+                    self.save()
+            else:
+                LOGGER.warning(u'Article %s has an URL error, aborting '
+                               u'(%s).', self, self.url_error)
+                return True
+
+        return False
+
     def absolutize_url_post_process(self, requests_response):
 
         url = requests_response.url
@@ -1001,7 +1025,7 @@ class Article(Document):
 
     @celery_task_method(name='Article.absolutize_url', queue='medium',
                         default_retry_delay=3600)
-    def absolutize_url(self, requests_response=None, force=False):
+    def absolutize_url(self, requests_response=None, force=False, commit=True):
         """ Make the current article URL absolute. Eg. transform:
 
             http://feedproxy.google.com/~r/francaistechcrunch/~3/hEIhLwVyEEI/
@@ -1024,17 +1048,12 @@ class Article(Document):
 
         # Another example: http://rss.lefigaro.fr/~r/lefigaro/laune/~3/7jgyrQ-PmBA/story01.htm # NOQA
 
-        if self.url_absolute and not force:
-            LOGGER.warning(u'URL of article %s is already absolute!', self)
-            return True
-
-        if config.ARTICLE_ABSOLUTIZING_DISABLED:
-            LOGGER.warning(u'Absolutizing disabled by configuration, aborting.')
-            return
-
         # ALL celery task methods need to reload the instance in case
         # we added new attributes before the object was pickled to a task.
         self.safe_reload()
+
+        if self.absolutize_url_must_abort(force=force, commit=commit):
+            return
 
         if requests_response is None:
             try:
@@ -1047,16 +1066,24 @@ class Article(Document):
                     # Special case, we probably hit a remote parallel limit.
                     self.feed.set_fetch_limit()
 
-                # re-raise for the caller to eventually
-                # retry() the whole operation.
-                raise
+                self.url_error = str(e)
+                self.save()
 
-            # Any other exception will raise, too. This is intentional.
+                LOGGER.error(u'Connection failed while absolutizing URL or %s.',
+                             self)
+                return
 
         if not requests_response.ok or requests_response.status_code != 200:
-            raise Exception(u'Failed to get absolute URL of "%s": %s - %s'
-                            % (self.url, requests_response.status_code,
-                            requests_response.reason))
+
+            message = u'HTTP Error %s (%s) while resolving %s.' % (
+                requests_response.status_code, requests_response.reason,
+                requests_response.url)
+
+            self.url_error = message
+            self.save()
+
+            LOGGER.error(message)
+            return
 
         #
         # NOTE: we could also get it eventually from r.headers['link'],
@@ -1084,6 +1111,10 @@ class Article(Document):
 
             except (NotUniqueError, DuplicateKeyError):
                 original = Article.objects.get(url=final_url)
+
+                # Just to display the right "old" one in sentry errors and logs.
+                self.url = old_url
+
                 LOGGER.info(u'Article %s is a duplicate of %s, '
                             u'registering as such.', self, original)
 
@@ -1137,6 +1168,8 @@ class Article(Document):
 
         # Thus, the current article replaces it completely in the chain.
 
+        need_reload = False
+
         for feed in duplicate.feeds:
             try:
                 self.update(add_to_set__feeds=feed)
@@ -1146,6 +1179,11 @@ class Article(Document):
                 # and reload() at the end of the method.
                 LOGGER.exception(u'Could not add feed %s to feeds of '
                                  u'article %s!', feed, self)
+            else:
+                need_reload = True
+
+        if need_reload:
+            self.safe_reload()
 
         for read in duplicate.reads:
             read.article = self
@@ -1248,6 +1286,10 @@ class Article(Document):
             LOGGER.warning(u'Article %s has already been fetched.', self)
             return
 
+        if config.ARTICLE_FETCHING_DISABLED:
+            LOGGER.warning(u'Article fetching disabled in configuration.')
+            return
+
         if self.content_error:
             if force:
                 self.content_error = None
@@ -1257,10 +1299,6 @@ class Article(Document):
                 LOGGER.warning(u'Article %s has a fetching error, aborting '
                                u'(%s).', self, self.content_error)
                 return
-
-        if config.ARTICLE_FETCHING_DISABLED:
-            LOGGER.warning(u'Article fetching disabled in configuration.')
-            return
 
         if self.orphaned:
             LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
@@ -1301,7 +1339,7 @@ class Article(Document):
 
         except StopProcessingException, e:
             LOGGER.error(u'Stopping processing or article %s on behalf of '
-                         u'an internal caller: %s.', e)
+                         u'an internal caller: %s.', self, e)
             return
 
         except requests.ConnectionError, e:

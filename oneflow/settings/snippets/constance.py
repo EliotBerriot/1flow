@@ -82,7 +82,10 @@ CONSTANCE_CONFIG = {
 
     'ARTICLE_ABSOLUTIZING_DISABLED': (False, ugettext(u'Disable or not the '
                                       u'article URL absolutization. Default: '
-                                      u'enabled in normal conditions.')),
+                                      u'enabled in normal conditions (and '
+                                      u'without it we will have a lot of '
+                                      u'duplicate content that will need '
+                                      u'post-processing).')),
 
     'ARTICLE_FETCHING_DISABLED': (False, ugettext(u'Disable or not '
                                   u'global fetching operations for all '

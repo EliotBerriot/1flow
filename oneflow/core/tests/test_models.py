@@ -11,7 +11,7 @@ from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 #from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, FeedStatsCounter
+from oneflow.core.models import Feed, Article, FeedStatsCounter, Read, User
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -37,8 +37,13 @@ class FeedStatsCounterTests(TestCase):
         self.global_counter = FeedStatsCounter()
         self.t1 = FeedStatsCounter('test1')
         self.t2 = FeedStatsCounter('test2')
-        self.t3 = FeedStatsCounter(Feed.objects()[0])
-        self.t4 = FeedStatsCounter(Feed.objects()[1])
+
+        Feed.drop_collection()
+        f3 = Feed(url='http://test-feed3.com').save()
+        f4 = Feed(url='http://test-feed4.com').save()
+
+        self.t3 = FeedStatsCounter(f3)
+        self.t4 = FeedStatsCounter(f4)
 
     def test_feed_stats_counters(self):
 
@@ -218,6 +223,8 @@ class ArticleDuplicateTest(TestCase):
     def setUp(self):
 
         Article.drop_collection()
+        User.drop_collection()
+        Feed.drop_collection()
 
         self.article1 = Article(title='test1',
                                 url='http://test.com/test1').save()
@@ -226,12 +233,40 @@ class ArticleDuplicateTest(TestCase):
         self.article3 = Article(title='test3',
                                 url='http://test.com/test3').save()
 
+        #user creation
+        for u in xrange(1, 6):
+            u = User(django_user=u).save()
+            Read(user=u, article=self.article1).save()
+        for u in xrange(6, 11):
+            u = User(django_user=u).save()
+            Read(user=u, article=self.article2).save()
+
+        #Feeds creation
+
+        for f in xrange(1, 6):
+            f = Feed(url='http://test-feed%s.com' % f).save()
+            self.article1.update(add_to_set__feeds=f)
+            self.article1.reload()
+
+        for f in xrange(6, 11):
+            f = Feed(url='http://test-feed%s.com' % f).save()
+            self.article2.update(add_to_set__feeds=f)
+            self.article2.reload()
+
     def test_register_duplicate_bare(self):
 
         self.assertEquals(Article.objects(
                           duplicate_of__exists=False).count(), 3)
 
         self.article1.register_duplicate(self.article2)
+
+        self.assertEquals(self.article1.reads.count(), 10)
+
+        self.assertEquals(self.article2.reads.count(), 0)
+
+        self.assertEquals(len(self.article1.feeds), 10)
+
+        self.assertEquals(len(self.article2.feeds), 5)
 
         self.assertEquals(self.article2.duplicate_of, self.article1)
 
@@ -243,9 +278,5 @@ class ArticleDuplicateTest(TestCase):
     def test_register_duplicate_not_again(self):
 
         self.article1.register_duplicate(self.article2)
-
-        self.assertRaises(RuntimeError,
-                          self.article1.register_duplicate,
-                          self.article3)
 
         self.assertEquals(self.article2.duplicate_of, self.article1)

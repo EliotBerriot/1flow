@@ -4,15 +4,16 @@ import redis
 
 from django.db import models
 from mongoengine import EmbeddedDocument, fields
+
 from django.conf import settings
-from django.contrib.auth.models import User
-#from django.utils.translation import ugettext as _
+from django.contrib.auth import get_user_model
 
 from .fields import ListField
 
 REDIS = redis.StrictRedis(host=settings.REDIS_FEEDBACK_HOST,
                           port=settings.REDIS_FEEDBACK_PORT,
                           db=settings.REDIS_FEEDBACK_DB)
+DjangoUser = get_user_model()
 
 
 class RedisFeedbackMixin(object):
@@ -81,8 +82,8 @@ class RedisFeedbackMixin(object):
             )
 
             if resolve:
-                return (User.objects.filter(id__in=positive_list),
-                        User.objects.filter(id__in=negative_list))
+                return (DjangoUser.objects.filter(id__in=positive_list),
+                        DjangoUser.objects.filter(id__in=negative_list))
 
             return positive_list, negative_list
 
@@ -90,7 +91,7 @@ class RedisFeedbackMixin(object):
             ids = REDIS.smembers(score_key + '+' if positive else '-')
 
             if resolve:
-                return User.objects.filter(id__in=ids)
+                return DjangoUser.objects.filter(id__in=ids)
 
             return ids
 
