@@ -1066,12 +1066,12 @@ class Article(Document):
                     # Special case, we probably hit a remote parallel limit.
                     self.feed.set_fetch_limit()
 
-            self.url_error = str(e)
-            self.save()
+                self.url_error = str(e)
+                self.save()
 
-            LOGGER.error(u'Connection failed while absolutizing URL or %s.',
-                         self)
-            return
+                LOGGER.error(u'Connection failed while absolutizing URL or %s.',
+                             self)
+                return
 
         if not requests_response.ok or requests_response.status_code != 200:
 
