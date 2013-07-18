@@ -1055,8 +1055,8 @@ class Article(Document):
 
         if not requests_response.ok or requests_response.status_code != 200:
             raise Exception(u'Failed to get absolute URL of "%s": %s - %s'
-                            % self.url, requests_response.status_code,
-                            requests_response.reason)
+                            % (self.url, requests_response.status_code,
+                            requests_response.reason))
 
         #
         # NOTE: we could also get it eventually from r.headers['link'],
@@ -1119,9 +1119,12 @@ class Article(Document):
 
         if duplicate.duplicate_of:
             if duplicate.duplicate_of != self:
-                # This should not happen IRL.
+                # This can't happen IRL (demonstrated with Willian 20130718).
+                # Any "second" duplicate *will* resolve to the master via the
+                # redirect chain. It will *never* resolve to an intermediate
+                # URL in the chain.
                 LOGGER.warning(u'Article %s is already a duplicate of '
-                               u'another article, not %s. ABORTING.',
+                               u'another article, not %s. Aborting .',
                                duplicate, duplicate.duplicate_of)
                 return
 
