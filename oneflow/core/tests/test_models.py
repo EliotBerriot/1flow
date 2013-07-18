@@ -5,11 +5,13 @@ import redis
 import logging
 
 from constance import config
+from mongoengine.connection import connect, disconnect
 
 from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
+#from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, FeedStatsCounter
+from oneflow.core.models import Feed, Article, FeedStatsCounter
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -24,6 +26,9 @@ RedisStatsCounter.REDIS = TEST_REDIS
 FeedStatsCounter.REDIS  = TEST_REDIS
 
 TEST_REDIS.flushdb()
+
+disconnect()
+connect('oneflow_testsuite')
 
 
 class FeedStatsCounterTests(TestCase):
@@ -197,3 +202,50 @@ class ThrottleIntervalTest(TestCase):
                           'etag', None), config.FEED_FETCH_MIN_INTERVAL)
         self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news, no_dupe,
                           '', 'last_mod'), config.FEED_FETCH_MIN_INTERVAL)
+
+
+#
+# Doesn't work because of https://github.com/celery/celery/issues/1478
+#
+# @override_settings(STATICFILES_STORAGE=
+#                    'pipeline.storage.NonPackagingPipelineStorage',
+#                    CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+#                    CELERY_ALWAYS_EAGER=True,
+#                    BROKER_BACKEND='memory',)
+#
+class ArticleDuplicateTest(TestCase):
+
+    def setUp(self):
+
+        Article.drop_collection()
+
+        self.article1 = Article(title='test1',
+                                url='http://test.com/test1').save()
+        self.article2 = Article(title='test2',
+                                url='http://test.com/test2').save()
+        self.article3 = Article(title='test3',
+                                url='http://test.com/test3').save()
+
+    def test_register_duplicate_bare(self):
+
+        self.assertEquals(Article.objects(
+                          duplicate_of__exists=False).count(), 3)
+
+        self.article1.register_duplicate(self.article2)
+
+        self.assertEquals(self.article2.duplicate_of, self.article1)
+
+        self.assertEquals(Article.objects(
+                          duplicate_of__exists=True).count(), 1)
+        self.assertEquals(Article.objects(
+                          duplicate_of__exists=False).count(), 2)
+
+    def test_register_duplicate_not_again(self):
+
+        self.article1.register_duplicate(self.article2)
+
+        self.assertRaises(RuntimeError,
+                          self.article1.register_duplicate,
+                          self.article3)
+
+        self.assertEquals(self.article2.duplicate_of, self.article1)
