@@ -1025,7 +1025,7 @@ class Article(Document):
 
         if not requests_response.ok or requests_response.status_code != 200:
             raise Exception(u'Failed to get absolute URL of "%s": %s - %s',
-                            self.url, requests_response.status,
+                            self.url, requests_response.status_code,
                             requests_response.reason)
 
         #
