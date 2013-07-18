@@ -734,20 +734,22 @@ class Feed(Document):
         try:
             feed_status = http_logger.log[-1]['status']
 
-        except IndexError, e:
+        except IndexError:
             # The website could not be reached? Network
             # unavailable? on my production server???
 
             # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
             #raise self.refresh.retry(exc=e)
-            self.error(str(e), last_fetch=True)
+
+            self.error('Highly probable network error (http_log is empty)',
+                       last_fetch=True)
             return
 
         # Stop on HTTP errors before stopping on feedparser errors,
         # because he is much more lenient in many conditions.
         if feed_status in (400, 401, 402, 403, 404, 500, 502, 503):
-            self.error(u'HTTP error %s' % str(http_logger.log[-1]),
-                       last_fetch=True)
+            self.error(u'HTTP %s on %s' % (http_logger.log[-1]['status'],
+                       http_logger.log[-1]['url']), last_fetch=True)
             return
 
         if self.has_feedparser_error(parsed_feed):
