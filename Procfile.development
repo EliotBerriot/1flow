@@ -9,8 +9,8 @@ web: python manage.py runserver
 #web: uwsgi --http :8000 -H ${WORKON_HOME}/1flow --chdir ${HOME}/sources/1flow --wsgi-file oneflow/wsgi.py --master --processes 6
 shell: python manage.py shell_ipynb
 flower: python manage.py celery flower --logging=warning
-celery_beat: python manage.py celery beat      --loglevel=info
-worker_high: python manage.py celery worker -E --loglevel=info --queues high      --hostname high.lil.1flow.io -c 6
-worker_medium: python manage.py celery worker -E --loglevel=info --queues medium  --hostname medium.lil.1flow.io -c 4
-worker_low: python manage.py celery worker -E --loglevel=info --queues low,celery --hostname low.lil.1flow.io -c 4
+celery_beat: python manage.py celery beat        --loglevel=info
+worker_high: python manage.py celery worker -E   --loglevel=info --queues high   --hostname high.${HOSTNAME}
+worker_medium: python manage.py celery worker -E --loglevel=info --queues medium --hostname medium.${HOSTNAME}
+worker_low: python manage.py celery worker -E    --loglevel=info --queues low    --hostname low.${HOSTNAME}
 

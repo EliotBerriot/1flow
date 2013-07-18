@@ -220,6 +220,12 @@ class JsContextSerializer(ContextSerializer):
         data['user']['id'] = self.request.user.id
 
 
+class StopProcessingException(Exception):
+    """ Exception to notify a caller that it should just stop its processing
+        because for some reason it would be useless or obsolete to continue. """
+    pass
+
+
 class AlreadyLockedException(Exception):
     """ Simple Exception to notify a caller that uses RedisExpiringLock
         as a context manager that the lock could not be taken. """

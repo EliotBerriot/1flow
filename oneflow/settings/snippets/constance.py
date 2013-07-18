@@ -80,6 +80,10 @@ CONSTANCE_CONFIG = {
                                u'intermediate article versions. Default: '
                                   u'not enabled in normal conditions.')),
 
+    'ARTICLE_ABSOLUTIZING_DISABLED': (False, ugettext(u'Disable or not the '
+                                      u'article URL absolutization. Default: '
+                                      u'enabled in normal conditions.')),
+
     'ARTICLE_FETCHING_DISABLED': (False, ugettext(u'Disable or not '
                                   u'global fetching operations for all '
                                   u'content types. Default: '
