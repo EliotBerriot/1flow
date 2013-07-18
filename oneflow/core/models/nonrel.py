@@ -1451,7 +1451,7 @@ class Article(Document):
             if not self.absolutize_url(response):
                 raise StopProcessingException(u'absolutize() reported we '
                                               u'are a duplicate of some '
-                                              u'other article.')
+                                              u'other article')
 
         return response.content, encoding
 
