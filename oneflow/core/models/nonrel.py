@@ -1075,14 +1075,14 @@ class Article(Document):
 
         if not requests_response.ok or requests_response.status_code != 200:
 
-            message = u'HTTP Error %s (%s) while resolving %s.' % (
-                requests_response.status_code, requests_response.reason,
-                requests_response.url)
+            message = u'HTTP Error %s (%s) while resolving %s.'
+            args = (requests_response.status_code, requests_response.reason,
+                    requests_response.url)
 
-            self.url_error = message
+            self.url_error = message % args
             self.save()
 
-            LOGGER.error(message)
+            LOGGER.error(message, *args)
             return
 
         #
