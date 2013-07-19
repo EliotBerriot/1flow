@@ -377,6 +377,19 @@ class Feed(Document):
     def has_option(self, option):
         return option in self.options
 
+    def reopen(self, commit=True):
+
+        self.closed        = False
+        self.date_closed   = None
+        self.closed_reason = u'Reopen on %s' % now().isoformat()
+
+        LOGGER.info(u'Feed %s has just beed re-opened.', self)
+
+        if commit:
+            self.save()
+
+        self.safe_reload()
+
     def close(self, reason=None, commit=True):
         self.closed        = True
         self.date_closed   = now()
