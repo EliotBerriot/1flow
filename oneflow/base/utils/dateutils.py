@@ -1,8 +1,10 @@
 # -*- coding: utf-8 -*-
 """ Global timezone aware functions. """
 
+import time as pytime
 import datetime as pydatetime
-import humanize.time as human_time
+import humanize.time as humanize_time
+
 from django.conf import settings
 from django.utils.timezone import (is_aware, is_naive, # NOQA
                                    make_aware, utc,
@@ -22,8 +24,8 @@ dt_fromtimestamp = pydatetime.datetime.fromtimestamp
 today     = pydatetime.date.today
 timedelta = pydatetime.timedelta
 
-naturaltime  = human_time.naturaltime
-naturaldelta = human_time.naturaldelta
+naturaltime  = humanize_time.naturaltime
+naturaldelta = humanize_time.naturaldelta
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Aware aliases
@@ -60,7 +62,13 @@ def until_tomorrow_delta(time_of_tomorrow=None):
     return combine(tomorrow, time_of_tomorrow) - now()
 
 
+def stats_datetime():
+
+    return pytime.strftime('%Y%m%d %H:%M')
+
+
 __all__ = ('today', 'timedelta', 'naturaltime', 'naturaldelta',
            'now', 'ftstamp', 'tzcombine', 'combine', 'time', 'datetime',
            'is_aware', 'is_naive',
-           'until_tomorrow_delta', )
+           'until_tomorrow_delta',
+           'pytime', 'pydatetime')
