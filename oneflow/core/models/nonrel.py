@@ -1018,7 +1018,7 @@ class Article(Document):
         proto, remaining = url.split('://')
         hostname_port, remaining = remaining.split('/', 1)
 
-        if 'feedportal.com' in hostname_port:
+        if 'feedsportal.com' in hostname_port:
             # Sometimes the redirect chain breaks and gives us
             # a F*G page with links in many languages "click here
             # to continue".
