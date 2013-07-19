@@ -135,45 +135,46 @@ def article_current_numbers():
     # NoneType error due to scoping problems.
     #with no_dereference(Article) as Article:
 
-    # empty_articles is looped 2 times: cache it.
-    empty_articles    = Article.objects(content_type=0)
-    pending_articles  = empty_articles.filter(
-        content_error__exists=False).no_cache()
-    error_articles    = empty_articles.filter(
-        content_error__exists=True).no_cache()
-    unparsed_articles = Article.objects(
-        content_type__exists=False).no_cache()
-    error2_articles   = Article.objects(
-        content_error__exists=True).no_cache()
-    html_articles     = Article.objects(content_type=1).no_cache()
-    markdown_articles = Article.objects(content_type=2).no_cache()
+    empty_articles    = Article.objects(content_type=0).no_cache()
+    pending_articles  = empty_articles.filter(content_error='')
+
+    parsed_articles   = Article.objects(content_type__ne=0)
+    parsed_errors     = parsed_articles.filter(content_error__ne='').no_cache()
+
+    html_articles     = parsed_articles.filter(content_type=1)
+    markdown_articles = parsed_articles.filter(content_type=2)
+
     absolutes         = Article.objects(url_absolute=True).no_cache()
-    duplicates        = Article.objects(
-        duplicate_of__exists=True).no_cache()
+    duplicates        = Article.objects(duplicate_of__ne=None).no_cache()
     orphaned          = Article.objects(orphaned=True).no_cache()
-    orphaned_httperr  = orphaned.filter(url_error__exists=True)
+    orphaned_httperr  = orphaned.filter(url_error__ne='')
 
     return {
         'empty_articles': empty_articles,
         'pending_articles': pending_articles,
-        'error_articles': error_articles,
-        'unparsed_articles': unparsed_articles,
-        'error2_articles': error2_articles,
+
+        'parsed_errors': parsed_errors,
+        'parsed_articles': parsed_articles,
+
         'html_articles': html_articles,
         'markdown_articles': markdown_articles,
+
         'absolutes': absolutes,
         'duplicates': duplicates,
         'orphaned': orphaned,
         'orphaned_httperr': orphaned_httperr,
 
         'total_articles_count': Article._get_collection().count(),
-        # empty_articles is not counted.
-        'unparsed_articles_count': unparsed_articles.count(),
+
+        'empty_articles_count': empty_articles.count(),
         'pending_articles_count': pending_articles.count(),
-        'error_articles_count': error_articles.count(),
-        'error2_articles_count': error2_articles.count(),
+
+        'parsed_errors_count': parsed_errors.count(),
+        'parsed_articles_count': parsed_articles.count(),
+
         'html_articles_count': html_articles.count(),
         'markdown_articles_count': markdown_articles.count(),
+
         'absolutes_count': absolutes.count(),
         'duplicates_count': duplicates.count(),
         'orphaned_count': orphaned.count(),
@@ -189,21 +190,28 @@ def article_current_numbers_display(results=None):
         results = article_current_numbers()
 
     # display
-    return results, (u'- %s: pending: %s (%.2f%%), errors: %s/%s (%.2f%%), '
-                     u' md: %s (%.2f%%), html: %s (%.2f%%), total: %s, '
-                     u'unparsed: %s (%.2f%%),\n'
-                     u'    - absolutes: %s, duplicates: %s (%.2f%%), '
-                     u'orphaned: %s, because of HTTP error: %s (%.2f%%),\n'
-                     u'    - RAW: fetched: %s, dupes: %s, mutualized: %s, '
+    return results, (u'- %s: total: %s, pending: %s (%.2f%%), '
+                     u'unfetchable: %s (%.2f%%),\n'
+                     u'    - md: %s (%.2f%%), html: %s (%.2f%%), '
+                     u'parsed errors: %s (%.2f%%),\n'
+                     u'    - absolutes: %s (%.2f%%), '
+                     u'duplicates: %s (rel %.2f%%),\n'
+                     u'    - orphaned: %s (%.2f%%), '
+                     u'with HTTP error: %s (rel %.2f%%),\n'
+                     u'    - RAW counters (not accurate): fetched: %s, '
+                     u'dupes: %s, mutualized: %s,\n'
                      u'[computed in %s]') % (
                          stats_datetime(),
+                         results['total_articles_count'],
+
                          results['pending_articles_count'],
                          results['pending_articles_count']
                              * 100.0 / results['total_articles_count'],
 
-                         results['error_articles_count'],
-                         results['error2_articles_count'],
-                         results['error2_articles_count']
+                         results['empty_articles_count']
+                             - results['pending_articles_count'],
+                         (results['empty_articles_count']
+                             - results['pending_articles_count'])
                              * 100.0 / results['total_articles_count'],
 
                          results['markdown_articles_count'],
@@ -214,19 +222,21 @@ def article_current_numbers_display(results=None):
                          results['html_articles_count']
                              * 100.0 / results['total_articles_count'],
 
-                         results['total_articles_count'],
-
-                         results['unparsed_articles_count'],
-                         results['unparsed_articles_count']
+                         results['parsed_errors_count'],
+                         results['parsed_errors_count']
                              * 100.0 / results['total_articles_count'],
 
                          results['absolutes_count'],
+                         results['absolutes_count']
+                             * 100.0 / results['total_articles_count'],
 
                          results['duplicates_count'],
                          results['duplicates_count']
                              * 100.0 / results['absolutes_count'],
 
                          results['orphaned_count'],
+                         results['orphaned_count']
+                             * 100.0 / results['total_articles_count'],
 
                          results['orphaned_httperr_count'],
                          results['orphaned_httperr_count']
