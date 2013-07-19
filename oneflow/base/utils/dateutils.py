@@ -67,7 +67,7 @@ def until_tomorrow_delta(time_of_tomorrow=None):
 
 def stats_datetime():
 
-    return pytime.strftime('%Y%m%d %H:%M')
+    return pytime.strftime('%Y-%m-%d %H:%M')
 
 
 class benchmark(object):
