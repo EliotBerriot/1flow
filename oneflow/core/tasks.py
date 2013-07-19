@@ -609,7 +609,7 @@ def global_feeds_checker():
 
     feeds = Feed.objects(Q(closed=True)
                          & (Q(date_closed__exists=False)
-                            or Q(date_closed__gte=closed_limit)))
+                            | Q(date_closed__gte=closed_limit)))
 
     count = feeds.count()
 
