@@ -78,11 +78,10 @@ class benchmark(object):
 
     def __enter__(self):
         self.start   = pytime.time()
-        self.dtstart = now()
+        self.dtstart = stats_datetime()
 
     def __exit__(self, ty, val, tb):
-        LOGGER.info("%s started %s, ran in %s.", self.name,
-                    naturaltime(self.dtstart),
+        LOGGER.info("%s started %s, ran in %s.", self.name, self.dtstart,
                     naturaldelta(pytime.time() - self.start))
         return False
 
