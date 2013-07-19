@@ -1,15 +1,15 @@
 # -*- coding: utf-8 -*-
 
 import logging
-
-import time as pytime
+import operator
 
 from constance import config
 #from mongoengine.queryset import Q
-from mongoengine.context_managers import no_dereference
+#from mongoengine.context_managers import no_dereference
 
 from oneflow.core.models import Feed, Article, global_feed_stats
-from oneflow.base.utils.dateutils import timedelta, now, naturaldelta
+from oneflow.base.utils.dateutils import (timedelta, now, pytime,
+                                          naturaldelta, stats_datetime)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -130,19 +130,28 @@ def article_current_numbers():
 
     global Article
 
-    with no_dereference(Article) as Article:
-        # empty_articles is looped 2 times: cache it.
-        empty_articles    = Article.objects(content_type=0)
-        pending_articles  = empty_articles.filter(
-            content_error__exists=False).no_cache()
-        error_articles    = empty_articles.filter(
-            content_error__exists=True).no_cache()
-        unparsed_articles = Article.objects(
-            content_type__exists=False).no_cache()
-        error2_articles   = Article.objects(
-            content_error__exists=True).no_cache()
-        html_articles     = Article.objects(content_type=1).no_cache()
-        markdown_articles = Article.objects(content_type=2).no_cache()
+    # Just doesn't work, produces a bunch of weird
+    # 'KeyError: 'pending_articles_count'' and other
+    # NoneType error due to scoping problems.
+    #with no_dereference(Article) as Article:
+
+    # empty_articles is looped 2 times: cache it.
+    empty_articles    = Article.objects(content_type=0)
+    pending_articles  = empty_articles.filter(
+        content_error__exists=False).no_cache()
+    error_articles    = empty_articles.filter(
+        content_error__exists=True).no_cache()
+    unparsed_articles = Article.objects(
+        content_type__exists=False).no_cache()
+    error2_articles   = Article.objects(
+        content_error__exists=True).no_cache()
+    html_articles     = Article.objects(content_type=1).no_cache()
+    markdown_articles = Article.objects(content_type=2).no_cache()
+    absolutes         = Article.objects(url_absolute=True).no_cache()
+    duplicates        = Article.objects(
+        duplicate_of__exists=True).no_cache()
+    orphaned          = Article.objects(orphaned=True).no_cache()
+    orphaned_httperr  = orphaned.filter(url_error__exists=True)
 
     return {
         'empty_articles': empty_articles,
@@ -152,6 +161,10 @@ def article_current_numbers():
         'error2_articles': error2_articles,
         'html_articles': html_articles,
         'markdown_articles': markdown_articles,
+        'absolutes': absolutes,
+        'duplicates': duplicates,
+        'orphaned': orphaned,
+        'orphaned_httperr': orphaned_httperr,
 
         'total_articles_count': Article._get_collection().count(),
         # empty_articles is not counted.
@@ -161,6 +174,11 @@ def article_current_numbers():
         'error2_articles_count': error2_articles.count(),
         'html_articles_count': html_articles.count(),
         'markdown_articles_count': markdown_articles.count(),
+        'absolutes_count': absolutes.count(),
+        'duplicates_count': duplicates.count(),
+        'orphaned_count': orphaned.count(),
+        'orphaned_httperr_count': orphaned_httperr.count(),
+
         'meta': {'duration': pytime.time() - start_time}
     }
 
@@ -172,42 +190,123 @@ def article_current_numbers_display(results=None):
 
     # display
     return results, (u'- %s: pending: %s, errors: %s/%s, md: %s, '
-                     u'html: %s, unparsed: %s, total: %s; fetched: %s, '
-                     u'dupes: %s, mutualized: %s, computed in %s') % (
-                         pytime.strftime('%Y%m%d %H:%M'),
+                     u'html: %s, total: %s, unparsed: %s (%.2f%%),\n'
+                     u'    - absolutes: %s, duplicates: %s (%.2f%%), '
+                     u'orphaned: %s, because of HTTP error: %s (%.2f%%),\n'
+                     u'    - RAW: fetched: %s, dupes: %s, mutualized: %s, '
+                     u'[computed in %s]') % (
+                         stats_datetime(),
                          results['pending_articles_count'],
                          results['error_articles_count'],
                          results['error2_articles_count'],
                          results['markdown_articles_count'],
                          results['html_articles_count'],
-                         results['unparsed_articles_count'],
                          results['total_articles_count'],
+                         results['unparsed_articles_count'],
+                         results['unparsed_articles_count']
+                             * 100.0 / results['total_articles_count'],
+                         results['absolutes_count'],
+                         results['duplicates_count'],
+                         results['duplicates_count']
+                             * 100.0 / results['absolutes_count'],
+                         results['orphaned_count'],
+                         results['orphaned_httperr_count'],
+                         results['orphaned_httperr_count']
+                             * 100.0 / results['orphaned_count'],
+
                          global_feed_stats.fetched(),
                          global_feed_stats.dupes(),
                          global_feed_stats.mutualized(),
                          naturaldelta(results['meta']['duration']))
 
 
-def article_error_types():
-    # TODO:
+def classify_error(article):
 
+    if 'codec can' in article.content_error:
+        error = 'Encoding error'
+
+    #elif article.content_error.startswith("'charmap'"):
+    #    error = 'Charmap encoding error'
+
+    #elif article.content_error.startswith("'gb2312'"):
+    #    error = 'gb2312 encoding error'
+
+    elif article.content_error.startswith("HTTPConnection"):
+        error = 'Socket or bad HTTP error'
+
+    elif article.content_error.startswith("HTTPSConnection"):
+        error = 'Secure socket error / bad HTTPs'
+
+    elif article.content_error.startswith("hostname '"):
+        error = 'HTTPs certificate error'
+    elif '_ssl.c:' in article.content_error:
+        error = 'HTTPs certificate error'
+
+    elif article.content_error.startswith("HTTP "):
+        error = 'HTTP Error'
+    elif article.content_error.startswith("Exceeded 30 redirects"):
+        error = 'HTTP Error'
+
+    elif article.content_error.startswith("<urlopen"):
+        error = 'Socket/urlopen error'
+    elif article.content_error.startswith("[Errno 104] Conn"):
+        error = 'Socket/urlopen error'
+    elif article.content_error.startswith("The read operation"):
+        error = 'Socket/urlopen error'
+    elif article.content_error.startswith("IncompleteRead"):
+        error = 'Socket/urlopen error'
+
+    elif article.content_error.startswith("unknown encoding: image"):
+        error = 'Image instead of HTML article'
+
+    elif article.content_error.startswith(
+            "unknown encoding: application/pdf"):
+        error = 'PDF instead of HTML article'
+
+    elif article.content_error.startswith("unknown encoding: audio"):
+        error = 'Audio content instead of HTML article'
+
+    elif article.content_error.startswith("unknown encoding: video"):
+        error = 'Video content instead of HTML article'
+
+    elif article.content_error.startswith('unknown encoding:'):
+        error = 'No encoding specified, server side'
+
+    elif article.content_error.startswith("maximum recursion"):
+        error = 'Python maximum recursion loop'
+
+    #elif article.content_error.startswith("java.lang."):
+    #    error = 'Old Java-BoilerPipe error'
+    #    boiler_errors.append(article)
+
+    else:
+        error = article.content_error
+
+    return error
+
+
+def article_error_types(results=None):
+
+    if results is None:
+        results = article_current_numbers()
 
     start_time     = pytime.time()
-    error_types    = {}
     dupes_errors   = 0
-    seen_articles  = []
 
-    codec_errors   = []
+    error_types    = {}
+    seen_articles  = []
     timeout_errors = []
-    utf8_errors    = []
+    codec_errors   = []
     ascii_errors   = []
-    #boiler_errors  = []
+    utf8_errors    = []
 
     # Next to investigate:
     #    list index out of range: 758
     #    'NoneType' object has no attribute 'findAll': 137
 
-    for bunch in (error_articles, error2_articles):
+    for bunch in (results.get('error_articles'),
+                  results.get('error2_articles')):
+
         for article in bunch:
             if article.id in seen_articles:
                 dupes_errors += 1
@@ -217,82 +316,51 @@ def article_error_types():
 
             if article.content_error.startswith("'ascii'"):
                 ascii_errors.append(article)
+                codec_errors.append(article)
+
             elif article.content_error.startswith("'utf8'"):
                 #error = 'UTF8 encoding error'
                 utf8_errors.append(article)
-
-            if 'codec can' in article.content_error:
-                error = 'Encoding error'
                 codec_errors.append(article)
 
-            #elif article.content_error.startswith("'charmap'"):
-            #    error = 'Charmap encoding error'
-
-            #elif article.content_error.startswith("'gb2312'"):
-            #    error = 'gb2312 encoding error'
-
             elif article.content_error.startswith('SoftTimeLimit'):
-                error = article.content_error
                 timeout_errors.append(article)
 
-            elif article.content_error.startswith("HTTPConnection"):
-                error = 'Socket or bad HTTP error'
-
-            elif article.content_error.startswith("HTTPSConnection"):
-                error = 'Secure socket error / bad HTTPs'
-
-            elif article.content_error.startswith("hostname '"):
-                error = 'HTTPs certificate error'
-            elif '_ssl.c:' in article.content_error:
-                error = 'HTTPs certificate error'
-
-            elif article.content_error.startswith("HTTP "):
-                error = 'HTTP Error'
-            elif article.content_error.startswith("Exceeded 30 redirects"):
-                error = 'HTTP Error'
-
-            elif article.content_error.startswith("<urlopen"):
-                error = 'Socket/urlopen error'
-            elif article.content_error.startswith("[Errno 104] Conn"):
-                error = 'Socket/urlopen error'
-            elif article.content_error.startswith("The read operation"):
-                error = 'Socket/urlopen error'
-            elif article.content_error.startswith("IncompleteRead"):
-                error = 'Socket/urlopen error'
-
-            elif article.content_error.startswith("unknown encoding: image"):
-                error = 'Image instead of HTML article'
-
-            elif article.content_error.startswith("unknown encoding: application/pdf"):
-                error = 'PDF instead of HTML article'
-
-            elif article.content_error.startswith("unknown encoding: audio"):
-                error = 'Audio content instead of HTML article'
-
-            elif article.content_error.startswith("unknown encoding: video"):
-                error = 'Video content instead of HTML article'
-
-            elif article.content_error.startswith('unknown encoding:'):
-                error = 'No encoding specified, server side'
-
-            elif article.content_error.startswith("maximum recursion"):
-                error = 'Python maximum recursion loop'
-
-            #elif article.content_error.startswith("java.lang."):
-            #    error = 'Old Java-BoilerPipe error'
-            #    boiler_errors.append(article)
-
-            else:
-                error = article.content_error
+            error = classify_error(article)
 
             if error in error_types:
-                error_types[error] +=1
+                error_types[error] += 1
             else:
                 error_types[error] = 1
 
-    duration = timedelta(seconds=pytime.time() - start_time)
+    return {
+        'meta': {
+            'duration': pytime.time() - start_time,
+        },
+        'error_types': error_types,
+        'seen_articles': seen_articles,
+        'dupes_errors': dupes_errors,
+        'timeout_errors': timeout_errors,
+        'codec_errors': codec_errors,
+        'utf8_errors': utf8_errors,
+        'ascii_errors': ascii_errors,
+    }
 
-    print '>> Error types: %s (total: %s, dupes: %s, computed in %s)\n' % (
-        len(error_types), len(seen_articles), dupes_errors, naturaldelta(duration)), \
-        '\n'.join('%s: %s' % (k, v) for k,v in sorted(error_types.items(),
-            key=operator.itemgetter(1), reverse=True))
+
+def article_error_types_display(results=None, articles_results=None):
+
+    if results is None:
+        results = article_error_types(articles_results)
+
+    output = '>> Error types: %s (total: %s, dupes: %s, computed in %s)\n' % (
+        len(results.get('error_types')),
+        len(results.get('seen_articles')),
+        results.get('dupes_errors'),
+        naturaldelta(results.get('meta').get('duration')))
+
+    output += '\n'.join('%s: %s' % (k, v) for k, v in sorted(
+                    results.get('error_types').items(),
+                    key=operator.itemgetter(1),
+                    reverse=True))
+
+    return results, output
