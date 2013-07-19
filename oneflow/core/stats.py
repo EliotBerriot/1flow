@@ -189,27 +189,45 @@ def article_current_numbers_display(results=None):
         results = article_current_numbers()
 
     # display
-    return results, (u'- %s: pending: %s, errors: %s/%s, md: %s, '
-                     u'html: %s, total: %s, unparsed: %s (%.2f%%),\n'
+    return results, (u'- %s: pending: %s (%.2f%%), errors: %s/%s (%.2f%%), '
+                     u' md: %s (%.2f%%), html: %s (%.2f%%), total: %s, '
+                     u'unparsed: %s (%.2f%%),\n'
                      u'    - absolutes: %s, duplicates: %s (%.2f%%), '
                      u'orphaned: %s, because of HTTP error: %s (%.2f%%),\n'
                      u'    - RAW: fetched: %s, dupes: %s, mutualized: %s, '
                      u'[computed in %s]') % (
                          stats_datetime(),
                          results['pending_articles_count'],
+                         results['pending_articles_count']
+                             * 100.0 / results['total_articles_count'],
+
                          results['error_articles_count'],
                          results['error2_articles_count'],
+                         results['error2_articles_count']
+                             * 100.0 / results['total_articles_count'],
+
                          results['markdown_articles_count'],
+                         results['markdown_articles_count']
+                             * 100.0 / results['total_articles_count'],
+
                          results['html_articles_count'],
+                         results['html_articles_count']
+                             * 100.0 / results['total_articles_count'],
+
                          results['total_articles_count'],
+
                          results['unparsed_articles_count'],
                          results['unparsed_articles_count']
                              * 100.0 / results['total_articles_count'],
+
                          results['absolutes_count'],
+
                          results['duplicates_count'],
                          results['duplicates_count']
                              * 100.0 / results['absolutes_count'],
+
                          results['orphaned_count'],
+
                          results['orphaned_httperr_count'],
                          results['orphaned_httperr_count']
                              * 100.0 / results['orphaned_count'],

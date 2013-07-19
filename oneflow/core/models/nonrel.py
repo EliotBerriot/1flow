@@ -377,6 +377,19 @@ class Feed(Document):
     def has_option(self, option):
         return option in self.options
 
+    def reopen(self, commit=True):
+
+        self.closed        = False
+        self.date_closed   = None
+        self.closed_reason = u'Reopen on %s' % now().isoformat()
+
+        LOGGER.info(u'Feed %s has just beed re-opened.', self)
+
+        if commit:
+            self.save()
+
+        self.safe_reload()
+
     def close(self, reason=None, commit=True):
         self.closed        = True
         self.date_closed   = now()
@@ -986,6 +999,11 @@ class Article(Document):
             LOGGER.warning(u'URL of article %s is already absolute!', self)
             return True
 
+        if self.orphaned and not force:
+            LOGGER.warning(u'Article %s is orphaned, absolutization aborted.',
+                           self)
+            return True
+
         if self.url_error:
             if force:
                 self.url_error = None
@@ -1079,6 +1097,7 @@ class Article(Document):
             args = (requests_response.status_code, requests_response.reason,
                     requests_response.url)
 
+            self.orphaned  = True
             self.url_error = message % args
             self.save()
 
@@ -1274,6 +1293,34 @@ class Article(Document):
 
             return new_article, True
 
+    def fetch_content_must_abort(self, force=False, commit=True):
+
+        if self.content_type in CONTENT_TYPES_FINAL and not force:
+            LOGGER.warning(u'Article %s has already been fetched.', self)
+            return True
+
+        if config.ARTICLE_FETCHING_DISABLED:
+            LOGGER.warning(u'Article fetching disabled in configuration.')
+            return True
+
+        if self.content_error:
+            if force:
+                self.content_error = None
+
+                if commit:
+                    self.save()
+
+            else:
+                LOGGER.warning(u'Article %s has a fetching error, aborting '
+                               u'(%s).', self, self.content_error)
+                return True
+
+        if self.orphaned:
+            LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
+            return True
+
+        return False
+
     @celery_task_method(name='Article.fetch_content', queue='low',
                         default_retry_delay=3600, soft_time_limit=120)
     def fetch_content(self, force=False, commit=True):
@@ -1282,26 +1329,7 @@ class Article(Document):
         # the task waited a long time before running.
         self.safe_reload()
 
-        if self.content_type in CONTENT_TYPES_FINAL and not force:
-            LOGGER.warning(u'Article %s has already been fetched.', self)
-            return
-
-        if config.ARTICLE_FETCHING_DISABLED:
-            LOGGER.warning(u'Article fetching disabled in configuration.')
-            return
-
-        if self.content_error:
-            if force:
-                self.content_error = None
-                if commit:
-                    self.save()
-            else:
-                LOGGER.warning(u'Article %s has a fetching error, aborting '
-                               u'(%s).', self, self.content_error)
-                return
-
-        if self.orphaned:
-            LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
+        if self.fetch_content_must_abort(force=force, commit=commit):
             return
 
         #
@@ -1338,7 +1366,7 @@ class Article(Document):
                                            countdown=randrange(60))
 
         except StopProcessingException, e:
-            LOGGER.error(u'Stopping processing or article %s on behalf of '
+            LOGGER.error(u'Stopping processing of article %s on behalf of '
                          u'an internal caller: %s.', self, e)
             return
 
@@ -1417,10 +1445,14 @@ class Article(Document):
         """ :param:`url` should be set in the case of multipage content. """
 
         if url is None:
+            # Asolutize only if 'main' article URL,
+            # and not already absolutized.
             fetch_url = self.url
-            absolutize = True
+            absolutize = not self.url_absolute
 
         else:
+            # never absolutize if we are manually given an URL,
+            # it's the one for next page in multi-page text content.
             fetch_url = url
             absolutize = False
 
