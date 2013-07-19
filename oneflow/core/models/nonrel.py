@@ -459,6 +459,8 @@ class Feed(Document):
         if last_fetch:
             self.last_fetch = now()
 
+        retval = False
+
         if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
             self.close(u'Too many errors on the feed. Last was: %s'
                        % self.errors[0], commit=False)
@@ -468,15 +470,12 @@ class Feed(Document):
             # Keep only the most recent errors.
             self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
 
-            if commit:
-                self.save()
-
-            return True
+            retval = True
 
         if commit:
             self.save()
 
-        return False
+        return retval
 
     def create_article_and_reads(self, article, subscribers, tags):
         """ Take a feedparser item and lists of Feed subscribers and
@@ -825,8 +824,8 @@ class Feed(Document):
             self.update_recent_articles_count.apply_async(
                 (), countdown=until_tomorrow_delta().seconds)
 
-        # Avoid running too near refreshes. Even if the feed didn't include
-        # new items, we will not check it again until fetch_interval is spent.
+        # Everything went fine, be sure to reset the "error counter".
+        self.errors[:]  = []
         self.last_fetch = now()
         self.save()
 
@@ -1010,7 +1009,7 @@ class Article(Document):
 
         if self.url_error:
             if force:
-                self.url_error = None
+                self.url_error = ''
                 if commit:
                     self.save()
             else:
@@ -1124,10 +1123,13 @@ class Article(Document):
         final_url = self.absolutize_url_post_process(requests_response)
 
         if final_url != self.url:
+
+            # Just for displaying purposes, see below.
             old_url  = self.url
 
-            self.url = final_url
+            self.url          = final_url
             self.url_absolute = True
+            self.url_error    = ''
 
             try:
                 self.save()
@@ -1153,6 +1155,7 @@ class Article(Document):
         elif not self.url_absolute:
             # Don't do the job twice.
             self.url_absolute = True
+            self.url_error    = ''
             self.save()
 
         return True
@@ -1309,7 +1312,7 @@ class Article(Document):
 
         if self.content_error:
             if force:
-                self.content_error = None
+                self.content_error = ''
 
                 if commit:
                     self.save()
@@ -1634,6 +1637,7 @@ class Article(Document):
             return e
 
         self.content_type = CONTENT_TYPE_MARKDOWN
+        self.content_error = ''
 
         #
         # TODO: word count here
