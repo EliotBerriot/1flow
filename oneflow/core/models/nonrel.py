@@ -459,6 +459,8 @@ class Feed(Document):
         if last_fetch:
             self.last_fetch = now()
 
+        retval = False
+
         if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
             self.close(u'Too many errors on the feed. Last was: %s'
                        % self.errors[0], commit=False)
@@ -468,15 +470,12 @@ class Feed(Document):
             # Keep only the most recent errors.
             self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
 
-            if commit:
-                self.save()
-
-            return True
+            retval = True
 
         if commit:
             self.save()
 
-        return False
+        return retval
 
     def create_article_and_reads(self, article, subscribers, tags):
         """ Take a feedparser item and lists of Feed subscribers and
