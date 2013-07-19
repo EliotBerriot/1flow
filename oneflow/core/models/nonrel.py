@@ -869,7 +869,7 @@ class Article(Document):
     url_absolute = BooleanField(default=False, verbose_name=_(u'Absolute URL'),
                                 help_text=_(u'The article URL has already been '
                                             u'successfully absolutized.'))
-    url_error  = StringField(verbose_name=_(u'URL fetch error'),
+    url_error  = StringField(verbose_name=_(u'URL fetch error'), default='',
                              help_text=_(u'Error when absolutizing the URL'))
     pages_urls = ListField(URLField(), verbose_name=_(u'Next pages URLs'),
                            help_text=_(u'In case of a multi-pages article, '
@@ -914,7 +914,7 @@ class Article(Document):
                              verbose_name=_(u'Content type'),
                              help_text=_(u'Type of article content '
                                          u'(text, image…)'))
-    content_error = StringField(verbose_name=_(u'Error'),
+    content_error = StringField(verbose_name=_(u'Error'), default='',
                                 help_text=_(u'Error when fetching content'))
 
     # This should go away soon, after a full re-parsing.
@@ -951,6 +951,10 @@ class Article(Document):
                                               u'shortened, the other not), '
                                               u'they lead to the same final '
                                               u'destination on the web.'))
+
+    meta = {
+        'indexes': ['content_type', 'content_error', 'url_error', ]
+    }
 
     def __unicode__(self):
         return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
