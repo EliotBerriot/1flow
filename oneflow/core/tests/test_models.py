@@ -280,3 +280,87 @@ class ArticleDuplicateTest(TestCase):
         self.article1.register_duplicate(self.article2)
 
         self.assertEquals(self.article2.duplicate_of, self.article1)
+
+
+class ArticleDuplicateTest(TestCase):
+
+    def setUp(self):
+
+        Article.drop_collection()
+
+        self.article1 = Article(title='test1',
+                                url='http://test.com/test1').save()
+        self.article2 = Article(title='test2',
+                                url='http://test.com/test2').save()
+        self.article3 = Article(title='test3',
+                                url='http://test.com/test3').save()
+
+    def test_register_duplicate_bare(self):
+
+        self.assertEquals(Article.objects(
+                          duplicate_of__exists=False).count(), 3)
+
+        self.article1.register_duplicate(self.article2)
+
+        self.assertEquals(self.article2.duplicate_of, self.article1)
+
+        self.assertEquals(Article.objects(
+                          duplicate_of__exists=True).count(), 1)
+        self.assertEquals(Article.objects(
+                          duplicate_of__exists=False).count(), 2)
+
+    def test_register_duplicate_not_again(self):
+
+        self.article1.register_duplicate(self.article2)
+
+        #self.assertRaises(RuntimeError,
+        #                  self.article1.register_duplicate,
+        #                  self.article3)
+
+        self.assertEquals(self.article2.duplicate_of, self.article1)
+
+
+class AbsolutizeTest(TestCase):
+
+    def setUp(self):
+
+        Article.drop_collection()
+        Feed.drop_collection()
+
+        self.article1 = Article(title=u'test1',
+                                url=u'http://rss.feedsportal.com/c/707/f/9951/s/2b27496a/l/0L0Sreseaux0Etelecoms0Bnet0Cactualites0Clire0Elancement0Emondial0Edu0Esamsung0Egalaxy0Es40E25980A0Bhtml/story01.htm').save() # NOQA
+        self.article2 = Article(title=u'test2',
+                                url=u'http://feedproxy.google.com/~r/francaistechcrunch/~3/hEIhLwVyEEI/').save() # NOQA
+        self.article3 = Article(title=u'test3',
+                                url=u'http://obi.1flow.io/absolutize_test_401').save() # NOQA
+        self.article4 = Article(title=u'test4',
+                                url=u'http://not.exixstent.com/absolutize_test').save() # NOQA
+        self.article5 = Article(title=u'test5',
+                                url=u'http://1flow.io/absolutize_test_404').save() # NOQA
+
+    def test_absolutize(self):
+        self.article1.absolutize_url()
+        self.assertEquals(self.article1.url, u'http://www.reseaux-telecoms.net/actualites/lire-lancement-mondial-du-samsung-galaxy-s4-25980.html') # NOQA
+        self.assertEquals(self.article1.url_absolute, True)
+        self.assertEquals(self.article1.url_error, None)
+
+        self.article2.absolutize_url()
+        self.assertEquals(self.article2.url, u'http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/') # NOQA
+        self.assertEquals(self.article2.url_absolute, True)
+        self.assertEquals(self.article2.url_error, None)
+
+    def test_absolutize_erros(self):
+        self.article3.absolutize_url()
+        self.assertEquals(self.article3.url, u'http://obi.1flow.io/absolutize_test_401') # NOQA
+        self.assertEquals(self.article3.url_absolute, False)
+        self.assertEquals(self.article3.url_error, u'HTTP Error 401 (Unauthorized) while resolving http://obi.1flow.io/absolutize_test_401.') # NOQA
+
+        self.article5.absolutize_url()
+        self.assertEquals(self.article5.url, u'http://1flow.io/absolutize_test_404') # NOQA
+        self.assertEquals(self.article5.url_absolute, False)
+        self.assertEquals(self.article5.url_error, u'HTTP Error 404 (NOT FOUND) while resolving http://1flow.io/absolutize_test_404.') # NOQA
+
+        self.article4.absolutize_url()
+        self.assertEquals(self.article4.url, u'http://not.exixstent.com/absolutize_test') # NOQA
+        self.assertEquals(self.article4.url_absolute, False)
+        self.assertEquals(self.article4.url_error, u"HTTPConnectionPool(host='not.exixstent.com', port=80): Max retries exceeded with url: /absolutize_test (Caused by <class 'socket.error'>: [Errno 2] No such file or directory)") # NOQA
