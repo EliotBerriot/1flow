@@ -1,6 +1,8 @@
 # -*- coding: utf-8 -*-
 """ Global timezone aware functions. """
 
+import logging
+
 import time as pytime
 import datetime as pydatetime
 import humanize.time as humanize_time
@@ -10,6 +12,7 @@ from django.utils.timezone import (is_aware, is_naive, # NOQA
                                    make_aware, utc,
                                    now as dj_now)
 
+LOGGER = logging.getLogger(__name__)
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Local aliases
 
@@ -67,8 +70,24 @@ def stats_datetime():
     return pytime.strftime('%Y%m%d %H:%M')
 
 
+class benchmark(object):
+    """http://dabeaz.blogspot.fr/2010/02/context-manager-for-timing-benchmarks.html """ # NOQA
+
+    def __init__(self, name=None):
+        self.name = name or u'Generic benchmark'
+
+    def __enter__(self):
+        self.start   = pytime.time()
+        self.dtstart = now()
+
+    def __exit__(self, ty, val, tb):
+        LOGGER.info("%s started %s, ran in %s.", self.name,
+                    naturaltime(self.dtstart),
+                    naturaldelta(pytime.time() - self.start))
+        return False
+
 __all__ = ('today', 'timedelta', 'naturaltime', 'naturaldelta',
            'now', 'ftstamp', 'tzcombine', 'combine', 'time', 'datetime',
            'is_aware', 'is_naive',
-           'until_tomorrow_delta',
+           'until_tomorrow_delta', 'stats_datetime', 'benchmark',
            'pytime', 'pydatetime')
