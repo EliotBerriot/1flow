@@ -1351,7 +1351,7 @@ class Article(Document):
                                            countdown=randrange(60))
 
         except StopProcessingException, e:
-            LOGGER.error(u'Stopping processing or article %s on behalf of '
+            LOGGER.error(u'Stopping processing of article %s on behalf of '
                          u'an internal caller: %s.', self, e)
             return
 
