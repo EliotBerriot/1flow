@@ -829,6 +829,12 @@ class Feed(Document):
         self.last_fetch = now()
         self.save()
 
+        # As the last_fetch is now up-to-date, we can release the fetch lock.
+        # If any other refresh job comes, it will check last_fetch and will
+        # terminate if called too early.
+        my_lock = RedisExpiringLock(self, lock_name='fetch')
+        my_lock.release()
+
         # Launch the next fetcher right now; don't wait for the global
         # checker, it's run quite infrequently. But substract the duration
         # of the current refresh to avoid delaying the next and "slipping"
