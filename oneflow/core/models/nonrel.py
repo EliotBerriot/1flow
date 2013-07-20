@@ -1050,7 +1050,7 @@ class Article(Document):
         # last URL we got. Better than nothing.
         return clean_url(requests_response.url)
 
-    @celery_task_method(name='Article.absolutize_url', queue='medium',
+    @celery_task_method(name='Article.absolutize_url', queue='swarm',
                         default_retry_delay=3600)
     def absolutize_url(self, requests_response=None, force=False, commit=True):
         """ Make the current article URL absolute. Eg. transform:
