@@ -85,6 +85,7 @@ class benchmark(object):
                     naturaldelta(pytime.time() - self.start))
         return False
 
+
 __all__ = ('today', 'timedelta', 'naturaltime', 'naturaldelta',
            'now', 'ftstamp', 'tzcombine', 'combine', 'time', 'datetime',
            'is_aware', 'is_naive',
