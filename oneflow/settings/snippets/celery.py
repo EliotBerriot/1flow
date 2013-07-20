@@ -18,6 +18,7 @@ CELERY_QUEUES = (
     Queue('medium', Exchange('medium'), routing_key='medium'),
     Queue('low', Exchange('low'), routing_key='low'),
     Queue('fetch', Exchange('fetch'), routing_key='fetch'),
+    Queue('swarm', Exchange('swarm'), routing_key='swarm'),
 )
 
 BROKER_URL = os.environ.get('BROKER_URL')
