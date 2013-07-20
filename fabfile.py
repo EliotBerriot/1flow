@@ -189,16 +189,19 @@ def production():
             'worker-04.1flow.io': 8,
             # setting only 'worker-99.1flow.io': 24
             # would override worker_swarm setting.
-            'worker_fetch@worker-99.1flow.io': 24,
-            'worker_swarm': 1000,
+            'worker_fetch@worker-99.1flow.io': 16,
+            'worker_swarm': 48,
         },
         'worker_queues': {
             'worker_fetch@worker-02.1flow.io': 'fetch,low',
             'worker_fetch@worker-04.1flow.io': 'fetch,medium',
             'worker_fetch@worker-99.1flow.io': 'fetch,high',
         },
-        'worker_pool': {
-            'worker_swarm': 'eventlet',
+        # 'worker_pool': {
+        #     'worker_swarm': 'eventlet',
+        # },
+        'worker_soft_time_limit': {
+            'worker_swarm': '30',
         },
     }
     env.env_was_set = True
