@@ -192,8 +192,8 @@ def article_current_numbers_display(results=None):
     # display
     return results, (u'- %s: total: %s, pending: %s (%.2f%%), '
                      u'unfetchable: %s (%.2f%%),\n'
-                     u'    - md: %s (%.2f%%), html: %s (%.2f%%), '
-                     u'parsed errors: %s (%.2f%%),\n'
+                     u'    - markdown: %s (%.2f%%), html: %s (%.2f%%), '
+                     u'conversion errors: %s (%.2f%%),\n'
                      u'    - absolutes: %s (%.2f%%), '
                      u'duplicates: %s (rel %.2f%%),\n'
                      u'    - orphaned: %s (%.2f%%), '
