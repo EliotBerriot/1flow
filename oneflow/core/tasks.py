@@ -627,7 +627,7 @@ def refresh_all_feeds(limit=None):
                             u'Scheduled randomized'
                             if countdown else u'Launched',
                             feed,
-                            u' in {0}'.formatnaturaldelta(countdown)
+                            u' in {0}'.format.naturaldelta(countdown)
                             if countdown else u'in the background',
                             naturaldelta(how_late))
                 count += 1
