@@ -169,10 +169,9 @@ def production():
         'worker_high': ['worker-01.1flow.io', ],
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low': ['worker-05.1flow.io', ],
+        'worker_swarm': ['worker-99.1flow.io', ],
         'worker_fetch': ['worker-02.1flow.io',
-                         #'worker-03.1flow.io',
                          'worker-04.1flow.io',
-                         #'worker-05.1flow.io',
                          'worker-99.1flow.io', ],
     })
     env.sparks_options = {
@@ -186,11 +185,20 @@ def production():
             'worker_high': 8,
             'worker_medium': 10,
             'worker_low': 10,
-            #'worker_fetch@worker-03.1flow.io': 2,
-            #'worker_fetch@worker-05.1flow.io': 2,
             'worker-02.1flow.io': 8,
             'worker-04.1flow.io': 8,
-            'worker-99.1flow.io': 24,
+            # setting only 'worker-99.1flow.io': 24
+            # would override worker_swarm setting.
+            'worker_fetch@worker-99.1flow.io': 24,
+            'worker_swarm': 1000,
+        },
+        'worker_queues': {
+            'worker_fetch@worker-02.1flow.io': 'fetch,low',
+            'worker_fetch@worker-04.1flow.io': 'fetch,medium',
+            'worker_fetch@worker-99.1flow.io': 'fetch,high',
+        },
+        'worker_pool': {
+            'worker_swarm': 'eventlet',
         },
     }
     env.env_was_set = True
