@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import uuid
-import time
 import logging
 import requests
 import strainer
@@ -40,7 +39,7 @@ from ...base.utils import (connect_mongoengine_signals,
 
 from ...base.utils.http import clean_url
 from ...base.utils.dateutils import (now, timedelta, until_tomorrow_delta,
-                                     today, datetime, naturaldelta)
+                                     today, datetime)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from .keyval import FeedbackDocument
 
@@ -349,6 +348,15 @@ class Feed(Document):
         return _(u'%s (#%s)') % (self.name, self.id)
 
     @property
+    def refresh_lock(self):
+        try:
+            return self.__refresh_lock
+
+        except AttributeError:
+            self.__refresh_lock = RedisExpiringLock(self, lock_name='fetch')
+            return self.__refresh_lock
+
+    @property
     def fetch_limit(self):
         try:
             return self.__limit_semaphore
@@ -543,40 +551,6 @@ class Feed(Document):
 
         return created or None if mutualized else False
 
-    def check_refresher(self):
-
-        if self.closed:
-            LOGGER.info(u'Feed %s is closed. refresh aborted.', self)
-            return
-
-        if config.FEED_FETCH_DISABLED:
-            # we do not raise .retry() because the global refresh
-            # task will call us again anyway at next global check.
-            LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
-            return
-
-        my_lock = RedisExpiringLock(self, lock_name='fetch')
-
-        if my_lock.acquire():
-            # no refresher is running.
-            # Release the lock and launch one.
-            my_lock.release()
-
-            if config.FEED_REFRESH_RANDOMIZE:
-
-                countdown = randrange(self.fetch_interval / 10)
-
-                self.refresh.apply_async((), countdown=countdown)
-
-                LOGGER.info(u'Programmed %srefresh of feed %s in %s.',
-                            u'randomized ' if config.FEED_FETCH_DEFAULT_INTERVAL
-                            else u'', self, naturaldelta(countdown))
-
-            else:
-                self.refresh.delay()
-                LOGGER.info(u'Launched refresh task of feed '
-                            u'%s in the background.', self)
-
     def build_refresh_kwargs(self):
 
         kwargs = {}
@@ -614,17 +588,14 @@ class Feed(Document):
             LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
             return True
 
-        my_lock = RedisExpiringLock(self, lock_name='fetch')
-
-        if not my_lock.acquire():
+        if not self.refresh_lock.acquire():
             if force:
-                LOGGER.warning(u'Forcing reschedule of fetcher for feed %s.',
-                               self)
-                my_lock.release()
-                my_lock.acquire()
+                LOGGER.warning(u'Forcing refresh for feed %s, despite of '
+                               u'lock already acquired.', self)
+                self.refresh_lock.release()
+                self.refresh_lock.acquire()
             else:
-                LOGGER.info(u'Refresh for %s already scheduled, aborting.',
-                            self)
+                LOGGER.info(u'Refresh for %s already running, aborting.', self)
                 return True
 
         if self.last_fetch is not None and self.last_fetch >= (
@@ -735,6 +706,7 @@ class Feed(Document):
         self.safe_reload()
 
         if self.refresh_must_abort(force=force):
+            self.refresh_lock.release()
             return
 
         LOGGER.info(u'Refreshing feed %s…', self)
@@ -767,8 +739,6 @@ class Feed(Document):
         if self.has_feedparser_error(parsed_feed):
             # the method will have already call self.error().
             return
-
-        refresh_start = time.time()
 
         if feed_status == 304:
             LOGGER.info(u'No new content in feed %s.', self)
@@ -832,16 +802,7 @@ class Feed(Document):
         # As the last_fetch is now up-to-date, we can release the fetch lock.
         # If any other refresh job comes, it will check last_fetch and will
         # terminate if called too early.
-        my_lock = RedisExpiringLock(self, lock_name='fetch')
-        my_lock.release()
-
-        # Launch the next fetcher right now; don't wait for the global
-        # checker, it's run quite infrequently. But substract the duration
-        # of the current refresh to avoid delaying the next and "slipping"
-        # a little more at every refresh.
-        self.refresh.apply_async((), countdown=(self.fetch_interval
-                                 - (time.time() - refresh_start))
-                                 or config.FEED_FETCH_DEFAULT_INTERVAL)
+        self.refresh_lock.release()
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
@@ -1335,8 +1296,8 @@ class Article(Document):
 
         return False
 
-    @celery_task_method(name='Article.fetch_content', queue='low',
-                        default_retry_delay=3600, soft_time_limit=120)
+    @celery_task_method(name='Article.fetch_content', queue='fetch',
+                        default_retry_delay=3600, soft_time_limit=180)
     def fetch_content(self, force=False, commit=True):
 
         # In tasks, doing this is often useful, if

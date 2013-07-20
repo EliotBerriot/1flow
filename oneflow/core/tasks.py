@@ -4,6 +4,7 @@ import redis
 import logging
 import time as pytime
 
+from random import randrange
 from constance import config
 
 from mongoengine.errors import OperationError
@@ -27,7 +28,7 @@ from .gr_import import GoogleReaderImport
 
 from ..base.utils import RedisExpiringLock
 from ..base.utils.dateutils import (now, ftstamp, today, timedelta, datetime,
-                                    naturaldelta, naturaltime)
+                                    naturaldelta, naturaltime, benchmark)
 
 # We don't fetch articles too far in the past, even if google has them.
 GR_OLDEST_DATE = datetime(2008, 1, 1)
@@ -551,7 +552,7 @@ def clean_gri_keys():
         REDIS.delete(*names)
 
 
-@task(queue='low')
+@task(queue='medium')
 def clean_obsolete_redis_keys():
     """ Call in turn all redis-related cleaners. """
 
@@ -571,6 +572,7 @@ def refresh_all_feeds(limit=None):
 
     if config.FEED_FETCH_DISABLED:
         # Do not raise any .retry(), this is a scheduled task.
+        LOGGER.warning(u'Feed refresh disabled in configuration.')
         return
 
     my_lock = RedisExpiringLock('refresh_all_feeds')
@@ -579,7 +581,7 @@ def refresh_all_feeds(limit=None):
         # Avoid running this task over and over again in the queue
         # if the previous instance did not yet terminate. Happens
         # when scheduled task runs too quickly.
-        LOGGER.info(u'refresh_all_feeds() is already locked, aborting.')
+        LOGGER.warning(u'refresh_all_feeds() is already locked, aborting.')
         return
 
     feeds = Feed.objects.filter(closed__ne=True)
@@ -589,15 +591,51 @@ def refresh_all_feeds(limit=None):
 
     # No need for caching and cluttering CPU/memory for a one-shot thing.
     feeds.no_cache()
-    start_time = pytime.time()
 
-    for feed in feeds:
-        feed.check_refresher()
+    with benchmark('refresh_all_feeds()'):
+
+        count = 0
+        mynow = now()
+
+        for feed in feeds:
+            interval = timedelta(seconds=feed.fetch_interval)
+
+            if feed.last_fetch is None:
+
+                feed.refresh.delay()
+
+                LOGGER.info(u'Launched immediate refresh of feed %s which '
+                            u'has never been refreshed.', feed)
+
+            elif feed.last_fetch + interval < mynow:
+
+                how_late = feed.last_fetch + interval - mynow
+                how_late = how_late.days * 86400 + how_late.seconds
+
+                #LOGGER.warning('>> %s %s < %s: %s', feed.id,
+                #               feed.last_fetch + interval, mynow, how_late)
+
+                if config.FEED_REFRESH_RANDOMIZE:
+                    countdown = randrange(feed.fetch_interval / 10)
+                    feed.refresh.apply_async((), countdown=countdown)
+
+                else:
+                    countdown = 0
+                    feed.refresh.delay()
+
+                LOGGER.info(u'%s refresh of feed %s %s (%s late).',
+                            u'Scheduled randomized'
+                            if countdown else u'Launched',
+                            feed,
+                            u' in {0}'.formatnaturaldelta(countdown)
+                            if countdown else u'in the background',
+                            naturaldelta(how_late))
+                count += 1
+
+        LOGGER.info(u'Launched %s refreshes out of %s feed(s) checked.',
+                    count, feeds.count())
 
     my_lock.release()
-
-    LOGGER.info(u'Checked %s feed(s) in %s.', feeds.count(),
-                naturaldelta(pytime.time() - start_time))
 
 
 @task(queue='high')
