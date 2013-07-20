@@ -829,6 +829,12 @@ class Feed(Document):
         self.last_fetch = now()
         self.save()
 
+        # As the last_fetch is now up-to-date, we can release the fetch lock.
+        # If any other refresh job comes, it will check last_fetch and will
+        # terminate if called too early.
+        my_lock = RedisExpiringLock(self, lock_name='fetch')
+        my_lock.release()
+
         # Launch the next fetcher right now; don't wait for the global
         # checker, it's run quite infrequently. But substract the duration
         # of the current refresh to avoid delaying the next and "slipping"
@@ -1044,7 +1050,7 @@ class Article(Document):
         # last URL we got. Better than nothing.
         return clean_url(requests_response.url)
 
-    @celery_task_method(name='Article.absolutize_url', queue='medium',
+    @celery_task_method(name='Article.absolutize_url', queue='swarm',
                         default_retry_delay=3600)
     def absolutize_url(self, requests_response=None, force=False, commit=True):
         """ Make the current article URL absolute. Eg. transform:
@@ -1053,7 +1059,8 @@ class Article(Document):
 
             into:
 
-            http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29 # NOQA
+            http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/ # NOQA
+                ?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29 # NOQA
 
             and then remove all these F*G utm_* parameters to get a clean
             final URL for the current article.
@@ -1125,11 +1132,13 @@ class Article(Document):
         if final_url != self.url:
 
             # Just for displaying purposes, see below.
-            old_url  = self.url
+            old_url = self.url
 
-            self.url          = final_url
-            self.url_absolute = True
-            self.url_error    = ''
+            # Even if we are a duplicate, we came until here and everything
+            # went fine. We won't need to lookup again the absolute URL.
+            self.update(set__url_absolute=True, set__url_error='')
+
+            self.url = final_url
 
             try:
                 self.save()
@@ -1152,11 +1161,9 @@ class Article(Document):
                             u'from %s to %s.', self.title, self.id,
                             old_url, final_url)
 
-        elif not self.url_absolute:
+        else:
             # Don't do the job twice.
-            self.url_absolute = True
-            self.url_error    = ''
-            self.save()
+            self.update(set__url_absolute=True, set__url_error='')
 
         return True
 
