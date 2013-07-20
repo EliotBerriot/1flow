@@ -549,7 +549,8 @@ class Feed(Document):
         # it to be able to read it.
         new_article.create_reads(subscribers, tags, verbose=created)
 
-        return created or None if mutualized else False
+        # Don't forget the parenthesis else we return ``False`` everytime.
+        return created or (None if mutualized else False)
 
     def build_refresh_kwargs(self):
 
