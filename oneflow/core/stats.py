@@ -137,25 +137,30 @@ class ArticlesStatistic(Document):
 
     empty_count = IntField(verbose_name=_(u'Empty'), default=0)
     empty_pending_count = IntField(verbose_name=_(u'Pending'), default=0)
-    empty_content_error_count = IntField(verbose_name=_(u'Content errors'), default=0)
+    empty_content_error_count = IntField(verbose_name=_(u'Content errors'),
+                                         default=0)
     empty_url_error_count = IntField(verbose_name=_(u'URL errors'), default=0)
 
     markdown_count = IntField(verbose_name=_(u'Markdown'), default=0)
     html_count = IntField(verbose_name=_(u'HTML'), default=0)
-    html_content_error_count = IntField(verbose_name=_(u'Conversion errors'), default=0)
+    html_content_error_count = IntField(verbose_name=_(u'Conversion errors'),
+                                        default=0)
 
-    absolute_count = IntField(verbose_name=_(u'Absolute URLs'), default=0)
-    absolute_url_error_count = IntField(verbose_name=_(u'Abs. errors'), default=0)
+    absolute_count = IntField(verbose_name=_(u'Abs. URLs'), default=0)
+    absolute_url_error_count = IntField(verbose_name=_(u'Abs. errors'),
+                                        default=0)
 
-    duplicates_count = IntField(verbose_name=_(u'Duplicates'), default=0)
+    duplicates_count = IntField(verbose_name=_(u'Dupes'), default=0)
 
-    orphaned_count = IntField(verbose_name=_(u'Orphaned'), default=0)
-    orphaned_url_error_count = IntField(verbose_name=_(u'Orph. URL err.'), default=0)
+    orphaned_count = IntField(verbose_name=_(u'Orphans'), default=0)
+    orphaned_url_error_count = IntField(verbose_name=_(u'Orph. err.'),
+                                        default=0)
 
-    time_limit_error_count = IntField(verbose_name=_(u'Time Limit err.'), default=0)
+    time_limit_error_count = IntField(verbose_name=_(u'Time err.'),
+                                      default=0)
 
     raw_fetched_count    = IntField(verbose_name=_(u'Fetched'), default=0)
-    raw_duplicates_count = IntField(verbose_name=_(u'Fetch dupl.'), default=0)
+    raw_duplicates_count = IntField(verbose_name=_(u'Fet. dupl.'), default=0)
     raw_mutualized_count = IntField(verbose_name=_(u'Mutualized'), default=0)
 
     notes = StringField(verbose_name=_(u'Notes'))
@@ -226,7 +231,7 @@ class ArticlesStatistic(Document):
             return stat
 
     def __unicode__(self):
-        return u'Statistics generated on %s' % (self.date_computed.isoformat())
+        return u'Articles statistic #%s' % (self.id)
 
 
 def classify_error(article):

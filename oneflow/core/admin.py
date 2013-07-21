@@ -346,17 +346,21 @@ admin.site.register(Feed, FeedAdmin)
 
 class ArticlesStatisticAdmin(admin.DocumentAdmin):
 
-    list_display = ('__unicode__', 'date_computed', 'total_count',
-                    'markdown_count_display', 'empty_pending_count_display',
+    list_display = ('date_computed_display',
+                    'total_count', 'markdown_count_display',
+                    'empty_pending_count_display',
                     'empty_content_error_count_display',
-                    'html_count_display', 'html_content_error_display',)
+                    'html_count_display', 'html_content_error_display',
+                    'absolute_count', 'duplicates_count', 'orphaned_count',
+                    'raw_fetched_count', 'raw_duplicates_count',
+                    'raw_mutualized_count', )
 
     # list_display_links = ('id', 'name', )
     # list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
     # search_fields = ('name', 'url', 'site_url', 'closed', )
 
     # Setting this makes the whole thing unsortable…
-    #ordering = ('-date_computed', )
+    ordering = ('-date_computed', )
 
     # The following fields don't work with mongoadmin.
     #
@@ -364,6 +368,19 @@ class ArticlesStatisticAdmin(admin.DocumentAdmin):
     #date_hierarchy = 'date_added'
     #change_list_template = "admin/change_list_filter_sidebar.html"
     #change_list_filter_template = "admin/filter_listing.html"
+
+    def date_computed_display(self, obj):
+
+        with django_language():
+            return (u'<span title="Launched at {0}, duration: {1}" '
+                u'style="cursor: pointer">{2}</span>').format(
+                    obj.date_computed.strftime('%Y-%m-%d %H:%m %z'),
+                    naturaldelta(obj.duration),
+                    naturaltime(obj.date_computed))
+
+    date_computed_display.short_description = _(u'Generated')
+    date_computed_display.admin_order_field = 'date_computed'
+    date_computed_display.allow_tags        = True
 
     def markdown_count_display(self, obj):
 
@@ -384,13 +401,15 @@ class ArticlesStatisticAdmin(admin.DocumentAdmin):
 
     def empty_content_error_count_display(self, obj):
 
-        return u'%s (%.2f%% tot, %.2f%% empty)' % (
-            obj.empty_content_error_count,
-            obj.empty_content_error_count * 100.0 / obj.total_count,
-            obj.empty_content_error_count * 100.0 / (obj.empty_count or 1))
+        return (u'<span title="%.2f%% of empty" style="cursor:pointer">'
+                u'%s (%.2f%%)</span>') % (
+                obj.empty_content_error_count * 100.0 / (obj.empty_count or 1),
+                obj.empty_content_error_count,
+                obj.empty_content_error_count * 100.0 / obj.total_count)
 
     empty_content_error_count_display.short_description = _(u'Errors')
     empty_content_error_count_display.admin_order_field = 'empty_pending_count'
+    empty_content_error_count_display.allow_tags        = True
 
     def html_count_display(self, obj):
 
@@ -402,13 +421,15 @@ class ArticlesStatisticAdmin(admin.DocumentAdmin):
 
     def html_content_error_display(self, obj):
 
-        return u'%s (%.2f%% tot, %.2f%% html)' % (
+        return (u'<span title="%.2f%% of HTML" style="cursor:pointer">'
+                u'%s (%.2f%%)') % (
+            obj.html_content_error_count * 100.0 / (obj.html_count or 1),
             obj.html_content_error_count,
-            obj.html_content_error_count * 100.0 / obj.total_count,
-            obj.html_content_error_count * 100.0 / (obj.html_count or 1))
+            obj.html_content_error_count * 100.0 / obj.total_count)
 
     html_content_error_display.short_description = _(u'Errors')
     html_content_error_display.admin_order_field = 'html_content_error_count' # NOQA
+    html_content_error_display.allow_tags        = True
 
     # def html_url_error_display(self, obj):
 
