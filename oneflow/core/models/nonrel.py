@@ -986,8 +986,12 @@ class Article(Document):
 
         url = requests_response.url
 
-        proto, remaining = url.split('://')
-        hostname_port, remaining = remaining.split('/', 1)
+        try:
+            proto, remaining = url.split('://')
+            hostname_port, remaining = remaining.split('/', 1)
+
+        except ValueError:
+            return url
 
         if 'feedsportal.com' in hostname_port:
             # Sometimes the redirect chain breaks and gives us
