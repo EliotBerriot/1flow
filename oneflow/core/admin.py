@@ -12,6 +12,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
 from .models.nonrel import Feed
+from .stats import ArticlesStatistic
 
 import mongoadmin as admin
 
@@ -341,3 +342,83 @@ class FeedAdmin(admin.DocumentAdmin):
 
 
 admin.site.register(Feed, FeedAdmin)
+
+
+class ArticlesStatisticAdmin(admin.DocumentAdmin):
+
+    list_display = ('__unicode__', 'date_computed', 'total_count',
+                    'markdown_count_display', 'empty_pending_count_display',
+                    'empty_content_error_count_display',
+                    'html_count_display', 'html_content_error_display',)
+
+    # list_display_links = ('id', 'name', )
+    # list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
+    # search_fields = ('name', 'url', 'site_url', 'closed', )
+
+    # Setting this makes the whole thing unsortable…
+    #ordering = ('-date_computed', )
+
+    # The following fields don't work with mongoadmin.
+    #
+    #list_filter = ('closed', 'last_fetch', 'recent_articles__count', )
+    #date_hierarchy = 'date_added'
+    #change_list_template = "admin/change_list_filter_sidebar.html"
+    #change_list_filter_template = "admin/filter_listing.html"
+
+    def markdown_count_display(self, obj):
+
+        return u'%s (%.2f%%)' % (obj.markdown_count, obj.markdown_count
+                                 * 100.0 / obj.total_count)
+
+    markdown_count_display.short_description = _(u'Markdown')
+    markdown_count_display.admin_order_field = 'markdown_count'
+
+    def empty_pending_count_display(self, obj):
+
+        return u'%s (%.2f%%)' % (obj.empty_pending_count,
+                                 obj.empty_pending_count
+                                 * 100.0 / obj.total_count)
+
+    empty_pending_count_display.short_description = _(u'Pending')
+    empty_pending_count_display.admin_order_field = 'empty_pending_count'
+
+    def empty_content_error_count_display(self, obj):
+
+        return u'%s (%.2f%% tot, %.2f%% empty)' % (
+            obj.empty_content_error_count,
+            obj.empty_content_error_count * 100.0 / obj.total_count,
+            obj.empty_content_error_count * 100.0 / (obj.empty_count or 1))
+
+    empty_content_error_count_display.short_description = _(u'Errors')
+    empty_content_error_count_display.admin_order_field = 'empty_pending_count'
+
+    def html_count_display(self, obj):
+
+        return u'%s (%.2f%%)' % (obj.html_count, obj.html_count
+                                 * 100.0 / obj.total_count)
+
+    html_count_display.short_description = _(u'HTML')
+    html_count_display.admin_order_field = 'html_count'
+
+    def html_content_error_display(self, obj):
+
+        return u'%s (%.2f%% tot, %.2f%% html)' % (
+            obj.html_content_error_count,
+            obj.html_content_error_count * 100.0 / obj.total_count,
+            obj.html_content_error_count * 100.0 / (obj.html_count or 1))
+
+    html_content_error_display.short_description = _(u'Errors')
+    html_content_error_display.admin_order_field = 'html_content_error_count' # NOQA
+
+    # def html_url_error_display(self, obj):
+
+    #     return u'%s (%.2f%% tot, %.2f%% html)' % (
+    #         obj.html_url_error_count,
+    #         obj.html_url_error_count * 100.0 / obj.total_count,
+    #         obj.html_url_error_count * 100.0 / (obj.html_count or 1))
+
+    # html_url_error_display.short_description = _(u'Errors')
+    # html_url_error_display.admin_order_field = 'html_url_error_count' # NOQA
+
+
+admin.site.register(ArticlesStatistic, ArticlesStatisticAdmin)
