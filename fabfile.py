@@ -182,21 +182,28 @@ def production():
             'worker-04.1flow.io': 'git@10.0.3.110:1flow.git',
         },
         'worker_concurrency': {
-            'worker_high': 8,
-            'worker_medium': 10,
-            'worker_low': 10,
-            'worker-02.1flow.io': 8,
-            'worker-04.1flow.io': 8,
-            # setting only 'worker-99.1flow.io': 24
+
+            # All of them get normalized to __all__ value
+            #'worker_high': 8,
+            #'worker_medium': 10,
+            #'worker_low': 10,
+            #'worker-02.1flow.io': 8,
+            #'worker-04.1flow.io': 8,
+
+            # setting only 'worker-99.1flow.io'
             # would override worker_swarm setting.
             'worker_fetch@worker-99.1flow.io': 16,
+
             'worker_swarm': 48,
+            '__all__': 8,
         },
         'worker_queues': {
+            # The 3 fetchers help on main queues.
             'worker_fetch@worker-02.1flow.io': 'fetch,low',
             'worker_fetch@worker-04.1flow.io': 'fetch,medium',
             'worker_fetch@worker-99.1flow.io': 'fetch,high',
         },
+        # Eventlet is definitively broken, the worker halts every now and then.
         # 'worker_pool': {
         #     'worker_swarm': 'eventlet',
         # },
