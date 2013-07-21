@@ -6,10 +6,14 @@ import operator
 from constance import config
 #from mongoengine.queryset import Q
 #from mongoengine.context_managers import no_dereference
+from mongoengine import Document
+from mongoengine.fields import IntField, DateTimeField, StringField
+
+from django.utils.translation import ugettext_lazy as _
 
 from oneflow.core.models import Feed, Article, global_feed_stats
 from oneflow.base.utils.dateutils import (timedelta, now, pytime,
-                                          naturaldelta, stats_datetime)
+                                          naturaldelta)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -124,128 +128,105 @@ def feed_distribution_by_last_fetch_display(results=None):
     return results, output
 
 
-def article_current_numbers():
+class ArticlesStatistic(Document):
 
-    start_time = pytime.time()
+    date_computed = DateTimeField(verbose_name=_(u'Date'))
+    duration      = IntField(verbose_name=_(u'Duration'))
 
-    global Article
+    total_count = IntField(verbose_name=_(u'Total'), default=0)
 
-    # Just doesn't work, produces a bunch of weird
-    # 'KeyError: 'pending_articles_count'' and other
-    # NoneType error due to scoping problems.
-    #with no_dereference(Article) as Article:
+    empty_count = IntField(verbose_name=_(u'Empty'), default=0)
+    empty_pending_count = IntField(verbose_name=_(u'Pending'), default=0)
+    empty_content_error_count = IntField(verbose_name=_(u'Content errors'), default=0)
+    empty_url_error_count = IntField(verbose_name=_(u'URL errors'), default=0)
 
-    empty_articles    = Article.objects(content_type=0).no_cache()
-    pending_articles  = empty_articles.filter(content_error='')
+    markdown_count = IntField(verbose_name=_(u'Markdown'), default=0)
+    html_count = IntField(verbose_name=_(u'HTML'), default=0)
+    html_content_error_count = IntField(verbose_name=_(u'Conversion errors'), default=0)
 
-    parsed_articles   = Article.objects(content_type__ne=0)
-    parsed_errors     = parsed_articles.filter(content_error__ne='').no_cache()
+    absolute_count = IntField(verbose_name=_(u'Absolute URLs'), default=0)
+    absolute_url_error_count = IntField(verbose_name=_(u'Abs. errors'), default=0)
 
-    html_articles     = parsed_articles.filter(content_type=1)
-    markdown_articles = parsed_articles.filter(content_type=2)
+    duplicates_count = IntField(verbose_name=_(u'Duplicates'), default=0)
 
-    absolutes         = Article.objects(url_absolute=True).no_cache()
-    duplicates        = Article.objects(duplicate_of__ne=None).no_cache()
-    orphaned          = Article.objects(orphaned=True).no_cache()
-    orphaned_httperr  = orphaned.filter(url_error__ne='')
+    orphaned_count = IntField(verbose_name=_(u'Orphaned'), default=0)
+    orphaned_url_error_count = IntField(verbose_name=_(u'Orph. URL err.'), default=0)
 
-    return {
-        'empty_articles': empty_articles,
-        'pending_articles': pending_articles,
+    time_limit_error_count = IntField(verbose_name=_(u'Time Limit err.'), default=0)
 
-        'parsed_errors': parsed_errors,
-        'parsed_articles': parsed_articles,
+    raw_fetched_count    = IntField(verbose_name=_(u'Fetched'), default=0)
+    raw_duplicates_count = IntField(verbose_name=_(u'Fetch dupl.'), default=0)
+    raw_mutualized_count = IntField(verbose_name=_(u'Mutualized'), default=0)
 
-        'html_articles': html_articles,
-        'markdown_articles': markdown_articles,
+    notes = StringField(verbose_name=_(u'Notes'))
 
-        'absolutes': absolutes,
-        'duplicates': duplicates,
-        'orphaned': orphaned,
-        'orphaned_httperr': orphaned_httperr,
+    @classmethod
+    def compute(cls, full=False):
 
-        'total_articles_count': Article._get_collection().count(),
+        start_time = pytime.time()
 
-        'empty_articles_count': empty_articles.count(),
-        'pending_articles_count': pending_articles.count(),
+        # Just doesn't work, produces a bunch of weird
+        # 'KeyError: 'pending_articles_count'' and other
+        # NoneType error due to scoping problems.
+        #with no_dereference(Article) as Article:
 
-        'parsed_errors_count': parsed_errors.count(),
-        'parsed_articles_count': parsed_articles.count(),
+        empty               = Article.objects(content_type=0).no_cache()
+        empty_pending       = empty.filter(content_error='', url_error='')
+        empty_content_error = empty.filter(content_error__ne='')
+        empty_url_error     = empty.filter(url_error__ne='')
 
-        'html_articles_count': html_articles.count(),
-        'markdown_articles_count': markdown_articles.count(),
+        parsed       = Article.objects(content_type__ne=0)
+        parsed_error = parsed.filter(content_error__ne='').no_cache()
+        html         = parsed.filter(content_type=1)
+        html_error   = html.filter(content_error__ne='')
 
-        'absolutes_count': absolutes.count(),
-        'duplicates_count': duplicates.count(),
-        'orphaned_count': orphaned.count(),
-        'orphaned_httperr_count': orphaned_httperr.count(),
+        markdown = parsed.filter(content_type=2)
 
-        'meta': {'duration': pytime.time() - start_time}
-    }
+        absolutes          = Article.objects(url_absolute=True).no_cache()
+        duplicates         = Article.objects(duplicate_of__ne=None).no_cache()
+        orphaned           = Article.objects(orphaned=True).no_cache()
+        orphaned_url_error = orphaned.filter(url_error__ne='')
 
+        kwargs = {
+            'date_computed': now(),
+            'total_count': Article._get_collection().count(),
+            'empty_count': empty.count(),
+            'empty_pending_count': empty_pending.count(),
+            'empty_content_error_count': empty_content_error.count(),
+            'empty_url_error_count': empty_url_error.count(),
+            'parsed_error_count': parsed_error.count(),
+            'parsed_count': parsed.count(),
+            'html_count': html.count(),
+            'html_error_count': html_error.count(),
+            'markdown_count': markdown.count(),
+            'raw_fetched_count': global_feed_stats.fetched(),
+            'raw_duplicates_count': global_feed_stats.dupes(),
+            'raw_mutualized_count': global_feed_stats.mutualized(),
+        }
 
-def article_current_numbers_display(results=None):
+        if full:
+            kwargs.update({
+                'absolutes_count': absolutes.count(),
+                'absolutes_url_error_count': absolutes.count(),
+                'duplicates_count': duplicates.count(),
+                'orphaned_count': orphaned.count(),
+                'orphaned_url_error_count': orphaned_url_error.count(),
+            })
 
-    if results is None:
-        results = article_current_numbers()
+        stat = ArticlesStatistic(**kwargs)
+        stat.duration = pytime.time() - start_time
 
-    # display
-    return results, (u'- %s: total: %s, pending: %s (%.2f%%), '
-                     u'unfetchable: %s (%.2f%%),\n'
-                     u'    - markdown: %s (%.2f%%), html: %s (%.2f%%), '
-                     u'conversion errors: %s (%.2f%%),\n'
-                     u'    - absolutes: %s (%.2f%%), '
-                     u'duplicates: %s (rel %.2f%%),\n'
-                     u'    - orphaned: %s (%.2f%%), '
-                     u'with HTTP error: %s (rel %.2f%%),\n'
-                     u'    - RAW counters (not accurate): fetched: %s, '
-                     u'dupes: %s, mutualized: %s,\n'
-                     u'[computed in %s]') % (
-                         stats_datetime(),
-                         results['total_articles_count'],
+        try:
+            stat.save()
 
-                         results['pending_articles_count'],
-                         results['pending_articles_count']
-                             * 100.0 / results['total_articles_count'],
+        except:
+            LOGGER.exception('Could not save new statistics')
 
-                         results['empty_articles_count']
-                             - results['pending_articles_count'],
-                         (results['empty_articles_count']
-                             - results['pending_articles_count'])
-                             * 100.0 / results['total_articles_count'],
+        else:
+            return stat
 
-                         results['markdown_articles_count'],
-                         results['markdown_articles_count']
-                             * 100.0 / results['total_articles_count'],
-
-                         results['html_articles_count'],
-                         results['html_articles_count']
-                             * 100.0 / results['total_articles_count'],
-
-                         results['parsed_errors_count'],
-                         results['parsed_errors_count']
-                             * 100.0 / results['total_articles_count'],
-
-                         results['absolutes_count'],
-                         results['absolutes_count']
-                             * 100.0 / results['total_articles_count'],
-
-                         results['duplicates_count'],
-                         results['duplicates_count']
-                             * 100.0 / results['absolutes_count'],
-
-                         results['orphaned_count'],
-                         results['orphaned_count']
-                             * 100.0 / results['total_articles_count'],
-
-                         results['orphaned_httperr_count'],
-                         results['orphaned_httperr_count']
-                             * 100.0 / results['orphaned_count'],
-
-                         global_feed_stats.fetched(),
-                         global_feed_stats.dupes(),
-                         global_feed_stats.mutualized(),
-                         naturaldelta(results['meta']['duration']))
+    def __unicode__(self):
+        return u'Statistics generated on %s' % (self.date_computed.isoformat())
 
 
 def classify_error(article):
@@ -313,16 +294,11 @@ def classify_error(article):
     return error
 
 
-def article_error_types(results=None):
-
-    if results is None:
-        results = article_current_numbers()
+def article_error_types():
 
     start_time     = pytime.time()
-    dupes_errors   = 0
-
+    seen_articles  = 0
     error_types    = {}
-    seen_articles  = []
     timeout_errors = []
     codec_errors   = []
     ascii_errors   = []
@@ -332,34 +308,28 @@ def article_error_types(results=None):
     #    list index out of range: 758
     #    'NoneType' object has no attribute 'findAll': 137
 
-    for bunch in (results.get('error_articles'),
-                  results.get('error2_articles')):
+    for article in Article.objects(content_error__ne=''):
 
-        for article in bunch:
-            if article.id in seen_articles:
-                dupes_errors += 1
-                continue
+        seen_articles += 1
 
-            seen_articles.append(article.id)
+        if article.content_error.startswith("'ascii'"):
+            ascii_errors.append(article)
+            codec_errors.append(article)
 
-            if article.content_error.startswith("'ascii'"):
-                ascii_errors.append(article)
-                codec_errors.append(article)
+        elif article.content_error.startswith("'utf8'"):
+            #error = 'UTF8 encoding error'
+            utf8_errors.append(article)
+            codec_errors.append(article)
 
-            elif article.content_error.startswith("'utf8'"):
-                #error = 'UTF8 encoding error'
-                utf8_errors.append(article)
-                codec_errors.append(article)
+        elif article.content_error.startswith('SoftTimeLimit'):
+            timeout_errors.append(article)
 
-            elif article.content_error.startswith('SoftTimeLimit'):
-                timeout_errors.append(article)
+        error = classify_error(article)
 
-            error = classify_error(article)
-
-            if error in error_types:
-                error_types[error] += 1
-            else:
-                error_types[error] = 1
+        if error in error_types:
+            error_types[error] += 1
+        else:
+            error_types[error] = 1
 
     return {
         'meta': {
@@ -367,7 +337,6 @@ def article_error_types(results=None):
         },
         'error_types': error_types,
         'seen_articles': seen_articles,
-        'dupes_errors': dupes_errors,
         'timeout_errors': timeout_errors,
         'codec_errors': codec_errors,
         'utf8_errors': utf8_errors,
@@ -380,9 +349,9 @@ def article_error_types_display(results=None, articles_results=None):
     if results is None:
         results = article_error_types(articles_results)
 
-    output = '>> Error types: %s (total: %s, dupes: %s, computed in %s)\n' % (
+    output = '>> Error types: %s (total: %s, computed in %s)\n' % (
         len(results.get('error_types')),
-        len(results.get('seen_articles')),
+        results.get('seen_articles'),
         results.get('dupes_errors'),
         naturaldelta(results.get('meta').get('duration')))
 
