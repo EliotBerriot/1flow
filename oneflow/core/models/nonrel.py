@@ -806,7 +806,7 @@ class Feed(Document):
         self.refresh_lock.release()
 
 
-# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed-related
 
 
 class Subscription(Document):
@@ -820,12 +820,7 @@ class Subscription(Document):
     tags = ListField(StringField())
 
 
-class Group(Document):
-    name = StringField(unique_with='creator')
-    creator = ReferenceField('User')
-    administrators = ListField(ReferenceField('User'))
-    members = ListField(ReferenceField('User'))
-    guests = ListField(ReferenceField('User'))
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article
 
 
 class Article(Document):
@@ -1779,6 +1774,14 @@ class User(Document):
         self.last_name = django_user.last_name
         self.first_name = django_user.first_name
         self.save()
+
+
+class Group(Document):
+    name = StringField(unique_with='creator')
+    creator = ReferenceField('User')
+    administrators = ListField(ReferenceField('User'))
+    members = ListField(ReferenceField('User'))
+    guests = ListField(ReferenceField('User'))
 
 
 connect_mongoengine_signals(globals())
