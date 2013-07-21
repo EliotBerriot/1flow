@@ -141,14 +141,18 @@ class ArticlesStatistic(Document):
                                          default=0)
     empty_url_error_count = IntField(verbose_name=_(u'URL errors'), default=0)
 
+    parsed_count = IntField(verbose_name=_(u'Parsed'), default=0)
+    parsed_error_count = IntField(verbose_name=_(u'Parse errors'), default=0)
+
     markdown_count = IntField(verbose_name=_(u'Markdown'), default=0)
+
     html_count = IntField(verbose_name=_(u'HTML'), default=0)
     html_content_error_count = IntField(verbose_name=_(u'Conversion errors'),
                                         default=0)
 
-    absolute_count = IntField(verbose_name=_(u'Abs. URLs'), default=0)
-    absolute_url_error_count = IntField(verbose_name=_(u'Abs. errors'),
-                                        default=0)
+    absolutes_count = IntField(verbose_name=_(u'Abs. URLs'), default=0)
+    absolutes_url_error_count = IntField(verbose_name=_(u'Abs. errors'),
+                                         default=0)
 
     duplicates_count = IntField(verbose_name=_(u'Dupes'), default=0)
 
@@ -182,6 +186,7 @@ class ArticlesStatistic(Document):
 
         parsed       = Article.objects(content_type__ne=0)
         parsed_error = parsed.filter(content_error__ne='').no_cache()
+
         html         = parsed.filter(content_type=1)
         html_error   = html.filter(content_error__ne='')
 
@@ -199,10 +204,10 @@ class ArticlesStatistic(Document):
             'empty_pending_count': empty_pending.count(),
             'empty_content_error_count': empty_content_error.count(),
             'empty_url_error_count': empty_url_error.count(),
-            'parsed_error_count': parsed_error.count(),
             'parsed_count': parsed.count(),
+            'parsed_error_count': parsed_error.count(),
             'html_count': html.count(),
-            'html_error_count': html_error.count(),
+            'html_content_error_count': html_error.count(),
             'markdown_count': markdown.count(),
             'raw_fetched_count': global_feed_stats.fetched(),
             'raw_duplicates_count': global_feed_stats.dupes(),
@@ -216,9 +221,12 @@ class ArticlesStatistic(Document):
                 'duplicates_count': duplicates.count(),
                 'orphaned_count': orphaned.count(),
                 'orphaned_url_error_count': orphaned_url_error.count(),
+                'time_limit_error_count': Article.objects(
+                    content_error__startswith='SoftTime').no_cache().count()
             })
 
         stat = ArticlesStatistic(**kwargs)
+
         stat.duration = pytime.time() - start_time
 
         try:
