@@ -387,27 +387,19 @@ class Feed(Document):
 
     def reopen(self, commit=True):
 
-        self.closed        = False
-        self.date_closed   = None
+        self.update(set__closed=False, set__date_closed=now())
         self.closed_reason = u'Reopen on %s' % now().isoformat()
 
         LOGGER.info(u'Feed %s has just beed re-opened.', self)
 
-        if commit:
-            self.save()
-
         self.safe_reload()
 
     def close(self, reason=None, commit=True):
-        self.closed        = True
-        self.date_closed   = now()
+        self.update(set__closed=True, set__date_closed=now())
         self.closed_reason = reason or u'NO REASON GIVEN'
 
         LOGGER.critical(u'Feed %s closed with reason "%s"!',
                         self, self.closed_reason)
-
-        if commit:
-            self.save()
 
         self.safe_reload()
 
@@ -435,13 +427,13 @@ class Feed(Document):
                 #           self.mail_warned.append('bad_site_url')
 
                 self.site_url = None
-                self.close(commit=False)
+                self.close()
 
             url_error = e.errors.pop('url', None)
 
             if url_error is not None:
                 if not self.closed:
-                    self.close(str(url_error), commit=False)
+                    self.close(str(url_error))
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
@@ -470,10 +462,11 @@ class Feed(Document):
         retval = False
 
         if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
-            self.close(u'Too many errors on the feed. Last was: %s'
-                       % self.errors[0], commit=False)
+            if not self.closed:
+                self.close(u'Too many errors on the feed. Last was: %s'
+                           % self.errors[0])
 
-            LOGGER.critical(u'Too many errors on feed %s, closed.', self)
+                LOGGER.critical(u'Too many errors on feed %s, closed.', self)
 
             # Keep only the most recent errors.
             self.errors = self.errors[:config.FEED_FETCH_MAX_ERRORS]
