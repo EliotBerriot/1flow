@@ -398,8 +398,8 @@ class Feed(Document):
         self.update(set__closed=True, set__date_closed=now())
         self.closed_reason = reason or u'NO REASON GIVEN'
 
-        LOGGER.critical(u'Feed %s closed with reason "%s"!',
-                        self, self.closed_reason)
+        LOGGER.info(u'Feed %s closed with reason "%s"!',
+                    self, self.closed_reason)
 
         self.safe_reload()
 
@@ -1334,8 +1334,8 @@ class Article(Document):
                                            countdown=randrange(60))
 
         except StopProcessingException, e:
-            LOGGER.error(u'Stopping processing of article %s on behalf of '
-                         u'an internal caller: %s.', self, e)
+            LOGGER.info(u'Stopping processing of article %s on behalf of '
+                        u'an internal caller: %s.', self, e)
             return
 
         except requests.ConnectionError, e:
