@@ -347,11 +347,12 @@ admin.site.register(Feed, FeedAdmin)
 class ArticlesStatisticAdmin(admin.DocumentAdmin):
 
     list_display = ('date_computed_display',
-                    'total_count', 'markdown_count_display',
-                    'empty_pending_count_display',
-                    'empty_content_error_count_display',
-                    'html_count_display', 'html_content_error_display',
-                    'absolutes_count', 'duplicates_count', 'orphaned_count',
+                    'total_count', 'markdown_display',
+                    'empty_pending_display',
+                    'empty_content_error_display',
+                    'html_display', 'html_content_error_display',
+                    'absolutes_display', 'duplicates_display',
+                    'orphaned_display', 'orphaned_url_error_display',
                     'raw_fetched_count', 'raw_duplicates_count',
                     'raw_mutualized_count', )
 
@@ -382,24 +383,24 @@ class ArticlesStatisticAdmin(admin.DocumentAdmin):
     date_computed_display.admin_order_field = 'date_computed'
     date_computed_display.allow_tags        = True
 
-    def markdown_count_display(self, obj):
+    def markdown_display(self, obj):
 
         return u'%s (%.2f%%)' % (obj.markdown_count, obj.markdown_count
                                  * 100.0 / obj.total_count)
 
-    markdown_count_display.short_description = _(u'Markdown')
-    markdown_count_display.admin_order_field = 'markdown_count'
+    markdown_display.short_description = _(u'Markdown')
+    markdown_display.admin_order_field = 'markdown_count'
 
-    def empty_pending_count_display(self, obj):
+    def empty_pending_display(self, obj):
 
         return u'%s (%.2f%%)' % (obj.empty_pending_count,
                                  obj.empty_pending_count
                                  * 100.0 / obj.total_count)
 
-    empty_pending_count_display.short_description = _(u'Pending')
-    empty_pending_count_display.admin_order_field = 'empty_pending_count'
+    empty_pending_display.short_description = _(u'Pending')
+    empty_pending_display.admin_order_field = 'empty_pending_count'
 
-    def empty_content_error_count_display(self, obj):
+    def empty_content_error_display(self, obj):
 
         return (u'<span title="%.2f%% of empty" style="cursor:pointer">'
                 u'%s (%.2f%%)</span>') % (
@@ -408,17 +409,17 @@ class ArticlesStatisticAdmin(admin.DocumentAdmin):
                     obj.empty_content_error_count,
                     obj.empty_content_error_count * 100.0 / obj.total_count)
 
-    empty_content_error_count_display.short_description = _(u'Errors')
-    empty_content_error_count_display.admin_order_field = 'empty_pending_count'
-    empty_content_error_count_display.allow_tags        = True
+    empty_content_error_display.short_description = _(u'Errors')
+    empty_content_error_display.admin_order_field = 'empty_pending_count'
+    empty_content_error_display.allow_tags        = True
 
-    def html_count_display(self, obj):
+    def html_display(self, obj):
 
         return u'%s (%.2f%%)' % (obj.html_count, obj.html_count
                                  * 100.0 / obj.total_count)
 
-    html_count_display.short_description = _(u'HTML')
-    html_count_display.admin_order_field = 'html_count'
+    html_display.short_description = _(u'HTML')
+    html_display.admin_order_field = 'html_count'
 
     def html_content_error_display(self, obj):
 
@@ -433,15 +434,55 @@ class ArticlesStatisticAdmin(admin.DocumentAdmin):
     html_content_error_display.admin_order_field = 'html_content_error_count' # NOQA
     html_content_error_display.allow_tags        = True
 
-    # def html_url_error_display(self, obj):
+    def absolutes_display(self, obj):
 
-    #     return u'%s (%.2f%% tot, %.2f%% html)' % (
-    #         obj.html_url_error_count,
-    #         obj.html_url_error_count * 100.0 / obj.total_count,
-    #         obj.html_url_error_count * 100.0 / (obj.html_count or 1))
+        if obj.absolutes_count:
+            return u'%s (%.2f%%)' % (obj.absolutes_count,
+                                     obj.absolutes_count
+                                     * 100.0 / obj.total_count)
+        return u'—'
 
-    # html_url_error_display.short_description = _(u'Errors')
-    # html_url_error_display.admin_order_field = 'html_url_error_count' # NOQA
+    absolutes_display.short_description = _(u'Absolutes')
+    absolutes_display.admin_order_field = 'absolutes_count'
+
+    def duplicates_display(self, obj):
+
+        if obj.duplicates_count:
+            return (u'<span title="%.2f%% of absolutes" style="cursor:pointer">'
+                    u'%s (%.2f%%)') % (
+                        obj.duplicates_count
+                            * 100.0 / (obj.absolutes_count or 1),
+                        obj.duplicates_count,
+                        obj.duplicates_count * 100.0 / obj.total_count)
+        return u'—'
+
+    duplicates_display.short_description = _(u'Errors')
+    duplicates_display.admin_order_field = 'duplicates_count' # NOQA
+    duplicates_display.allow_tags        = True
+
+    def orphaned_display(self, obj):
+
+        if obj.orphaned_count:
+            return u'%s (%.2f%%)' % (obj.orphaned_count,
+                                     obj.orphaned_count
+                                     * 100.0 / obj.total_count)
+        return u'—'
+
+    orphaned_display.short_description = _(u'Orphans')
+    orphaned_display.admin_order_field = 'orphaned_count'
+
+    def orphaned_url_error_display(self, obj):
+
+        return (u'<span title="%.2f%% of absolutes" style="cursor:pointer">'
+                u'%s (%.2f%%)') % (
+                    obj.orphaned_url_error_count
+                        * 100.0 / (obj.absolutes_count or 1),
+                    obj.orphaned_url_error_count,
+                    obj.orphaned_url_error_count * 100.0 / obj.total_count)
+
+    orphaned_url_error_display.short_description = _(u'Errors')
+    orphaned_url_error_display.admin_order_field = 'orphaned_url_error_count'
+    orphaned_url_error_display.allow_tags        = True
 
 
 admin.site.register(ArticlesStatistic, ArticlesStatisticAdmin)
