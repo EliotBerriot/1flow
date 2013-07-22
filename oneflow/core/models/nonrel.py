@@ -398,8 +398,8 @@ class Feed(Document):
         self.update(set__closed=True, set__date_closed=now())
         self.closed_reason = reason or u'NO REASON GIVEN'
 
-        LOGGER.critical(u'Feed %s closed with reason "%s"!',
-                        self, self.closed_reason)
+        LOGGER.info(u'Feed %s closed with reason "%s"!',
+                    self, self.closed_reason)
 
         self.safe_reload()
 
