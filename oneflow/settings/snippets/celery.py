@@ -82,7 +82,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'compute-articles-statistics': {
         'task': 'oneflow.core.tasks.compute_articles_statistics',
-        'schedule': crontab(hour='*/4', minute='14'),
+        'schedule': crontab(hour='8,14,20', minute='14'),
     },
     'compute-articles-statistics-full': {
         'task': 'oneflow.core.tasks.compute_articles_statistics_full',
