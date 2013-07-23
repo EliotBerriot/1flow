@@ -80,14 +80,6 @@ CELERYBEAT_SCHEDULE = {
         'task': 'oneflow.core.tasks.global_feeds_checker',
         'schedule': crontab(hour='1', minute='1'),
     },
-    'compute-articles-statistics': {
-        'task': 'oneflow.core.tasks.compute_articles_statistics',
-        'schedule': crontab(hour='8,14,20', minute='14'),
-    },
-    'compute-articles-statistics-full': {
-        'task': 'oneflow.core.tasks.compute_articles_statistics_full',
-        'schedule': crontab(hour='2', minute='22'),
-    },
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Cleaning tasks
 
