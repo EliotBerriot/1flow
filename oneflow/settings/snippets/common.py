@@ -375,6 +375,10 @@ RAVEN_CONFIG = {
                           else 'RAVEN_DSN'),
 }
 
+STATSD_HOST   = os.environ.get('STATSD_HOST')
+STATSD_PORT   = int(os.environ.get('STATSD_PORT', 8125))
+STATSD_PREFIX = os.environ.get('STATSD_PREFIX', '1flow')
+
 MAINTENANCE_MODE = os.path.exists(os.path.join(BASE_ROOT, 'MAINTENANCE_MODE'))
 
 MAINTENANCE_IGNORE_URLS = (
