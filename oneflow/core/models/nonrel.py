@@ -687,6 +687,7 @@ class Feed(Document):
             subscribers   = [s.user for s in self.subscriptions]
             new_articles  = 0
             duplicates    = 0
+            mutualized    = 0
 
             statsd.incr('feeds.refresh.fetch.global.updated')
             statsd.incr('feeds.refresh.fetch.byId.%s.updated' % self.id)
@@ -695,19 +696,13 @@ class Feed(Document):
                 created = self.create_article_and_reads(article, subscribers,
                                                         tags)
                 if created:
-                    statsd.incr('feeds.refresh.global.fetched')
-                    statsd.incr('feeds.refresh.byId.%s.fetched' % self.id)
-
                     new_articles += 1
 
                 elif created is False:
-                    statsd.incr('feeds.refresh.global.duplicates')
-                    statsd.incr('feeds.refresh.byId.%s.duplicates' % self.id)
                     duplicates += 1
 
                 else:
-                    statsd.incr('feeds.refresh.global.mutualized')
-                    statsd.incr('feeds.refresh.byId.%s.mutualized' % self.id)
+                    mutualized += 1
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
@@ -735,6 +730,15 @@ class Feed(Document):
                                 new_interval, self, new_articles, duplicates)
 
                     self.fetch_interval = new_interval
+
+            statsd.incr('feeds.refresh.global.fetched', new_articles)
+            statsd.incr('feeds.refresh.global.duplicates', duplicates)
+            statsd.incr('feeds.refresh.global.mutualized', mutualized)
+
+            sid = str(self.id)
+            statsd.incr('feeds.refresh.byId.%s.fetched' % sid, new_articles)
+            statsd.incr('feeds.refresh.byId.%s.duplicates' % sid, duplicates)
+            statsd.incr('feeds.refresh.byId.%s.mutualized' % sid, mutualized)
 
             self.update_recent_articles_count.apply_async(
                 (), countdown=until_tomorrow_delta().seconds)

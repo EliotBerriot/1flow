@@ -3,13 +3,14 @@
 import logging
 import operator
 
+from statsd import statsd
 from constance import config
 #from mongoengine.queryset import Q
 #from mongoengine.context_managers import no_dereference
 
 from oneflow.core.models import Feed, Article
 from oneflow.base.utils.dateutils import (timedelta, now, pytime,
-                                          naturaldelta)
+                                          naturaldelta, benchmark)
 
 
 LOGGER = logging.getLogger(__name__)
@@ -256,3 +257,35 @@ def article_error_types_display(results=None, articles_results=None):
                     reverse=True))
 
     return results, output
+
+
+def synchronize_statsd_articles_gauges(full=False):
+
+    with benchmark('synchronize statsd gauges for Article.*'):
+
+        empty               = Article.objects(content_type=0).no_cache()
+        #empty_pending       = empty.filter(content_error='', url_error='')
+        #empty_content_error = empty.filter(content_error__ne='')
+        #empty_url_error     = empty.filter(url_error__ne='')
+
+        parsed             = Article.objects(content_type__ne=0)
+        html               = parsed.filter(content_type=1)
+        markdown           = parsed.filter(content_type=2)
+
+        absolutes          = Article.objects(url_absolute=True).no_cache()
+        duplicates         = Article.objects(duplicate_of__ne=None).no_cache()
+        orphaned           = Article.objects(orphaned=True).no_cache()
+        content_errors     = Article.objects(content_error__ne='').no_cache()
+        url_errors         = Article.objects(url_error__ne='').no_cache()
+
+        statsd.gauge('articles.counts.total', Article._get_collection().count())
+        statsd.gauge('articles.counts.markdown', markdown.count())
+        statsd.gauge('articles.counts.html', html.count())
+        statsd.gauge('articles.counts.empty', empty.count())
+        statsd.gauge('articles.counts.content_errors', content_errors.count())
+        statsd.gauge('articles.counts.url_errors', url_errors.count())
+
+        if full:
+            statsd.gauge('articles.counts.orphaned', orphaned.count())
+            statsd.gauge('articles.counts.absolutes', absolutes.count())
+            statsd.gauge('articles.counts.duplicates', duplicates.count())
