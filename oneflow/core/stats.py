@@ -6,12 +6,8 @@ import operator
 from constance import config
 #from mongoengine.queryset import Q
 #from mongoengine.context_managers import no_dereference
-from mongoengine import Document
-from mongoengine.fields import IntField, DateTimeField, StringField
 
-from django.utils.translation import ugettext_lazy as _
-
-from oneflow.core.models import Feed, Article, global_feed_stats
+from oneflow.core.models import Feed, Article
 from oneflow.base.utils.dateutils import (timedelta, now, pytime,
                                           naturaldelta)
 
@@ -126,120 +122,6 @@ def feed_distribution_by_last_fetch_display(results=None):
                        naturaldelta(meta['duration']))
 
     return results, output
-
-
-class ArticlesStatistic(Document):
-
-    date_computed = DateTimeField(verbose_name=_(u'Date'))
-    duration      = IntField(verbose_name=_(u'Duration'))
-
-    total_count = IntField(verbose_name=_(u'Total'), default=0)
-
-    empty_count = IntField(verbose_name=_(u'Empty'), default=0)
-    empty_pending_count = IntField(verbose_name=_(u'Pending'), default=0)
-    empty_content_error_count = IntField(verbose_name=_(u'Content errors'),
-                                         default=0)
-    empty_url_error_count = IntField(verbose_name=_(u'URL errors'), default=0)
-
-    parsed_count = IntField(verbose_name=_(u'Parsed'), default=0)
-    parsed_error_count = IntField(verbose_name=_(u'Parse errors'), default=0)
-
-    markdown_count = IntField(verbose_name=_(u'Markdown'), default=0)
-
-    html_count = IntField(verbose_name=_(u'HTML'), default=0)
-    html_content_error_count = IntField(verbose_name=_(u'Conversion errors'),
-                                        default=0)
-
-    absolutes_count = IntField(verbose_name=_(u'Abs. URLs'), default=0)
-    absolutes_url_error_count = IntField(verbose_name=_(u'Abs. errors'),
-                                         default=0)
-
-    duplicates_count = IntField(verbose_name=_(u'Dupes'), default=0)
-
-    orphaned_count = IntField(verbose_name=_(u'Orphans'), default=0)
-    orphaned_url_error_count = IntField(verbose_name=_(u'Orph. err.'),
-                                        default=0)
-
-    time_limit_error_count = IntField(verbose_name=_(u'Time err.'),
-                                      default=0)
-
-    raw_fetched_count    = IntField(verbose_name=_(u'Fetched'), default=0)
-    raw_duplicates_count = IntField(verbose_name=_(u'Fet. dupl.'), default=0)
-    raw_mutualized_count = IntField(verbose_name=_(u'Mutualized'), default=0)
-
-    notes = StringField(verbose_name=_(u'Notes'))
-
-    @classmethod
-    def compute(cls, full=False):
-
-        start_time = pytime.time()
-
-        # Just doesn't work, produces a bunch of weird
-        # 'KeyError: 'pending_articles_count'' and other
-        # NoneType error due to scoping problems.
-        #with no_dereference(Article) as Article:
-
-        empty               = Article.objects(content_type=0).no_cache()
-        empty_pending       = empty.filter(content_error='', url_error='')
-        empty_content_error = empty.filter(content_error__ne='')
-        empty_url_error     = empty.filter(url_error__ne='')
-
-        parsed       = Article.objects(content_type__ne=0)
-        parsed_error = parsed.filter(content_error__ne='').no_cache()
-
-        html         = parsed.filter(content_type=1)
-        html_error   = html.filter(content_error__ne='')
-
-        markdown = parsed.filter(content_type=2)
-
-        absolutes          = Article.objects(url_absolute=True).no_cache()
-        duplicates         = Article.objects(duplicate_of__ne=None).no_cache()
-        orphaned           = Article.objects(orphaned=True).no_cache()
-        orphaned_url_error = orphaned.filter(url_error__ne='')
-
-        kwargs = {
-            'date_computed': now(),
-            'total_count': Article._get_collection().count(),
-            'empty_count': empty.count(),
-            'empty_pending_count': empty_pending.count(),
-            'empty_content_error_count': empty_content_error.count(),
-            'empty_url_error_count': empty_url_error.count(),
-            'parsed_count': parsed.count(),
-            'parsed_error_count': parsed_error.count(),
-            'html_count': html.count(),
-            'html_content_error_count': html_error.count(),
-            'markdown_count': markdown.count(),
-            'raw_fetched_count': global_feed_stats.fetched(),
-            'raw_duplicates_count': global_feed_stats.dupes(),
-            'raw_mutualized_count': global_feed_stats.mutualized(),
-        }
-
-        if full:
-            kwargs.update({
-                'absolutes_count': absolutes.count(),
-                'absolutes_url_error_count': absolutes.count(),
-                'duplicates_count': duplicates.count(),
-                'orphaned_count': orphaned.count(),
-                'orphaned_url_error_count': orphaned_url_error.count(),
-                'time_limit_error_count': Article.objects(
-                    content_error__startswith='SoftTime').no_cache().count()
-            })
-
-        stat = ArticlesStatistic(**kwargs)
-
-        stat.duration = pytime.time() - start_time
-
-        try:
-            stat.save()
-
-        except:
-            LOGGER.exception('Could not save new statistics')
-
-        else:
-            return stat
-
-    def __unicode__(self):
-        return u'Articles statistic #%s' % (self.id)
 
 
 def classify_error(article):

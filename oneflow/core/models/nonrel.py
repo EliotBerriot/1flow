@@ -7,6 +7,7 @@ import strainer
 import html2text
 import feedparser
 
+from statsd import statsd
 from random import randrange
 from constance import config
 
@@ -34,8 +35,7 @@ from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
                            RedisExpiringLock, AlreadyLockedException,
                            RedisSemaphore, NoResourceAvailableException,
-                           HttpResponseLogProcessor, RedisStatsCounter,
-                           StopProcessingException)
+                           HttpResponseLogProcessor, StopProcessingException)
 
 from ...base.utils.http import clean_url
 from ...base.utils.dateutils import (now, timedelta, until_tomorrow_delta,
@@ -99,63 +99,6 @@ feedparser.registerDateHandler(dateutilDateHandler)
 
 # ••••••••• end issue •••••••••••••••••••••••••••••••••••••••••••••••••••••••••
 
-
-class FeedStatsCounter(RedisStatsCounter):
-    """ This counter represents a given feed's statistics.
-
-        It will increment global feeds statistics too, so that we
-        developpers don't have to worry about 2 types of statistics
-        counters in the Feed methods / tasks.
-    """
-
-    key_base = 'feeds'
-
-    def incr_fetched(self):
-
-        if self.key_base != global_feed_stats.key_base:
-            global_feed_stats.incr_fetched()
-
-        return self.fetched(increment=True)
-
-    def fetched(self, increment=False):
-
-        # NOTE: the following code won't work work: it will
-        # increment the global counter instead of reseting it.
-        # (spotted by the test-suite 2013-07-12)
-        #
-        # if self.key_base != global_feed_stats.key_base:
-        #     # in case we want to reset.
-        #     global_feed_stats.fetched(increment)
-
-        return RedisStatsCounter._int_incr_key(
-            self.key_base + ':fetch', increment)
-
-    def incr_dupes(self):
-
-        if self.key_base != global_feed_stats.key_base:
-            global_feed_stats.incr_dupes()
-
-        return self.dupes(increment=True)
-
-    def dupes(self, increment=False):
-
-        return RedisStatsCounter._int_incr_key(
-            self.key_base + ':dupes', increment)
-
-    def incr_mutualized(self):
-
-        if self.key_base != global_feed_stats.key_base:
-            global_feed_stats.incr_mutualized()
-
-        return self.mutualized(increment=True)
-
-    def mutualized(self, increment=False):
-
-        return RedisStatsCounter._int_incr_key(
-            self.key_base + ':mutual', increment)
-
-# This one will keep track of all counters, globally, for all feeds.
-global_feed_stats = FeedStatsCounter()
 
 # Until we patch Ghost to use more than one Xvfb at the same time,
 # we are tied to ensure there is only one running at a time.
@@ -525,7 +468,7 @@ class Feed(Document):
             LOGGER.exception(u'Article creation failed in feed %s.', self)
             return False
 
-        mutualized = not created and self in new_article.feeds
+        mutualized = created is None
 
         if created or mutualized:
             self.recent_articles_count += 1
@@ -736,27 +679,35 @@ class Feed(Document):
 
         if feed_status == 304:
             LOGGER.info(u'No new content in feed %s.', self)
+            statsd.incr('feeds.refresh.fetch.global.unchanged')
+            statsd.incr('feeds.refresh.fetch.byId.%s.unchanged' % self.id)
 
         else:
-            fetch_counter = FeedStatsCounter(self)
             tags          = getattr(parsed_feed, 'tags', [])
             subscribers   = [s.user for s in self.subscriptions]
             new_articles  = 0
             duplicates    = 0
 
+            statsd.incr('feeds.refresh.fetch.global.updated')
+            statsd.incr('feeds.refresh.fetch.byId.%s.updated' % self.id)
+
             for article in parsed_feed.entries:
                 created = self.create_article_and_reads(article, subscribers,
                                                         tags)
                 if created:
-                    fetch_counter.incr_fetched()
+                    statsd.incr('feeds.refresh.global.fetched')
+                    statsd.incr('feeds.refresh.byId.%s.fetched' % self.id)
+
                     new_articles += 1
 
                 elif created is False:
-                    fetch_counter.incr_dupes()
+                    statsd.incr('feeds.refresh.global.duplicates')
+                    statsd.incr('feeds.refresh.byId.%s.duplicates' % self.id)
                     duplicates += 1
 
                 else:
-                    fetch_counter.incr_mutualized()
+                    statsd.incr('feeds.refresh.global.mutualized')
+                    statsd.incr('feeds.refresh.byId.%s.mutualized' % self.id)
 
             # Store the date/etag for next cycle. Doing it after the full
             # refresh worked ensures that in case of any exception during
@@ -792,6 +743,9 @@ class Feed(Document):
         self.errors[:]  = []
         self.last_fetch = now()
         self.save()
+
+        statsd.incr('feeds.refresh.fetch.global.done')
+        statsd.incr('feeds.refresh.fetch.byId.%s.done' % self.id)
 
         # As the last_fetch is now up-to-date, we can release the fetch lock.
         # If any other refresh job comes, it will check last_fetch and will
@@ -1048,6 +1002,7 @@ class Article(Document):
                     # Special case, we probably hit a remote parallel limit.
                     self.feed.set_fetch_limit()
 
+                statsd.gauge('articles.counts.url_errors', 1, delta=True)
                 self.url_error = str(e)
                 self.save()
 
@@ -1061,6 +1016,8 @@ class Article(Document):
             args = (requests_response.status_code, requests_response.reason,
                     requests_response.url)
 
+            statsd.gauge('articles.counts.orphaned', 1, delta=True)
+            statsd.gauge('articles.counts.url_errors', 1, delta=True)
             self.orphaned  = True
             self.url_error = message % args
             self.save()
@@ -1088,8 +1045,12 @@ class Article(Document):
             # Just for displaying purposes, see below.
             old_url = self.url
 
+            if self.url_error:
+                statsd.gauge('articles.counts.url_errors', -1, delta=True)
+
             # Even if we are a duplicate, we came until here and everything
             # went fine. We won't need to lookup again the absolute URL.
+            statsd.gauge('articles.counts.absolutes', 1, delta=True)
             self.update(set__url_absolute=True, set__url_error='')
 
             self.url = final_url
@@ -1117,6 +1078,10 @@ class Article(Document):
 
         else:
             # Don't do the job twice.
+            if self.url_error:
+                statsd.gauge('articles.counts.url_errors', -1, delta=True)
+
+            statsd.gauge('articles.counts.absolutes', 1, delta=True)
             self.update(set__url_absolute=True, set__url_error='')
 
         return True
@@ -1153,7 +1118,9 @@ class Article(Document):
         duplicate.duplicate_of = self
         duplicate.save()
 
+        #
         # Thus, the current article replaces it completely in the chain.
+        #
 
         need_reload = False
 
@@ -1186,6 +1153,8 @@ class Article(Document):
                 LOGGER.exception(u'Could not replace current article in '
                                  u'read %s by %s!' % (read, self))
 
+        statsd.gauge('articles.counts.duplicates', 1, delta=True)
+
         LOGGER.info(u'Article %s successfully registered as duplicate '
                     u'of %s and can be deleted if wanted.', duplicate, self)
 
@@ -1207,6 +1176,10 @@ class Article(Document):
 
     @classmethod
     def create_article(cls, title, url, feeds, **kwargs):
+        """ Returns ``True`` if article created, ``False`` if a pure duplicate
+            (already exists in the same feed), ``None`` if exists but not in
+            the same feed. If more than one feed given, only returns ``True``
+            or ``False`` (mutualized state is not checked). """
 
         if url is None:
             reset_url = True
@@ -1227,12 +1200,17 @@ class Article(Document):
 
             new_article = cls.objects.get(url=url)
 
+            created_retval = False
+
+            if len(feeds) == 1 and feeds[0] not in new_article.feeds:
+                created_retval = None
+
             for feed in feeds:
                 new_article.update(add_to_set__feeds=feed)
 
-            new_article.reload()
+            new_article.safe_reload()
 
-            return new_article, False
+            return new_article, created_retval
 
         else:
             if kwargs:
@@ -1246,6 +1224,7 @@ class Article(Document):
                 new_article.url = \
                     ARTICLE_ORPHANED_BASE + unicode(new_article.id)
                 new_article.orphaned = True
+                statsd.gauge('articles.counts.orphaned', 1, delta=True)
 
                 # Need to save because we will reload just after.
                 new_article.save()
@@ -1253,12 +1232,13 @@ class Article(Document):
             for feed in feeds:
                 new_article.update(add_to_set__feeds=feed)
 
-            new_article.reload()
+            new_article.safe_reload()
 
             LOGGER.info(u'Created %sarticle %s in feed(s) %s.', u'orphaned '
                         if reset_url else u'', new_article,
                         u', '.join(unicode(f) for f in feeds))
 
+            statsd.gauge('articles.counts.total', 1, delta=True)
             return new_article, True
 
     def fetch_content_must_abort(self, force=False, commit=True):
@@ -1319,6 +1299,8 @@ class Article(Document):
         #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
 
         try:
+            statsd.gauge('articles.counts.empty', 1, delta=True)
+
             if self.feed:
                 with self.feed.fetch_limit:
                     self.fetch_content_text(force=force, commit=commit)
@@ -1349,6 +1331,7 @@ class Article(Document):
                                                countdown=randrange(60))
                 return
 
+            statsd.gauge('articles.counts.content_errors', 1, delta=True)
             self.content_error = str(e)
             self.save()
 
@@ -1356,6 +1339,7 @@ class Article(Document):
             return
 
         except SoftTimeLimitExceeded, e:
+            statsd.gauge('articles.counts.content_errors', 1, delta=True)
             self.content_error = str(e)
             self.save()
 
@@ -1364,6 +1348,7 @@ class Article(Document):
 
         except Exception, e:
             # TODO: except urllib2.error: retry with longer delay.
+            statsd.gauge('articles.counts.content_errors', 1, delta=True)
             self.content_error = str(e)
             self.save()
 
@@ -1543,7 +1528,13 @@ class Article(Document):
                 # and BeautifulSoup's str() outputs 'utf-8' encoded strings :-)
                 self.content = str(content)
 
+            statsd.gauge('articles.counts.empty', -1, delta=True)
+            statsd.gauge('articles.counts.html', 1, delta=True)
             self.content_type = CONTENT_TYPE_HTML
+
+            if self.content_error:
+                statsd.gauge('articles.counts.content_errors', -1, delta=True)
+                self.content_error = ''
 
             if commit:
                 self.save()
@@ -1571,11 +1562,16 @@ class Article(Document):
                            u'configuration.')
             return
 
-        if self.content_type == CONTENT_TYPE_MARKDOWN and not force:
-            LOGGER.warning(u'Article %s already converted to Markdown.', self)
-            return
+        if self.content_type == CONTENT_TYPE_MARKDOWN:
+            if not force:
+                LOGGER.warning(u'Article %s already converted to Markdown.',
+                               self)
+                return
 
-        if self.content_type != CONTENT_TYPE_HTML:
+            else:
+                statsd.gauge('articles.counts.markdown', -1, delta=True)
+
+        elif self.content_type != CONTENT_TYPE_HTML:
             LOGGER.warning(u'Article %s cannot be converted to Markdown, '
                            u'it is not currently HTML.', self)
             return
@@ -1591,6 +1587,8 @@ class Article(Document):
                 self.content.decode('utf-8')).encode('utf-8')
 
         except Exception, e:
+            statsd.gauge('articles.counts.content_errors', 1, delta=True)
+
             self.content_error = str(e)
             self.save()
 
@@ -1598,7 +1596,12 @@ class Article(Document):
             return e
 
         self.content_type = CONTENT_TYPE_MARKDOWN
-        self.content_error = ''
+        statsd.gauge('articles.counts.html', -1, delta=True)
+        statsd.gauge('articles.counts.markdown', 1, delta=True)
+
+        if self.content_error:
+            statsd.gauge('articles.counts.content_errors', -1, delta=True)
+            self.content_error = ''
 
         #
         # TODO: word count here

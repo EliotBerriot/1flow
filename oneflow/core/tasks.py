@@ -24,7 +24,6 @@ from django.utils.translation import ugettext_lazy as _
 
 from .models import RATINGS
 from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
-from .stats import ArticlesStatistic
 from .gr_import import GoogleReaderImport
 
 from ..base.utils import RedisExpiringLock
@@ -685,21 +684,3 @@ def global_feeds_checker():
 
     LOGGER.info('Closed %s feeds in %s.', count,
                 naturaldelta(pytime.time() - start_time))
-
-
-# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Refresh RSS feeds
-
-
-@task(queue='high')
-def compute_articles_statistics():
-    """ This one is fast (thanks to indexes) and quite important,
-        it goes to high queue. """
-
-    return ArticlesStatistic.compute()
-
-
-@task(queue='low')
-def compute_articles_statistics_full():
-    """ This one is very long, it gets to the low queue. """
-
-    return ArticlesStatistic.compute(full=True)
