@@ -679,8 +679,10 @@ class Feed(Document):
 
         if feed_status == 304:
             LOGGER.info(u'No new content in feed %s.', self)
-            statsd.incr('feeds.refresh.fetch.global.unchanged')
-            statsd.incr('feeds.refresh.fetch.byId.%s.unchanged' % self.id)
+
+            with statsd.pipeline() as spipe:
+                spipe.incr('feeds.refresh.fetch.global.unchanged')
+                spipe.incr('feeds.refresh.fetch.byId.%s.unchanged' % self.id)
 
         else:
             tags          = getattr(parsed_feed, 'tags', [])
@@ -689,8 +691,9 @@ class Feed(Document):
             duplicates    = 0
             mutualized    = 0
 
-            statsd.incr('feeds.refresh.fetch.global.updated')
-            statsd.incr('feeds.refresh.fetch.byId.%s.updated' % self.id)
+            with statsd.pipeline() as spipe:
+                spipe.incr('feeds.refresh.fetch.global.updated')
+                spipe.incr('feeds.refresh.fetch.byId.%s.updated' % self.id)
 
             for article in parsed_feed.entries:
                 created = self.create_article_and_reads(article, subscribers,
@@ -731,14 +734,16 @@ class Feed(Document):
 
                     self.fetch_interval = new_interval
 
-            statsd.incr('feeds.refresh.global.fetched', new_articles)
-            statsd.incr('feeds.refresh.global.duplicates', duplicates)
-            statsd.incr('feeds.refresh.global.mutualized', mutualized)
+            with statsd.pipeline() as spipe:
+                spipe.incr('feeds.refresh.global.fetched', new_articles)
+                spipe.incr('feeds.refresh.global.duplicates', duplicates)
+                spipe.incr('feeds.refresh.global.mutualized', mutualized)
 
-            sid = str(self.id)
-            statsd.incr('feeds.refresh.byId.%s.fetched' % sid, new_articles)
-            statsd.incr('feeds.refresh.byId.%s.duplicates' % sid, duplicates)
-            statsd.incr('feeds.refresh.byId.%s.mutualized' % sid, mutualized)
+                sid = str(self.id)
+
+                spipe.incr('feeds.refresh.byId.%s.fetched' % sid, new_articles)
+                spipe.incr('feeds.refresh.byId.%s.duplicates' % sid, duplicates)
+                spipe.incr('feeds.refresh.byId.%s.mutualized' % sid, mutualized)
 
             self.update_recent_articles_count.apply_async(
                 (), countdown=until_tomorrow_delta().seconds)
@@ -748,8 +753,9 @@ class Feed(Document):
         self.last_fetch = now()
         self.save()
 
-        statsd.incr('feeds.refresh.fetch.global.done')
-        statsd.incr('feeds.refresh.fetch.byId.%s.done' % self.id)
+        with statsd.pipeline() as spipe:
+            spipe.incr('feeds.refresh.fetch.global.done')
+            spipe.incr('feeds.refresh.fetch.byId.%s.done' % self.id)
 
         # As the last_fetch is now up-to-date, we can release the fetch lock.
         # If any other refresh job comes, it will check last_fetch and will
@@ -1020,8 +1026,10 @@ class Article(Document):
             args = (requests_response.status_code, requests_response.reason,
                     requests_response.url)
 
-            statsd.gauge('articles.counts.orphaned', 1, delta=True)
-            statsd.gauge('articles.counts.url_errors', 1, delta=True)
+            with statsd.pipeline() as spipe:
+                spipe.gauge('articles.counts.orphaned', 1, delta=True)
+                spipe.gauge('articles.counts.url_errors', 1, delta=True)
+
             self.orphaned  = True
             self.url_error = message % args
             self.save()
@@ -1534,8 +1542,10 @@ class Article(Document):
                 # and BeautifulSoup's str() outputs 'utf-8' encoded strings :-)
                 self.content = str(content)
 
-            statsd.gauge('articles.counts.empty', -1, delta=True)
-            statsd.gauge('articles.counts.html', 1, delta=True)
+            with statsd.pipeline() as spipe:
+                spipe.gauge('articles.counts.empty', -1, delta=True)
+                spipe.gauge('articles.counts.html', 1, delta=True)
+
             self.content_type = CONTENT_TYPE_HTML
 
             if self.content_error:
@@ -1601,9 +1611,11 @@ class Article(Document):
             LOGGER.exception(u'Markdown convert failed for article %s.', self)
             return e
 
+        with statsd.pipeline() as spipe:
+            spipe.gauge('articles.counts.html', -1, delta=True)
+            spipe.gauge('articles.counts.markdown', 1, delta=True)
+
         self.content_type = CONTENT_TYPE_MARKDOWN
-        statsd.gauge('articles.counts.html', -1, delta=True)
-        statsd.gauge('articles.counts.markdown', 1, delta=True)
 
         if self.content_error:
             statsd.gauge('articles.counts.content_errors', -1, delta=True)
