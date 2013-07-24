@@ -1055,7 +1055,8 @@ class Article(Document):
             # Even if we are a duplicate, we came until here and everything
             # went fine. We won't need to lookup again the absolute URL.
             statsd.gauge('articles.counts.absolutes', 1, delta=True)
-            self.update(set__url_absolute=True, set__url_error='')
+            self.url_absolute = True
+            self.url_error    = ''
 
             self.url = final_url
 
@@ -1087,6 +1088,7 @@ class Article(Document):
 
             statsd.gauge('articles.counts.absolutes', 1, delta=True)
             self.update(set__url_absolute=True, set__url_error='')
+            self.safe_reload()
 
         return True
 

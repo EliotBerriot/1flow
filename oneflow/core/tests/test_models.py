@@ -11,7 +11,7 @@ from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 #from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, FeedStatsCounter, Read, User
+from oneflow.core.models import Feed, Article, Read, User
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -23,63 +23,11 @@ TEST_REDIS = redis.StrictRedis(host=settings.REDIS_TEST_HOST,
 
 # Use the test database not to pollute the production/development one.
 RedisStatsCounter.REDIS = TEST_REDIS
-FeedStatsCounter.REDIS  = TEST_REDIS
 
 TEST_REDIS.flushdb()
 
 disconnect()
 connect('oneflow_testsuite')
-
-
-class FeedStatsCounterTests(TestCase):
-
-    def setUp(self):
-        self.global_counter = FeedStatsCounter()
-        self.t1 = FeedStatsCounter('test1')
-        self.t2 = FeedStatsCounter('test2')
-
-        Feed.drop_collection()
-        f3 = Feed(url='http://test-feed3.com').save()
-        f4 = Feed(url='http://test-feed4.com').save()
-
-        self.t3 = FeedStatsCounter(f3)
-        self.t4 = FeedStatsCounter(f4)
-
-    def test_feed_stats_counters(self):
-
-        current_value = self.global_counter.fetched()
-
-        self.t1.incr_fetched()
-        self.t1.incr_fetched()
-        self.t1.incr_fetched()
-        self.t1.incr_fetched()
-
-        self.assertEquals(self.t1.fetched(), 4)
-
-        self.t2.incr_fetched()
-        self.t2.incr_fetched()
-        self.t2.incr_fetched()
-
-        self.assertEquals(self.t2.fetched(), 3)
-
-        self.assertEquals(self.global_counter.fetched(), current_value + 7)
-
-    def test_feed_stats_counters_reset(self):
-
-        self.t1.fetched('reset')
-        self.global_counter.fetched('reset')
-
-        self.assertEquals(self.t1.fetched(), 0)
-        self.assertEquals(self.global_counter.fetched(), 0)
-
-        self.t2.incr_fetched()
-        self.t2.incr_fetched()
-        self.t2.incr_fetched()
-
-        # t2 has not been reset since first test method. This is intended.
-        self.assertEquals(self.t2.fetched(), 6)
-
-        self.assertEquals(self.global_counter.fetched(), 3)
 
 
 class ThrottleIntervalTest(TestCase):
@@ -296,7 +244,7 @@ class AbsolutizeTest(TestCase):
         self.article3 = Article(title=u'test3',
                                 url=u'http://obi.1flow.io/absolutize_test_401').save() # NOQA
         self.article4 = Article(title=u'test4',
-                                url=u'http://not.exixstent.com/absolutize_test').save() # NOQA
+                                url=u'http://host.non.exixstentz.com/absolutize_test').save() # NOQA
         self.article5 = Article(title=u'test5',
                                 url=u'http://1flow.io/absolutize_test_404').save() # NOQA
 
@@ -304,12 +252,12 @@ class AbsolutizeTest(TestCase):
         self.article1.absolutize_url()
         self.assertEquals(self.article1.url, u'http://www.reseaux-telecoms.net/actualites/lire-lancement-mondial-du-samsung-galaxy-s4-25980.html') # NOQA
         self.assertEquals(self.article1.url_absolute, True)
-        self.assertEquals(self.article1.url_error, None)
+        self.assertEquals(self.article1.url_error, '')
 
         self.article2.absolutize_url()
         self.assertEquals(self.article2.url, u'http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/') # NOQA
         self.assertEquals(self.article2.url_absolute, True)
-        self.assertEquals(self.article2.url_error, None)
+        self.assertEquals(self.article2.url_error, '')
 
     def test_absolutize_erros(self):
         self.article3.absolutize_url()
@@ -323,6 +271,6 @@ class AbsolutizeTest(TestCase):
         self.assertEquals(self.article5.url_error, u'HTTP Error 404 (NOT FOUND) while resolving http://1flow.io/absolutize_test_404.') # NOQA
 
         self.article4.absolutize_url()
-        self.assertEquals(self.article4.url, u'http://not.exixstent.com/absolutize_test') # NOQA
+        self.assertEquals(self.article4.url, u'http://host.non.exixstentz.com/absolutize_test') # NOQA
         self.assertEquals(self.article4.url_absolute, False)
-        self.assertEquals(self.article4.url_error, u"HTTPConnectionPool(host='not.exixstent.com', port=80): Max retries exceeded with url: /absolutize_test (Caused by <class 'socket.error'>: [Errno 2] No such file or directory)") # NOQA
+        self.assertEquals(self.article4.url_error[:108], u"HTTPConnectionPool(host='host.non.exixstentz.com', port=80): Max retries exceeded with url: /absolutize_test") # NOQA
