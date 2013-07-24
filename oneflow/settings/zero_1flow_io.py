@@ -27,4 +27,6 @@ include_snippets(
 
 # Overide real production settings, to be able to distinguish.
 SITE_DOMAIN = 'zero.1flow.io'
+EMAIL_SUBJECT_PREFIX='[ZERO.1flow] '
+
 ALLOWED_HOSTS += ['localhost', SITE_DOMAIN]

@@ -4,6 +4,8 @@
 
 MANAGERS += (('Matthieu Chaignot', 'mchaignot@gmail.com'), )
 
+EMAIL_SUBJECT_PREFIX='[1flow admin] '
+
 ALLOWED_HOSTS += [
     '1flow.io',
     'app.1flow.io',
