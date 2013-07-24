@@ -1212,19 +1212,19 @@ class Article(Document):
             LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
                            title, url, u', '.join(unicode(f) for f in feeds))
 
-            new_article = cls.objects.get(url=url)
+            cur_article = cls.objects.get(url=url)
 
             created_retval = False
 
-            if len(feeds) == 1 and feeds[0] not in new_article.feeds:
+            if len(feeds) == 1 and feeds[0] not in cur_article.feeds:
                 created_retval = None
 
             for feed in feeds:
-                new_article.update(add_to_set__feeds=feed)
+                cur_article.update(add_to_set__feeds=feed)
 
-            new_article.safe_reload()
+            cur_article.safe_reload()
 
-            return new_article, created_retval
+            return cur_article, created_retval
 
         else:
             if kwargs:
