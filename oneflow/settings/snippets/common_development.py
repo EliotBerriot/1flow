@@ -12,6 +12,7 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.debug',
 )
 
+EMAIL_SUBJECT_PREFIX='[1flow DEV] '
 
 ALLOWED_HOSTS += [
     'localhost',
