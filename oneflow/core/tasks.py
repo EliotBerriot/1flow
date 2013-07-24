@@ -17,10 +17,10 @@ from celery import task
 
 from django.conf import settings
 from django.core.mail import mail_admins
-from django.contrib.auth import get_user_model
+from django.core.urlresolvers import reverse
 from django.core.mail import mail_managers
+from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
-
 
 from .models import RATINGS
 from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
@@ -666,11 +666,25 @@ def global_feeds_checker():
                   u"(if any) of closing:\n\n{feed_list}\n\nYou can manually "
                   u"reopen any of them from the admin interface.\n\n").format(
                   feed_list='\n\n'.join(
-                  u'- %s, url: %s\n    - %s\n    - reason: %s' % (feed,
-                  feed.url, (u'closed on %s' % feed.date_closed)
-                  if feed.date_closed else u'no closing date',
-                  feed.closed_reason or
-                  u'none (or manually closed from the admin interface)')
+                  u'- %s,\n'
+                  u'    - admin url: http://%s%s\n'
+                  u'    - public url: %s\n'
+                  u'    - %s\n'
+                  u'    - reason: %s\n'
+                  u'    - last error: %s' % (
+                      feed,
+                      settings.SITE_DOMAIN,
+                      reverse('admin:%s_%s_change' % (
+                          feed._meta.get('app_label', 'models'),
+                          feed._meta.get('module_name', 'feed')),
+                          args=[feed.id]),
+                      feed.url,
+                      (u'closed on %s' % feed.date_closed)
+                          if feed.date_closed else u'(no closing date)',
+                      feed.closed_reason or
+                          u'none (or manually closed from the admin interface)',
+                      feed.errors[0] if len(feed.errors)
+                          else u'(no error recorded)')
                   for feed in feeds)))
 
     start_time = pytime.time()
