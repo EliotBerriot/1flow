@@ -233,16 +233,16 @@ class ArticleDuplicateTest(TestCase):
         self.article3 = Article(title='test3',
                                 url='http://test.com/test3').save()
 
-        #user creation
+        # User & Reads creation
         for u in xrange(1, 6):
             u = User(django_user=u).save()
             Read(user=u, article=self.article1).save()
+
         for u in xrange(6, 11):
             u = User(django_user=u).save()
             Read(user=u, article=self.article2).save()
 
-        #Feeds creation
-
+        # Feeds creation
         for f in xrange(1, 6):
             f = Feed(url='http://test-feed%s.com' % f).save()
             self.article1.update(add_to_set__feeds=f)
@@ -278,44 +278,6 @@ class ArticleDuplicateTest(TestCase):
     def test_register_duplicate_not_again(self):
 
         self.article1.register_duplicate(self.article2)
-
-        self.assertEquals(self.article2.duplicate_of, self.article1)
-
-
-class ArticleDuplicateTest(TestCase):
-
-    def setUp(self):
-
-        Article.drop_collection()
-
-        self.article1 = Article(title='test1',
-                                url='http://test.com/test1').save()
-        self.article2 = Article(title='test2',
-                                url='http://test.com/test2').save()
-        self.article3 = Article(title='test3',
-                                url='http://test.com/test3').save()
-
-    def test_register_duplicate_bare(self):
-
-        self.assertEquals(Article.objects(
-                          duplicate_of__exists=False).count(), 3)
-
-        self.article1.register_duplicate(self.article2)
-
-        self.assertEquals(self.article2.duplicate_of, self.article1)
-
-        self.assertEquals(Article.objects(
-                          duplicate_of__exists=True).count(), 1)
-        self.assertEquals(Article.objects(
-                          duplicate_of__exists=False).count(), 2)
-
-    def test_register_duplicate_not_again(self):
-
-        self.article1.register_duplicate(self.article2)
-
-        #self.assertRaises(RuntimeError,
-        #                  self.article1.register_duplicate,
-        #                  self.article3)
 
         self.assertEquals(self.article2.duplicate_of, self.article1)
 
