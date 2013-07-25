@@ -37,7 +37,7 @@ CELERY_ACKS_LATE = True
 CELERY_MESSAGE_COMPRESSION = 'gzip'
 
 # Avoid long running and retried tasks to be run over-and-over again.
-BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 43200}
+BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 86400}
 
 # One day is already the default
 #CELERY_TASK_RESULT_EXPIRES = 86400
