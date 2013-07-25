@@ -1313,8 +1313,6 @@ class Article(Document):
         #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
 
         try:
-            statsd.gauge('articles.counts.empty', 1, delta=True)
-
             if self.feed:
                 with self.feed.fetch_limit:
                     self.fetch_content_text(force=force, commit=commit)
@@ -1328,6 +1326,7 @@ class Article(Document):
             # TODO: use retry() when celery#1458 is solved
             self.fetch_content.apply_async((force, commit),
                                            countdown=randrange(60))
+            return
 
         except StopProcessingException, e:
             LOGGER.info(u'Stopping processing of article %s on behalf of '
@@ -1645,6 +1644,9 @@ class Article(Document):
 
         self.slug = slugify(self.title)
         self.save()
+
+        #LOGGER.warning('\n>>>>>>> +1 empty for %s\n', self)
+        statsd.gauge('articles.counts.empty', 1, delta=True)
 
         # Manually randomize a little the fetching in 5 seconds, to avoid
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
