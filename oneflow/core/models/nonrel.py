@@ -1257,12 +1257,12 @@ class Article(Document):
 
     def fetch_content_must_abort(self, force=False, commit=True):
 
-        if self.content_type in CONTENT_TYPES_FINAL and not force:
-            LOGGER.warning(u'Article %s has already been fetched.', self)
-            return True
-
         if config.ARTICLE_FETCHING_DISABLED:
             LOGGER.warning(u'Article fetching disabled in configuration.')
+            return True
+
+        if self.content_type in CONTENT_TYPES_FINAL and not force:
+            LOGGER.warning(u'Article %s has already been fetched.', self)
             return True
 
         if self.content_error:
