@@ -1336,8 +1336,9 @@ class Article(Document):
         except requests.ConnectionError, e:
 
             if 'Errno 104' in str(e):
-                # Special case, we probably hit a remote parallel limit.
-                self.feed.set_fetch_limit()
+                if self.feed:
+                    # Special case, we probably hit a remote parallel limit.
+                    self.feed.set_fetch_limit()
 
                 # TODO: use retry() when celery#1458 is solved
                 self.fetch_content.apply_async((force, commit),
