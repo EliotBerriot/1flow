@@ -1267,6 +1267,7 @@ class Article(Document):
 
         if self.content_error:
             if force:
+                statsd.gauge('articles.counts.content_errors', -1, delta=True)
                 self.content_error = ''
 
                 if commit:
