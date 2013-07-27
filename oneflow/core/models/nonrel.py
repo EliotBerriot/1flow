@@ -1267,6 +1267,7 @@ class Article(Document):
 
         if self.content_error:
             if force:
+                statsd.gauge('articles.counts.content_errors', -1, delta=True)
                 self.content_error = ''
 
                 if commit:
@@ -1336,8 +1337,9 @@ class Article(Document):
         except requests.ConnectionError, e:
 
             if 'Errno 104' in str(e):
-                # Special case, we probably hit a remote parallel limit.
-                self.feed.set_fetch_limit()
+                if self.feed:
+                    # Special case, we probably hit a remote parallel limit.
+                    self.feed.set_fetch_limit()
 
                 # TODO: use retry() when celery#1458 is solved
                 self.fetch_content.apply_async((force, commit),
@@ -1357,7 +1359,7 @@ class Article(Document):
             self.save()
 
             LOGGER.error(u'Extraction took too long for article %s.', self)
-            raise
+            return
 
         except Exception, e:
             # TODO: except urllib2.error: retry with longer delay.
@@ -1366,7 +1368,7 @@ class Article(Document):
             self.save()
 
             LOGGER.exception(u'Extraction failed for article %s.', self)
-            raise
+            return
 
     def fetch_content_image(self, force=False, commit=True):
 
