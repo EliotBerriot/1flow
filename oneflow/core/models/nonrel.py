@@ -1472,7 +1472,7 @@ class Article(Document):
                             u'\n%s\n'
                             u'————————— end #%s HTML —————————',
                             self.id, content.__class__.__name__, encoding,
-                            unicode(content, encoding), self.id)
+                            unicode(str(content), encoding), self.id)
             except:
                 LOGGER.exception(u'Could not log source HTML content of '
                                  u'article %s.', self)
@@ -1498,7 +1498,7 @@ class Article(Document):
                             u'\n%s\n'
                             u'————————— end #%s CLEANED —————————',
                             self.id, content.__class__.__name__, encoding,
-                            unicode(content, encoding), self.id)
+                            unicode(str(content), encoding), self.id)
             except:
                 LOGGER.exception(u'Could not log cleaned HTML content of '
                                  u'article %s.', self)
