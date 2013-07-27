@@ -1359,7 +1359,7 @@ class Article(Document):
             self.save()
 
             LOGGER.error(u'Extraction took too long for article %s.', self)
-            raise
+            return
 
         except Exception, e:
             # TODO: except urllib2.error: retry with longer delay.
@@ -1368,7 +1368,7 @@ class Article(Document):
             self.save()
 
             LOGGER.exception(u'Extraction failed for article %s.', self)
-            raise
+            return
 
     def fetch_content_image(self, force=False, commit=True):
 
