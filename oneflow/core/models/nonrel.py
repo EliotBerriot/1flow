@@ -330,12 +330,13 @@ class Feed(Document):
 
     def reopen(self, commit=True):
 
-        self.update(set__closed=False, set__date_closed=now())
+        self.errors[:]     = []
+        self.closed        = False
+        self.date_closed   = now()
         self.closed_reason = u'Reopen on %s' % now().isoformat()
+        self.save()
 
         LOGGER.info(u'Feed %s has just beed re-opened.', self)
-
-        self.safe_reload()
 
     def close(self, reason=None, commit=True):
         self.update(set__closed=True, set__date_closed=now())
