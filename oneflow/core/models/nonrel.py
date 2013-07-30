@@ -196,6 +196,7 @@ class Tag(Document):
 
             except cls.DoesNotExist:
                 tags.add(cls(name=tag_name, origin=origin).save())
+                statsd.gauge('tags.counts.total', 1, delta=True)
 
         return tags
 
@@ -214,6 +215,8 @@ class Tag(Document):
         # Register the duplication immediately, for other
         # background operations to use ourselves as value.
         duplicate.update(set__duplicate_of=self)
+
+        statsd.gauge('tags.counts.duplicates', 1, delta=True)
 
         # Update the current articles/reads tags in the database
         # to use the new tag. It can take long, this is a task.
@@ -1288,6 +1291,10 @@ class Article(Document):
             if self.tags == [] and 'tags' in fpod:
                 tags = [x['term'] for x in fpod['tags']]
                 tags
+
+        #
+        # TODO / XXX: continue here.
+        #
 
     @celery_task_method(name='Article.register_duplicate', queue='low',
                         default_retry_delay=3600)
