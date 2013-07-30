@@ -126,6 +126,67 @@ class Source(Document):
     slug    = StringField()
 
 
+class Tag(Document):
+    name     = StringField(verbose_name=_(u'name'), unique=True)
+    slug     = StringField(verbose_name=_(u'slug'))
+    language = StringField(verbose_name=_(u'language'), default='')
+    parents  = ListField(ReferenceField('self'), default=list)
+    children = ListField(ReferenceField('self'), default=list)
+
+    @classmethod
+    def get_tags_set(cls, tags_names):
+
+        tags = set()
+
+        for tag_name in tags_names:
+            try:
+                tags.add(cls.objects.get(name=tag_name))
+
+            except cls.DoesNotExist:
+                tags.add(cls.objects(name=tag_name).save())
+
+        return tags
+
+    def safe_reload(self):
+        """ Because it fails if no object present. """
+
+        try:
+            self.reload()
+        except:
+            pass
+
+    def add_parent(self, parent, update_reverse_link=True):
+
+        self.update(add_to_set__parents=parent)
+        self.safe_reload()
+
+        if update_reverse_link:
+            parent.add_child(self, update_reverse_link=False)
+
+    def remove_parent(self, parent, update_reverse_link=True):
+
+        if update_reverse_link:
+            parent.remove_child(self, update_reverse_link=False)
+
+        self.update(pull__parents=parent)
+        self.safe_reload()
+
+    def add_child(self, child, update_reverse_link=True):
+        self.update(add_to_set__children=child)
+        self.safe_reload()
+
+        if update_reverse_link:
+            child.add_parent(self, update_reverse_link=False)
+
+    def remove_child(self, child, update_reverse_link=True):
+
+        if update_reverse_link:
+            child.remove_parent(self, update_reverse_link=False)
+
+        self.update(pull__children=child)
+        self.safe_reload()
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
 
 
