@@ -300,4 +300,4 @@ def synchronize_statsd_tags_gauges(full=False):
         statsd.gauge('tags.counts.total', Tag._get_collection().count())
 
         if full:
-            statsd.gauge('tags.counts.absolutes', duplicates.count())
+            statsd.gauge('tags.counts.duplicates', duplicates.count())
