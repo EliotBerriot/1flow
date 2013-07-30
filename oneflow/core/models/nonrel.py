@@ -19,7 +19,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Document, ValidationError
+from mongoengine import Document, EmbeddedDocument, ValidationError
 from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 DateTimeField,
@@ -125,6 +125,22 @@ class Source(Document):
     name    = StringField()
     authors = ListField(ReferenceField('User'))
     slug    = StringField()
+
+
+WORD_RELATION_TYPES = (
+    (0, _(u'None')),
+    (1, _(u'Synonym')),
+    (2, _(u'Antonym')),
+)
+
+
+class WordRelation(EmbeddedDocument):
+    relation_type  = IntField(choices=WORD_RELATION_TYPES,
+                              verbose_name=_(u'Relation type'))
+    relation_with  = GenericReferenceField(unique_with='relation_type',
+                                           verbose_name=_(u'Relation with'),
+                                           help_text=_(u'The word'))
+    relation_score = FloatField()
 
 
 class Tag(Document):
