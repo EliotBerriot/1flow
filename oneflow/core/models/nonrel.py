@@ -47,8 +47,9 @@ from .keyval import FeedbackDocument
 
 LOGGER = logging.getLogger(__name__)
 
-feedparser.USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
-REQUEST_BASE_HEADERS  = {'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' } # NOQA
+BASE_1FLOW_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+feedparser.USER_AGENT = BASE_1FLOW_USER_AGENT
+REQUEST_BASE_HEADERS  = {'User-agent': BASE_1FLOW_USER_AGENT}
 
 # Lower the default, we know good websites just work well.
 requests.adapters.DEFAULT_RETRIES = 1
