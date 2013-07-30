@@ -11,7 +11,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
-from .models.nonrel import Feed
+from .models.nonrel import Tag, Feed
 
 import mongoadmin as admin
 
@@ -182,6 +182,17 @@ class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
 
 
 admin.site.register(GriUser, GriOneFlowUserAdmin)
+
+
+class TagAdmin(admin.DocumentAdmin):
+
+    list_display = ('id', 'name', 'language', 'duplicate_of', )
+    list_display_links = ('id', 'name', )
+    search_fields = ('name', 'slug', 'duplicate_of', )
+    change_list_filter_template = "admin/filter_listing.html"
+
+
+admin.site.register(Tag, TagAdmin)
 
 
 class FeedAdmin(admin.DocumentAdmin):

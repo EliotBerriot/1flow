@@ -19,7 +19,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Document, ValidationError
+from mongoengine import Document, EmbeddedDocument, ValidationError
 from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 DateTimeField,
@@ -47,8 +47,9 @@ from .keyval import FeedbackDocument
 
 LOGGER = logging.getLogger(__name__)
 
-feedparser.USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
-REQUEST_BASE_HEADERS  = {'User-agent': 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' } # NOQA
+BASE_1FLOW_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+feedparser.USER_AGENT = BASE_1FLOW_USER_AGENT
+REQUEST_BASE_HEADERS  = {'User-agent': BASE_1FLOW_USER_AGENT}
 
 # Lower the default, we know good websites just work well.
 requests.adapters.DEFAULT_RETRIES = 1
@@ -126,6 +127,160 @@ class Source(Document):
     slug    = StringField()
 
 
+WORD_RELATION_TYPES = (
+    (0, _(u'None')),
+    (1, _(u'Synonym')),
+    (2, _(u'Antonym')),
+)
+
+
+class WordRelation(EmbeddedDocument):
+    relation_type  = IntField(choices=WORD_RELATION_TYPES,
+                              verbose_name=_(u'Relation type'))
+    relation_with  = GenericReferenceField(unique_with='relation_type',
+                                           verbose_name=_(u'Relation with'),
+                                           help_text=_(u'The word'))
+    relation_score = FloatField()
+
+
+class Tag(Document):
+    name     = StringField(verbose_name=_(u'name'), unique=True)
+    slug     = StringField(verbose_name=_(u'slug'))
+    language = StringField(verbose_name=_(u'language'), default='')
+    parents  = ListField(ReferenceField('self'), default=list)
+    children = ListField(ReferenceField('self'), default=list)
+    origin   = GenericReferenceField(verbose_name=_(u'Origin'),
+                                     help_text=_(u'Initial origin from where '
+                                     u'the tag was created from, to eventually '
+                                     u'help defining other attributes.'))
+    duplicate_of = ReferenceField('Tag', verbose_name=_(u'Duplicate of'),
+                                  help_text=_(u'Put a "master" tag here to '
+                                  u'help avoiding too much different tags '
+                                  u'(eg. singular and plurals) with the same '
+                                  u'meaning and loss of information.'))
+
+    meta = {
+        'indexes': ['name', ]
+    }
+
+    # See the `WordRelation` class before working on this.
+    #
+    # antonyms = ListField(ReferenceField('self'), verbose_name=_(u'Antonyms'),
+    #                      help_text=_(u'Define an antonym tag to '
+    #                      u'help search connectable but.'))
+
+    def __unicode__(self):
+        return _(u'%s ⚐%s (#%s)') % (self.name, self.language, self.id)
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document, **kwargs):
+        if kwargs.get('created', False):
+            document.post_save_task.delay()
+
+    @celery_task_method(name='Tag.post_save', queue='high')
+    def post_save_task(self):
+
+        self.slug = slugify(self.name)
+        self.save()
+
+    @classmethod
+    def get_tags_set(cls, tags_names, origin=None):
+
+        tags = set()
+
+        for tag_name in tags_names:
+            tag_name = tag_name.lower()
+            try:
+                tag = cls.objects.get(name=tag_name)
+                tags.add(tag.duplicate_of or tag)
+
+            except cls.DoesNotExist:
+                tags.add(cls(name=tag_name, origin=origin).save())
+
+        return tags
+
+    def register_duplicate(self, duplicate, force=False):
+
+        if duplicate.duplicate_of:
+            if duplicate.duplicate_of != self:
+                LOGGER.warning(u'Tag %s is already a duplicate of '
+                               u'another tag, not %s. Aborting.',
+                               duplicate, duplicate.duplicate_of)
+                return
+
+        LOGGER.info(u'Registering Tag %s as duplicate of %s…',
+                    duplicate, self)
+
+        # Register the duplication immediately, for other
+        # background operations to use ourselves as value.
+        duplicate.update(set__duplicate_of=self)
+
+        # Update the current articles/reads tags in the database
+        # to use the new tag. It can take long, this is a task.
+        self.replace_duplicate_tag.delay()
+
+    @celery_task_method(name='Tag.replace_duplicate_everywhere', queue='low')
+    def replace_duplicate_everywhere(self, duplicate, force=False):
+
+        #
+        # TODO: update search engine indexes…
+        #
+
+        # ALL celery task methods need to reload the instance in case
+        # we added new attributes before the object was pickled to a task.
+        self.safe_reload()
+        duplicate.safe_reload()
+
+        for article in Article.objects(tags=duplicate).no_cache():
+            for read in article.reads:
+                if duplicate in read.tags:
+                    read.update(pull__tags=duplicate)
+                    read.update(add_to_set__tags=self)
+
+            article.update(pull__tags=duplicate)
+            article.update(add_to_set__tags=self)
+
+    def safe_reload(self):
+        """ Because it fails if no object present. """
+
+        try:
+            self.reload()
+
+        except:
+            pass
+
+    def add_parent(self, parent, update_reverse_link=True):
+
+        self.update(add_to_set__parents=parent)
+        self.safe_reload()
+
+        if update_reverse_link:
+            parent.add_child(self, update_reverse_link=False)
+
+    def remove_parent(self, parent, update_reverse_link=True):
+
+        if update_reverse_link:
+            parent.remove_child(self, update_reverse_link=False)
+
+        self.update(pull__parents=parent)
+        self.safe_reload()
+
+    def add_child(self, child, update_reverse_link=True):
+        self.update(add_to_set__children=child)
+        self.safe_reload()
+
+        if update_reverse_link:
+            child.add_parent(self, update_reverse_link=False)
+
+    def remove_child(self, child, update_reverse_link=True):
+
+        if update_reverse_link:
+            child.remove_parent(self, update_reverse_link=False)
+
+        self.update(pull__children=child)
+        self.safe_reload()
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
 
 
@@ -145,11 +300,11 @@ def feed_subscriptions_count_default(feed, *args, **kwargs):
 
 
 class Feed(Document):
-    # TODO: init
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
+    tags           = ListField(GenericReferenceField(), default=list)
     date_added     = DateTimeField(default=datetime(2013, 07, 01),
                                    verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
@@ -330,12 +485,13 @@ class Feed(Document):
 
     def reopen(self, commit=True):
 
-        self.update(set__closed=False, set__date_closed=now())
+        self.errors[:]     = []
+        self.closed        = False
+        self.date_closed   = now()
         self.closed_reason = u'Reopen on %s' % now().isoformat()
+        self.save()
 
         LOGGER.info(u'Feed %s has just beed re-opened.', self)
-
-        self.safe_reload()
 
     def close(self, reason=None, commit=True):
         self.update(set__closed=True, set__date_closed=now())
@@ -421,9 +577,9 @@ class Feed(Document):
 
         return retval
 
-    def create_article_and_reads(self, article, subscribers, tags):
-        """ Take a feedparser item and lists of Feed subscribers and
-            tags, then create the corresponding Article and Read(s). """
+    def create_article_and_reads(self, article, subscribers, feed_tags):
+        """ Take a feedparser item and a list of Feed subscribers and
+            feed tags, and create the corresponding Article and Read(s). """
 
         feedparser_content = getattr(article, 'content', CONTENT_NOT_PARSED)
 
@@ -439,6 +595,10 @@ class Feed(Document):
 
         except:
             date_published = None
+
+        tags = Tag.get_tags_set(set(t['term']
+                                for t in article.get('tags', []))
+                                , origin=self) | set(feed_tags)
 
         try:
             new_article, created = Article.create_article(
@@ -457,6 +617,7 @@ class Feed(Document):
                 content=content,
                 date_published=date_published,
                 feeds=[self],
+                tags=tags,
 
                 # Convert to unicode before saving,
                 # else the article won't validate.
@@ -483,7 +644,7 @@ class Feed(Document):
         # In the case of a mutualized article, it will be fetched only
         # once, but all subscribers of all feeds must be connected to
         # it to be able to read it.
-        new_article.create_reads(subscribers, tags, verbose=created)
+        new_article.create_reads(subscribers, verbose=created)
 
         # Don't forget the parenthesis else we return ``False`` everytime.
         return created or (None if mutualized else False)
@@ -685,7 +846,18 @@ class Feed(Document):
                 spipe.incr('feeds.refresh.fetch.byId.%s.unchanged' % self.id)
 
         else:
-            tags          = getattr(parsed_feed, 'tags', [])
+            tags = Tag.get_tags_set(getattr(parsed_feed, 'tags', []),
+                                    origin=self)
+
+            if tags != set(self.tags):
+                # We consider the publisher knows the nature of his content
+                # better than us, and we trust him about the tags he sets
+                # on the feed. Thus, we don't union() with the new tags,
+                # but simply replace current by new ones.
+                LOGGER.info(u'Updating tags of feed %s from %s to %s.',
+                            self.tags, tags)
+                self.tags = list(tags)
+
             subscribers   = [s.user for s in self.subscriptions]
             new_articles  = 0
             duplicates    = 0
@@ -696,7 +868,8 @@ class Feed(Document):
                 spipe.incr('feeds.refresh.fetch.byId.%s.updated' % self.id)
 
             for article in parsed_feed.entries:
-                created = self.create_article_and_reads(article, subscribers,
+                created = self.create_article_and_reads(article,
+                                                        subscribers,
                                                         tags)
                 if created:
                     new_articles += 1
@@ -773,8 +946,10 @@ class Subscription(Document):
     # allow the user to rename the field in its own subscription
     name = StringField()
 
-    # these are kind of 'folders', but can be more dynamic.
-    tags = ListField(StringField())
+    tags = ListField(GenericReferenceField(), default=list,
+                     verbose_name=_(u'tags'), help_text=_(u'Subscription tags, '
+                     u'which can also be seen as folders from the user point '
+                     u'of view.'))
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article
@@ -815,6 +990,9 @@ class Article(Document):
                                    help_text=_(u'When the article was added '
                                                u'to the 1flow database.'))
 
+    tags = ListField(GenericReferenceField(), default=list,
+                     verbose_name=_(u'Tags'), help_text=_(u'Default tags that '
+                     u'will be applied to new reads of this article.'))
     default_rating = FloatField(default=0.0, verbose_name=_(u'default rating'),
                                 help_text=_(u'Rating used as a base when a '
                                             u'user has not already rated the '
@@ -1100,6 +1278,17 @@ class Article(Document):
 
         return True
 
+    @celery_task_method(name='Article.postprocess_feedparser_data',
+                        queue='fetch')
+    def postprocess_feedparser_data(self, force=False, commit=True):
+
+        fpod = self.feedparser_original_data
+
+        if fpod:
+            if self.tags == [] and 'tags' in fpod:
+                tags = [x['term'] for x in fpod['tags']]
+                tags
+
     @celery_task_method(name='Article.register_duplicate', queue='low',
                         default_retry_delay=3600)
     def register_duplicate(self, duplicate, force=False):
@@ -1121,7 +1310,7 @@ class Article(Document):
                 # redirect chain. It will *never* resolve to an intermediate
                 # URL in the chain.
                 LOGGER.warning(u'Article %s is already a duplicate of '
-                               u'another article, not %s. Aborting .',
+                               u'another article, not %s. Aborting.',
                                duplicate, duplicate.duplicate_of)
                 return
 
@@ -1172,12 +1361,11 @@ class Article(Document):
         LOGGER.info(u'Article %s successfully registered as duplicate '
                     u'of %s and can be deleted if wanted.', duplicate, self)
 
-    def create_reads(self, users, tags, verbose=True):
+    def create_reads(self, users, verbose=True):
 
         for user in users:
-            new_read = Read(article=self,
-                            user=user,
-                            tags=tags)
+            new_read = Read(article=self, user=user, tags=self.tags)
+
             try:
                 new_read.save()
 
@@ -1227,26 +1415,36 @@ class Article(Document):
             return cur_article, created_retval
 
         else:
+
+            tags = kwargs.pop('tags', [])
+
+            if tags:
+                new_article.update(add_to_set__tags=tags)
+                new_article.safe_reload()
+
+            need_save = False
+
             if kwargs:
+                need_save = True
                 for key, value in kwargs.items():
                     setattr(new_article, key, value)
 
-                # Need to save because we will reload just after.
-                new_article.save()
-
             if reset_url:
+                need_save       = True
                 new_article.url = \
                     ARTICLE_ORPHANED_BASE + unicode(new_article.id)
                 new_article.orphaned = True
                 statsd.gauge('articles.counts.orphaned', 1, delta=True)
 
+            if need_save:
                 # Need to save because we will reload just after.
                 new_article.save()
 
-            for feed in feeds:
-                new_article.update(add_to_set__feeds=feed)
+            if feeds:
+                for feed in feeds:
+                    new_article.update(add_to_set__feeds=feed)
 
-            new_article.safe_reload()
+                new_article.safe_reload()
 
             LOGGER.info(u'Created %sarticle %s in feed(s) %s.', u'orphaned '
                         if reset_url else u'', new_article,
@@ -1690,7 +1888,9 @@ class Read(Document):
     date_created = DateTimeField(default=now)
     date_read = DateTimeField()
     date_auto_read = DateTimeField()
-    tags = ListField(StringField())
+    tags = ListField(GenericReferenceField(), default=list,
+                     verbose_name=_(u'Tags'), help_text=_(u'User set of tags '
+                     u'for this read.'))
 
     # This will be set to Article.default_rating
     # until the user sets it manually.
@@ -1704,10 +1904,38 @@ class Read(Document):
 
         document.rating = document.article.default_rating
 
+    def safe_reload(self):
+        try:
+            self.reload()
+
+        except:
+            pass
+
     def __unicode__(self):
         return _(u'%s∞%s (#%s) %s %s') % (
             self.user, self.article, self.id,
             _(u'read') if self.is_read else _(u'unread'), self.rating)
+
+    def remove_tags(self, tags=[]):
+        """ If the user remove his own tags from a Read, it will get back the
+            default tags from the article it comes from. """
+
+        if tags:
+            for tag in Tag.get_tags_set(tags, origin=self):
+                self.update(pull__tags=tag)
+
+            self.safe_reload()
+
+        if self.tags == []:
+            self.tags = self.article.tags.copy()
+            self.save()
+
+    def add_tags(self, tags):
+
+        for tag in Tag.get_tags_set(tags, origin=self):
+            self.update(add_to_set__tags=tag)
+
+        self.safe_reload()
 
 
 class Comment(Document):
@@ -1716,8 +1944,8 @@ class Comment(Document):
     TYPE_ANALYSIS = 20
     TYPE_SYNTHESIS = 30
 
-    VISIBILITY_PUBLIC = 1
-    VISIBILITY_GROUP = 10
+    VISIBILITY_PUBLIC  = 1
+    VISIBILITY_GROUP   = 10
     VISIBILITY_PRIVATE = 20
 
     nature = IntField(default=TYPE_COMMENT)

@@ -11,7 +11,7 @@ from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 #from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, Read, User
+from oneflow.core.models import Feed, Article, Read, User, Tag
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -274,3 +274,36 @@ class AbsolutizeTest(TestCase):
         self.assertEquals(self.article4.url, u'http://host.non.exixstentz.com/absolutize_test') # NOQA
         self.assertEquals(self.article4.url_absolute, False)
         self.assertEquals(self.article4.url_error[:108], u"HTTPConnectionPool(host='host.non.exixstentz.com', port=80): Max retries exceeded with url: /absolutize_test") # NOQA
+
+
+class TagsTest(TestCase):
+
+    def setUp(self):
+
+        Tag.drop_collection()
+
+        self.t1 = Tag(name='test1').save()
+        self.t2 = Tag(name='test2').save()
+        self.t3 = Tag(name='test3').save()
+
+    def test_add_parent(self):
+
+        self.t2.add_parent(self.t1)
+        self.t3.add_parent(self.t1)
+
+        self.assertEquals(self.t1 in self.t2.parents, True)
+        self.assertEquals(self.t1 in self.t3.parents, True)
+
+        self.assertEquals(self.t2 in self.t1.children, True)
+        self.assertEquals(self.t3 in self.t1.children, True)
+
+    def test_add_child(self):
+
+        self.t1.add_child(self.t2)
+        self.t1.add_child(self.t3)
+
+        self.assertEquals(self.t1 in self.t2.parents, True)
+        self.assertEquals(self.t1 in self.t3.parents, True)
+
+        self.assertEquals(self.t2 in self.t1.children, True)
+        self.assertEquals(self.t3 in self.t1.children, True)
