@@ -252,36 +252,78 @@ class Tag(Document):
         except:
             pass
 
-    def add_parent(self, parent, update_reverse_link=True):
+    def save(self, *args, **kwargs):
+        """ This method will simply add the missing children/parents reverse
+            links of the current Tag. This is needed when modifying tags from
+            the Django admin, which doesn't know about the reverse-link
+            existence.
+
+            .. note:: sadly, we have no fast way to do the same for links
+                removal.
+        """
+
+        super(Tag, self).save(*args, **kwargs)
+
+        for parent in self.parents:
+            if self in parent.children:
+                continue
+
+            try:
+                parent.add_child(self, update_reverse_link=False,
+                                 full_reload=False)
+            except:
+                LOGGER.exception(u'Exception while reverse-adding '
+                                 u'child %s to parent %s', self, parent)
+
+        for child in self.children:
+            if self in child.parents:
+                continue
+
+            try:
+                child.add_parent(self, update_reverse_link=False,
+                                 full_reload=False)
+            except:
+                LOGGER.exception(u'Exception while reverse-adding '
+                                 u'parent %s to child %s', self, child)
+
+    def add_parent(self, parent, update_reverse_link=True, full_reload=True):
 
         self.update(add_to_set__parents=parent)
-        self.safe_reload()
+
+        if full_reload:
+            self.safe_reload()
 
         if update_reverse_link:
             parent.add_child(self, update_reverse_link=False)
 
-    def remove_parent(self, parent, update_reverse_link=True):
+    def remove_parent(self, parent, update_reverse_link=True, full_reload=True):
 
         if update_reverse_link:
             parent.remove_child(self, update_reverse_link=False)
 
         self.update(pull__parents=parent)
-        self.safe_reload()
 
-    def add_child(self, child, update_reverse_link=True):
+        if full_reload:
+            self.safe_reload()
+
+    def add_child(self, child, update_reverse_link=True, full_reload=True):
         self.update(add_to_set__children=child)
-        self.safe_reload()
+
+        if full_reload:
+            self.safe_reload()
 
         if update_reverse_link:
             child.add_parent(self, update_reverse_link=False)
 
-    def remove_child(self, child, update_reverse_link=True):
+    def remove_child(self, child, update_reverse_link=True, full_reload=True):
 
         if update_reverse_link:
             child.remove_parent(self, update_reverse_link=False)
 
         self.update(pull__children=child)
-        self.safe_reload()
+
+        if full_reload:
+            self.safe_reload()
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
