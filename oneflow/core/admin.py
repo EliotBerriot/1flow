@@ -186,10 +186,44 @@ admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 class TagAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name', 'language', 'duplicate_of', )
+    list_display = ('id', 'name', 'language', 'duplicate_of',
+                    'parents_display', 'children_display')
     list_display_links = ('id', 'name', )
-    search_fields = ('name', 'slug', 'duplicate_of', )
+    search_fields = ('name', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
+    filter_horizontal = ('parents', 'children', )
+
+    def change_view(self, request, object_id, extra_context=None):
+        self.exclude = ('origin',)  # 'parents', 'children', )
+
+        return super(TagAdmin, self).change_view(request, object_id,
+                                                 extra_context=None)
+
+    def parents_display(self, obj):
+
+        if obj.parents:
+            return ','.join(u'<a href="/admin/models/tag/{0}" '
+                            u'target="_blank">{1}</a>'.format(
+                            parent.id, parent.name)
+                            for parent in obj.parents)
+
+        return u'—'
+
+    parents_display.short_description = _(u'Parents')
+    parents_display.allow_tags = True
+
+    def children_display(self, obj):
+
+        if obj.children:
+            return ','.join(u'<a href="/admin/models/tag/{0}" '
+                            u'target="_blank">{1}</a>'.format(
+                            child.id, child.name)
+                            for child in obj.children)
+
+        return u'—'
+
+    children_display.short_description = _(u'Children')
+    children_display.allow_tags = True
 
 
 admin.site.register(Tag, TagAdmin)
