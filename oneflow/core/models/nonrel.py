@@ -1125,7 +1125,8 @@ class Article(Document):
         url = requests_response.url
 
         try:
-            proto, remaining = url.split('://')
+            # XXX: duplicate code
+            proto, remaining = url.split('://', 1)
             hostname_port, remaining = remaining.split('/', 1)
 
         except ValueError:
