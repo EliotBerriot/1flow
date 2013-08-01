@@ -1188,7 +1188,8 @@ class Article(Document):
             # If we come here, feed portal template has probably changed.
             # Developers should be noticed about it.
             LOGGER.critical(u'Feedportal post-processing failed '
-                            u'for article %s!', self)
+                            u'for article %s (no beautiful soup tag found)!',
+                            self)
 
         # if nothing matched before, just clean the
         # last URL we got. Better than nothing.
