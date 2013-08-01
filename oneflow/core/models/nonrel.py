@@ -252,36 +252,78 @@ class Tag(Document):
         except:
             pass
 
-    def add_parent(self, parent, update_reverse_link=True):
+    def save(self, *args, **kwargs):
+        """ This method will simply add the missing children/parents reverse
+            links of the current Tag. This is needed when modifying tags from
+            the Django admin, which doesn't know about the reverse-link
+            existence.
+
+            .. note:: sadly, we have no fast way to do the same for links
+                removal.
+        """
+
+        super(Tag, self).save(*args, **kwargs)
+
+        for parent in self.parents:
+            if self in parent.children:
+                continue
+
+            try:
+                parent.add_child(self, update_reverse_link=False,
+                                 full_reload=False)
+            except:
+                LOGGER.exception(u'Exception while reverse-adding '
+                                 u'child %s to parent %s', self, parent)
+
+        for child in self.children:
+            if self in child.parents:
+                continue
+
+            try:
+                child.add_parent(self, update_reverse_link=False,
+                                 full_reload=False)
+            except:
+                LOGGER.exception(u'Exception while reverse-adding '
+                                 u'parent %s to child %s', self, child)
+
+    def add_parent(self, parent, update_reverse_link=True, full_reload=True):
 
         self.update(add_to_set__parents=parent)
-        self.safe_reload()
+
+        if full_reload:
+            self.safe_reload()
 
         if update_reverse_link:
             parent.add_child(self, update_reverse_link=False)
 
-    def remove_parent(self, parent, update_reverse_link=True):
+    def remove_parent(self, parent, update_reverse_link=True, full_reload=True):
 
         if update_reverse_link:
             parent.remove_child(self, update_reverse_link=False)
 
         self.update(pull__parents=parent)
-        self.safe_reload()
 
-    def add_child(self, child, update_reverse_link=True):
+        if full_reload:
+            self.safe_reload()
+
+    def add_child(self, child, update_reverse_link=True, full_reload=True):
         self.update(add_to_set__children=child)
-        self.safe_reload()
+
+        if full_reload:
+            self.safe_reload()
 
         if update_reverse_link:
             child.add_parent(self, update_reverse_link=False)
 
-    def remove_child(self, child, update_reverse_link=True):
+    def remove_child(self, child, update_reverse_link=True, full_reload=True):
 
         if update_reverse_link:
             child.remove_parent(self, update_reverse_link=False)
 
         self.update(pull__children=child)
-        self.safe_reload()
+
+        if full_reload:
+            self.safe_reload()
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed
@@ -1284,11 +1326,25 @@ class Article(Document):
 
         return True
 
+    @property
+    def feedparser_original_data_hydrated(self):
+        """ XXX: should disappear when feedparser_data is useless. """
+
+        if self.feedparser_original_data:
+            return ast.literal_eval(re.sub(r'time.struct_time\([^)]+\)',
+                                    '""', self.feedparser_original_data))
+
+        return None
+
     @celery_task_method(name='Article.postprocess_feedparser_data',
                         queue='fetch')
     def postprocess_feedparser_data(self, force=False, commit=True):
+        """ XXX: should disappear when feedparser_data is useless. """
 
-        fpod = self.feedparser_original_data
+        # Celery, my love.
+        self.safe_reload()
+
+        fpod = self.feedparser_original_data_hydrated
 
         if fpod:
             if self.tags == [] and 'tags' in fpod:
@@ -2010,6 +2066,29 @@ class Preference(Document):
     notification = EmbeddedDocumentField('NotificationPreference')
 
 
+def user_django_user_random_default():
+    """ 20130731: unused function but I keep this code for random()-related
+        and future use. """
+
+    count = 1
+
+    while count:
+        random_int = randint(-sys.maxint - 1, -1)
+
+        try:
+            User.objects.get(django_user=random_int)
+
+        except User.DoesNotExist:
+            return random_int
+
+        else:
+            count += 1
+            if count == 10:
+                LOGGER.warning(u'user_django_user_random_default() is trying '
+                               u'to slow down things (more than 10 cycles to '
+                               u' generate a not-taken random ID)…')
+
+
 class User(Document):
     django_user = IntField(unique=True)
     username    = StringField()
@@ -2023,6 +2102,13 @@ class User(Document):
 
     def get_full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
+
+    def safe_reload(self):
+        try:
+            self.reload()
+
+        except:
+            pass
 
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):

@@ -202,10 +202,10 @@ class TagAdmin(admin.DocumentAdmin):
     def parents_display(self, obj):
 
         if obj.parents:
-            return ','.join(u'<a href="/admin/models/tag/{0}" '
-                            u'target="_blank">{1}</a>'.format(
-                            parent.id, parent.name)
-                            for parent in obj.parents)
+            return ', '.join(u'<a href="/admin/models/tag/{0}" '
+                             u'target="_blank">{1}</a>'.format(
+                             parent.id, parent.name)
+                             for parent in obj.parents)
 
         return u'—'
 
@@ -215,10 +215,10 @@ class TagAdmin(admin.DocumentAdmin):
     def children_display(self, obj):
 
         if obj.children:
-            return ','.join(u'<a href="/admin/models/tag/{0}" '
-                            u'target="_blank">{1}</a>'.format(
-                            child.id, child.name)
-                            for child in obj.children)
+            return ', '.join(u'<a href="/admin/models/tag/{0}" '
+                             u'target="_blank">{1}</a>'.format(
+                             child.id, child.name)
+                             for child in obj.children)
 
         return u'—'
 

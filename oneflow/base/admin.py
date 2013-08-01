@@ -61,7 +61,11 @@ class CSVAdminMixin(django_admin.ModelAdmin):
         if request.user.is_superuser:
             actions.append('csv_export')
 
-        actions = super(CSVAdminMixin, self).get_actions(request)
+        super_actions = super(CSVAdminMixin, self).get_actions(request)
+
+        if super_actions:
+            actions.extend(super_actions)
+
         return actions
 
     def get_extra_csv_fields(self, request):
@@ -165,7 +169,10 @@ class OneFlowUserAdmin(UserAdmin, CSVAdminMixin):
     full_name_display.short_description = _(u'Full name')
 
 admin.site.register(User, OneFlowUserAdmin)
-admin.site.unregister(DjangoUser)
+try:
+    admin.site.unregister(DjangoUser)
+except:
+    pass
 
 
 if settings.FULL_ADMIN:
