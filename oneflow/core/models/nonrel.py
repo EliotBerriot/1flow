@@ -1136,6 +1136,7 @@ class Article(Document):
                     in str(tags_error):
 
                 self.tags = [t for t in self.tags if t is not None]
+                e.errors.pop('tags')
 
             if e.errors:
                 raise e
