@@ -599,9 +599,11 @@ class Feed(Document):
         except:
             date_published = None
 
-        tags = Tag.get_tags_set(set(t['term']
-                                for t in article.get('tags', []))
-                                , origin=self) | set(feed_tags)
+        tags = list(Tag.get_tags_set(set(t['term']
+                    for t in article.get('tags', [])
+                    # Sometimes, t['term'] can be None.
+                    # http://dev.1flow.net/webapps/1flow/group/4082/
+                    if t['term']), origin=self) | set(feed_tags))
 
         try:
             new_article, created = Article.create_article(
@@ -1125,7 +1127,8 @@ class Article(Document):
         url = requests_response.url
 
         try:
-            proto, remaining = url.split('://')
+            # XXX: duplicate code
+            proto, remaining = url.split('://', 1)
             hostname_port, remaining = remaining.split('/', 1)
 
         except ValueError:
@@ -1289,8 +1292,11 @@ class Article(Document):
 
         if fpod:
             if self.tags == [] and 'tags' in fpod:
-                tags = [x['term'] for x in fpod['tags']]
-                tags
+                tags = list(Tag.get_tags_set((x['term']
+                            # Sometimes, x['term'] can be None.
+                            # http://dev.1flow.net/webapps/1flow/group/4082/
+                            for x in fpod['tags'] if x['term']),
+                            origin=self))
 
         #
         # TODO / XXX: continue here.
