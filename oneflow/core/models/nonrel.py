@@ -1127,6 +1127,13 @@ class Article(Document):
                 self.title = self.title[:255] + (self.title[:255] and u'…')
                 e.errors.pop('title')
 
+            tags_error = e.errors.get('tags', None)
+
+            if tags_error and 'GenericReferences can only contain documents' \
+                    in str(tags_error):
+
+                self.tags = [t for t in self.tags if t is not None]
+
             if e.errors:
                 raise e
 
