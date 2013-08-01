@@ -1433,8 +1433,11 @@ class Article(Document):
 
     def create_reads(self, users, verbose=True):
 
+        # XXX: todo remove this, when globally fixed.
+        tags = [t for t in self.tags if t is not None]
+
         for user in users:
-            new_read = Read(article=self, user=user, tags=self.tags)
+            new_read = Read(article=self, user=user, tags=tags)
 
             try:
                 new_read.save()
