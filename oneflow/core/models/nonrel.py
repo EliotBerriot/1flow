@@ -645,7 +645,7 @@ class Feed(Document):
                     for t in article.get('tags', [])
                     # Sometimes, t['term'] can be None.
                     # http://dev.1flow.net/webapps/1flow/group/4082/
-                    if t['term']), origin=self) | set(feed_tags))
+                    if t['term'] is not None), origin=self) | set(feed_tags))
 
         try:
             new_article, created = Article.create_article(
