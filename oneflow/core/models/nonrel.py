@@ -2,6 +2,7 @@
 
 import re
 import ast
+import sys
 import uuid
 import logging
 import requests
@@ -10,7 +11,7 @@ import html2text
 import feedparser
 
 from statsd import statsd
-from random import randrange
+from random import randint, randrange
 from constance import config
 
 from bs4 import BeautifulSoup
@@ -1136,6 +1137,7 @@ class Article(Document):
                     in str(tags_error):
 
                 self.tags = [t for t in self.tags if t is not None]
+                e.errors.pop('tags')
 
             if e.errors:
                 raise e
