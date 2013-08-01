@@ -641,8 +641,8 @@ class Feed(Document):
         except:
             date_published = None
 
-        tags = list(Tag.get_tags_set(set(t['term']
-                    for t in article.get('tags', [])
+        tags = list(Tag.get_tags_set((
+                    t['term'] for t in article.get('tags', [])
                     # Sometimes, t['term'] can be None.
                     # http://dev.1flow.net/webapps/1flow/group/4082/
                     if t['term'] is not None), origin=self) | set(feed_tags))
