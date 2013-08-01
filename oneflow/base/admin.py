@@ -165,7 +165,10 @@ class OneFlowUserAdmin(UserAdmin, CSVAdminMixin):
     full_name_display.short_description = _(u'Full name')
 
 admin.site.register(User, OneFlowUserAdmin)
-admin.site.unregister(DjangoUser)
+try:
+    admin.site.unregister(DjangoUser)
+except:
+    pass
 
 
 if settings.FULL_ADMIN:
