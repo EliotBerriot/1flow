@@ -1326,11 +1326,25 @@ class Article(Document):
 
         return True
 
+    @property
+    def feedparser_original_data_hydrated(self):
+        """ XXX: should disappear when feedparser_data is useless. """
+
+        if self.feedparser_original_data:
+            return ast.literal_eval(re.sub(r'time.struct_time\([^)]+\)',
+                                    '""', self.feedparser_original_data))
+
+        return None
+
     @celery_task_method(name='Article.postprocess_feedparser_data',
                         queue='fetch')
     def postprocess_feedparser_data(self, force=False, commit=True):
+        """ XXX: should disappear when feedparser_data is useless. """
 
-        fpod = self.feedparser_original_data
+        # Celery, my love.
+        self.safe_reload()
+
+        fpod = self.feedparser_original_data_hydrated
 
         if fpod:
             if self.tags == [] and 'tags' in fpod:
