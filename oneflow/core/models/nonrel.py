@@ -1349,10 +1349,10 @@ class Article(Document):
 
         if fpod:
             if self.tags == [] and 'tags' in fpod:
-                tags = list(Tag.get_tags_set((x['term']
-                            # Sometimes, x['term'] can be None.
+                tags = list(Tag.get_tags_set((t['term']
+                            # Sometimes, t['term'] can be None.
                             # http://dev.1flow.net/webapps/1flow/group/4082/
-                            for x in fpod['tags'] if x['term']),
+                            for t in fpod['tags'] if t['term'] is not None),
                             origin=self))
 
         #
