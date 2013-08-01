@@ -2080,6 +2080,13 @@ class User(Document):
     def get_full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
 
+    def safe_reload(self):
+        try:
+            self.reload()
+
+        except:
+            pass
+
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
         if kwargs.get('created', False):
