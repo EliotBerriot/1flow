@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import re
+import ast
 import uuid
 import logging
 import requests
@@ -190,6 +192,7 @@ class Tag(Document):
 
         for tag_name in tags_names:
             tag_name = tag_name.lower()
+
             try:
                 tag = cls.objects.get(name=tag_name)
                 tags.add(tag.duplicate_of or tag)
