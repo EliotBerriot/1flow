@@ -2066,6 +2066,29 @@ class Preference(Document):
     notification = EmbeddedDocumentField('NotificationPreference')
 
 
+def user_django_user_random_default():
+    """ 20130731: unused function but I keep this code for random()-related
+        and future use. """
+
+    count = 1
+
+    while count:
+        random_int = randint(-sys.maxint - 1, -1)
+
+        try:
+            User.objects.get(django_user=random_int)
+
+        except User.DoesNotExist:
+            return random_int
+
+        else:
+            count += 1
+            if count == 10:
+                LOGGER.warning(u'user_django_user_random_default() is trying '
+                               u'to slow down things (more than 10 cycles to '
+                               u' generate a not-taken random ID)…')
+
+
 class User(Document):
     django_user = IntField(unique=True)
     username    = StringField()
