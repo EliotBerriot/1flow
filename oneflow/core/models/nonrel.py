@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+import re
+import ast
 import uuid
 import logging
 import requests
@@ -190,6 +192,7 @@ class Tag(Document):
 
         for tag_name in tags_names:
             tag_name = tag_name.lower()
+
             try:
                 tag = cls.objects.get(name=tag_name)
                 tags.add(tag.duplicate_of or tag)
@@ -641,8 +644,8 @@ class Feed(Document):
         except:
             date_published = None
 
-        tags = list(Tag.get_tags_set(set(t['term']
-                    for t in article.get('tags', [])
+        tags = list(Tag.get_tags_set((
+                    t['term'] for t in article.get('tags', [])
                     # Sometimes, t['term'] can be None.
                     # http://dev.1flow.net/webapps/1flow/group/4082/
                     if t['term'] is not None), origin=self) | set(feed_tags))
