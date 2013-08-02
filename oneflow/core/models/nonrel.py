@@ -1188,7 +1188,7 @@ class Article(Document):
         except ValueError:
             return url
 
-        if 'feedsportal.com' in hostname_port:
+        if 'da.feedsportal.com' in hostname_port:
             # Sometimes the redirect chain breaks and gives us
             # a F*G page with links in many languages "click here
             # to continue".
@@ -1200,8 +1200,8 @@ class Article(Document):
             # If we come here, feed portal template has probably changed.
             # Developers should be noticed about it.
             LOGGER.critical(u'Feedportal post-processing failed '
-                            u'for article %s (no beautiful soup tag found)!',
-                            self)
+                            u'for article %s (no redirect tag found '
+                            u'at address %s)!', self, url)
 
         # if nothing matched before, just clean the
         # last URL we got. Better than nothing.
