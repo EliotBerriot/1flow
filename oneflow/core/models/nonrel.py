@@ -41,8 +41,7 @@ from ...base.utils import (connect_mongoengine_signals,
                            HttpResponseLogProcessor, StopProcessingException)
 
 from ...base.utils.http import clean_url
-from ...base.utils.dateutils import (now, timedelta, until_tomorrow_delta,
-                                     today, datetime)
+from ...base.utils.dateutils import (now, timedelta, today, datetime)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from .keyval import FeedbackDocument
 
@@ -968,9 +967,6 @@ class Feed(Document):
                 spipe.incr('feeds.refresh.byId.%s.fetched' % sid, new_articles)
                 spipe.incr('feeds.refresh.byId.%s.duplicates' % sid, duplicates)
                 spipe.incr('feeds.refresh.byId.%s.mutualized' % sid, mutualized)
-
-            self.update_recent_articles_count.apply_async(
-                (), countdown=until_tomorrow_delta().seconds)
 
         # Everything went fine, be sure to reset the "error counter".
         self.errors[:]  = []
