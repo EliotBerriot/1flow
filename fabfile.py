@@ -170,7 +170,7 @@ def production():
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low': ['worker-05.1flow.io', ],
         'worker_swarm': ['worker-99.1flow.io', ],
-        'worker_fetch': ['worker-02.1flow.io',
+        'worker_fetch': [ #'worker-02.1flow.io',
                          'worker-04.1flow.io',
                          'worker-99.1flow.io', ],
     })
@@ -200,8 +200,8 @@ def production():
         'worker_queues': {
             # The 3 fetchers help on main queues.
             'worker_fetch@worker-02.1flow.io': 'fetch,low',
-            'worker_fetch@worker-04.1flow.io': 'fetch,medium',
-            'worker_fetch@worker-99.1flow.io': 'fetch,high',
+            'worker_fetch@worker-04.1flow.io': 'fetch,high',
+            'worker_fetch@worker-99.1flow.io': 'fetch,medium',
         },
         # Eventlet is definitively broken, the worker halts every now and then.
         # 'worker_pool': {
