@@ -1926,7 +1926,6 @@ class Article(Document):
         self.slug = slugify(self.title)
         self.save()
 
-        #LOGGER.warning('\n>>>>>>> +1 empty for %s\n', self)
         statsd.gauge('articles.counts.empty', 1, delta=True)
 
         # Manually randomize a little the fetching in 5 seconds, to avoid
