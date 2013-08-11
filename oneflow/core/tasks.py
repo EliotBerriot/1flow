@@ -9,7 +9,7 @@ from constance import config
 
 from statsd import statsd
 
-from mongoengine.errors import OperationError
+from mongoengine.errors import OperationError, NotUniqueError
 from mongoengine.queryset import Q
 from pymongo.errors import DuplicateKeyError
 
@@ -714,7 +714,11 @@ def archive_article_one_internal(article, counts):
         unless you know what you're doing. """
 
     article.switch_db('archive')
-    article.save()
+    try:
+        article.save()
+    except (NotUniqueError, DuplicateKeyError):
+        LOGGER.warning(u'Tried to save a duplicate article %s '
+                       u'in the archive DB.', article)
 
     article.switch_db('default')
     article.delete()
