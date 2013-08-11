@@ -1918,7 +1918,13 @@ class Article(Document):
     @classmethod
     def signal_post_save_handler(cls, sender, document, **kwargs):
         if kwargs.get('created', False):
-            document.post_save_task.delay()
+            #
+            # TODO: find a more robust way to be sure this handler
+            #       runs only on the production 'default' database
+            #       (eg. not on "archive" and possibly others).
+            #
+            if not (document.orphaned or document.duplicate_of):
+                document.post_save_task.delay()
 
     @celery_task_method(name='Article.post_save', queue='high')
     def post_save_task(self):
