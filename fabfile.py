@@ -170,7 +170,7 @@ def production():
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low': ['worker-05.1flow.io', ],
         'worker_swarm': ['worker-99.1flow.io', ],
-        'worker_fetch': [ #'worker-02.1flow.io',
+        'worker_fetch': ['worker-02.1flow.io',
                          'worker-04.1flow.io',
                          'worker-99.1flow.io', ],
     })
@@ -195,13 +195,13 @@ def production():
             'worker_fetch@worker-04.1flow.io': 'fetch,high',
             'worker_fetch@worker-99.1flow.io': 'fetch,medium',
         },
+        'worker_soft_time_limit': {
+            'worker_swarm': '30',
+        },
         # Eventlet is definitively broken, the worker halts every now and then.
         # 'worker_pool': {
         #     'worker_swarm': 'eventlet',
         # },
-        'worker_soft_time_limit': {
-            'worker_swarm': '30',
-        },
     }
     env.env_was_set = True
 
