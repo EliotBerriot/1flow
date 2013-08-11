@@ -7,9 +7,12 @@ import time as pytime
 from random import randrange
 from constance import config
 
+from statsd import statsd
+
 from mongoengine.errors import OperationError
 from mongoengine.queryset import Q
 from pymongo.errors import DuplicateKeyError
+
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
 
@@ -23,7 +26,11 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from .models import RATINGS
-from .models.nonrel import Article, Feed, Subscription, Read, User as MongoUser
+from .models.nonrel import (Article, Feed, Subscription, Read,
+                            User as MongoUser,
+                            CONTENT_TYPE_NONE, CONTENT_TYPE_HTML,
+                            CONTENT_TYPE_MARKDOWN)
+
 from .gr_import import GoogleReaderImport
 
 from ..base.utils import RedisExpiringLock
@@ -698,3 +705,108 @@ def global_feeds_checker():
 
     LOGGER.info('Closed %s feeds in %s.', count,
                 naturaldelta(pytime.time() - start_time))
+
+
+# ••••••••••••••••••••••••••••••••••••••••••••••••••• Move things to Archive DB
+
+def archive_article_one_internal(article, counts):
+    """ internal function. Do not use directly
+        unless you know what you're doing. """
+
+    article.switch_db('archive')
+    article.save()
+
+    article.switch_db('default')
+    article.delete()
+
+    if article.content_type == CONTENT_TYPE_NONE:
+        counts['empty'] += 1
+
+    elif article.content_type == CONTENT_TYPE_HTML:
+        counts['html'] += 1
+
+    elif article.content_type == CONTENT_TYPE_MARKDOWN:
+        counts['markdown'] += 1
+
+    if article.url_error:
+        counts['url_errors'] += 1
+
+    if article.content_error:
+        counts['content_errors'] += 1
+
+
+@task(queue='medium')
+def archive_articles(limit=None):
+
+    counts = {
+        'empty': 0,
+        'html': 0,
+        'markdown': 0,
+        'url_errors': 0,
+        'content_errors': 0,
+        'duplicates': 0,
+        'orphaned': 0,
+    }
+
+    if limit is None:
+        limit = config.ARTICLE_ARCHIVE_BATCH_SIZE
+
+    duplicates = Article.objects(duplicate_of__ne=None).limit(limit).no_cache()
+    orphaned   = Article.objects(orphaned=True).limit(limit).no_cache()
+
+    counts['duplicates'] = duplicates.count()
+    counts['orphaned']   = orphaned.count()
+
+    if counts['duplicates']:
+        with benchmark('Archiving of %s duplicate article(s)'
+                       % counts['duplicates']):
+            for article in duplicates:
+                archive_article_one_internal(article, counts)
+
+    if counts['orphaned']:
+        with benchmark('Archiving of %s orphaned article(s)'
+                       % counts['orphaned']):
+            for article in orphaned:
+                archive_article_one_internal(article, counts)
+
+    if counts['duplicates'] or counts['orphaned']:
+        with statsd.pipeline() as spipe:
+
+            if counts['duplicates']:
+                spipe.gauge('articles.counts.duplicates',
+                            -counts['duplicates'], delta=True)
+
+            if counts['orphaned']:
+                spipe.gauge('articles.counts.orphaned',
+                            -counts['orphaned'], delta=True)
+
+            if counts['empty']:
+                spipe.gauge('articles.counts.empty',
+                            -counts['empty'], delta=True)
+
+            if counts['html']:
+                spipe.gauge('articles.counts.html',
+                            -counts['html'], delta=True)
+
+            if counts['markdown']:
+                spipe.gauge('articles.counts.markdown',
+                            -counts['markdown'], delta=True)
+
+            if counts['url_errors']:
+                spipe.gauge('articles.counts.url_errors',
+                            -counts['url_errors'], delta=True)
+
+            if counts['content_errors']:
+                spipe.gauge('articles.counts.content_errors',
+                            -counts['content_errors'], delta=True)
+
+    else:
+        LOGGER.info(u'No article to archive.')
+
+
+@task(queue='medium')
+def archive_documents():
+
+    # these are tasks, but we run them sequentially in this global archive job
+    # to avoid hammering the production database with multiple archive jobs.
+    archive_articles()

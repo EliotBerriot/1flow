@@ -108,6 +108,10 @@ CONSTANCE_CONFIG = {
                                   u'to Markdown internal conversion. '
                                   u'Default: enabled in normal conditions.')),
 
+    'ARTICLE_ARCHIVE_BATCH_SIZE': (100 if DEBUG else 50000,
+                                   ugettext(u'how much articles will be '
+                                   u'archived at each archive task run.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
 
     # GR_LOAD_LIMIT * GR_WAVE_LIMIT must equals GR_MAX_ARTICLES:
