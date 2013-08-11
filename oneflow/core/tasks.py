@@ -800,6 +800,11 @@ def archive_articles(limit=None):
                 spipe.gauge('articles.counts.content_errors',
                             -counts['content_errors'], delta=True)
 
+            # We cannot simply do -(duplicates+orphaned), because some of
+            # them are of both types, and this would false the total count.
+            spipe.gauge('articles.counts.total',
+                        Article._get_collection().count())
+
     else:
         LOGGER.info(u'No article to archive.')
 
