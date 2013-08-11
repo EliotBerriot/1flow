@@ -805,8 +805,8 @@ def archive_articles(limit=None):
 
 
 @task(queue='medium')
-def archive_documents():
+def archive_documents(limit=None):
 
     # these are tasks, but we run them sequentially in this global archive job
     # to avoid hammering the production database with multiple archive jobs.
-    archive_articles()
+    archive_articles(limit=limit)
