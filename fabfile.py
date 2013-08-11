@@ -182,14 +182,6 @@ def production():
             'worker-04.1flow.io': 'git@10.0.3.110:1flow.git',
         },
         'worker_concurrency': {
-
-            # All of them get normalized to __all__ value
-            #'worker_high': 8,
-            #'worker_medium': 10,
-            #'worker_low': 10,
-            #'worker-02.1flow.io': 8,
-            #'worker-04.1flow.io': 8,
-
             # setting only 'worker-99.1flow.io'
             # would override worker_swarm setting.
             'worker_fetch@worker-99.1flow.io': 16,
