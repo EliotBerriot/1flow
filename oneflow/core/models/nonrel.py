@@ -543,12 +543,19 @@ class Feed(Document):
 
     def close(self, reason=None, commit=True):
         self.update(set__closed=True, set__date_closed=now())
+
         self.closed_reason = reason or u'NO REASON GIVEN'
 
         LOGGER.info(u'Feed %s closed with reason "%s"!',
                     self, self.closed_reason)
 
-        self.safe_reload()
+        if commit:
+            self.safe_reload()
+
+        else:
+            # Just make sure the current instance
+            # has the same value as the database.
+            self.closed = True
 
     def get_articles(self, limit=None):
 
@@ -611,7 +618,11 @@ class Feed(Document):
         if len(self.errors) >= config.FEED_FETCH_MAX_ERRORS:
             if not self.closed:
                 self.close(u'Too many errors on the feed. Last was: %s'
-                           % self.errors[0])
+                           % self.errors[0],
+
+                           # prevent self.close() to reload()
+                           # us before we save().
+                           commit=False)
 
                 LOGGER.critical(u'Too many errors on feed %s, closed.', self)
 
