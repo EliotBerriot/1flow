@@ -7,12 +7,13 @@ DATABASES = {
     'default': dj_database_url.config()
 }
 
-mongoengine.connect(os.environ.get('MONGODB_NAME'),
-                    host=os.environ.get('MONGODB_HOST'),
+MONGODB_NAME = os.environ.get('MONGODB_NAME')
+MONGODB_NAME_ARTCHIVE = os.environ.get('MONGODB_NAME_ARCHIVE')
+
+mongoengine.connect(MONGODB_NAME, host=os.environ.get('MONGODB_HOST'),
                     tz_aware=USE_TZ)
 
-mongoengine.register_connection('archive',
-                                os.environ.get('MONGODB_NAME_ARCHIVE'),
+mongoengine.register_connection('archive', MONGODB_NAME_ARTCHIVE,
                                 host=os.environ.get('MONGODB_HOST_ARCHIVE'),
                                 tz_aware=USE_TZ)
 

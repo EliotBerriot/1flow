@@ -33,6 +33,7 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 ReferenceField, GenericReferenceField,
                                 EmbeddedDocumentField)
 
+from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
 
@@ -2012,7 +2013,18 @@ class Article(Document):
             #       (eg. not on "archive" and possibly others).
             #
             if not (document.orphaned or document.duplicate_of):
-                document.post_save_task.delay()
+
+                # We need to workaround
+                # https://github.com/MongoEngine/mongoengine/pull/441
+                try:
+                    db_name = document._get_db().name
+
+                except:
+                    db_name = document._get_db()().name
+
+                if db_name == settings.MONGODB_NAME:
+                    # We don't re-run the signal tasks in the archive database.
+                    document.post_save_task.delay()
 
     @celery_task_method(name='Article.post_save', queue='high')
     def post_save_task(self):
