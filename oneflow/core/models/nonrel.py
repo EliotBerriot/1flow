@@ -1951,8 +1951,7 @@ class Article(Document):
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
         # as much as possible. This is not yet a full-featured solution,
         # but it's completed byt the `fetch_limit` semaphore on the Feed.
-        if not self.orphaned:
-            self.fetch_content.apply_async((), countdown=randrange(5))
+        self.fetch_content.apply_async((), countdown=randrange(5))
 
         #
         # TODO: create short_url
