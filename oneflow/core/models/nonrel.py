@@ -1019,8 +1019,10 @@ class Article(Document):
     slug         = StringField(max_length=256)
     url          = URLField(unique=True, verbose_name=_(u'Public URL'))
     url_absolute = BooleanField(default=False, verbose_name=_(u'Absolute URL'),
-                                help_text=_(u'The article URL has already been '
-                                            u'successfully absolutized.'))
+                                help_text=_(u'The article URL has been '
+                                            u'successfully absolutized '
+                                            u'to its unique and final '
+                                            u'location.'))
     url_error  = StringField(verbose_name=_(u'URL fetch error'), default='',
                              help_text=_(u'Error when absolutizing the URL'))
     pages_urls = ListField(URLField(), verbose_name=_(u'Next pages URLs'),
