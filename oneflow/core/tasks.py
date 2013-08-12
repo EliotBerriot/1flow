@@ -716,6 +716,7 @@ def archive_article_one_internal(article, counts):
     article.switch_db('archive')
     try:
         article.save()
+
     except (NotUniqueError, DuplicateKeyError):
         LOGGER.warning(u'Tried to save a duplicate article %s '
                        u'in the archive DB.', article)
@@ -732,6 +733,9 @@ def archive_article_one_internal(article, counts):
     elif article.content_type == CONTENT_TYPE_MARKDOWN:
         counts['markdown'] += 1
 
+    if article.url_absolute:
+        counts['absolutes'] += 1
+
     if article.url_error:
         counts['url_errors'] += 1
 
@@ -746,6 +750,7 @@ def archive_articles(limit=None):
         'empty': 0,
         'html': 0,
         'markdown': 0,
+        'absolutes': 0,
         'url_errors': 0,
         'content_errors': 0,
         'duplicates': 0,
@@ -795,6 +800,10 @@ def archive_articles(limit=None):
             if counts['markdown']:
                 spipe.gauge('articles.counts.markdown',
                             -counts['markdown'], delta=True)
+
+            if counts['absolutes']:
+                spipe.gauge('articles.counts.absolutes',
+                            -counts['absolutes'], delta=True)
 
             if counts['url_errors']:
                 spipe.gauge('articles.counts.url_errors',
