@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import os
 import re
 import ast
 import sys
 import uuid
+import errno
 import logging
 import requests
 import strainer
@@ -43,6 +45,7 @@ from ...base.utils import (connect_mongoengine_signals,
 from ...base.utils.http import clean_url
 from ...base.utils.dateutils import (now, timedelta, today, datetime)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
+
 from .keyval import FeedbackDocument
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
@@ -127,6 +130,64 @@ class Source(Document):
     name    = StringField()
     authors = ListField(ReferenceField('User'))
     slug    = StringField()
+
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
+
+
+class WebSite(Document):
+    """ Simple representation of a web site. Holds options for it.
+
+
+    .. todo::
+        - replace Feed.site_url by Feed.website
+        - set_fetch_limit goes into website (can be common to many feeds)
+    """
+
+    name = StringField()
+    url = URLField(unique=True)
+    duplicate_of = ReferenceField('WebSite')
+
+    def __unicode__(self):
+        return u'%s #%s (%s)%s' % (self.name or u'<UNSET>', self.id, self.url,
+                                   (_(u'(dupe of #%s)') % self.duplicate_of.id)
+                                   if self.duplicate_of else u'')
+
+    @classmethod
+    def get_from_url(cls, url):
+        try:
+            # XXX: duplicate code
+            proto, remaining = url.split('://', 1)
+            hostname_port, remaining = remaining.split('/', 1)
+
+        except:
+            LOGGER.exception('Unable to determine Website from "%s"', url)
+            return None
+
+        else:
+            website, _ = WebSite.get_or_create_website('%s://%s'
+                                                       % (proto, hostname_port))
+            return website
+
+    @classmethod
+    def get_or_create_website(cls, url):
+        """
+
+            .. warning:: will always return the *master* :class:`WebSite`
+                if the found one is a duplicate (eg. never returns the
+                duplicate one).
+        """
+        try:
+            website = cls.objects.get(url=url)
+
+        except cls.DoesNotExist:
+            return cls(url=url).save(), True
+
+        else:
+            return website.duplicate_of or website, False
+
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
 
 
 WORD_RELATION_TYPES = (
