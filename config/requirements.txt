@@ -1,4 +1,4 @@
--e git+https://github.com/Karmak23/sparks.git@sparks-3.7#egg=sparks-dev
+-e git+https://github.com/Karmak23/sparks.git@sparks-3.6.4#egg=sparks-dev
 -e git+https://github.com/Karmak23/humanize.git@master#egg=humanize-dev
 -e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-dev
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-dev
@@ -10,6 +10,7 @@
 -e git+https://github.com/gregmuellegger/django-reset.git@4f859d9319a7bfc41484f302e96e1f880aaa67db#egg=django_reset-dev
 -e git+https://github.com/noirbizarre/django-ember.git@2845c3ef46711320b6941c22ce8204c302d6651f#egg=django_ember-dev
 -e git+https://github.com/noirbizarre/django.js.git@5e73d284971356a127677d0d4088f68a14631080#egg=django.js-dev
+-e git+https://github.com/kmmbvnr/django-jenkins.git@master#egg=django-jenkins-dev
 amqp==1.0.12
 anyjson==0.3.3
 beautifulsoup4==4.2.1
@@ -75,6 +76,7 @@ raven==3.4.0
 recordtype==1.1
 redis==2.7.6
 requests==1.2.3
+selenium==2.33.0
 simplejson==3.3.0
 South==0.8.1
 sphinx-me==0.1.2

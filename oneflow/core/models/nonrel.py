@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
+import os
 import re
 import ast
 import sys
 import uuid
+import errno
 import logging
 import requests
 import strainer
@@ -43,6 +45,7 @@ from ...base.utils import (connect_mongoengine_signals,
 from ...base.utils.http import clean_url
 from ...base.utils.dateutils import (now, timedelta, today, datetime)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
+
 from .keyval import FeedbackDocument
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
@@ -127,6 +130,64 @@ class Source(Document):
     name    = StringField()
     authors = ListField(ReferenceField('User'))
     slug    = StringField()
+
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
+
+
+class WebSite(Document):
+    """ Simple representation of a web site. Holds options for it.
+
+
+    .. todo::
+        - replace Feed.site_url by Feed.website
+        - set_fetch_limit goes into website (can be common to many feeds)
+    """
+
+    name = StringField()
+    url = URLField(unique=True)
+    duplicate_of = ReferenceField('WebSite')
+
+    def __unicode__(self):
+        return u'%s #%s (%s)%s' % (self.name or u'<UNSET>', self.id, self.url,
+                                   (_(u'(dupe of #%s)') % self.duplicate_of.id)
+                                   if self.duplicate_of else u'')
+
+    @classmethod
+    def get_from_url(cls, url):
+        try:
+            # XXX: duplicate code
+            proto, remaining = url.split('://', 1)
+            hostname_port, remaining = remaining.split('/', 1)
+
+        except:
+            LOGGER.exception('Unable to determine Website from "%s"', url)
+            return None
+
+        else:
+            website, _ = WebSite.get_or_create_website('%s://%s'
+                                                       % (proto, hostname_port))
+            return website
+
+    @classmethod
+    def get_or_create_website(cls, url):
+        """
+
+            .. warning:: will always return the *master* :class:`WebSite`
+                if the found one is a duplicate (eg. never returns the
+                duplicate one).
+        """
+        try:
+            website = cls.objects.get(url=url)
+
+        except cls.DoesNotExist:
+            return cls(url=url).save(), True
+
+        else:
+            return website.duplicate_of or website, False
+
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
 
 
 WORD_RELATION_TYPES = (
@@ -675,20 +736,18 @@ class Feed(Document):
                 # We *NEED* a title, but as we have no article.lang yet,
                 # it must be language independant as much as possible.
                 title=getattr(article, 'title', u' '),
-                content=content,
-                date_published=date_published,
-                feeds=[self],
-                tags=tags,
 
-                # Convert to unicode before saving,
-                # else the article won't validate.
-                feedparser_original_data=unicode(article))
+                content=content, date_published=date_published,
+                feeds=[self], tags=tags)
 
         except:
             # NOTE: duplication handling is already
             # taken care of in Article.create_article().
             LOGGER.exception(u'Article creation failed in feed %s.', self)
             return False
+
+        if created:
+            new_article.add_original_data('feedparser', unicode(article))
 
         mutualized = created is None
 
@@ -1158,6 +1217,32 @@ class Article(Document):
     def reads(self):
         return Read.objects.filter(article=self)
 
+    @property
+    def original_data(self):
+        try:
+            return OriginalData.objects.get(article=self)
+
+        except OriginalData.DoesNotExist:
+            return OriginalData(article=self).save()
+
+    def add_original_data(self, name, value):
+        od = self.original_data
+
+        setattr(od, name, value)
+        od.save()
+
+    def remove_original_data(self, name):
+        od = self.original_data
+
+        try:
+            delattr(od, name)
+
+        except AttributeError:
+            pass
+
+        else:
+            od.save()
+
     def absolutize_url_must_abort(self, force=False, commit=True):
 
         if config.ARTICLE_ABSOLUTIZING_DISABLED:
@@ -1348,16 +1433,6 @@ class Article(Document):
 
         return True
 
-    @property
-    def feedparser_original_data_hydrated(self):
-        """ XXX: should disappear when feedparser_data is useless. """
-
-        if self.feedparser_original_data:
-            return ast.literal_eval(re.sub(r'time.struct_time\([^)]+\)',
-                                    '""', self.feedparser_original_data))
-
-        return None
-
     @celery_task_method(name='Article.postprocess_feedparser_data',
                         queue='fetch')
     def postprocess_feedparser_data(self, force=False, commit=True):
@@ -1366,7 +1441,7 @@ class Article(Document):
         # Celery, my love.
         self.safe_reload()
 
-        fpod = self.feedparser_original_data_hydrated
+        fpod = self.original_data.feedparser_hydrated
 
         if fpod:
             if self.tags == [] and 'tags' in fpod:
@@ -1951,8 +2026,7 @@ class Article(Document):
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
         # as much as possible. This is not yet a full-featured solution,
         # but it's completed byt the `fetch_limit` semaphore on the Feed.
-        if not self.orphaned:
-            self.fetch_content.apply_async((), countdown=randrange(5))
+        self.fetch_content.apply_async((), countdown=randrange(5))
 
         #
         # TODO: create short_url
@@ -1977,6 +2051,29 @@ class Article(Document):
         #
 
         return
+
+
+class OriginalData(Document):
+
+    article = ReferenceField('Article', unique=True)
+
+    # This should go away soon, after a full re-parsing.
+    google_reader = StringField()
+    feedparser    = StringField()
+
+    meta = {
+        'db_alias': 'archive',
+    }
+
+    @property
+    def feedparser_hydrated(self):
+        """ XXX: should disappear when feedparser_data is useless. """
+
+        if self.feedparser:
+            return ast.literal_eval(re.sub(r'time.struct_time\([^)]+\)',
+                                    '""', self.feedparser))
+
+        return None
 
 
 class Read(Document):
@@ -2094,6 +2191,130 @@ class NotificationPreference(Document):
 class Preference(Document):
     snap = EmbeddedDocumentField('SnapPreference')
     notification = EmbeddedDocumentField('NotificationPreference')
+
+
+class Author(Document):
+    name        = StringField()
+    website     = ReferenceField('WebSite', unique_with='origin_name')
+    origin_name = StringField(help_text=_(u'When trying to guess authors, we '
+                              u'have only a "fullname" equivalent. We need to '
+                              u'store it for future comparisons in case '
+                              u'firstname and lastname get manually modified '
+                              u'after author creation.'))
+
+    is_unsure = BooleanField(help_text=_(u'Set to True when the author '
+                             u'has been found from its origin_name and '
+                             u'not via email; because origin_name can '
+                             u'be duplicated, but not emails.'),
+                             default=False)
+
+    user = ReferenceField('User', required=False, help_text=_(u'Link an '
+                          u'internet author to a 1flow user.'))
+
+    duplicate_of = ReferenceField('Author')
+
+    def __unicode__(self):
+        return u'%s%s #%s for website %s' % (self.name or self.origin_name,
+                                             _(u'(unsure)')
+                                             if self.is_unsure else u'',
+                                             self.id, self.website)
+
+    def safe_reload(self):
+        try:
+            self.reload()
+
+        except:
+            pass
+
+    @classmethod
+    def get_authors_from_feedparser_article(cls, feedparser_article,
+                                            set_to_article=None):
+
+        if set_to_article:
+            # This is an absolutized URL, hopefully.
+            article_url = set_to_article.url
+
+        else:
+            article_url = getattr(feedparser_article, 'link',
+                                  '').replace(' ', '%20') or None
+
+        if article_url:
+            website = WebSite.get_from_url(article_url)
+
+        else:
+            LOGGER.critical(u'NO url, cannot get any author.')
+
+        authors = set()
+
+        if 'authors' in feedparser_article:
+            # 'authors' can be [{}], which is useless.
+
+            for author_dict in feedparser_article['authors']:
+                author = cls.get_author_from_feedparser_dict(author_dict,
+                                                             website)
+
+                if author:
+                    if set_to_article:
+                        set_to_article.update(add_to_set__authors=author)
+
+                    authors.add(author)
+
+        if 'author_detail' in feedparser_article:
+            author = cls.get_author_from_feedparser_dict(
+                feedparser_article['author_detail'], website)
+
+            if author:
+                if set_to_article:
+                    set_to_article.update(add_to_set__authors=author)
+
+                authors.add(author)
+
+        if 'author' in feedparser_article:
+            author = cls.get_author_from_feedparser_dict(
+                {'name': feedparser_article['author']}, website)
+
+            if author:
+                if set_to_article:
+                    set_to_article.update(add_to_set__authors=author)
+
+                authors.add(author)
+
+        if set_to_article and authors:
+            set_to_article.reload()
+
+        # Always return a list, else we hit
+        # http://dev.1flow.net/development/1flow-dev/group/4026/
+        return list(authors)
+
+    @classmethod
+    def get_author_from_feedparser_dict(cls, author_dict, website):
+
+        email = author_dict.get('email', None)
+
+        if email:
+            # An email is less likely to have a duplicates than
+            # a standard name. It takes precedence if it exists.
+
+            try:
+                return cls.objects.get(origin_name=email, website=website)
+
+            except cls.DoesNotExist:
+                return cls(origin_name=email, website=website,
+                           is_unsure=False).save()
+
+        origin_name = author_dict.get('name', None)
+
+        if origin_name:
+            try:
+                return cls.objects.get(origin_name=origin_name,
+                                       website=website)
+
+            except cls.DoesNotExist:
+                return cls(origin_name=origin_name,
+                           website=website,
+                           is_unsure=True).save()
+
+        return None
 
 
 def user_django_user_random_default():
