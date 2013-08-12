@@ -1219,6 +1219,32 @@ class Article(Document):
     def reads(self):
         return Read.objects.filter(article=self)
 
+    @property
+    def original_data(self):
+        try:
+            return OriginalData.objects.get(article=self)
+
+        except OriginalData.DoesNotExist:
+            return OriginalData(article=self).save()
+
+    def add_original_data(self, name, value):
+        od = self.original_data
+
+        setattr(od, name, value)
+        od.save()
+
+    def remove_original_data(self, name):
+        od = self.original_data
+
+        try:
+            delattr(od, name)
+
+        except AttributeError:
+            pass
+
+        else:
+            od.save()
+
     def absolutize_url_must_abort(self, force=False, commit=True):
 
         if config.ARTICLE_ABSOLUTIZING_DISABLED:
@@ -1409,16 +1435,6 @@ class Article(Document):
 
         return True
 
-    @property
-    def feedparser_original_data_hydrated(self):
-        """ XXX: should disappear when feedparser_data is useless. """
-
-        if self.feedparser_original_data:
-            return ast.literal_eval(re.sub(r'time.struct_time\([^)]+\)',
-                                    '""', self.feedparser_original_data))
-
-        return None
-
     @celery_task_method(name='Article.postprocess_feedparser_data',
                         queue='fetch')
     def postprocess_feedparser_data(self, force=False, commit=True):
@@ -1427,7 +1443,7 @@ class Article(Document):
         # Celery, my love.
         self.safe_reload()
 
-        fpod = self.feedparser_original_data_hydrated
+        fpod = self.original_data.feedparser_hydrated
 
         if fpod:
             if self.tags == [] and 'tags' in fpod:
@@ -2037,6 +2053,29 @@ class Article(Document):
         #
 
         return
+
+
+class OriginalData(Document):
+
+    article = ReferenceField('Article', unique=True)
+
+    # This should go away soon, after a full re-parsing.
+    google_reader = StringField()
+    feedparser    = StringField()
+
+    meta = {
+        'db_alias': 'archive',
+    }
+
+    @property
+    def feedparser_hydrated(self):
+        """ XXX: should disappear when feedparser_data is useless. """
+
+        if self.feedparser:
+            return ast.literal_eval(re.sub(r'time.struct_time\([^)]+\)',
+                                    '""', self.feedparser))
+
+        return None
 
 
 class Read(Document):
