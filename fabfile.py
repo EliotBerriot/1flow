@@ -80,7 +80,7 @@ def local():
     # but it's still comfortable to have it when lanching tasks that are not
     # fully roledefs-compatible (eg. sdf.compilemessages ran alone).
     env.host_string = 'localhost'
-    env.root        = os.path.expanduser('~/sources/1flow')
+    env.root        = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
     env.env_was_set = True
 
 
