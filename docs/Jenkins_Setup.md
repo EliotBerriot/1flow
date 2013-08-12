@@ -3,7 +3,8 @@
 
     lxc-clone -n ci.1flow.net
     ssh ci
-    apt-get install
+    apt-get install sloccount
+
     sudo su - jenkins
     ssh-keygen -t dsa
 
@@ -22,3 +23,4 @@
     sudo vim /etc/postgres/*/pg_hba.conf
 
         host all postgres 127.0.0.1/32  peer
+
