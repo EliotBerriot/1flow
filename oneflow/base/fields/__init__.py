@@ -251,3 +251,30 @@ class DatetimeRedisDescriptor(RedisCachedDescriptor):
     def to_redis(self, value):
 
         return time.mktime(value.timetuple())
+
+
+class ListRedisProxy(list):
+
+    def __init__(self, parent_descriptor, hydrate_func=lambda x: x,
+                 dehydrate_func=lambda x: x):
+        self.parent = parent_descriptor
+
+    def append(self, value):
+        pass
+
+    def remove(self, value):
+        pass
+
+    def __len__(self):
+        return self.parent.REDIS.llen()
+
+
+class ListRedisDescriptor(RedisCachedDescriptor):
+
+    PROXY = ListRedisProxy
+
+    def to_python(self, value):
+        return self.PROXY(self).to_python(value)
+
+    def to_redis(self, value):
+        return [self.to_redis_one(x) for x in value]
