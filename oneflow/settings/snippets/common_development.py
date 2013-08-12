@@ -12,17 +12,31 @@ TEMPLATE_CONTEXT_PROCESSORS += (
     'django.core.context_processors.debug',
 )
 
+JENKINS_TASKS = (
+    'django_jenkins.tasks.with_coverage',
+    'django_jenkins.tasks.django_tests',   # select one django or
+    #'django_jenkins.tasks.dir_tests'      # directory tests discovery
+    'django_jenkins.tasks.run_pep8',
+    'django_jenkins.tasks.run_pyflakes',
+    #'django_jenkins.tasks.run_jslint',
+    #'django_jenkins.tasks.run_csslint',
+    'django_jenkins.tasks.run_sloccount',
+    #'django_jenkins.tasks.lettuce_tests',
+)
+
+
 
 ALLOWED_HOSTS += [
     'localhost',
 ]
 
-INSTALLED_APPS += ('django_nose', 'devserver', )
+INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver', )
 
 DEVSERVER_DEFAULT_ADDR = '0.0.0.0'
 DEVSERVER_DEFAULT_PORT = 8000
 
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
+JENKINS_TEST_RUNNER='django_jenkins.nose_runner.CINoseTestSuiteRunner'
 
 NOSE_ARGS = ['--stop']
 
