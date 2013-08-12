@@ -48,7 +48,7 @@ env.parallel   = True
 # Conclusion: it seems `env.user` overrides even the ~/.ssh/config values.
 
 # Where is the django project located
-env.root         = '/home/1flow/www/src'
+env.root         = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
 env.environment  = 'test'
 env.repository   = 'git@dev.1flow.net:1flow.git'
 
