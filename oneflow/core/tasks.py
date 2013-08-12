@@ -582,7 +582,12 @@ def refresh_all_feeds(limit=None):
         LOGGER.warning(u'Feed refresh disabled in configuration.')
         return
 
-    my_lock = RedisExpiringLock('refresh_all_feeds')
+    # Be sure two refresh operations don't overlap, but don't hold the
+    # lock too long if something goes wrong. In production conditions
+    # as of 20130812, refreshing all feeds takes only a moment:
+    # [2013-08-12 09:07:02,028: INFO/MainProcess] Task
+    #       oneflow.core.tasks.refresh_all_feeds succeeded in 1.99886608124s.
+    my_lock = RedisExpiringLock('refresh_all_feeds', expire_time=120)
 
     if not my_lock.acquire():
         # Avoid running this task over and over again in the queue
