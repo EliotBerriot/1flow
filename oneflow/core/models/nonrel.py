@@ -736,20 +736,18 @@ class Feed(Document):
                 # We *NEED* a title, but as we have no article.lang yet,
                 # it must be language independant as much as possible.
                 title=getattr(article, 'title', u' '),
-                content=content,
-                date_published=date_published,
-                feeds=[self],
-                tags=tags,
 
-                # Convert to unicode before saving,
-                # else the article won't validate.
-                feedparser_original_data=unicode(article))
+                content=content, date_published=date_published,
+                feeds=[self], tags=tags)
 
         except:
             # NOTE: duplication handling is already
             # taken care of in Article.create_article().
             LOGGER.exception(u'Article creation failed in feed %s.', self)
             return False
+
+        if created:
+            new_article.add_original_data('feedparser', unicode(article))
 
         mutualized = created is None
 
