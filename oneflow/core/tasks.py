@@ -7,8 +7,6 @@ import time as pytime
 from random import randrange
 from constance import config
 
-from statsd import statsd
-
 from pymongo.errors import DuplicateKeyError
 from mongoengine.errors import OperationError, NotUniqueError, ValidationError
 from mongoengine.queryset import Q
@@ -25,11 +23,9 @@ from django.core.mail import mail_managers
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
-from .models import RATINGS
-from .models.nonrel import (Article, Feed, Subscription, Read,
-                            User as MongoUser,
-                            CONTENT_TYPE_NONE, CONTENT_TYPE_HTML,
-                            CONTENT_TYPE_MARKDOWN)
+from .models import (RATINGS,
+                     Article, Feed, Subscription, Read, User as MongoUser)
+from .stats import synchronize_statsd_articles_gauges
 
 from .gr_import import GoogleReaderImport
 
@@ -744,35 +740,11 @@ def archive_article_one_internal(article, counts):
         article.switch_db('default')
         article.delete()
 
-        if article.content_type == CONTENT_TYPE_NONE:
-            counts['empty'] += 1
-
-        elif article.content_type == CONTENT_TYPE_HTML:
-            counts['html'] += 1
-
-        elif article.content_type == CONTENT_TYPE_MARKDOWN:
-            counts['markdown'] += 1
-
-        if article.url_absolute:
-            counts['absolutes'] += 1
-
-        if article.url_error:
-            counts['url_errors'] += 1
-
-        if article.content_error:
-            counts['content_errors'] += 1
-
 
 @task(queue='medium')
 def archive_articles(limit=None):
 
     counts = {
-        'empty': 0,
-        'html': 0,
-        'markdown': 0,
-        'absolutes': 0,
-        'url_errors': 0,
-        'content_errors': 0,
         'duplicates': 0,
         'orphaned': 0,
         'bad_articles': 0,
@@ -801,44 +773,7 @@ def archive_articles(limit=None):
                 archive_article_one_internal(article, counts)
 
     if counts['duplicates'] or counts['orphaned']:
-        with statsd.pipeline() as spipe:
-
-            if counts['duplicates']:
-                spipe.gauge('articles.counts.duplicates',
-                            -counts['duplicates'], delta=True)
-
-            if counts['orphaned']:
-                spipe.gauge('articles.counts.orphaned',
-                            -counts['orphaned'], delta=True)
-
-            if counts['empty']:
-                spipe.gauge('articles.counts.empty',
-                            -counts['empty'], delta=True)
-
-            if counts['html']:
-                spipe.gauge('articles.counts.html',
-                            -counts['html'], delta=True)
-
-            if counts['markdown']:
-                spipe.gauge('articles.counts.markdown',
-                            -counts['markdown'], delta=True)
-
-            if counts['absolutes']:
-                spipe.gauge('articles.counts.absolutes',
-                            -counts['absolutes'], delta=True)
-
-            if counts['url_errors']:
-                spipe.gauge('articles.counts.url_errors',
-                            -counts['url_errors'], delta=True)
-
-            if counts['content_errors']:
-                spipe.gauge('articles.counts.content_errors',
-                            -counts['content_errors'], delta=True)
-
-            # We cannot simply do -(duplicates+orphaned), because some of
-            # them are of both types, and this would false the total count.
-            spipe.gauge('articles.counts.total',
-                        Article._get_collection().count())
+        synchronize_statsd_articles_gauges(full=True)
 
         LOGGER.info('%s already archived and %s bad articles were found '
                     u'during the operation.', counts['archived_dupes'],
