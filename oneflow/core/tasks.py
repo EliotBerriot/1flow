@@ -9,9 +9,9 @@ from constance import config
 
 from statsd import statsd
 
-from mongoengine.errors import OperationError, NotUniqueError
-from mongoengine.queryset import Q
 from pymongo.errors import DuplicateKeyError
+from mongoengine.errors import OperationError, NotUniqueError, ValidationError
+from mongoengine.queryset import Q
 
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
@@ -718,34 +718,49 @@ def archive_article_one_internal(article, counts):
     """ internal function. Do not use directly
         unless you know what you're doing. """
 
+    delete_anyway = True
     article.switch_db('archive')
+
     try:
         article.save()
 
     except (NotUniqueError, DuplicateKeyError):
-        LOGGER.warning(u'Tried to save a duplicate article %s '
-                       u'in the archive DB.', article)
+        counts['archived_dupes'] += 1
 
-    article.switch_db('default')
-    article.delete()
+    except ValidationError:
+        # If the article doesn't validate in the archive database, how
+        # the hell did it make its way into the production one?? Perhaps
+        # a scoria of the GR import which did update_one(set_*…), which
+        # bypassed the validation phase.
+        # Anyway, beiing here means the article is duplicate or orphaned.
+        # So just forget the validation error and wipe it from production.
+        LOGGER.exception(u'Article archiving failed for %s', article)
+        counts['bad_articles'] += 1
 
-    if article.content_type == CONTENT_TYPE_NONE:
-        counts['empty'] += 1
+    except:
+        delete_anyway = False
 
-    elif article.content_type == CONTENT_TYPE_HTML:
-        counts['html'] += 1
+    if delete_anyway:
+        article.switch_db('default')
+        article.delete()
 
-    elif article.content_type == CONTENT_TYPE_MARKDOWN:
-        counts['markdown'] += 1
+        if article.content_type == CONTENT_TYPE_NONE:
+            counts['empty'] += 1
 
-    if article.url_absolute:
-        counts['absolutes'] += 1
+        elif article.content_type == CONTENT_TYPE_HTML:
+            counts['html'] += 1
 
-    if article.url_error:
-        counts['url_errors'] += 1
+        elif article.content_type == CONTENT_TYPE_MARKDOWN:
+            counts['markdown'] += 1
 
-    if article.content_error:
-        counts['content_errors'] += 1
+        if article.url_absolute:
+            counts['absolutes'] += 1
+
+        if article.url_error:
+            counts['url_errors'] += 1
+
+        if article.content_error:
+            counts['content_errors'] += 1
 
 
 @task(queue='medium')
@@ -760,6 +775,8 @@ def archive_articles(limit=None):
         'content_errors': 0,
         'duplicates': 0,
         'orphaned': 0,
+        'bad_articles': 0,
+        'archived_dupes': 0,
     }
 
     if limit is None:
@@ -822,6 +839,10 @@ def archive_articles(limit=None):
             # them are of both types, and this would false the total count.
             spipe.gauge('articles.counts.total',
                         Article._get_collection().count())
+
+        LOGGER.info('%s already archived and %s bad articles were found '
+                    u'during the operation.', counts['archived_dupes'],
+                    counts['bad_articles'])
 
     else:
         LOGGER.info(u'No article to archive.')

@@ -25,11 +25,11 @@ CONSTANCE_CONFIG = {
                                  u'not. Disabled by default, make OSX Python '
                                  u'crash.')),
 
-    'FEED_FETCH_MAX_ERRORS': (30, ugettext(u'The maximum number of errors '
+    'FEED_FETCH_MAX_ERRORS': (90, ugettext(u'The maximum number of errors '
                               u'a feed can meet before beiing automatically '
                               u'closed.')),
 
-    'FEED_FETCH_DEFAULT_INTERVAL': (3600, ugettext(u'Default feed fetch '
+    'FEED_FETCH_DEFAULT_INTERVAL': (43200, ugettext(u'Default feed fetch '
                                     u'interval in seconds. You can tune the '
                                     u'interval for each feed after creation.')),
 
@@ -37,7 +37,7 @@ CONSTANCE_CONFIG = {
                                 u'fetches of the same feed. Warning: anything '
                                 u'under 60 will not be taken in account.')),
 
-    'FEED_FETCH_MAX_INTERVAL': (86400, ugettext(u'The maximum interval between '
+    'FEED_FETCH_MAX_INTERVAL': (259200, ugettext(u'The maximum interval between '
                                 u'fetches of the same feed. Warning: anything '
                                 u'more than 7 days (expressed in seconds) will '
                                 u'not be taken in account.')),
@@ -47,7 +47,7 @@ CONSTANCE_CONFIG = {
                                    u'be fetched more fast than a feed that '
                                    u'produces less. Minimum value: 5.')),
 
-    'FEED_FETCH_PARALLEL_LIMIT': (100, ugettext(u'Default number of articles '
+    'FEED_FETCH_PARALLEL_LIMIT': (16, ugettext(u'Default number of articles '
                                   u'fetchable from the same feed at the same '
                                   u'time. Workers should adjust the value '
                                   u'automatically as time passes.')),
@@ -60,7 +60,7 @@ CONSTANCE_CONFIG = {
                                u'randomize the refreshs not to hammer our '
                                u'machines.')),
 
-    'FEED_ADMIN_LIST_PER_PAGE': (10, ugettext(u'How many feeds per page in '
+    'FEED_ADMIN_LIST_PER_PAGE': (100, ugettext(u'How many feeds per page in '
                                  u'the Django admin. Increase only if '
                                  u'performance is acceptable; do NOT abuse!')),
 
@@ -72,7 +72,7 @@ CONSTANCE_CONFIG = {
 
     'FEED_CLOSED_WARN_LIMIT': (5, ugettext(u'Number of days during which a '
                                u'just closed feed will be warned about to '
-                               u'site managers.')),
+                               u'site managers via mail.')),
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article parsing
 
