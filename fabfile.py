@@ -203,7 +203,7 @@ def production():
             '__all__': 8,
         },
         'worker_queues': {
-            # The 3 fetchers help on main queues.
+            # The fetchers help on main queues, except 'low' which is… low.
             'worker_fetch@worker-02.1flow.io': 'fetch,medium',
             'worker_fetch@worker-04.1flow.io': 'fetch,high',
         },
