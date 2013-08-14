@@ -295,9 +295,13 @@ def synchronize_statsd_tags_gauges(full=False):
 
     with benchmark('synchronize statsd gauges for Tag.*'):
 
-        duplicates = Tag.objects(duplicate_of__ne=None).no_cache()
-
         statsd.gauge('tags.counts.total', Tag._get_collection().count())
 
         if full:
+            duplicates = Tag.objects(duplicate_of__ne=None).no_cache()
             statsd.gauge('tags.counts.duplicates', duplicates.count())
+
+
+def synchronize_statsd_gauges(full=False):
+    synchronize_statsd_articles_gauges(full=full)
+    synchronize_statsd_tags_gauges(full=full)
