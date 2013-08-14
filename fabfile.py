@@ -36,7 +36,8 @@ run_command, restart_services = sdf.run_command, sdf.restart_services
 stop, start, status = sdf.stop_services, sdf.start_services, sdf.status_services
 remove, pick, role = sdf.remove_services, sdf.pick, sdf.role
 
-USE_JENKINS = pwd.getpwuid(os.getuid()).pw_name == 'jenkins'
+USE_JENKINS  = pwd.getpwuid(os.getuid()).pw_name == 'jenkins'
+JENKINS_ROOT = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
 
 # The Django project name
 env.project    = 'oneflow'
@@ -52,9 +53,10 @@ env.parallel   = True
 
 # Where is the django project located
 if USE_JENKINS:
-    env.root         = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
+    env.root = JENKINS_ROOT
 else:
     env.root = '/home/1flow/www/src'
+
 env.environment  = 'test'
 env.repository   = 'git@dev.1flow.net:1flow.git'
 
@@ -86,10 +88,12 @@ def local():
     # but it's still comfortable to have it when lanching tasks that are not
     # fully roledefs-compatible (eg. sdf.compilemessages ran alone).
     env.host_string = 'localhost'
+
     if USE_JENKINS:
-        env.root         = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
+        env.root = JENKINS_ROOT
     else:
         env.root = os.path.expanduser('~/sources/1flow')
+
     env.env_was_set = True
 
 
