@@ -146,11 +146,25 @@ def preview(branch=None):
 
 
 @task(aliases=('work', ))
-def workers():
+def workers(with_shell=False, with_flower=False):
     """ Just setup the workers roles so we can act easily on all of them. """
 
-    #TODO: set worker_roles
-    env.roles = worker_roles[:] + ['beat']
+    #
+    # NOTE: don't try to simply set:
+    #       env.roles = worker_roles[:] + ['beat']
+    #
+    #       This will not work as expected for hosts assuming more than
+    #       one role (the first of them will get run multiple times).
+    #
+    roles = worker_roles[:] + ['beat']
+
+    if with_shell:
+        roles.append('shell')
+
+    if with_flower:
+        roles.append('flower')
+
+    role(*roles)
 
 
 @task(aliases=('kill', ))
