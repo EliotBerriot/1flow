@@ -183,7 +183,8 @@ def production():
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low': ['worker-05.1flow.io', ],
         'worker_swarm': ['worker-99.1flow.io', ],
-        'worker_fetch': ['worker-04.1flow.io',
+        'worker_fetch': ['worker-02.1flow.io',
+                         'worker-04.1flow.io',
                          'worker-99.1flow.io', ],
     })
     env.sparks_options = {
