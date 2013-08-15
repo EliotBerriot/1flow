@@ -36,7 +36,8 @@ run_command, restart_services = sdf.run_command, sdf.restart_services
 stop, start, status = sdf.stop_services, sdf.start_services, sdf.status_services
 remove, pick, role = sdf.remove_services, sdf.pick, sdf.role
 
-USE_JENKINS = pwd.getpwuid(os.getuid()).pw_name == 'jenkins'
+USE_JENKINS  = pwd.getpwuid(os.getuid()).pw_name == 'jenkins'
+JENKINS_ROOT = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
 
 # The Django project name
 env.project    = 'oneflow'
@@ -52,9 +53,10 @@ env.parallel   = True
 
 # Where is the django project located
 if USE_JENKINS:
-    env.root         = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
+    env.root = JENKINS_ROOT
 else:
     env.root = '/home/1flow/www/src'
+
 env.environment  = 'test'
 env.repository   = 'git@dev.1flow.net:1flow.git'
 
@@ -86,10 +88,12 @@ def local():
     # but it's still comfortable to have it when lanching tasks that are not
     # fully roledefs-compatible (eg. sdf.compilemessages ran alone).
     env.host_string = 'localhost'
+
     if USE_JENKINS:
-        env.root         = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
+        env.root = JENKINS_ROOT
     else:
         env.root = os.path.expanduser('~/sources/1flow')
+
     env.env_was_set = True
 
 
@@ -142,11 +146,25 @@ def preview(branch=None):
 
 
 @task(aliases=('work', ))
-def workers():
+def workers(with_shell=False, with_flower=False):
     """ Just setup the workers roles so we can act easily on all of them. """
 
-    #TODO: set worker_roles
-    env.roles = worker_roles[:] + ['beat']
+    #
+    # NOTE: don't try to simply set:
+    #       env.roles = worker_roles[:] + ['beat']
+    #
+    #       This will not work as expected for hosts assuming more than
+    #       one role (the first of them will get run multiple times).
+    #
+    roles = worker_roles[:] + ['beat']
+
+    if with_shell:
+        roles.append('shell')
+
+    if with_flower:
+        roles.append('flower')
+
+    role(*roles)
 
 
 @task(aliases=('kill', ))
@@ -175,12 +193,12 @@ def production():
         'beat': ['worker-01.1flow.io', ],
         'shell': ['worker-03.1flow.io', ],
         'flower': ['worker-01.1flow.io', ],
-        'worker_high': ['worker-01.1flow.io', ],
+        'worker_high':   ['worker-01.1flow.io', ],
         'worker_medium': ['worker-03.1flow.io', ],
-        'worker_low': ['worker-05.1flow.io', ],
-        'worker_swarm': ['worker-99.1flow.io', ],
-        'worker_fetch': ['worker-04.1flow.io',
-                         'worker-99.1flow.io', ],
+        'worker_low':    ['worker-05.1flow.io', ],
+        'worker_fetch':  ['worker-02.1flow.io',
+                          'worker-04.1flow.io', ],
+        'worker_swarm':  ['worker-02.1flow.io', ],
     })
     env.sparks_options = {
         'repository': {
@@ -190,18 +208,18 @@ def production():
             'worker-04.1flow.io': 'git@10.0.3.110:1flow.git',
         },
         'worker_concurrency': {
-            # setting only 'worker-99.1flow.io'
+            # setting only 'worker-02.1flow.io'
             # would override worker_swarm setting.
+            'worker_fetch@worker-02.1flow.io': 12,
             'worker_fetch@worker-99.1flow.io': 16,
 
-            'worker_swarm': 48,
+            'worker_swarm': 32,
             '__all__': 8,
         },
         'worker_queues': {
-            # The 3 fetchers help on main queues.
-            'worker_fetch@worker-02.1flow.io': 'fetch,low',
+            # The fetchers help on main queues, except 'low' which is… low.
+            'worker_fetch@worker-02.1flow.io': 'fetch,medium',
             'worker_fetch@worker-04.1flow.io': 'fetch,high',
-            'worker_fetch@worker-99.1flow.io': 'fetch,medium',
         },
         'worker_soft_time_limit': {
             'worker_swarm': '30',
