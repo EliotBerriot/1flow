@@ -624,7 +624,7 @@ def refresh_all_feeds(limit=None):
                 #               feed.last_fetch + interval, mynow, how_late)
 
                 if config.FEED_REFRESH_RANDOMIZE:
-                    countdown = randrange(feed.fetch_interval / 10)
+                    countdown = randrange(config.FEED_REFRESH_RANDOMIZE_DELAY)
                     feed.refresh.apply_async((), countdown=countdown)
 
                 else:

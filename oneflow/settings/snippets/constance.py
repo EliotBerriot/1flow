@@ -60,6 +60,13 @@ CONSTANCE_CONFIG = {
                                u'randomize the refreshs not to hammer our '
                                u'machines.')),
 
+    'FEED_REFRESH_RANDOMIZE_DELAY': (40, ugettext(u'Number of seconds max for '
+                                     u'the randomization (eg. between 0 and '
+                                     u'this number). Warning: keep this '
+                                     u'lower than the peridicity of the feed '
+                                     u'refresher, else some tasks will be '
+                                     u'duplicated.')),
+
     'FEED_ADMIN_LIST_PER_PAGE': (100, ugettext(u'How many feeds per page in '
                                  u'the Django admin. Increase only if '
                                  u'performance is acceptable; do NOT abuse!')),
