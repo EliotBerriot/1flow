@@ -351,6 +351,8 @@ class Tag(Document):
                 LOGGER.exception(u'Exception while reverse-adding '
                                  u'parent %s to child %s', self, child)
 
+        return self
+
     def add_parent(self, parent, update_reverse_link=True, full_reload=True):
 
         self.update(add_to_set__parents=parent)
