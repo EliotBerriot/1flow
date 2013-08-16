@@ -259,7 +259,13 @@ class AbsolutizeTest(TestCase):
         self.assertEquals(self.article2.url_absolute, True)
         self.assertEquals(self.article2.url_error, '')
 
-    def test_absolutize_erros(self):
+    def test_absolutize_errors(self):
+
+        #
+        # NOTE: if a PROXY is set, the reasons word cases can vary.
+        # eg. 'Not Found' (via Squid) instead of 'NOT FOUND' (direct answer).
+        #
+
         self.article3.absolutize_url()
         self.assertEquals(self.article3.url, u'http://obi.1flow.io/absolutize_test_401') # NOQA
         self.assertEquals(self.article3.url_absolute, False)
