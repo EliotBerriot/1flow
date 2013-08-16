@@ -1,6 +1,9 @@
 # Django's collectstatic
 /static
 
+# Jenkins reports
+/reports
+
 /MAINTENANCE_MODE
 /celerybeat-schedule
 
