@@ -130,8 +130,8 @@ def create_article_and_read(article_url,
             set__url=article_url, set__title=article_title,
             add_to_set__feeds=feed, set__content=article_content,
             set__date_published=None
-                if article_time is None
-                else ftstamp(article_time),
+            if article_time is None
+            else ftstamp(article_time),
             set__google_reader_original_data=article_data, upsert=True)
 
     except (OperationError, DuplicateKeyError):
@@ -192,7 +192,7 @@ def end_fetch_prematurely(kind, gri, processed, gr_article, gr_feed_title,
         if gr_article.time is None:
             LOGGER.warning(u'Article %s (feed “%s”, user %s) has no time. '
                            u'DATA=%s.', gr_article, gr_feed_title,
-                           username, gr_article.time, gr_article.data)
+                           username, gr_article.data)
 
         else:
             if ftstamp(gr_article.time) < date_limit:
@@ -373,13 +373,13 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
         gri.incr_feeds()
         return
 
-    loadMethod = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
+    load_method = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
 
     retry = 0
 
     while True:
         try:
-            loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+            load_method(loadLimit=config.GR_LOAD_LIMIT)
 
         except:
             if retry < config.GR_MAX_RETRIES:
@@ -467,13 +467,13 @@ def import_google_reader_articles(user_id, username, gr_feed, feed, wave=0):
         gri.incr_feeds()
         return
 
-    loadMethod = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
+    load_method = gr_feed.loadItems if wave == 0 else gr_feed.loadMoreItems
 
     retry = 0
 
     while True:
         try:
-            loadMethod(loadLimit=config.GR_LOAD_LIMIT)
+            load_method(loadLimit=config.GR_LOAD_LIMIT)
 
         except:
             if retry < config.GR_MAX_RETRIES:
