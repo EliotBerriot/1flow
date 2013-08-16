@@ -37,7 +37,8 @@ stop, start, status = sdf.stop_services, sdf.start_services, sdf.status_services
 remove, pick, role = sdf.remove_services, sdf.pick, sdf.role
 
 USE_JENKINS  = pwd.getpwuid(os.getuid()).pw_name == 'jenkins'
-JENKINS_ROOT = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
+JENKINS_JOB  = os.environ.get('JOB_NAME', '1flow')
+JENKINS_ROOT = '/var/lib/jenkins/jobs/{0}/workspace'.format(JENKINS_JOB)
 
 # The Django project name
 env.project    = 'oneflow'
