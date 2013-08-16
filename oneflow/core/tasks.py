@@ -620,9 +620,6 @@ def refresh_all_feeds(limit=None):
                 how_late = feed.last_fetch + interval - mynow
                 how_late = how_late.days * 86400 + how_late.seconds
 
-                #LOGGER.warning('>> %s %s < %s: %s', feed.id,
-                #               feed.last_fetch + interval, mynow, how_late)
-
                 if config.FEED_REFRESH_RANDOMIZE:
                     countdown = randrange(config.FEED_REFRESH_RANDOMIZE_DELAY)
                     feed.refresh.apply_async((), countdown=countdown)
