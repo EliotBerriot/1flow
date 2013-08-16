@@ -21,8 +21,10 @@
 
 # Jenkins Install
 
-    install & config see
-        https://sites.google.com/site/kmmbvnr/home/django-jenkins-tutorial
+Install & config see:
+    https://sites.google.com/site/kmmbvnr/home/django-jenkins-tutorial
+And:
+    http://www.akei.com/presentations/2011-Djangocong/index.html#slide30
 
     ssh ${SRV}
 
@@ -50,6 +52,10 @@
         git config --global user.email 'jenkins@1flow.net'
         git config --global user.name "Jenkins for 1flow"
 
+        cat >> .profile << EOF
+        . ~/.env
+        EOF
+
     scp ~/sources/global-config/ENVs/oneflow/developement.env ${JENK}:.env
 
 
@@ -58,15 +64,19 @@
 
     http://ci.1flow.net/pluginManager/?
 
-    and install “jenkins git plugin”
+And install:
+    - jenkins git plugin
+    - Jabber
+    - Cobertura
+    - Violations
+    - Green Balls
+    - Continuous Integration game
 
 ## Configure security
 
 https://wiki.jenkins-ci.org/display/JENKINS/Standard+Security+Setup
 
 # configure the settingd.py for jenkins
-
-# create .profile for jenkins
 
 
 # configure remote build
