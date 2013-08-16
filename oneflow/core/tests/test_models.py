@@ -27,7 +27,7 @@ RedisStatsCounter.REDIS = TEST_REDIS
 TEST_REDIS.flushdb()
 
 disconnect()
-connect('oneflow_testsuite')
+connect('{0}_testsuite'.format(settings.MONGODB_NAME))
 
 
 class ThrottleIntervalTest(TestCase):
