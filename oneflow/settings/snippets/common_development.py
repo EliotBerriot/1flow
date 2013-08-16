@@ -14,7 +14,14 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 EMAIL_SUBJECT_PREFIX='[1flow DEV] '
 
+PROJECT_APPS = (
+    'oneflow.base',
+    'oneflow.landing',
+    'oneflow.core',
+)
+
 JENKINS_TASKS = (
+    'django_jenkins.tasks.run_pylint',
     'django_jenkins.tasks.with_coverage',
     'django_jenkins.tasks.django_tests',   # select one django or
     #'django_jenkins.tasks.dir_tests'      # directory tests discovery
