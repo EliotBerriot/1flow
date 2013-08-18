@@ -19,6 +19,7 @@ from constance import config
 from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
 
+from celery import group as tasks_group
 from celery.contrib.methods import task as celery_task_method
 from celery.exceptions import SoftTimeLimitExceeded
 
@@ -75,6 +76,12 @@ CONTENT_PREPARSING_NEEDS_GHOST = 1
 CONTENT_FETCH_LIKELY_MULTIPAGE = 2
 
 # MORE CONTENT_PREPARSING_NEEDS_* TO COME
+
+ORIGIN_TYPE_NONE          = 0
+ORIGIN_TYPE_GOOGLE_READER = 1
+ORIGIN_TYPE_FEEDPARSER    = 2
+ORIGIN_TYPE_STANDALONE    = 3
+ORIGIN_TYPE_TWITTER       = 4
 
 ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
                         settings.SITE_DOMAIN)
@@ -509,6 +516,11 @@ class Feed(Document, DocumentHelperMixin):
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(GenericReferenceField(), default=list)
+    languages      = ListField(StringField(), verbose_name=_(u'Languages'),
+                               help_text=_(u'Set this to more than one '
+                                           u'language to help article '
+                                           u'language detection if none '
+                                           u'is set in articles.'))
     date_added     = DateTimeField(default=datetime(2013, 07, 01),
                                    verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
@@ -519,6 +531,9 @@ class Feed(Document, DocumentHelperMixin):
     fetch_interval = IntField(default=config.FEED_FETCH_DEFAULT_INTERVAL,
                               verbose_name=_(u'fetch interval'))
     last_fetch     = DateTimeField(verbose_name=_(u'last fetch'))
+
+    # TODO: move this into WebSite to avoid too much parallel fetches
+    # when using multiple feeds from the same origin website.
     fetch_limit_nr = IntField(default=config.FEED_FETCH_PARALLEL_LIMIT,
                               verbose_name=_(u'fetch limit'),
                               help_text=_(u'The maximum number of articles '
@@ -838,7 +853,7 @@ class Feed(Document, DocumentHelperMixin):
                 title=getattr(article, 'title', u' '),
 
                 content=content, date_published=date_published,
-                feeds=[self], tags=tags)
+                feeds=[self], tags=tags, origin_type=ORIGIN_TYPE_FEEDPARSER)
 
         except:
             # NOTE: duplication handling is already
@@ -1197,7 +1212,7 @@ class Article(Document, DocumentHelperMixin):
 
     word_count = IntField(verbose_name=_(u'Word count'))
 
-    authors    = ListField(ReferenceField('User'))
+    authors    = ListField(ReferenceField('Author'))
     publishers = ListField(ReferenceField('User'))
 
     date_published = DateTimeField(verbose_name=_(u'date published'),
@@ -1241,12 +1256,20 @@ class Article(Document, DocumentHelperMixin):
     # An article references its source (origin blog / newspaper…)
     source = GenericReferenceField()
 
+    origin_type = IntField(default=ORIGIN_TYPE_NONE,
+                           verbose_name=_(u'Origin type'),
+                           help_text=_(u'Origin of article (feedparser, '
+                                       u'twitter, websnap…). Can be 0 '
+                                       u'(none/unknown).'))
+
     # The feed from which we got this article from. Can be ``None`` if the
     # user snapped an article directly from a standalone web page in browser.
     # TODO: remove this in favor of `.feeds`.
     feed = ReferenceField('Feed')
 
     feeds = ListField(ReferenceField('Feed'))
+
+    comments_feed = URLField()
 
     #
     # TODO: activate this on feed > feeds migration
@@ -1411,7 +1434,7 @@ class Article(Document, DocumentHelperMixin):
             into:
 
             http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/ # NOQA
-                ?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29 # NOQA
+                ?utm_source=feeurner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29 # NOQA
 
             and then remove all these F*G utm_* parameters to get a clean
             final URL for the current article.
@@ -1534,12 +1557,52 @@ class Article(Document, DocumentHelperMixin):
         return True
 
     @celery_task_method(name='Article.postprocess_feedparser_data',
-                        queue='fetch')
+                        queue='low')
+    def postprocess_original_data(self, force=False, commit=True):
+
+        methods_table = {
+            ORIGIN_TYPE_NONE: self.postprocess_guess_origin_data,
+            ORIGIN_TYPE_FEEDPARSER: self.postprocess_feedparser_data,
+        }
+
+        meth = methods_table.get(self.origin_type, None)
+
+        if meth is None:
+            LOGGER.warning(u'No method to post-process origin type %s of '
+                           u'article %s.', self.origin_type, self)
+            return
+
+        # This is a Celery task. reload the object
+        # from the database for up-to-date attributes.
+        self.safe_reload()
+
+        meth(force=force, commit=commit)
+
+    def postprocess_guess_origin_data(self, force=False, commit=True):
+
+        need_save = False
+
+        if self.original_data.feedparser_hydrated:
+            self.origin_type = ORIGIN_TYPE_FEEDPARSER
+            need_save        = True
+
+        elif self.original_data.google_reader_hydrated:
+            self.origin_type = ORIGIN_TYPE_GOOGLE_READER
+            need_save        = True
+
+        if need_save:
+            if commit:
+                self.save()
+
+            # Now that we have an origin type, re-run the real post-processor.
+            self.postprocess_original_data(force=force, commit=commit)
+
     def postprocess_feedparser_data(self, force=False, commit=True):
         """ XXX: should disappear when feedparser_data is useless. """
 
-        # Celery, my love.
-        self.safe_reload()
+        if self.original_data.feedparser_processed and not force:
+            LOGGER.info('feedparser data already post-processed.')
+            return
 
         fpod = self.original_data.feedparser_hydrated
 
@@ -1551,9 +1614,85 @@ class Article(Document, DocumentHelperMixin):
                             for t in fpod['tags'] if t['term'] is not None),
                             origin=self))
 
-        #
-        # TODO / XXX: continue here.
-        #
+                self.update_tags(tags, initial=True, need_reload=False)
+                self.safe_reload()
+
+            if self.authors == []:
+                Author.get_authors_from_feedparser_article(fpod,
+                                                           set_to_article=self)
+
+            if self.language is None:
+                language = fpod.get('summary_detail', {}).get('language', None)
+
+                if language is None:
+                    language = fpod.get('title_detail', {}).get(
+                                        'language', None)
+
+                if language is not None:
+                    self.language = language
+                    self.save()
+
+            if self.orphaned:
+                # We have a chance to get at least *some* content. It will
+                # probably be incomplete, but this is better than nothing.
+
+                detail = fpod.get('summary_detail', {})
+
+                if detail:
+                    detail_type = detail.get('type', None)
+                    detail_value = detail.get('value', '')
+
+                    # We need some *real* data, though
+                    if len(detail_value) > 20:
+
+                        if detail_type == 'text/plain':
+                            self.content = detail_value
+                            self.content_type = CONTENT_TYPE_MARKDOWN
+                            self.save()
+
+                            statsd.gauge('articles.counts.markdown',
+                                         1, delta=True)
+
+                        elif detail_type == 'text/html':
+                            self.content = detail_value
+                            self.content_type = CONTENT_TYPE_HTML
+                            self.save()
+
+                            statsd.gauge('articles.counts.html',
+                                         1, delta=True)
+
+                            self.convert_to_markdown()
+
+                        else:
+                            LOGGER.warning(u'No usable content-type found '
+                                           u'while trying to recover article '
+                                           u'%s content: %s => "%s".', self,
+                                           detail_type, detail_value)
+                    else:
+                        LOGGER.warning(u'Empty (or nearly) content-type '
+                                       u'found while trying to recover '
+                                       u'orphaned article %s '
+                                       u'content: %s => "%s".', self,
+                                       detail_type, detail_value)
+                else:
+                    LOGGER.warning(u'No summary detail found while trying '
+                                   u'to recover orphaned article %s '
+                                   u'content: %s => "%s".', self,
+                                   detail_type, detail_value)
+
+            if self.comments_feed is None:
+
+                comments_feed_url = fpod.get('wfw_commentrss', None)
+
+                if comments_feed_url:
+                    self.comments_feed = comments_feed_url
+                    self.save()
+
+            # We don't care anymore, it's already in another database.
+            #self.offload_attribute('feedparser_original_data')
+
+        self.original_data.update(set__feedparser_processed=True)
+
     def update_tags(self, tags, initial=False, need_reload=True):
 
         if initial:
@@ -1905,16 +2044,10 @@ class Article(Document, DocumentHelperMixin):
         """ :param:`url` should be set in the case of multipage content. """
 
         if url is None:
-            # Asolutize only if 'main' article URL,
-            # and not already absolutized.
             fetch_url = self.url
-            absolutize = not self.url_absolute
 
         else:
-            # never absolutize if we are manually given an URL,
-            # it's the one for next page in multi-page text content.
             fetch_url = url
-            absolutize = False
 
         if self.needs_ghost_preparser():
 
@@ -1936,14 +2069,6 @@ class Article(Document, DocumentHelperMixin):
 
         response = requests.get(fetch_url, headers=REQUEST_BASE_HEADERS)
         encoding = detect_encoding_from_requests_response(response)
-
-        # We do this here to avoid get()ing the URL more than once
-        # and generating more traffic on the target website.
-        if absolutize:
-            if not self.absolutize_url(response):
-                raise StopProcessingException(u'absolutize() reported we '
-                                              u'are a duplicate of some '
-                                              u'other article')
 
         return response.content, encoding
 
@@ -2146,20 +2271,42 @@ class Article(Document, DocumentHelperMixin):
     @celery_task_method(name='Article.post_create', queue='high')
     def post_create_task(self):
 
-        self.slug = slugify(self.title)
-        self.save()
+        if not self.slug:
+            self.slug = slugify(self.title)
+            self.save()
 
-        statsd.gauge('articles.counts.empty', 1, delta=True)
+            with statsd.pipeline() as spipe:
+                spipe.gauge('articles.counts.total', 1, delta=True)
+                spipe.gauge('articles.counts.empty', 1, delta=True)
 
-        # Manually randomize a little the fetching in 5 seconds, to avoid
+        # Randomize a little to avoid
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
         # as much as possible. This is not yet a full-featured solution,
-        # but it's completed byt the `fetch_limit` semaphore on the Feed.
-        self.fetch_content.apply_async((), countdown=randrange(5))
+        # but it's completed by the `fetch_limit` thing.
+        absolute_result = self.absolutize_url.apply_async(
+                            (), countdown=randrange(5))
+
+        #
+        # Absolutization conditions everything else. If it doesn't succeed:
+        #   - no bother trying to post-process author data for example,
+        #     because we need the absolutized website domain to make
+        #     authors unique and worthfull.
+        #   - no bother fetching content: it uses the same mechanisms as
+        #     absolutize_url(), and will probably fail the same way.
+        #
+
+        if absolute_result.get(interval=1):
+            post_create_tasks_group = tasks_group(
+                self.postprocess_original_data.s(self),
+                self.fetch_content.s(self)
+            )
+
+            post_create_tasks_group.delay()
 
         #
         # TODO: create short_url
         #
+
         # TODO: remove_useless_blocks, eg:
         #       <p><a href="http://addthis.com/bookmark.php?v=250">
         #       <img src="http://cache.addthis.com/cachefly/static/btn/
@@ -2189,6 +2336,10 @@ class OriginalData(Document, DocumentHelperMixin):
     # This should go away soon, after a full re-parsing.
     google_reader = StringField()
     feedparser    = StringField()
+
+    # These are set to True to avoid endless re-processing.
+    google_reader_processed = BooleanField(default=False)
+    feedparser_processed    = BooleanField(default=False)
 
     meta = {
         'db_alias': 'archive',
