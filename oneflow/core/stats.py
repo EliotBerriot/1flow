@@ -8,7 +8,7 @@ from constance import config
 #from mongoengine.queryset import Q
 #from mongoengine.context_managers import no_dereference
 
-from oneflow.core.models import Tag, Feed, Article
+from oneflow.core.models import Tag, Feed, Article, Author, WebSite
 from oneflow.base.utils.dateutils import (timedelta, now, pytime,
                                           naturaldelta, benchmark)
 
@@ -302,6 +302,30 @@ def synchronize_statsd_tags_gauges(full=False):
             statsd.gauge('tags.counts.duplicates', duplicates.count())
 
 
+def synchronize_statsd_websites_gauges(full=False):
+
+    with benchmark('synchronize statsd gauges for WebSite.*'):
+
+        statsd.gauge('websites.counts.total', WebSite._get_collection().count())
+
+        if full:
+            duplicates = WebSite.objects(duplicate_of__ne=None).no_cache()
+            statsd.gauge('websites.counts.duplicates', duplicates.count())
+
+
+def synchronize_statsd_authors_gauges(full=False):
+
+    with benchmark('synchronize statsd gauges for Author.*'):
+
+        statsd.gauge('authors.counts.total', Author._get_collection().count())
+
+        if full:
+            duplicates = Author.objects(duplicate_of__ne=None).no_cache()
+            statsd.gauge('authors.counts.duplicates', duplicates.count())
+
+
 def synchronize_statsd_gauges(full=False):
     synchronize_statsd_articles_gauges(full=full)
     synchronize_statsd_tags_gauges(full=full)
+    synchronize_statsd_websites_gauges(full=full)
+    synchronize_statsd_authors_gauges(full=full)
