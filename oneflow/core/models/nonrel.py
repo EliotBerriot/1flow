@@ -274,7 +274,16 @@ class WebSite(Document, DocumentHelperMixin):
     def post_create_task(self):
 
         if not self.slug:
+            if self.name is None:
+
+                # XXX: duplicate code
+                proto, remaining = self.url.split(u'://', 1)
+                hostname_port, remaining = remaining.split(u'/', 1)
+
+                self.name = hostname_port.replace(u'_', u' ').title()
+
             self.slug = slugify(self.name)
+
             self.save()
 
             statsd.gauge('websites.counts.total', 1, delta=True)
