@@ -4,3 +4,5 @@
 from sparks.django.settings import clone_settings
 
 clone_settings('chani', __file__, globals())
+
+CELERY_ALWAYS_EAGER = True
