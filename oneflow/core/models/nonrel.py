@@ -112,10 +112,37 @@ feedparser.registerDateHandler(dateutilDateHandler)
 global_ghost_lock = RedisExpiringLock('__ghost.py__')
 
 
+class DocumentHelperMixin(object):
+    """ Because, as of MongoEngine 0.8.3,
+        subclassing `Document` is not possible o_O
+
+        […]
+          File "/Users/olive/sources/1flow/oneflow/core/models/nonrel.py", line 141, in <module> # NOQA
+            class Source(Document):
+          File "/Users/olive/.virtualenvs/1flow/lib/python2.7/site-packages/mongoengine/base/metaclasses.py", line 332, in __new__ # NOQA
+            new_class = super_new(cls, name, bases, attrs)
+          File "/Users/olive/.virtualenvs/1flow/lib/python2.7/site-packages/mongoengine/base/metaclasses.py", line 120, in __new__ # NOQA
+            base.__name__)
+        ValueError: Document Document may not be subclassed
+
+    """
+
+    @property
+    def _db_name(self):
+
+        # We need to workaround
+        # https://github.com/MongoEngine/mongoengine/pull/441
+        try:
+            return self._get_db().name
+
+        except:
+            return self._get_db()().name
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Source
 
 
-class Source(Document):
+class Source(Document, DocumentHelperMixin):
     """ The "original source" for similar articles: they have different authors,
         different contents, but all refer to the same information, which can
         come from the same article on the net (or radio, etc).
@@ -136,7 +163,7 @@ class Source(Document):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
 
 
-class WebSite(Document):
+class WebSite(Document, DocumentHelperMixin):
     """ Simple representation of a web site. Holds options for it.
 
 
@@ -207,7 +234,7 @@ class WordRelation(EmbeddedDocument):
     relation_score = FloatField()
 
 
-class Tag(Document):
+class Tag(Document, DocumentHelperMixin):
     name     = StringField(verbose_name=_(u'name'), unique=True)
     slug     = StringField(verbose_name=_(u'slug'))
     language = StringField(verbose_name=_(u'language'), default='')
@@ -411,7 +438,7 @@ def feed_subscriptions_count_default(feed, *args, **kwargs):
     return feed.subscriptions.count()
 
 
-class Feed(Document):
+class Feed(Document, DocumentHelperMixin):
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
@@ -587,10 +614,13 @@ class Feed(Document):
             LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
 
-        # Update the feed with current content.
-        document.refresh.delay()
+        if created:
+            if document._db_name != settings.MONGODB_NAME_ARCHIVE:
+                # Update the feed immediately after creation.
+                document.refresh.delay()
 
     def has_option(self, option):
         return option in self.options
@@ -1059,7 +1089,7 @@ class Feed(Document):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed-related
 
 
-class Subscription(Document):
+class Subscription(Document, DocumentHelperMixin):
     feed = ReferenceField('Feed')
     user = ReferenceField('User', unique_with='feed')
 
@@ -1075,7 +1105,7 @@ class Subscription(Document):
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article
 
 
-class Article(Document):
+class Article(Document, DocumentHelperMixin):
     title        = StringField(max_length=256, required=True,
                                verbose_name=_(u'Title'))
     slug         = StringField(max_length=256)
@@ -2007,26 +2037,17 @@ class Article(Document):
                         self.content, self.id)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
-        if kwargs.get('created', False):
-            #
-            # TODO: find a more robust way to be sure this handler
-            #       runs only on the production 'default' database
-            #       (eg. not on "archive" and possibly others).
-            #
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        if created:
+
+            # Some articles are created "already orphaned" or duplicates.
+            # In the archive database this is more immediate than looking
+            # up the database name.
             if not (document.orphaned or document.duplicate_of):
-
-                # We need to workaround
-                # https://github.com/MongoEngine/mongoengine/pull/441
-                try:
-                    db_name = document._get_db().name
-
-                except:
-                    db_name = document._get_db()().name
-
-                if db_name == settings.MONGODB_NAME:
-                    # We don't re-run the signal tasks in the archive database.
-                    document.post_save_task.delay()
+                if document._db_name != settings.MONGODB_NAME_ARCHIVE:
+                    document.post_create.delay()
 
     @celery_task_method(name='Article.post_save', queue='high')
     def post_save_task(self):
@@ -2067,7 +2088,7 @@ class Article(Document):
         return
 
 
-class OriginalData(Document):
+class OriginalData(Document, DocumentHelperMixin):
 
     article = ReferenceField('Article', unique=True)
 
@@ -2090,7 +2111,7 @@ class OriginalData(Document):
         return None
 
 
-class Read(Document):
+class Read(Document, DocumentHelperMixin):
     user = ReferenceField('User')
     article = ReferenceField('Article', unique_with='user')
     is_read = BooleanField(default=False)
@@ -2148,7 +2169,7 @@ class Read(Document):
         self.safe_reload()
 
 
-class Comment(Document):
+class Comment(Document, DocumentHelperMixin):
     TYPE_COMMENT = 1
     TYPE_INSIGHT = 10
     TYPE_ANALYSIS = 20
@@ -2190,24 +2211,24 @@ class Comment(Document):
     #             return Comment.TYPE_COMMENT
 
 
-class SnapPreference(Document):
+class SnapPreference(Document, DocumentHelperMixin):
     select_paragraph = BooleanField(_('Select whole paragraph on click'),
                                     default=False)  # , blank=True)
     default_public = BooleanField(_('Grows public by default'),
                                   default=True)  # , blank=True)
 
 
-class NotificationPreference(Document):
+class NotificationPreference(Document, DocumentHelperMixin):
     """ Email and other web notifications preferences. """
     pass
 
 
-class Preference(Document):
+class Preference(Document, DocumentHelperMixin):
     snap = EmbeddedDocumentField('SnapPreference')
     notification = EmbeddedDocumentField('NotificationPreference')
 
 
-class Author(Document):
+class Author(Document, DocumentHelperMixin):
     name        = StringField()
     website     = ReferenceField('WebSite', unique_with='origin_name')
     origin_name = StringField(help_text=_(u'When trying to guess authors, we '
@@ -2239,6 +2260,18 @@ class Author(Document):
 
         except:
             pass
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        if created:
+            if document._db_name != settings.MONGODB_NAME_ARCHIVE:
+                document.post_create_task.delay()
+
+    @celery_task_method(name='Author.post_create', queue='high')
+    def post_create_task(self):
+        statsd.gauge('authors.counts.total', 1, delta=True)
 
     @classmethod
     def get_authors_from_feedparser_article(cls, feedparser_article,
@@ -2354,7 +2387,7 @@ def user_django_user_random_default():
                                u' generate a not-taken random ID)…')
 
 
-class User(Document):
+class User(Document, DocumentHelperMixin):
     django_user = IntField(unique=True)
     username    = StringField()
     first_name  = StringField()
@@ -2376,9 +2409,11 @@ class User(Document):
             pass
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
-        if kwargs.get('created', False):
-            document.post_save_task.delay()
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+        if created:
+            if document._db_name != settings.MONGODB_NAME_ARCHIVE:
+                document.post_save_task.delay()
 
     @celery_task_method(name='User.post_save', queue='high')
     def post_save_task(self):
@@ -2390,7 +2425,7 @@ class User(Document):
         self.save()
 
 
-class Group(Document):
+class Group(Document, DocumentHelperMixin):
     name = StringField(unique_with='creator')
     creator = ReferenceField('User')
     administrators = ListField(ReferenceField('User'))
