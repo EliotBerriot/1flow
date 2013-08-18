@@ -1757,8 +1757,12 @@ class Article(Document, DocumentHelperMixin):
                                u'(%s).', self, self.content_error)
                 return True
 
-        if self.orphaned:
+        if self.orphaned and not force:
             LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
+            return True
+
+        if self.duplicate_of and not force:
+            LOGGER.warning(u'Article %s is a duplicate, will not fetch.', self)
             return True
 
         return False
