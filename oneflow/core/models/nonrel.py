@@ -76,7 +76,8 @@ CONTENT_FETCH_LIKELY_MULTIPAGE = 2
 
 # MORE CONTENT_PREPARSING_NEEDS_* TO COME
 
-ARTICLE_ORPHANED_BASE = u'http://1flow.io/orphaned/article/'
+ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
+                        settings.SITE_DOMAIN)
 
 # These classes will be re-used inside every worker; we instanciate only once.
 STRAINER_EXTRACTOR = strainer.Strainer(parser='lxml', add_score=True)
