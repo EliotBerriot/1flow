@@ -139,6 +139,40 @@ class DocumentHelperMixin(object):
         except:
             return self._get_db()().name
 
+    def offload_attribute(self, attribute_name, remove=False):
+        """ NOTE: this method is not used as of 20130816, but I keep it because
+            it contains the base for the idea of a global on-disk unique path
+            for each document.
+
+            The unique path can also eventually be used for statistics, to
+            avoid unbrowsable too big folders in Graphite.
+        """
+
+        # TODO: factorize this sometwhere common to all classes.
+        object_path = os.path.join(self.__class__.__name__,
+                                   self.id[-1] + self.id[-2],
+                                   self.id[-3] + self.id[-4],
+                                   self.id[-5] + self.id[-6],
+                                   self.id[-7] + self.id[-8],
+                                   self.id)
+
+        offload_directory = config.ARTICLE_OFFLOAD_DIRECTORY.format(
+            object_path=object_path)
+
+        if not os.path.exists(offload_directory):
+            try:
+                os.makedirs(offload_directory)
+
+            except (OSError, IOError), e:
+                if e.errno != errno.EEXIST:
+                    raise
+
+        with open(os.path.join(offload_directory, attribute_name), 'w') as f:
+            f.write(getattr(self, attribute_name))
+
+        if remove:
+            delattr(self, attribute_name)
+
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Source
 
@@ -1511,6 +1545,28 @@ class Article(Document, DocumentHelperMixin):
         #
         # TODO / XXX: continue here.
         #
+    def update_tags(self, tags, initial=False, need_reload=True):
+
+        if initial:
+            self.update(set__tags=tags)
+
+        else:
+            for tag in tags:
+                self.update(add_to_set__tags=tag)
+
+        if need_reload:
+            self.safe_reload()
+
+        for read in self.reads:
+            if initial:
+                read.update(set__tags=tags)
+
+            else:
+                for tag in tags:
+                    read.update(add_to_set__tags=tag)
+
+            if need_reload:
+                read.safe_reload()
 
     @celery_task_method(name='Article.register_duplicate', queue='low',
                         default_retry_delay=3600)
