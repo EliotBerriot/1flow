@@ -174,7 +174,8 @@ class WebSite(Document, DocumentHelperMixin):
     """
 
     name = StringField()
-    url = URLField(unique=True)
+    slug = StringField(verbose_name=_(u'slug'))
+    url  = URLField(unique=True)
     duplicate_of = ReferenceField('WebSite')
 
     def __unicode__(self):
@@ -214,6 +215,25 @@ class WebSite(Document, DocumentHelperMixin):
 
         else:
             return website.duplicate_of or website, False
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, website, created=False, **kwargs):
+
+        if created:
+            if not website.duplicate_of:
+                # We don't run the post_create() task in the archive
+                # database: the article is already complete.
+                if website._db_name != settings.MONGODB_NAME_ARCHIVE:
+                    website.post_create_task.delay()
+
+    @celery_task_method(name='WebSite.post_create', queue='high')
+    def post_create_task(self):
+
+        if not self.slug:
+            self.slug = slugify(self.name)
+            self.save()
+
+            statsd.gauge('websites.counts.total', 1, delta=True)
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
@@ -265,15 +285,20 @@ class Tag(Document, DocumentHelperMixin):
         return _(u'%s ⚐%s (#%s)') % (self.name, self.language, self.id)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
-        if kwargs.get('created', False):
-            document.post_save_task.delay()
+    def signal_post_save_handler(cls, sender, tag, created=False, **kwargs):
 
-    @celery_task_method(name='Tag.post_save', queue='high')
-    def post_save_task(self):
+        if created:
+            if tag._db_name != settings.MONGODB_NAME_ARCHIVE:
+                tag.post_create_task.delay()
 
-        self.slug = slugify(self.name)
-        self.save()
+    @celery_task_method(name='Tag.post_create', queue='high')
+    def post_create_task(self):
+
+        if not self.slug:
+            self.slug = slugify(self.name)
+            self.save()
+
+            statsd.gauge('tags.counts.total', 1, delta=True)
 
     @classmethod
     def get_tags_set(cls, tags_names, origin=None):
@@ -289,7 +314,6 @@ class Tag(Document, DocumentHelperMixin):
 
             except cls.DoesNotExist:
                 tags.add(cls(name=tag_name, origin=origin).save())
-                statsd.gauge('tags.counts.total', 1, delta=True)
 
         return tags
 
@@ -615,13 +639,12 @@ class Feed(Document, DocumentHelperMixin):
             LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document,
-                                 created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, feed, created=False, **kwargs):
 
         if created:
-            if document._db_name != settings.MONGODB_NAME_ARCHIVE:
+            if feed._db_name != settings.MONGODB_NAME_ARCHIVE:
                 # Update the feed immediately after creation.
-                document.refresh.delay()
+                feed.refresh.delay()
 
     def has_option(self, option):
         return option in self.options
@@ -1653,7 +1676,6 @@ class Article(Document, DocumentHelperMixin):
                         if reset_url else u'', new_article,
                         u', '.join(unicode(f) for f in feeds))
 
-            statsd.gauge('articles.counts.total', 1, delta=True)
             return new_article, True
 
     def fetch_content_must_abort(self, force=False, commit=True):
@@ -2038,7 +2060,7 @@ class Article(Document, DocumentHelperMixin):
                         self.content, self.id)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document,
+    def signal_post_save_handler(cls, sender, article,
                                  created=False, **kwargs):
 
         if created:
@@ -2046,9 +2068,9 @@ class Article(Document, DocumentHelperMixin):
             # Some articles are created "already orphaned" or duplicates.
             # In the archive database this is more immediate than looking
             # up the database name.
-            if not (document.orphaned or document.duplicate_of):
-                if document._db_name != settings.MONGODB_NAME_ARCHIVE:
-                    document.post_create.delay()
+            if not (article.orphaned or article.duplicate_of):
+                if article._db_name != settings.MONGODB_NAME_ARCHIVE:
+                    article.post_create_task.delay()
 
     @celery_task_method(name='Article.post_save', queue='high')
     def post_save_task(self):
@@ -2132,9 +2154,10 @@ class Read(Document, DocumentHelperMixin):
     #meta = {'max_documents': 1000, 'max_size': 2000000}
 
     @classmethod
-    def signal_pre_save_handler(cls, sender, document, **kwargs):
+    def signal_pre_save_handler(cls, sender, read, **kwargs):
 
-        document.rating = document.article.default_rating
+        if not read.rating:
+            read.rating = read.article.default_rating
 
     def safe_reload(self):
         try:
@@ -2263,12 +2286,11 @@ class Author(Document, DocumentHelperMixin):
             pass
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document,
-                                 created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, author, created=False, **kwargs):
 
         if created:
-            if document._db_name != settings.MONGODB_NAME_ARCHIVE:
-                document.post_create_task.delay()
+            if author._db_name != settings.MONGODB_NAME_ARCHIVE:
+                author.post_create_task.delay()
 
     @celery_task_method(name='Author.post_create', queue='high')
     def post_create_task(self):
@@ -2410,14 +2432,13 @@ class User(Document, DocumentHelperMixin):
             pass
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document,
-                                 created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, user, created=False, **kwargs):
         if created:
-            if document._db_name != settings.MONGODB_NAME_ARCHIVE:
-                document.post_save_task.delay()
+            if user._db_name != settings.MONGODB_NAME_ARCHIVE:
+                user.post_create_task.delay()
 
-    @celery_task_method(name='User.post_save', queue='high')
-    def post_save_task(self):
+    @celery_task_method(name='User.post_create', queue='high')
+    def post_create_task(self):
 
         django_user = User.objects.get(id=self.django_user)
         self.username = django_user.username
