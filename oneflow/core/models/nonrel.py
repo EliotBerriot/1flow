@@ -251,7 +251,10 @@ class WebSite(Document, DocumentHelperMixin):
             return website.duplicate_of or website, False
 
     @classmethod
-    def signal_post_save_handler(cls, sender, website, created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        website = document
 
         if created:
             if not website.duplicate_of:
@@ -319,7 +322,10 @@ class Tag(Document, DocumentHelperMixin):
         return _(u'%s ⚐%s (#%s)') % (self.name, self.language, self.id)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, tag, created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        tag = document
 
         if created:
             if tag._db_name != settings.MONGODB_NAME_ARCHIVE:
@@ -673,7 +679,10 @@ class Feed(Document, DocumentHelperMixin):
             LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, feed, created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        feed = document
 
         if created:
             if feed._db_name != settings.MONGODB_NAME_ARCHIVE:
@@ -2120,8 +2129,10 @@ class Article(Document, DocumentHelperMixin):
                         self.content, self.id)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, article,
+    def signal_post_save_handler(cls, sender, document,
                                  created=False, **kwargs):
+
+        article = document
 
         if created:
 
@@ -2132,8 +2143,8 @@ class Article(Document, DocumentHelperMixin):
                 if article._db_name != settings.MONGODB_NAME_ARCHIVE:
                     article.post_create_task.delay()
 
-    @celery_task_method(name='Article.post_save', queue='high')
-    def post_save_task(self):
+    @celery_task_method(name='Article.post_create', queue='high')
+    def post_create_task(self):
 
         self.slug = slugify(self.title)
         self.save()
@@ -2214,7 +2225,9 @@ class Read(Document, DocumentHelperMixin):
     #meta = {'max_documents': 1000, 'max_size': 2000000}
 
     @classmethod
-    def signal_pre_save_handler(cls, sender, read, **kwargs):
+    def signal_pre_save_handler(cls, sender, document, **kwargs):
+
+        read = document
 
         if not read.rating:
             read.rating = read.article.default_rating
@@ -2346,7 +2359,10 @@ class Author(Document, DocumentHelperMixin):
             pass
 
     @classmethod
-    def signal_post_save_handler(cls, sender, author, created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        author = document
 
         if created:
             if author._db_name != settings.MONGODB_NAME_ARCHIVE:
@@ -2492,7 +2508,11 @@ class User(Document, DocumentHelperMixin):
             pass
 
     @classmethod
-    def signal_post_save_handler(cls, sender, user, created=False, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        user = document
+
         if created:
             if user._db_name != settings.MONGODB_NAME_ARCHIVE:
                 user.post_create_task.delay()
