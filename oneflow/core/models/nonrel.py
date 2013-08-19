@@ -146,6 +146,60 @@ class DocumentHelperMixin(object):
         except:
             return self._get_db()().name
 
+    def register_duplicate(self, duplicate, force=False):
+
+        # be sure this helper method is called
+        # on a document that has the atribute.
+        assert hasattr(duplicate, 'duplicate_of')
+
+        _cls_name_   = self.__class__.__name__
+
+        # TODO: get this from a class attribute?
+        # I'm not sure for MongoEngine models.
+        lower_plural = _cls_name_.lower() + u's'
+
+        if duplicate.duplicate_of:
+            if duplicate.duplicate_of != self:
+                # NOTE: for Article, this situation can't happen IRL
+                # (demonstrated with Willian 20130718).
+                #
+                # Any "second" duplicate *will* resolve to the master via the
+                # redirect chain. It will *never* resolve to an intermediate
+                # URL in the chain.
+                #
+                # For other objects it should happen too, because the
+                # `get_or_create()` methods should return the `.duplicate_of`
+                # attribute if it is not None.
+
+                LOGGER.warning(u'%s %s is already a duplicate of '
+                               u'another instance, not %s. Aborting.',
+                               _cls_name_, duplicate, duplicate.duplicate_of)
+                return
+
+        LOGGER.info(u'Registering %s %s as duplicate of %s…',
+                    _cls_name_, duplicate, self)
+
+        # Register the duplication immediately, for other
+        # background operations to use ourselves as value.
+        duplicate.duplicate_of = self
+        duplicate.save()
+
+        statsd.gauge('%s.counts.duplicates' % lower_plural, 1, delta=True)
+
+        try:
+            #
+            # Until https://github.com/celery/celery/issues/1478 is resolved,
+            # we cannot use EAGER on tests, which make them fail if the
+            # following is ran as a task. Must run // for now. Bummer!
+            #
+            self.replace_duplicate_everywhere(duplicate)
+            #self.replace_duplicate_everywhere.apply_async((duplicate, ),
+            #                                              queue='low')
+
+        except AttributeError:
+            LOGGER.debug(u'Object %s does not have a '
+                         u'`replace_duplicate_everywhere()` task.', self)
+
     def offload_attribute(self, attribute_name, remove=False):
         """ NOTE: this method is not used as of 20130816, but I keep it because
             it contains the base for the idea of a global on-disk unique path
@@ -391,29 +445,7 @@ class Tag(Document, DocumentHelperMixin):
 
         return tags
 
-    def register_duplicate(self, duplicate, force=False):
-
-        if duplicate.duplicate_of:
-            if duplicate.duplicate_of != self:
-                LOGGER.warning(u'Tag %s is already a duplicate of '
-                               u'another tag, not %s. Aborting.',
-                               duplicate, duplicate.duplicate_of)
-                return
-
-        LOGGER.info(u'Registering Tag %s as duplicate of %s…',
-                    duplicate, self)
-
-        # Register the duplication immediately, for other
-        # background operations to use ourselves as value.
-        duplicate.update(set__duplicate_of=self)
-
-        statsd.gauge('tags.counts.duplicates', 1, delta=True)
-
-        # Update the current articles/reads tags in the database
-        # to use the new tag. It can take long, this is a task.
-        self.replace_duplicate_tag.delay()
-
-    @celery_task_method(name='Tag.replace_duplicate_everywhere', queue='low')
+    @celery_task_method(name='Tag.replace_duplicate_everywhere')
     def replace_duplicate_everywhere(self, duplicate, force=False):
 
         #
@@ -1561,7 +1593,7 @@ class Article(Document, DocumentHelperMixin):
                 LOGGER.info(u'Article %s is a duplicate of %s, '
                             u'registering as such.', self, original)
 
-                original.register_duplicate.delay(self)
+                original.register_duplicate(self)
                 return False
 
             # Any other exception will raise. This is intentional.
@@ -1741,9 +1773,8 @@ class Article(Document, DocumentHelperMixin):
             if need_reload:
                 read.safe_reload()
 
-    @celery_task_method(name='Article.register_duplicate', queue='low',
-                        default_retry_delay=3600)
-    def register_duplicate(self, duplicate, force=False):
+    @celery_task_method(name='Article.replace_duplicate_everywhere')
+    def replace_duplicate_everywhere(self, duplicate, force=False):
         """ register :param:`duplicate` as a duplicate content of myself.
 
             redirect/modify all reads and feeds links to me, keeping all
@@ -1754,28 +1785,6 @@ class Article(Document, DocumentHelperMixin):
         # we added new attributes before the object was pickled to a task.
         self.safe_reload()
         duplicate.safe_reload()
-
-        if duplicate.duplicate_of:
-            if duplicate.duplicate_of != self:
-                # This can't happen IRL (demonstrated with Willian 20130718).
-                # Any "second" duplicate *will* resolve to the master via the
-                # redirect chain. It will *never* resolve to an intermediate
-                # URL in the chain.
-                LOGGER.warning(u'Article %s is already a duplicate of '
-                               u'another article, not %s. Aborting.',
-                               duplicate, duplicate.duplicate_of)
-                return
-
-        LOGGER.info(u'Registering article %s as duplicate of %s…',
-                    duplicate, self)
-
-        # The duplicate will most probably be deleted at some time.
-        duplicate.duplicate_of = self
-        duplicate.save()
-
-        #
-        # Thus, the current article replaces it completely in the chain.
-        #
 
         need_reload = False
 
