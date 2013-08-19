@@ -304,6 +304,18 @@ class WebSite(Document, DocumentHelperMixin):
 
     @classmethod
     def get_from_url(cls, url):
+        """ Will get you the ``WebSite`` object from an :param:`url`, after
+            having striped down the path part
+            (eg. ``http://test.com/my-article`` gives you the web
+             site ``http://test.com``, without the trailing slash).
+
+            .. note:: unlike :meth:`get_or_create_website`, this method will
+                harmonize urls: ``WebSite.get_from_url('http://toto.com')``
+                and  ``WebSite.get_from_url('http://toto.com/')`` will give
+                you back the same result. This is intended, to avoid
+                duplication.
+
+        """
         try:
             proto, host_and_port, remaining = WebSite.split_url(url)
 
@@ -2700,12 +2712,14 @@ class User(Document, DocumentHelperMixin):
 
         if created:
             if user._db_name != settings.MONGODB_NAME_ARCHIVE:
-                user.post_create_task.delay()
+                # NOT YET. Needs review.
+                #user.post_create_task.delay()
+                pass
 
     @celery_task_method(name='User.post_create', queue='high')
     def post_create_task(self):
 
-        django_user = User.objects.get(id=self.django_user)
+        django_user = DjangoUser.objects.get(id=self.django_user)
         self.username = django_user.username
         self.last_name = django_user.last_name
         self.first_name = django_user.first_name
