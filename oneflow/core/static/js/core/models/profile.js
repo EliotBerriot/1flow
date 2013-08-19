@@ -1,37 +1,150 @@
 
+
+
+var attr = DS.attr;
+
 App.User = DS.Model.extend({
-    username: DS.attr('string'),
-    first_name: DS.attr('string'),
-    last_name: DS.attr('string'),
-
-    // not modifiable
-    email: DS.attr('string'),
-
-    old_password: DS.attr('string'),
-    password1: DS.attr('string'),
-    password2: DS.attr('string'),
-
-    // just for display:
-    date_joined: DS.attr('date'),
-    last_login: DS.attr('date'),
-
-    profile: DS.belongsTo('App.UserProfile')
+  //data: attr('string'),
+  date_joined: attr('string'),
+  email: attr('string'),
+  email_announcements: attr('string'),
+  first_name: attr('string'),
+  //hash_codes: attr('string'),
+  is_active: attr('string'),
+  is_staff: attr('string'),
+  is_superuser: attr('string'),
+  last_login: attr('string'),
+  last_modified: attr('string'),
+  last_name: attr('string'),
+  password: attr('string'),
+  //register_data: attr('string'),
+  resource_uri: attr('string'),
+  sent_emails: attr('string'),
+  username: attr('string'),
 });
 
-App.UserProfile = DS.Model.extend({
-    user: DS.belongsTo('App.User'),
+/*
+App.User.FIXTURES = [
+      {
+         data:"{}",
+         date_joined:"2013-06-13T15:16:15.210516",
+         email:"willian-munny@hotmail.com",
+         email_announcements:true,
+         first_name:"",
+         hash_codes:"{}",
+         id:5,
+         is_active:true,
+         is_staff:false,
+         is_superuser:false,
+         last_login:"2013-06-13T15:16:15.210482",
+         last_modified:"2013-06-28T14:47:47.319566",
+         last_name:"",
+         password:"",
+         register_data:"{}",
+         resource_uri:"/api/v1/user/5/",
+         sent_emails:"{}",
+         username:"willian-munny@hotmail.com"
+      },
+      {
+         data:"{}",
+         date_joined:"2013-06-19T11:05:31.242950",
+         email:"willianvervalen@hotmail.com",
+         email_announcements:true,
+         first_name:"willian",
+         hash_codes:"{}",
+         id:7,
+         is_active:true,
+         is_staff:false,
+         is_superuser:false,
+         last_login:"2013-06-19T11:11:59.153068",
+         last_modified:"2013-06-28T14:47:47.319566",
+         last_name:"paiva",
+         password:"pbkdf2_sha256$10000$vVWGYFr3QMm0$7d1OGoZ8YQVUP4e37RkZ8vfd8/zti3GDM6O18FttwEs=",
+         register_data:"{}",
+         resource_uri:"/api/v1/user/7/",
+         sent_emails:"{}",
+         username:"wmunny"
+      },
+      {
+         data:"{}",
+         date_joined:"2013-06-21T14:50:10.056612",
+         email:"mchaignot@gmail.com",
+         email_announcements:true,
+         first_name:"Matthieu",
+         hash_codes:"{}",
+         id:18,
+         is_active:true,
+         is_staff:false,
+         is_superuser:false,
+         last_login:"2013-06-21T14:50:10.086515",
+         last_modified:"2013-06-28T14:47:47.319566",
+         last_name:"Chaignot",
+         password:"!",
+         register_data:"{}",
+         resource_uri:"/api/v1/user/18/",
+         sent_emails:"{}",
+         username:"mchaignot"
+      },
+      {
+         data:"{}",
+         date_joined:"2013-06-13T12:16:57.404338",
+         email:"admin@1flow.net",
+         email_announcements:true,
+         first_name:"",
+         hash_codes:"{}",
+         id:1,
+         is_active:true,
+         is_staff:true,
+         is_superuser:true,
+         last_login:"2013-06-24T02:13:24.224588",
+         last_modified:"2013-06-28T14:47:47.319566",
+         last_name:"",
+         password:"pbkdf2_sha256$10000$9lAj1hBg3aXX$U79RFq7FYdEbg3kEv9LGQT9CzDM3FViJ7s0wegzsfno=",
+         register_data:"{}",
+         resource_uri:"/api/v1/user/1/",
+         sent_emails:"{}",
+         username:"admin"
+      },
+      {
+         data:"{}",
+         date_joined:"2013-06-20T14:51:47",
+         email:"vervalenpaiva@gmail.com",
+         email_announcements:true,
+         first_name:"willian",
+         hash_codes:"{}",
+         id:15,
+         is_active:true,
+         is_staff:true,
+         is_superuser:true,
+         last_login:"2013-07-16T10:16:35.286870",
+         last_modified:"2013-06-28T14:47:47.319566",
+         last_name:"ver valen paiva",
+         password:"!",
+         register_data:"{}",
+         resource_uri:"/api/v1/user/15/",
+         sent_emails:"{}",
+         username:"vervalenpaiva"
+      },
+      {
+         data:"{}",
+         date_joined:"2013-06-21T14:45:20",
+         email:"karmak23@gmail.com",
+         email_announcements:true,
+         first_name:"Olivier",
+         hash_codes:"{}",
+         id:17,
+         is_active:true,
+         is_staff:false,
+         is_superuser:false,
+         last_login:"2013-07-16T10:16:47.616457",
+         last_modified:"2013-06-28T14:47:47.319566",
+         last_name:"CortÃ¨s",
+         password:"!",
+         register_data:"{}",
+         resource_uri:"/api/v1/user/17/",
+         sent_emails:"{}",
+         username:"karmak23"
+      }
+   ]
 
-    email_announcements: DS.attr('boolean')
-
-});
-
-//App.UserController = Ember.Controller.extend({});
-//App.UserProfileController = Ember.Controller.extend({});
-
-
-// App.Adapter.map('App.UserProfile', {
-//   user: {embedded: 'always'}
-// });
-// App.Adapter.map('App.User', {
-//   profile: {embedded: 'always'}
-// });
+*/
