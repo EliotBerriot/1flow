@@ -7,7 +7,8 @@ from tastypie.exceptions import Unauthorized
 from tastypie.authentication import (MultiAuthentication,
                                      SessionAuthentication,
                                      ApiKeyAuthentication)
-from tastypie.resources import ModelResource
+from tastypie.resources import ModelResource, ALL
+
 #from tastypie import fields
 
 from django.contrib.auth import get_user_model
@@ -121,6 +122,8 @@ class UserResource(ModelResource):
     class Meta(EmberMeta):
         queryset = User.objects.all()
         resource_name = 'user'
+        filtering = {'id': ALL, }
+        ordering = ALL
 
 
 __all__ = ('UserObjectsOnlyAuthorization', 'EmberMeta',
