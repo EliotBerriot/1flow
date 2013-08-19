@@ -4,8 +4,8 @@
 console.log('PENSER A ACTIVER LES NOUVEAUX PARAMETRES !');
 
 App = Ember.Application.create({
-    LOG_TRANSITIONS: true //,
-    //LOG_BINDINGS: true,
+    LOG_TRANSITIONS: true,
+    LOG_BINDINGS: true //,
     //LOG_STACKSTRACE_ON_DEPRECIATION:true
 });
 
@@ -21,6 +21,10 @@ App.Store = DS.Store.extend({
 });
 
 App.Router.map(function(){
+    this.resource('read');
+
+
+
     this.resource('teams');
     this.resource('discovery');
     this.resource('subscriptions', function() {
@@ -28,7 +32,6 @@ App.Router.map(function(){
     });
     this.resource('help');
     this.resource('profile');
-	  this.resource('read');
 });
 
 //console.log(DJANGO_JS_CONTEXT['user']['id']);
