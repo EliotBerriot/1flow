@@ -11,7 +11,7 @@ from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 #from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, Read, User, Tag
+from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite, Author
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -231,6 +231,9 @@ class ArticleDuplicateTest(TestCase):
 
         self.assertEquals(self.article2.duplicate_of, self.article1)
 
+        #
+        # TODO: finish this test case.
+        #
 
 class AbsolutizeTest(TestCase):
 
@@ -315,3 +318,78 @@ class TagsTest(TestCase):
 
         self.assertEquals(self.t2 in self.t1.children, True)
         self.assertEquals(self.t3 in self.t1.children, True)
+
+
+
+class WebSitesTest(TestCase):
+    def setUp(self):
+
+        WebSite.drop_collection()
+        Article.drop_collection()
+
+        self.ws1 = WebSite(url='http://test1.com').save()
+        self.ws2 = WebSite(url='http://test2.com').save()
+
+    def test_get_or_create_website(self):
+
+        wt1, created = WebSite.get_or_create_website('http://test1.com')
+
+        self.assertFalse(created)
+        self.assertEquals(wt1, self.ws1)
+
+        wt3, created = WebSite.get_or_create_website('http://test3.com')
+
+        self.assertTrue(created)
+        self.assertNotEquals(wt3, self.ws1)
+        self.assertNotEquals(wt3, self.ws2)
+
+        wt4, created = WebSite.get_or_create_website('http://test3.com')
+
+        self.assertFalse(created)
+        self.assertEquals(wt3, wt4)
+
+        wt5, created = WebSite.get_or_create_website('http://test3.com/')
+
+        self.assertTrue(created)
+        self.assertNotEquals(wt5, wt4)
+
+    def test_get_from_url(self):
+
+        wt1 = WebSite.get_from_url('http://test1.com/example-article')
+        wt2 = WebSite.get_from_url('http://test1.com/example-article2')
+
+        self.assertEquals(wt1, self.ws1)
+        self.assertEquals(wt1, self.ws1)
+        self.assertEquals(wt1, wt2)
+
+    def test_register_duplicate_not_again(self):
+
+        wt1, created = WebSite.get_or_create_website('http://other.test1.com')
+
+        self.ws1.register_duplicate(wt1)
+
+        self.assertTrue(created)
+        self.assertEquals(wt1.duplicate_of, self.ws1)
+
+        wt2, created = WebSite.get_or_create_website('http://other.test1.com')
+
+        self.assertFalse(created)
+        self.assertNotEquals(wt2, wt1)
+        self.assertEquals(wt2, self.ws1)
+
+        # should fail.
+        #self.ws2.register_duplicate(wt1)
+
+        #
+        # TODO: finish this test case.
+        #
+
+    def test_websites_duplicates(self):
+        pass
+
+
+class AuthorsTest(TestCase):
+
+
+    pass
+
