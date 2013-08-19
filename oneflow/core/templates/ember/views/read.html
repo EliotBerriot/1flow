@@ -1,0 +1,7 @@
+{% load markdown_deux_tags %}
+
+{% handlebars "read" %}
+{% ember #each model %}
+  <h1>{% ember article %}</h1>
+ {% ember /each %}
+{% endhandlebars %}
