@@ -224,12 +224,34 @@ class WebSite(Document, DocumentHelperMixin):
                                    (_(u'(dupe of #%s)') % self.duplicate_of.id)
                                    if self.duplicate_of else u'')
 
+    @staticmethod
+    def split_url(url, split_port=False):
+
+        proto, remaining = url.split('://', 1)
+
+        try:
+            host_and_port, remaining = remaining.split('/', 1)
+
+        except ValueError:
+            host_and_port = remaining
+            remaining     = ''
+
+        if split_port:
+            try:
+                hostname, port = host_and_port.split(':')
+
+            except ValueError:
+                hostname = host_and_port
+                port = '80' if proto == 'http' else '443'
+
+            return proto, hostname, int(port), remaining
+
+        return proto, host_and_port, remaining
+
     @classmethod
     def get_from_url(cls, url):
         try:
-            # XXX: duplicate code
-            proto, remaining = url.split('://', 1)
-            hostname_port, remaining = remaining.split('/', 1)
+            proto, host_and_port, remaining = WebSite.split_url(url)
 
         except:
             LOGGER.exception('Unable to determine Website from "%s"', url)
@@ -237,7 +259,7 @@ class WebSite(Document, DocumentHelperMixin):
 
         else:
             website, _ = WebSite.get_or_create_website('%s://%s'
-                                                       % (proto, hostname_port))
+                                                       % (proto, host_and_port))
             return website
 
     @classmethod
@@ -248,6 +270,7 @@ class WebSite(Document, DocumentHelperMixin):
                 if the found one is a duplicate (eg. never returns the
                 duplicate one).
         """
+
         try:
             website = cls.objects.get(url=url)
 
@@ -275,19 +298,14 @@ class WebSite(Document, DocumentHelperMixin):
 
         if not self.slug:
             if self.name is None:
-
-                # XXX: duplicate code
-                proto, remaining = self.url.split(u'://', 1)
-                hostname_port, remaining = remaining.split(u'/', 1)
-
-                self.name = hostname_port.replace(u'_', u' ').title()
+                proto, host_and_port, remaining = WebSite.split_url(self.url)
+                self.name = host_and_port.replace(u'_', u' ').title()
 
             self.slug = slugify(self.name)
 
             self.save()
 
             statsd.gauge('websites.counts.total', 1, delta=True)
-
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
 
@@ -1407,14 +1425,12 @@ class Article(Document, DocumentHelperMixin):
         url = requests_response.url
 
         try:
-            # XXX: duplicate code
-            proto, remaining = url.split('://', 1)
-            hostname_port, remaining = remaining.split('/', 1)
+            proto, host_and_port, remaining = WebSite.split_url(url)
 
         except ValueError:
             return url
 
-        if 'da.feedsportal.com' in hostname_port:
+        if 'da.feedsportal.com' in host_and_port:
             # Sometimes the redirect chain breaks and gives us
             # a F*G page with links in many languages "click here
             # to continue".
