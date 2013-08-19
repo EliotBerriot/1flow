@@ -1,2 +1,4 @@
-[MESSAGES CONTROL]
-disable=E211
+[pep8]
+ignore = E126,E203,E221,E241,E272
+show-source = True
+max-line-length = 80
