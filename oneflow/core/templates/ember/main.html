@@ -58,6 +58,8 @@
           <ul class="nav">
             {% if request.user.is_authenticated %}
 
+              <li>{% linkto "read" %}{% trans 'Read' %}{% endlinkto %}</li>
+
               {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
 
                 <li>{% linkto 'index' %}{% trans 'flowboard' %}{% endlinkto %}</li>
