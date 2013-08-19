@@ -183,21 +183,23 @@ class ArticleDuplicateTest(TestCase):
 
         # User & Reads creation
         for u in xrange(1, 6):
-            u = User(django_user=u).save()
+            u = User(django_user=u, username='test_user_%s' % u).save()
             Read(user=u, article=self.article1).save()
 
         for u in xrange(6, 11):
-            u = User(django_user=u).save()
+            u = User(django_user=u, username='test_user_%s' % u).save()
             Read(user=u, article=self.article2).save()
 
         # Feeds creation
         for f in xrange(1, 6):
-            f = Feed(url='http://test-feed%s.com' % f).save()
+            f = Feed(name='test feed #%s' % f,
+                     url='http://test-feed%s.com' % f).save()
             self.article1.update(add_to_set__feeds=f)
             self.article1.reload()
 
         for f in xrange(6, 11):
-            f = Feed(url='http://test-feed%s.com' % f).save()
+            f = Feed(name='test feed #%s' % f,
+                     url='http://test-feed%s.com' % f).save()
             self.article2.update(add_to_set__feeds=f)
             self.article2.reload()
 
