@@ -19,7 +19,7 @@ from django.conf import settings
 from django.db import models
 from django.template import Context
 
-from djangojs.utils import ContextSerializer
+from djangojs.context_serializer import ContextSerializer
 
 from .dateutils import ftstamp
 
