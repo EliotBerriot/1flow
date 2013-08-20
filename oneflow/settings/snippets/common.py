@@ -239,9 +239,10 @@ PIPELINE_JS = {
             'js/core/core.js',
             'js/core/controllers/*.js',
             'js/core/models/*.js',
+            'js/core/views/*.js',
             'js/core/routes/*.js',
             'js/core/helpers/*.js',
-            'js/core/init.js',
+            'js/core/end.js',
         ),
         'output_filename': 'js/core.js',
     }
@@ -408,7 +409,7 @@ MARKDOWN_DEUX_STYLES = {
 
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
-API_LIMIT_PER_PAGE = 100
+API_LIMIT_PER_PAGE = 25
 
 
 AUTHENTICATION_BACKENDS = (
