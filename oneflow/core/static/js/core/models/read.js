@@ -1,7 +1,7 @@
 
 App.Read = DS.Model.extend({
     article: DS.belongsTo('App.Article'),
-    user: DS.belongsTo('App.User'),
+    //user: DS.belongsTo('App.User'),
     date_auto_read: DS.attr('string'),
     date_created: DS.attr('string'),
     date_read: DS.attr('string'),
