@@ -1,7 +1,41 @@
-{% load markdown_deux_tags %}
 
 {% handlebars "read" %}
-{% ember #each model %}
-  <h1>{% ember article %}</h1>
- {% ember /each %}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10">&nbsp;</div>
+    </div>
+    <div class="row-fluid">
+      <div class="span8 offset2">
+        <ul class="media-list">
+          {% ember #each model %}
+            <li class="media">
+                <a class="pull-left" href="#">
+                    <img class="media-object" data-src="holder.js/64x64">
+                    {% ember unbound _view.contentIndex %}
+                </a>
+                 <div class="media-body">
+                    <h4 class="media-heading"><span data-toggle="collapse" data-target="#content-{% ember unbound id %}">{{{ article.title }}}</span> <a href="{{{ unboundarticle.public_url }}}" target="_blank"><i class="icon-circle-arrow-right"></i></a>
+                    </h4>
+                    <p>
+                        {% ember momentFromNow article.date_published %}{% ember #if tags %}, {% trans "in" %} {% ember tags %}{% ember /if %}{% ember #if rating %}{% trans ", rated " %}{% ember rating %}.{% ember /if %}
+                    </p>
+                    {% ember #if article.authors %}
+                        <p>{% trans "by" %}
+                        {% ember #each article.authors %}
+                            {% ember name %},
+                        {% ember /each %}
+                        </p>
+                    {% ember /if %}
+
+                    <div id="content-{% ember unbound id %}" class="collapse in">
+                        {{{ markdownToHtml article.content }}}
+                    </div>
+
+                </div><!-- .media-body -->
+            </li><!-- .media -->
+          {% ember /each %}
+        </ul>
+      </div>
+    </div>
+  </div>
 {% endhandlebars %}

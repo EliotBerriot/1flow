@@ -1,5 +1,8 @@
+
 App.ReadRoute = Ember.Route.extend({
   model: function() {
-  return  App.Read.all();
+    reads = App.Read.find();
+    //console.log(reads);
+    return reads;
   }
 });
