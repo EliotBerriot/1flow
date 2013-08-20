@@ -86,15 +86,6 @@ ARTICLE_ORPHANED_BASE = u'http://1flow.io/orphaned/article/'
 
 # These classes will be re-used inside every worker; we instanciate only once.
 STRAINER_EXTRACTOR  = strainer.Strainer(parser='lxml', add_score=True)
-HTML2TEXT_CONVERTER = html2text.HTML2Text()
-
-# Set sane defaults. body_width > 0 breaks
-# some links by inserting \n inside them.
-#
-# MARKDOWN_V1 had [False, False, 78] (=default parameters)
-HTML2TEXT_CONVERTER.unicode_snob = True
-HTML2TEXT_CONVERTER.escape_snob = True
-HTML2TEXT_CONVERTER.body_width = 0
 
 if config.FEED_FETCH_GHOST_ENABLED:
     try:
@@ -1978,12 +1969,22 @@ class Article(Document):
 
         LOGGER.info(u'Converting article %s to markdown…', self)
 
+        md_converter = html2text.HTML2Text()
+
+        # Set sane defaults. body_width > 0 breaks
+        # some links by inserting \n inside them.
+        #
+        # MARKDOWN_V1 had [False, False, 78] (=default parameters)
+        md_converter.unicode_snob = True
+        md_converter.escape_snob  = True
+        md_converter.body_width   = 0
+
         try:
             # We decode content to Unicode before converting,
             # and re-encode back to utf-8 before saving. MongoDB
             # accepts only utf-8 data, html2text wants unicode.
             # Everyone should be happy.
-            self.content = HTML2TEXT_CONVERTER.handle(
+            self.content = md_converter.handle(
                 self.content.decode('utf-8')).encode('utf-8')
 
         except Exception, e:
