@@ -8,7 +8,9 @@ from tastypie_mongoengine.fields import ReferencedListField, ReferenceField
 from tastypie.resources import ALL
 from tastypie.fields import CharField
 
-from .models.nonrel import Subscription, Article, Read
+from .models.nonrel import Subscription, Feed, Article, Read, Author
+
+from ..base.utils.dateutils import now
 from ..base.api import (UserResource,
                         common_authentication,
                         UserObjectsOnlyAuthorization, )
@@ -16,7 +18,23 @@ from ..base.api import (UserResource,
 LOGGER = logging.getLogger(__name__)
 
 
+class FeedResource(MongoEngineResource):
+
+    class Meta:
+        queryset = Feed.objects.all()
+
+        # Ember-data expect the following 2 directives
+        always_return_data = True
+        allowed_methods    = ('get', 'post', 'put', 'delete')
+
+        # These are specific to 1flow functionnals.
+        authentication     = common_authentication
+        authorization      = UserObjectsOnlyAuthorization()
+
+
 class SubscriptionResource(MongoEngineResource):
+    feed_id = ReferenceField(FeedResource, 'feed')
+
     class Meta:
         queryset = Subscription.objects.all()
 
