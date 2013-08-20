@@ -29,4 +29,21 @@ App.Router.map(function(){
     this.resource('profile');
 });
 
-//console.log(DJANGO_JS_CONTEXT['user']['id']);
+
+
+
+
+// App.ShowSpinnerWhileRendering = Ember.Mixin.create({
+//   layout: Ember.Handlebars.compile('<div class="loading">loading --{{ yield }}--</div>'),
+
+//   classNameBindings: ['isLoaded'],
+
+//   isLoaded: function() {
+//     return this.get('isInserted') && this.get('controller.isLoaded');
+//   }.property('isInserted', 'controller.isLoaded'),
+
+//   didInsertElement: function() {
+//     this.set('inserted', true);
+//     this._super();
+//   }
+// });
