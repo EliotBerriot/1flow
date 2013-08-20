@@ -32,7 +32,7 @@ class SubscriptionResource(MongoEngineResource):
 class AuthorResource(MongoEngineResource):
 
     class Meta:
-        queryset = Article.objects.all()
+        queryset = Author.objects.all()
 
         # Ember-data expect the following 2 directives
         always_return_data = True
@@ -41,7 +41,6 @@ class AuthorResource(MongoEngineResource):
         resource_name      = 'author'
         filtering          = {'id': ALL, }
         ordering           = ALL
-        excludes           = ('is_unsure', )
         # These are specific to 1flow functionnals.
         authentication     = common_authentication
         #authorization      = UserObjectsOnlyAuthorization()
