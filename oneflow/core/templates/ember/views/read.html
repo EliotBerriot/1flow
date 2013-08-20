@@ -33,6 +33,10 @@
 
                 </div><!-- .media-body -->
             </li><!-- .media -->
+          {% ember else %}
+            <div class="hero-unit">
+                <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
+            </div>
           {% ember /each %}
         </ul>
       </div>
