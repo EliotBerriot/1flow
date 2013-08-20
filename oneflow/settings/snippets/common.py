@@ -408,6 +408,8 @@ MARKDOWN_DEUX_STYLES = {
 
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
+API_LIMIT_PER_PAGE = 100
+
 
 AUTHENTICATION_BACKENDS = (
     # WARNING: when activating Twitter, we MUST implement the email pipeline,
