@@ -28,8 +28,6 @@ class SubscriptionResource(MongoEngineResource):
         authentication     = common_authentication
         authorization      = UserObjectsOnlyAuthorization()
 
-        #authorization = authorization.Authorization()
-
 
 class AuthorResource(MongoEngineResource):
 
@@ -45,11 +43,8 @@ class AuthorResource(MongoEngineResource):
         ordering           = ALL
         excludes           = ('is_unsure', )
         # These are specific to 1flow functionnals.
-        #authentication     = common_authentication
+        authentication     = common_authentication
         #authorization      = UserObjectsOnlyAuthorization()
-
-        #authorization = authorization.Authorization()
-
 
 
 class ArticleResource(MongoEngineResource):
@@ -73,10 +68,8 @@ class ArticleResource(MongoEngineResource):
         excludes           = ('pages_urls', 'authors', 'url', )
 
         # These are specific to 1flow functionnals.
-        #authentication     = common_authentication
+        authentication     = common_authentication
         #authorization      = UserObjectsOnlyAuthorization()
-
-        #authorization = authorization.Authorization()
 
 
 class ReadResource(MongoEngineResource):
@@ -96,10 +89,8 @@ class ReadResource(MongoEngineResource):
         excludes           = ('article', 'user', )
 
         # These are specific to 1flow functionnals.
-        #authentication     = common_authentication
-        #authorization      = UserObjectsOnlyAuthorization()
-
-        #authorization = authorization.Authorization()
+        authentication     = common_authentication
+        authorization      = UserObjectsOnlyAuthorization()
 
 
 __all__ = ('SubscriptionResource',
