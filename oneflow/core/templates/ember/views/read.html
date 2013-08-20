@@ -14,17 +14,23 @@
                     {% ember unbound _view.contentIndex %}
                 </a>
                  <div class="media-body">
-                    <h4 class="media-heading"><span data-toggle="collapse" data-target="#content-{% ember unbound id %}">{{{ article.title }}}</span> <a href="{{{ unbound article.public_url }}}" target="_blank"><i class="icon-circle-arrow-right"></i></a>
-
-                    {% ember #if is_read %}
-                      <button {% ember action 'mark_unread' this %}>mark unread</button>
-                    {% ember else %}
-                      <button {% ember action 'mark_read' this %}>mark read</button>
-                    {% ember /if %}
+                    <h4 class="media-heading">
+                        <span data-toggle="collapse" data-target="#content-{% ember unbound id %}">{{{ article.title }}}</span>
 
 
+                        {% ember #if is_read %}
+                          <button class="btn btn-small btn-success" {% ember action 'mark_unread' this %}><i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
+                        {% ember else %}
+                          <button class="btn btn-small" {% ember action 'mark_read' this %}><i class="icon-check" alt="{% trans "mark as read" %}"></i>
+                        {% ember /if %}
+                        </button>
 
+                        <a href="{% ember unbound article.public_url %}" target="_blank"><i class="icon-circle-arrow-right"></i></a>
 
+                        {% if user.is_superuser %}
+                            <a href="/api/v1/article/{% ember unbound article.id %}" target="_blank"><i class="icon-cog"></i></a>
+                            <small class="muted">read: {% ember unbound id %}, article: {% ember unbound article.id %}</small>
+                        {% endif %}
                     </h4>
                     <p>
                         {% ember momentFromNow article.date_published %}{% ember #if tags %}, {% trans "in" %} {% ember tags %}{% ember /if %}{% ember #if rating %}{% trans ", rated " %}{% ember rating %}.{% ember /if %}
