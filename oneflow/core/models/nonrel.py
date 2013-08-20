@@ -99,8 +99,9 @@ HTML2TEXT_CONVERTER = html2text.HTML2Text()
 # Set sane defaults. body_width > 0 breaks
 # some links by inserting \n inside them.
 #
-# MARKDOWN_V1 had [False, 78] (=default parameters)
+# MARKDOWN_V1 had [False, False, 78] (=default parameters)
 HTML2TEXT_CONVERTER.unicode_snob = True
+HTML2TEXT_CONVERTER.escape_snob = True
 HTML2TEXT_CONVERTER.body_width = 0
 
 if config.FEED_FETCH_GHOST_ENABLED:
