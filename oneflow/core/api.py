@@ -94,6 +94,7 @@ class ReadResource(MongoEngineResource):
     user_id    = ReferenceField(UserResource, 'user')
 
     class Meta:
+        #queryset = Read.objects.filter(date_read=now)
         queryset = Read.objects.all()
 
         # Ember-data expect the following 2 directives
