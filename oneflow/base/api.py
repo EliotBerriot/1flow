@@ -77,19 +77,19 @@ class UserObjectsOnlyAuthorization(Authorization):
         # Since they may not all be saved, iterate over them.
         for obj in object_list:
             try:
-                object_user = obj.user
+                object_user_id = obj.user.django_user
 
             except AttributeError:
                 object_user = obj
 
-            if object_user == user or user.is_staff or user.is_superuser:
+            if user.is_staff or user.is_superuser or object_user_id == user.id:
                 allowed.append(obj)
 
         return allowed
 
     def update_detail(self, object_list, bundle):
         try:
-            return bundle.obj.user == bundle.request.user
+            return bundle.obj.user.django_user == bundle.request.user.id
 
         except AttributeError:
             return bundle.obj == bundle.request.user
