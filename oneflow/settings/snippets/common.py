@@ -409,7 +409,7 @@ MARKDOWN_DEUX_STYLES = {
 
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
-API_LIMIT_PER_PAGE = 25
+API_LIMIT_PER_PAGE = 10
 
 
 AUTHENTICATION_BACKENDS = (
