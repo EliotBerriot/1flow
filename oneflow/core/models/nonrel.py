@@ -62,15 +62,21 @@ REQUEST_BASE_HEADERS  = {'User-agent': BASE_1FLOW_USER_AGENT}
 requests.adapters.DEFAULT_RETRIES = 1
 
 # Don't use any lang-dependant values (eg. _(u'NO CONTENT'))
-CONTENT_NOT_PARSED    = None
-CONTENT_TYPE_NONE     = 0
-CONTENT_TYPE_HTML     = 1
-CONTENT_TYPE_MARKDOWN = 2
-CONTENT_TYPE_IMAGE    = 100
-CONTENT_TYPE_VIDEO    = 200
-CONTENT_TYPES_FINAL   = (CONTENT_TYPE_MARKDOWN,
-                         CONTENT_TYPE_IMAGE, CONTENT_TYPE_VIDEO,
-                         )
+CONTENT_NOT_PARSED       = None
+CONTENT_TYPE_NONE        = 0
+CONTENT_TYPE_HTML        = 1
+# Since Hotfix 0.20.11.5, we process markdown differently,
+# And need to know about the "old" processing method to be
+# able to fix it afterwards in the production database.
+CONTENT_TYPE_MARKDOWN_V1 = 2
+CONTENT_TYPE_MARKDOWN    = 3
+CONTENT_TYPE_IMAGE       = 100
+CONTENT_TYPE_VIDEO       = 200
+CONTENT_TYPES_FINAL      = (CONTENT_TYPE_MARKDOWN,
+                            CONTENT_TYPE_MARKDOWN_V1,
+                            CONTENT_TYPE_IMAGE,
+                            CONTENT_TYPE_VIDEO,
+                            )
 
 CONTENT_PREPARSING_NEEDS_GHOST = 1
 CONTENT_FETCH_LIKELY_MULTIPAGE = 2
@@ -87,7 +93,16 @@ ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
                         settings.SITE_DOMAIN)
 
 # These classes will be re-used inside every worker; we instanciate only once.
-STRAINER_EXTRACTOR = strainer.Strainer(parser='lxml', add_score=True)
+STRAINER_EXTRACTOR  = strainer.Strainer(parser='lxml', add_score=True)
+HTML2TEXT_CONVERTER = html2text.HTML2Text()
+
+# Set sane defaults. body_width > 0 breaks
+# some links by inserting \n inside them.
+#
+# MARKDOWN_V1 had [False, False, 78] (=default parameters)
+HTML2TEXT_CONVERTER.unicode_snob = True
+HTML2TEXT_CONVERTER.escape_snob = True
+HTML2TEXT_CONVERTER.body_width = 0
 
 if config.FEED_FETCH_GHOST_ENABLED:
     try:
@@ -2263,7 +2278,7 @@ class Article(Document, DocumentHelperMixin):
             # and re-encode back to utf-8 before saving. MongoDB
             # accepts only utf-8 data, html2text wants unicode.
             # Everyone should be happy.
-            self.content = html2text.html2text(
+            self.content = HTML2TEXT_CONVERTER.handle(
                 self.content.decode('utf-8')).encode('utf-8')
 
         except Exception, e:
