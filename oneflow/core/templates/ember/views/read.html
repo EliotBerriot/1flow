@@ -14,7 +14,17 @@
                     {% ember unbound _view.contentIndex %}
                 </a>
                  <div class="media-body">
-                    <h4 class="media-heading"><span data-toggle="collapse" data-target="#content-{% ember unbound id %}">{{{ article.title }}}</span> <a href="{{{ unboundarticle.public_url }}}" target="_blank"><i class="icon-circle-arrow-right"></i></a>
+                    <h4 class="media-heading"><span data-toggle="collapse" data-target="#content-{% ember unbound id %}">{{{ article.title }}}</span> <a href="{{{ unbound article.public_url }}}" target="_blank"><i class="icon-circle-arrow-right"></i></a>
+
+                    {% ember #if is_read %}
+                      <button {% ember action 'mark_unread' this %}>mark unread</button>
+                    {% ember else %}
+                      <button {% ember action 'mark_read' this %}>mark read</button>
+                    {% ember /if %}
+
+
+
+
                     </h4>
                     <p>
                         {% ember momentFromNow article.date_published %}{% ember #if tags %}, {% trans "in" %} {% ember tags %}{% ember /if %}{% ember #if rating %}{% trans ", rated " %}{% ember rating %}.{% ember /if %}
@@ -27,7 +37,7 @@
                         </p>
                     {% ember /if %}
 
-                    <div id="content-{% ember unbound id %}" class="collapse in">
+                    <div id="content-{% ember unbound id %}" class="collapse">
                         {{{ markdown article.content }}}
                     </div>
 
