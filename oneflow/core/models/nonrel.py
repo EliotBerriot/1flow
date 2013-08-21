@@ -165,7 +165,12 @@ class WebSite(Document):
         try:
             # XXX: duplicate code
             proto, remaining = url.split('://', 1)
-            hostname_port, remaining = remaining.split('/', 1)
+            try:
+                hostname_port, remaining = remaining.split('/', 1)
+
+            except ValueError:
+                hostname_port = remaining
+                remaining     = ''
 
         except:
             LOGGER.exception('Unable to determine Website from "%s"', url)
