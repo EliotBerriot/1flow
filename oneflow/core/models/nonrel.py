@@ -2368,18 +2368,18 @@ class Article(Document, DocumentHelperMixin):
         content = self.content
 
         if replace_newlines:
-            for repl_src in re.findall(r'[[][^]]+[]][(]', content):
+            for repl_src in re.findall(ur'[[][^]]+[]][(]', content):
                 repl_dst = repl_src.replace(u'\n', u' ')
                 content  = content.replace(repl_src, repl_dst)
 
-        for repl_src in re.findall(r'[]][(][^)]+[)]', content):
+        for repl_src in re.findall(ur'[]][(][^)]+[)]', content):
 
             if replace_newlines:
                 repl_dst = repl_src.replace(u'\n', u'')
             else:
                 repl_dst = repl_src
 
-            repl_dst = insert_website(repl_dst)
+            repl_dst = clean_url(insert_website(repl_dst))
             content  = content.replace(repl_src, repl_dst)
 
         if test_only:
