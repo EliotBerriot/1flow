@@ -172,8 +172,16 @@ class WebSite(Document):
             return None
 
         else:
-            website, _ = WebSite.get_or_create_website('%s://%s'
-                                                       % (proto, hostname_port))
+            base_url = '%s://%s' % (proto, hostname_port)
+
+            try:
+                website, _ = WebSite.get_or_create_website(base_url)
+
+            except ValidationError:
+                LOGGER.exception('Cannot create website from url %s (via '
+                                 u'original %s)', base_url, url)
+                return None
+
             return website
 
     @classmethod
