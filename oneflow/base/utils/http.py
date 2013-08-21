@@ -12,5 +12,5 @@ def clean_url(url):
 
     return LAST_RE.sub(u'',
                        UTM_RE.sub(u'',
-                       XTOR_RE.sub(u'',
-                       url)))
+                                  XTOR_RE.sub(u'',
+                                              url)))
