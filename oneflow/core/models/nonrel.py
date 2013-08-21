@@ -201,10 +201,15 @@ class WebSite(Document):
             website = cls.objects.get(url=url)
 
         except cls.DoesNotExist:
-            return cls(url=url).save(), True
+            try:
+                return cls(url=url).save(), True
 
-        else:
-            return website.duplicate_of or website, False
+            except (NotUniqueError, DuplicateKeyError):
+                # We just hit the race condition with two creations
+                # At the same time. Same player shoots again.
+                website = cls.objects.get(url=url)
+
+        return website.duplicate_of or website, False
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
