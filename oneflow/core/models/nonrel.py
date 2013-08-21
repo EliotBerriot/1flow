@@ -2044,15 +2044,15 @@ class Article(Document):
             repair its links by removing the `\n` inside them.
         """
 
-        if self.content_type == CONTENT_TYPE_MARKDOWN_V1:
+        if self.content_type == CONTENT_TYPE_MARKDOWN:
+            replace_newlines = False
+
+        elif self.content_type == CONTENT_TYPE_MARKDOWN_V1:
             replace_newlines = True
 
-        elif self.content_type not in (CONTENT_TYPE_MARKDOWN, ):
+        else:
             LOGGER.debug(u'Skipped non-Markdown article %s.', self)
             return
-
-        else:
-            replace_newlines = False
 
         website = WebSite.get_from_url(self.url)
 
