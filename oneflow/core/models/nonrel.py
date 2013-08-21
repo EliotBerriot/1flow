@@ -2047,6 +2047,10 @@ class Article(Document):
 
         content = self.content
 
+        if content is None:
+            LOGGER.warning(u'Article %s has no content to post-process.', self)
+            return
+
         if replace_newlines:
             for repl_src in re.findall(r'[[][^]]+[]][(]', content):
                 repl_dst = repl_src.replace(u'\n', u' ')
