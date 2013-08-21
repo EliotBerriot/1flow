@@ -2041,6 +2041,11 @@ class Article(Document):
 
         if self.content_type == CONTENT_TYPE_MARKDOWN_V1:
             replace_newlines = True
+
+        elif self.content_type not in (CONTENT_TYPE_MARKDOWN, ):
+            LOGGER.debug(u'Skipped non-Markdown article %s.', self)
+            return
+
         else:
             replace_newlines = False
 
@@ -2061,10 +2066,6 @@ class Article(Document):
                 return link
 
         content = self.content
-
-        if content is None:
-            LOGGER.warning(u'Article %s has no content to post-process.', self)
-            return
 
         if replace_newlines:
             for repl_src in re.findall(r'[[][^]]+[]][(]', content):
