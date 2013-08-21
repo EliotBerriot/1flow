@@ -1998,7 +1998,7 @@ class Article(Document):
             # accepts only utf-8 data, html2text wants unicode.
             # Everyone should be happy.
             self.content = md_converter.handle(
-                self.content.decode('utf-8')).encode('utf-8')
+                self.content.decode('utf-8'))
 
         except Exception, e:
             statsd.gauge('articles.counts.content_errors', 1, delta=True)
