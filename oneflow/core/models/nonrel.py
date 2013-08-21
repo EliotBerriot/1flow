@@ -1717,6 +1717,8 @@ class Article(Document):
 
         except (NoResourceAvailableException, AlreadyLockedException):
             # TODO: use retry() when celery#1458 is solved
+            LOGGER.warning(u'Feed has already the maximum '
+                           u'number of fetchers, delaying…')
             self.fetch_content.apply_async((force, commit),
                                            countdown=randrange(60))
             return
