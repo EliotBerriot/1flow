@@ -165,15 +165,28 @@ class WebSite(Document):
         try:
             # XXX: duplicate code
             proto, remaining = url.split('://', 1)
-            hostname_port, remaining = remaining.split('/', 1)
+            try:
+                hostname_port, remaining = remaining.split('/', 1)
+
+            except ValueError:
+                hostname_port = remaining
+                remaining     = ''
 
         except:
             LOGGER.exception('Unable to determine Website from "%s"', url)
             return None
 
         else:
-            website, _ = WebSite.get_or_create_website('%s://%s'
-                                                       % (proto, hostname_port))
+            base_url = '%s://%s' % (proto, hostname_port)
+
+            try:
+                website, _ = WebSite.get_or_create_website(base_url)
+
+            except ValidationError:
+                LOGGER.exception('Cannot create website from url %s (via '
+                                 u'original %s)', base_url, url)
+                return None
+
             return website
 
     @classmethod
@@ -1996,13 +2009,13 @@ class Article(Document):
             LOGGER.exception(u'Markdown convert failed for article %s.', self)
             return e
 
+        self.content_type = CONTENT_TYPE_MARKDOWN
+
         self.postprocess_markdown_links(commit=False)
 
         with statsd.pipeline() as spipe:
             spipe.gauge('articles.counts.html', -1, delta=True)
             spipe.gauge('articles.counts.markdown', 1, delta=True)
-
-        self.content_type = CONTENT_TYPE_MARKDOWN
 
         if self.content_error:
             statsd.gauge('articles.counts.content_errors', -1, delta=True)
@@ -2031,16 +2044,28 @@ class Article(Document):
             repair its links by removing the `\n` inside them.
         """
 
-        if self.content_type == CONTENT_TYPE_MARKDOWN_V1:
-            replace_newlines = True
-        else:
+        if self.content_type == CONTENT_TYPE_MARKDOWN:
             replace_newlines = False
 
-        wsurl = WebSite.get_from_url(self.url).url
+        elif self.content_type == CONTENT_TYPE_MARKDOWN_V1:
+            replace_newlines = True
+
+        else:
+            LOGGER.debug(u'Skipped non-Markdown article %s.', self)
+            return
+
+        website = WebSite.get_from_url(self.url)
+
+        if website is None:
+            LOGGER.warning(u'Article %s has no website??? Post-processing '
+                           u'aborted.', self)
+            return
+
+        website_url = website.url
 
         def insert_website(link):
             if link.startswith(u'](/') or link.startswith(u'](.'):
-                return u'](' + wsurl + link[2:]
+                return u'](' + website_url + link[2:]
 
             else:
                 return link
