@@ -2351,6 +2351,8 @@ class Article(Document, DocumentHelperMixin):
 
             if replace_newlines:
                 repl_dst = repl_src.replace(u'\n', u'')
+            else:
+                repl_dst = repl_src
 
             repl_dst = insert_website(repl_dst)
             content  = content.replace(repl_src, repl_dst)
