@@ -2291,6 +2291,8 @@ class Article(Document, DocumentHelperMixin):
             LOGGER.exception(u'Markdown convert failed for article %s.', self)
             return e
 
+        self.postprocess_markdown_links(commit=False)
+
         with statsd.pipeline() as spipe:
             spipe.gauge('articles.counts.html', -1, delta=True)
             spipe.gauge('articles.counts.markdown', 1, delta=True)
@@ -2314,6 +2316,58 @@ class Article(Document, DocumentHelperMixin):
                         u'————————— end #%s Markdown —————————',
                         self.id, self.content.__class__.__name__,
                         self.content, self.id)
+
+    def postprocess_markdown_links(self, commit=True, test_only=False):
+        """ Be sure we have no external links without the website part missing,
+            else 1flow article internal links all point to 1flow, which makes
+            them unusable.
+
+            BTW, if the current article is an "old" markdown V1 one, try to
+            repair its links by removing the `\n` inside them.
+        """
+
+        if self.content_type == CONTENT_TYPE_MARKDOWN_V1:
+            replace_newlines = True
+        else:
+            replace_newlines = False
+
+        wsurl = WebSite.get_from_url(self.url).url
+
+        def insert_website(link):
+            if link.startswith(u'](/') or link.startswith(u'](.'):
+                return u'](' + wsurl + link[2:]
+
+            else:
+                return link
+
+        content = self.content
+
+        if replace_newlines:
+            for repl_src in re.findall(r'[[][^]]+[]][(]', content):
+                repl_dst = repl_src.replace(u'\n', u' ')
+                content  = content.replace(repl_src, repl_dst)
+
+        for repl_src in re.findall(r'[]][(][^)]+[)]', content):
+
+            if replace_newlines:
+                repl_dst = repl_src.replace(u'\n', u'')
+
+            repl_dst = insert_website(repl_dst)
+            content  = content.replace(repl_src, repl_dst)
+
+        if test_only:
+            return content
+
+        else:
+            # replace self.content only at the end
+            # to avoid any half-terminated job.
+            self.content = content
+
+            if replace_newlines:
+                self.content_type = CONTENT_TYPE_MARKDOWN
+
+            if commit:
+                self.save()
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
