@@ -355,10 +355,15 @@ class WebSite(Document, DocumentHelperMixin):
             website = cls.objects.get(url=url)
 
         except cls.DoesNotExist:
-            return cls(url=url).save(), True
+            try:
+                return cls(url=url).save(), True
 
-        else:
-            return website.duplicate_of or website, False
+            except (NotUniqueError, DuplicateKeyError):
+                # We just hit the race condition with two creations
+                # At the same time. Same player shoots again.
+                website = cls.objects.get(url=url)
+
+        return website.duplicate_of or website, False
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -2021,6 +2026,8 @@ class Article(Document, DocumentHelperMixin):
 
         except (NoResourceAvailableException, AlreadyLockedException):
             # TODO: use retry() when celery#1458 is solved
+            LOGGER.warning(u'Feed has already the maximum '
+                           u'number of fetchers, delaying…')
             self.fetch_content.apply_async((force, commit),
                                            countdown=randrange(60))
             return

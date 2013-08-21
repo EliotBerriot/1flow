@@ -199,7 +199,8 @@ def production():
         'worker_low':    ['worker-05.1flow.io', ],
         'worker_fetch':  [#'worker-02.1flow.io',
                           'worker-04.1flow.io', ],
-        #'worker_swarm':  ['worker-02.1flow.io', ],
+        'worker_swarm':  [#'worker-02.1flow.io',
+                          'worker-04.1flow.io', ],
     })
     env.sparks_options = {
         'repository': {
@@ -212,8 +213,9 @@ def production():
             # setting only 'worker-02.1flow.io'
             # would override worker_swarm setting.
             'worker_fetch@worker-02.1flow.io': 12,
-            'worker_fetch@worker-99.1flow.io': 16,
+            'worker_fetch@worker-04.1flow.io': 6,
 
+            'worker_swarm@worker-04.1flow.io': 12,
             'worker_swarm': 32,
             '__all__': 8,
         },
@@ -222,9 +224,11 @@ def production():
             'worker_fetch@worker-02.1flow.io': 'fetch,medium',
             'worker_fetch@worker-04.1flow.io': 'fetch,high',
         },
-        'worker_soft_time_limit': {
-            'worker_swarm': '30',
-        },
+        # Time-limit is useless because there is already the socket timeout.
+        # And anyway, it's leaking memory in celery 3.0.x.
+        #'worker_soft_time_limit': {
+        #    'worker_swarm': '30',
+        #},
         # Eventlet is definitively broken, the worker halts every now and then.
         # 'worker_pool': {
         #     'worker_swarm': 'eventlet',
