@@ -2044,11 +2044,18 @@ class Article(Document):
         else:
             replace_newlines = False
 
-        wsurl = WebSite.get_from_url(self.url).url
+        website = WebSite.get_from_url(self.url)
+
+        if website is None:
+            LOGGER.warning(u'Article %s has no website??? Post-processing '
+                           u'aborted.', self)
+            return
+
+        website_url = website.url
 
         def insert_website(link):
             if link.startswith(u'](/') or link.startswith(u'](.'):
-                return u'](' + wsurl + link[2:]
+                return u'](' + website_url + link[2:]
 
             else:
                 return link
