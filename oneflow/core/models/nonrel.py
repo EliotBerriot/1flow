@@ -2004,13 +2004,13 @@ class Article(Document):
             LOGGER.exception(u'Markdown convert failed for article %s.', self)
             return e
 
+        self.content_type = CONTENT_TYPE_MARKDOWN
+
         self.postprocess_markdown_links(commit=False)
 
         with statsd.pipeline() as spipe:
             spipe.gauge('articles.counts.html', -1, delta=True)
             spipe.gauge('articles.counts.markdown', 1, delta=True)
-
-        self.content_type = CONTENT_TYPE_MARKDOWN
 
         if self.content_error:
             statsd.gauge('articles.counts.content_errors', -1, delta=True)
