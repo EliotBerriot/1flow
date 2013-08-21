@@ -2374,7 +2374,7 @@ class Article(Document, DocumentHelperMixin):
             else:
                 repl_dst = repl_src
 
-            repl_dst = insert_website(repl_dst)
+            repl_dst = clean_url(insert_website(repl_dst))
             content  = content.replace(repl_src, repl_dst)
 
         if test_only:
