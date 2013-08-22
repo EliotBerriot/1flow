@@ -6,8 +6,11 @@ MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware', )
 
 INTERNAL_IPS = (
     '127.0.0.1',
-    # leto.licorn.org
-    '82.236.133.193',
+    # gurney.licorn.org
+    '109.190.93.141',
+    # my LAN
+    '192.168.111.23',
+    '192.168.111.111',
 )
 
 DEBUG_TOOLBAR_PANELS = (
