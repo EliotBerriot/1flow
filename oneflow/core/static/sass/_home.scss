@@ -1,0 +1,20 @@
+#home {
+    /* Space for the fixed navbar. */
+    padding-top: 40px;
+}
+
+#home-styles-chooser {
+
+    /* Separate chooser from the intro text. */
+    padding-top: 30px;
+
+    .home-style {
+        /* Cancel the bootstrap "alert" padding-right. */
+        padding-right: 14px;
+
+        text-align: center;
+    }
+    .home-style-secondary {
+        margin-top: 40px;
+    }
+}
