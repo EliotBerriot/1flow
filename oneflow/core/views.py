@@ -42,6 +42,9 @@ add_to_builtins('absolute.templatetags.absolute_future')
 add_to_builtins('markdown_deux.templatetags.markdown_deux_tags')
 add_to_builtins('oneflow.base.templatetags.base_utils')
 
+if settings.TEMPLATE_DEBUG:
+    add_to_builtins('template_debug.templatetags.debug_tags')
+
 
 @never_cache
 def home(request):
