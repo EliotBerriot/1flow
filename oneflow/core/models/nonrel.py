@@ -45,7 +45,8 @@ from ...base.utils import (connect_mongoengine_signals,
                            HttpResponseLogProcessor, StopProcessingException)
 
 from ...base.utils.http import clean_url
-from ...base.utils.dateutils import (now, timedelta, today, datetime)
+from ...base.utils.dateutils import (now, timedelta, today, datetime,
+                                     naturaldelta)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 
 from .keyval import FeedbackDocument
@@ -2021,10 +2022,13 @@ class Article(Document, DocumentHelperMixin):
 
         except (NoResourceAvailableException, AlreadyLockedException):
             # TODO: use retry() when celery#1458 is solved
-            LOGGER.warning(u'Feed has already the maximum '
-                           u'number of fetchers, delaying…')
+            countdown = randrange(60)
+            LOGGER.warning(u'Feed %s has already the maximum '
+                           u'number of fetchers, re-planning '
+                           u'fetch of article %s in %s.', self.feed,
+                           self, naturaldelta(countdown))
             self.fetch_content.apply_async((force, commit),
-                                           countdown=randrange(60))
+                                           countdown=countdown)
             return
 
         except StopProcessingException, e:
