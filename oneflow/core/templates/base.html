@@ -1,4 +1,3 @@
-{% load markdown_deux_tags %}
 <!DOCTYPE html>
 <html lang="{{ LANGUAGE_CODE }}">
   <head>
@@ -22,7 +21,7 @@
     {% compressed_css 'core' %}
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
-  <body>
+  <body {% block body_style %}{% endblock body_style %}>
     {% block body %}{% endblock body %}
     {% block extrajs_footer %}{% endblock extrajs_footer %}
 
