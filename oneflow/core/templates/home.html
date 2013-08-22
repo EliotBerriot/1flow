@@ -22,17 +22,7 @@
 {% block extrajs_footer %}
 
     {% jquery_js %}
-    {% compressed_js 'temp_handlebars_rc4' %}
-    {% ember_js %}
-    {% ember_data_js %}
-    {% tastypie_adapter_js %}
-
-    {% comment %}
-    restore {% emberpie_js %}
-    when
-        http://discuss.emberjs.com/t/ember-rc-5-is-not-working-properly-with-handlebars-1-0-0/1391
-    is resolved
-    {% endcomment %}
+    {% emberpie_js %}
 
     {% compressed_js 'bootstrap' %}
     {% compressed_js 'showdown' %}
