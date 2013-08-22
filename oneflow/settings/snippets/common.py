@@ -229,6 +229,7 @@ PIPELINE_JS = {
 
     'utils': {
         'source_filenames': (
+            'vendor/holder/holder.js',
             'js/utils/*.js',
         ),
         'output_filename': 'js/utils.js',
