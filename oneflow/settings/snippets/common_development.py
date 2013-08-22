@@ -43,7 +43,8 @@ ALLOWED_HOSTS += [
     'localhost',
 ]
 
-INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver', )
+INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver',
+                   'template_debug', 'template_timings_panel', )
 
 DEVSERVER_DEFAULT_ADDR = '0.0.0.0'
 DEVSERVER_DEFAULT_PORT = 8000
