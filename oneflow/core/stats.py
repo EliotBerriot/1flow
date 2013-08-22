@@ -123,8 +123,8 @@ def feed_distribution_by_last_fetch_display(results=None):
     else:
         output += (u'%s total feeds fetched, out of %s open feeds.\n'
                    u'[computed in %s]') % (
-                       meta['fetched_feeds'], meta['open_feeds_count'],
-                       naturaldelta(meta['duration']))
+                    meta['fetched_feeds'], meta['open_feeds_count'],
+                    naturaldelta(meta['duration']))
 
     return results, output
 
