@@ -37,7 +37,7 @@
         moment.lang('{{ LANGUAGE_CODE }}');
     </script>
 
-    {% if has_google %}
+    {% if has_google and gr_import.can_import %}
         <script type="text/javascript">
             function update_gri_status() {
                 try {
