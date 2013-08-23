@@ -27,7 +27,7 @@ App.Store = DS.Store.extend({
 });
 
 App.Router.map(function(){
-    this.resource('read');
+    this.resource('reads');
 
     this.resource('teams');
     this.resource('discovery');

@@ -7,7 +7,7 @@
 //   }
 // });
 
-App.ReadRoute = Ember.Route.extend({
+App.ReadsRoute = Ember.Route.extend({
   model: function() {
     return App.Read.find();
   },
