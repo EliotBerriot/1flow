@@ -2227,14 +2227,19 @@ class Article(Document, DocumentHelperMixin):
                 # then: InvalidStringData: strings in documents must be valid UTF-8 (MongoEngine says) # NOQA
                 content, encoding = self.fetch_content_text_one_page()
 
-                # TRICK: `content` is BS4 Tag, which cannot be "automagically"
-                # converted by MongoEngine to utf8 for some unknown reason.
-                # Thus, we force it to unicode, and it will convert it to an
-                # utf8 string internally (MongoDB wants only utf8 strings).
-                # NOTE: We don't use str(content), even if BS4 would output
-                # an utf-8 one. This is just to be sure we always use unicode
-                # as the pivot value, which is a safer behaviour.
-                self.content = unicode(content, 'utf-8')
+                # TRICK: `content` is a BS4 Tag, which cannot be
+                # "automagically" converted by MongoEngine for
+                # some unknown reason. There is also the famous:
+                # TypeError: coercing to Unicode: need string or buffer, Tag found # NOQA
+                #
+                # Thus, we force it to unicode because this is the safe
+                # pivot value in Python/MongoEngine, and MongoDB will
+                # convert to an utf8 string internally.
+                #
+                # NOTE: We can be sure of the utf8 encoding, because
+                # str(content) outputs utf8, this is documented in BS4.
+                #
+                self.content = unicode(str(content), 'utf-8')
 
             self.content_type = CONTENT_TYPE_HTML
 
