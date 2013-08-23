@@ -1,5 +1,9 @@
 
 // NOTE: Django-pipeline will automatically "closurize" this file.
+// Worth a read:
+// http://www.rkblog.rk.edu.pl/w/p/creating-modern-web-applications-django-and-emberjs-javascript-framework/
+
+var api_namespace = Django.url('api_v1_top_level', 'v1').replace(/^\//, '').replace(/\/$/, '');
 
 App = Ember.Application.create({
     //LOG_TRANSITIONS: true,
@@ -9,11 +13,16 @@ App = Ember.Application.create({
 
 App.Store = DS.Store.extend({
   // adapter: 'DS.FixtureAdapter'
+
   adapter: DS.DjangoTastypieAdapter.extend({
-      // NO NEED: serverDomain: "http://dev1.1flow.io",
+
+      // serverDomain: "http://dev1.1flow.io",
       // serverDomain: "http://dev2.1flow.io:8000",
+      serverDomain: Django.context.ABSOLUTE_ROOT,
+
       // namespace: (url_root + '/api/v1').replace(/^\//g, ''),
-      namespace: 'api/v1'
+      // namespace: 'api/v1'
+      namespace: api_namespace
     })
 });
 
