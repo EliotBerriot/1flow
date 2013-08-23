@@ -24,7 +24,7 @@
                 </tr>
                 <tr>
                   <td>{% trans "e-mail announcements" %}</td>
-                  <td>{% ember email_announcements %}</td>
+                  <td>{% ember view Ember.Checkbox checkedBinding="email_announcements" %}</td>
                 </tr>
                 <tr>
                   <td>{% trans "Last login: " %}</td>
