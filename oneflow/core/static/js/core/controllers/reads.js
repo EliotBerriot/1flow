@@ -2,7 +2,6 @@
 
 App.ReadsController = Ember.ArrayController.extend({
 
-
   unreadCount: function() {
     return this.filterProperty('is_read', false).get('length');
   }.property('@each.is_read'),

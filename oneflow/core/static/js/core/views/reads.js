@@ -2,7 +2,7 @@
 // App.ReadView = Ember.View.extend(App.ShowSpinnerWhileRendering, {
 // });
 
-App.ReadView = Ember.View.extend({
+App.ReadsView = Ember.View.extend({
   didInsertElement: function() {
 
     var view = this;
