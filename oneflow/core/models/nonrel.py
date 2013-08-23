@@ -2227,9 +2227,14 @@ class Article(Document, DocumentHelperMixin):
                 # then: InvalidStringData: strings in documents must be valid UTF-8 (MongoEngine says) # NOQA
                 content, encoding = self.fetch_content_text_one_page()
 
-                # Everything should be fine: MongoDB absolutely wants 'utf-8'
-                # and BeautifulSoup's str() outputs 'utf-8' encoded strings :-)
-                self.content = str(content)
+                # TRICK: `content` is BS4 Tag, which cannot be "automagically"
+                # converted by MongoEngine to utf8 for some unknown reason.
+                # Thus, we force it to unicode, and it will convert it to an
+                # utf8 string internally (MongoDB wants only utf8 strings).
+                # NOTE: We don't use str(content), even if BS4 would output
+                # an utf-8 one. This is just to be sure we always use unicode
+                # as the pivot value, which is a safer behaviour.
+                self.content = unicode(content, 'utf-8')
 
             self.content_type = CONTENT_TYPE_HTML
 
@@ -2294,12 +2299,8 @@ class Article(Document, DocumentHelperMixin):
         md_converter.body_width   = 0
 
         try:
-            # We decode content to Unicode before converting,
-            # and re-encode back to utf-8 before saving. MongoDB
-            # accepts only utf-8 data, html2text wants unicode.
-            # Everyone should be happy.
-            self.content = md_converter.handle(
-                self.content.decode('utf-8'))
+            # NOTE: everything should stay in Unicode during this call.
+            self.content = md_converter.handle(self.content)
 
         except Exception, e:
             statsd.gauge('articles.counts.content_errors', 1, delta=True)
