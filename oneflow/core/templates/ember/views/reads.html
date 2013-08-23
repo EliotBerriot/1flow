@@ -21,7 +21,7 @@
 {% endhandlebars %}
 
 {% handlebars "read-list-item" %}
-  <li class="media">
+  <li class="media read-list-item">
     <a class="pull-left" href="#">
         <img class="media-object" data-src="holder.js/64x64">
         {% ember unbound _view.contentIndex %}
@@ -34,10 +34,12 @@
         </span>
 
         {% ember #if is_read %}
-          <a {% ember action 'mark_unread' this %}>
+          <a {% ember action 'mark_unread' this %}
+              title="{% trans "mark as unread" %}" data-toggle="tooltip">
             <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
         {% ember else %}
-          <a {% ember action 'mark_read' this %}>
+          <a {% ember action 'mark_read' this %}
+              title="{% trans "mark as read" %}" data-toggle="tooltip">
             <i class="icon-check" alt="{% trans "mark as read" %}"></i>
         {% ember /if %}
         </a>
@@ -46,12 +48,14 @@
           <i class="icon-circle-arrow-right"></i></a>
 
         {% if user.is_superuser %}
-          <a href="/api/v1/article/{% ember unbound article.id %}" target="_blank">
-            <i class="icon-cog"></i>
-          </a>
-          <small class="muted">
-            read: {% ember unbound id %},
-            article: {% ember unbound article.id %}
+          <small class="admin-actions pull-right">
+
+            <a href="/api/v1/article/{% ember unbound article.id %}" target="_blank">
+              <i class="icon-cog"> Article</i>
+            </a>
+            <a href="/api/v1/read/{% ember unbound id %}" target="_blank">
+              <i class="icon-cog"> Read</i>
+            </a>
           </small>
         {% endif %}
       </h4>
