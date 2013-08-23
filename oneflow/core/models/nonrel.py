@@ -2117,7 +2117,7 @@ class Article(Document, DocumentHelperMixin):
         return None
 
     def prepare_content_text(self, url=None):
-        """ :param:`url` should be set in the case of multipage content. """
+        """ :param:`url` should be sinfon the case of multipage content. """
 
         if url is None:
             fetch_url = self.url
@@ -2232,13 +2232,14 @@ class Article(Document, DocumentHelperMixin):
                 # then: InvalidStringData: strings in documents must be valid UTF-8 (MongoEngine says) # NOQA
                 content, encoding = self.fetch_content_text_one_page()
 
-                # Everything should be fine: MongoDB absolutely wants 'utf-8'
-                # and BeautifulSoup's str() outputs 'utf-8' encoded strings :-)
-                self.content = str(content)
-
-            with statsd.pipeline() as spipe:
-                spipe.gauge('articles.counts.empty', -1, delta=True)
-                spipe.gauge('articles.counts.html', 1, delta=True)
+                # TRICK: `content` is BS4 Tag, which cannot be "automagically"
+                # converted by MongoEngine to utf8 for some unknown reason.
+                # Thus, we force it to unicode, and it will convert it to an
+                # utf8 string internally (MongoDB wants only utf8 strings).
+                # NOTE: We don't use str(content), even if BS4 would output
+                # an utf-8 one. This is just to be sure we always use unicode
+                # as the pivot value, which is a safer behaviour.
+                self.content = unicode(content, 'utf-8')
 
             self.content_type = CONTENT_TYPE_HTML
 
@@ -2248,6 +2249,10 @@ class Article(Document, DocumentHelperMixin):
 
             if commit:
                 self.save()
+
+            with statsd.pipeline() as spipe:
+                spipe.gauge('articles.counts.empty', -1, delta=True)
+                spipe.gauge('articles.counts.html', 1, delta=True)
 
         #
         # TODO: parse HTML links to find other 1flow articles and convert
@@ -2299,12 +2304,8 @@ class Article(Document, DocumentHelperMixin):
         md_converter.body_width   = 0
 
         try:
-            # We decode content to Unicode before converting,
-            # and re-encode back to utf-8 before saving. MongoDB
-            # accepts only utf-8 data, html2text wants unicode.
-            # Everyone should be happy.
-            self.content = md_converter.handle(
-                self.content.decode('utf-8'))
+            # NOTE: everything should stay in Unicode during this call.
+            self.content = md_converter.handle(self.content)
 
         except Exception, e:
             statsd.gauge('articles.counts.content_errors', 1, delta=True)
@@ -2317,12 +2318,6 @@ class Article(Document, DocumentHelperMixin):
 
         self.content_type = CONTENT_TYPE_MARKDOWN
 
-        self.postprocess_markdown_links(commit=False)
-
-        with statsd.pipeline() as spipe:
-            spipe.gauge('articles.counts.html', -1, delta=True)
-            spipe.gauge('articles.counts.markdown', 1, delta=True)
-
         if self.content_error:
             statsd.gauge('articles.counts.content_errors', -1, delta=True)
             self.content_error = ''
@@ -2333,6 +2328,12 @@ class Article(Document, DocumentHelperMixin):
 
         if commit:
             self.save()
+
+        with statsd.pipeline() as spipe:
+            spipe.gauge('articles.counts.html', -1, delta=True)
+            spipe.gauge('articles.counts.markdown', 1, delta=True)
+
+        self.postprocess_markdown_links()
 
         if config.ARTICLE_FETCHING_DEBUG:
             LOGGER.info(u'————————— #%s Markdown %s —————————'
@@ -2376,16 +2377,21 @@ class Article(Document, DocumentHelperMixin):
             else:
                 return link
 
+        # Use a copy during the operation to ensure we can start
+        # again from scratch in a future call if anything goes wrong.
         content = self.content
 
         if replace_newlines:
             for repl_src in re.findall(ur'[[][^]]+[]][(]', content):
+
+                # In link text, we replace by a space.
                 repl_dst = repl_src.replace(u'\n', u' ')
                 content  = content.replace(repl_src, repl_dst)
 
         for repl_src in re.findall(ur'[]][(][^)]+[)]', content):
 
             if replace_newlines:
+                # In link URLs, we just cut out newlines.
                 repl_dst = repl_src.replace(u'\n', u'')
             else:
                 repl_dst = repl_src
@@ -2397,8 +2403,7 @@ class Article(Document, DocumentHelperMixin):
             return content
 
         else:
-            # replace self.content only at the end
-            # to avoid any half-terminated job.
+            # Everything went OK. Put back the content where it belongs.
             self.content = content
 
             if replace_newlines:
