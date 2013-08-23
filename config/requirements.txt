@@ -8,9 +8,9 @@
 -e git+https://github.com/jeanphix/Ghost.py.git@master#egg=Ghost-dev
 -e git+https://github.com/cpbotha/django-shell-ipynb.git@master#egg=ipynb
 -e git+https://github.com/gregmuellegger/django-reset.git@master#egg=django_reset-dev
--e git+https://github.com/noirbizarre/django-ember.git@master#egg=django_ember-dev
--e git+https://github.com/noirbizarre/django.js.git@master#egg=django.js-dev
 -e git+https://github.com/kmmbvnr/django-jenkins.git@master#egg=django-jenkins-dev
+-e git+https://github.com/noirbizarre/django-ember.git@47b5dad4f623efaccd3492c11d96fa4afdf8fb33#egg=django_ember-origin/HEAD
+-e git+https://github.com/noirbizarre/django.js.git@e3fb6b87f5eb98aaa0b87498db58fc354b46dcee#egg=django.js-origin/HEAD
 amqp==1.0.12
 anyjson==0.3.3
 beautifulsoup4==4.2.1
@@ -24,6 +24,7 @@ django-absolute==0.3
 django-bcrypt==0.9.2
 django-celery==3.0.17
 django-constance==0.6
+django-cors-headers==0.11
 django-debug-toolbar==0.9.4
 django-grappelli==2.4.5
 django-logentry-admin==0.1.1
