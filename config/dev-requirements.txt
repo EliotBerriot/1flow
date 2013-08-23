@@ -1,5 +1,9 @@
 -e git+https://github.com/Karmak23/fabric.git@7bd2eee26d7255c7b0edac0b87c1ee196086668f#egg=Fabric-dev
 -e git+https://github.com/mbi/django-rosetta.git@b56350aa2da8d6a9ac8c7ff74d0f64e9d84ca096#egg=django_rosetta-dev
+-e git+https://github.com/orf/django-debug-toolbar-template-timings.git@master#egg=django_debug_toolbar_template_timings-dev
+-e git+https://github.com/hmarr/django-debug-toolbar-mongo.git@master#egg=django-debug-toolbar-mongo-dev
+-e git+https://github.com/playfire/django-debug-toolbar-user-panel.git@master#egg=django-debug-toolbar-user-panel-dev
+-e git+https://github.com/calebsmith/django-template-debug.git@master#egg=django_template_debug-dev
 -e git+https://github.com/platypus-creation/django-rosetta-grappelli.git@83eff3890b6881460f105b6ecd63ff055f51dba4#egg=django_rosetta_grappelli-dev
 django-devserver==0.6.2
 django-nose==1.1

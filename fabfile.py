@@ -37,7 +37,8 @@ stop, start, status = sdf.stop_services, sdf.start_services, sdf.status_services
 remove, pick, role = sdf.remove_services, sdf.pick, sdf.role
 
 USE_JENKINS  = pwd.getpwuid(os.getuid()).pw_name == 'jenkins'
-JENKINS_ROOT = '/var/lib/jenkins/jobs/1flow_django_jenkins/workspace'
+JENKINS_JOB  = os.environ.get('JOB_NAME', '1flow')
+JENKINS_ROOT = '/var/lib/jenkins/jobs/{0}/workspace'.format(JENKINS_JOB)
 
 # The Django project name
 env.project    = 'oneflow'
@@ -198,7 +199,8 @@ def production():
         'worker_low':    ['worker-05.1flow.io', ],
         'worker_fetch':  ['worker-02.1flow.io',
                           'worker-04.1flow.io', ],
-        'worker_swarm':  ['worker-02.1flow.io', ],
+        'worker_swarm':  ['worker-02.1flow.io',
+                          'worker-04.1flow.io', ],
     })
     env.sparks_options = {
         'repository': {
@@ -211,8 +213,9 @@ def production():
             # setting only 'worker-02.1flow.io'
             # would override worker_swarm setting.
             'worker_fetch@worker-02.1flow.io': 12,
-            'worker_fetch@worker-99.1flow.io': 16,
+            'worker_fetch@worker-04.1flow.io': 6,
 
+            'worker_swarm@worker-04.1flow.io': 12,
             'worker_swarm': 32,
             '__all__': 8,
         },
@@ -221,9 +224,11 @@ def production():
             'worker_fetch@worker-02.1flow.io': 'fetch,medium',
             'worker_fetch@worker-04.1flow.io': 'fetch,high',
         },
-        'worker_soft_time_limit': {
-            'worker_swarm': '30',
-        },
+        # Time-limit is useless because there is already the socket timeout.
+        # And anyway, it's leaking memory in celery 3.0.x.
+        #'worker_soft_time_limit': {
+        #    'worker_swarm': '30',
+        #},
         # Eventlet is definitively broken, the worker halts every now and then.
         # 'worker_pool': {
         #     'worker_swarm': 'eventlet',

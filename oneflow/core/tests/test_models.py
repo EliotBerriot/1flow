@@ -11,7 +11,7 @@ from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 #from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, Read, User, Tag
+from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite, Author
 from oneflow.base.utils import RedisStatsCounter
 
 LOGGER = logging.getLogger(__file__)
@@ -27,7 +27,7 @@ RedisStatsCounter.REDIS = TEST_REDIS
 TEST_REDIS.flushdb()
 
 disconnect()
-connect('oneflow_testsuite')
+connect('{0}_testsuite'.format(settings.MONGODB_NAME))
 
 
 class ThrottleIntervalTest(TestCase):
@@ -183,21 +183,23 @@ class ArticleDuplicateTest(TestCase):
 
         # User & Reads creation
         for u in xrange(1, 6):
-            u = User(django_user=u).save()
+            u = User(django_user=u, username='test_user_%s' % u).save()
             Read(user=u, article=self.article1).save()
 
         for u in xrange(6, 11):
-            u = User(django_user=u).save()
+            u = User(django_user=u, username='test_user_%s' % u).save()
             Read(user=u, article=self.article2).save()
 
         # Feeds creation
         for f in xrange(1, 6):
-            f = Feed(url='http://test-feed%s.com' % f).save()
+            f = Feed(name='test feed #%s' % f,
+                     url='http://test-feed%s.com' % f).save()
             self.article1.update(add_to_set__feeds=f)
             self.article1.reload()
 
         for f in xrange(6, 11):
-            f = Feed(url='http://test-feed%s.com' % f).save()
+            f = Feed(name='test feed #%s' % f,
+                     url='http://test-feed%s.com' % f).save()
             self.article2.update(add_to_set__feeds=f)
             self.article2.reload()
 
@@ -229,6 +231,9 @@ class ArticleDuplicateTest(TestCase):
 
         self.assertEquals(self.article2.duplicate_of, self.article1)
 
+        #
+        # TODO: finish this test case.
+        #
 
 class AbsolutizeTest(TestCase):
 
@@ -259,7 +264,13 @@ class AbsolutizeTest(TestCase):
         self.assertEquals(self.article2.url_absolute, True)
         self.assertEquals(self.article2.url_error, '')
 
-    def test_absolutize_erros(self):
+    def test_absolutize_errors(self):
+
+        #
+        # NOTE: if a PROXY is set, the reasons word cases can vary.
+        # eg. 'Not Found' (via Squid) instead of 'NOT FOUND' (direct answer).
+        #
+
         self.article3.absolutize_url()
         self.assertEquals(self.article3.url, u'http://obi.1flow.io/absolutize_test_401') # NOQA
         self.assertEquals(self.article3.url_absolute, False)
@@ -307,3 +318,78 @@ class TagsTest(TestCase):
 
         self.assertEquals(self.t2 in self.t1.children, True)
         self.assertEquals(self.t3 in self.t1.children, True)
+
+
+
+class WebSitesTest(TestCase):
+    def setUp(self):
+
+        WebSite.drop_collection()
+        Article.drop_collection()
+
+        self.ws1 = WebSite(url='http://test1.com').save()
+        self.ws2 = WebSite(url='http://test2.com').save()
+
+    def test_get_or_create_website(self):
+
+        wt1, created = WebSite.get_or_create_website('http://test1.com')
+
+        self.assertFalse(created)
+        self.assertEquals(wt1, self.ws1)
+
+        wt3, created = WebSite.get_or_create_website('http://test3.com')
+
+        self.assertTrue(created)
+        self.assertNotEquals(wt3, self.ws1)
+        self.assertNotEquals(wt3, self.ws2)
+
+        wt4, created = WebSite.get_or_create_website('http://test3.com')
+
+        self.assertFalse(created)
+        self.assertEquals(wt3, wt4)
+
+        wt5, created = WebSite.get_or_create_website('http://test3.com/')
+
+        self.assertTrue(created)
+        self.assertNotEquals(wt5, wt4)
+
+    def test_get_from_url(self):
+
+        wt1 = WebSite.get_from_url('http://test1.com/example-article')
+        wt2 = WebSite.get_from_url('http://test1.com/example-article2')
+
+        self.assertEquals(wt1, self.ws1)
+        self.assertEquals(wt1, self.ws1)
+        self.assertEquals(wt1, wt2)
+
+    def test_register_duplicate_not_again(self):
+
+        wt1, created = WebSite.get_or_create_website('http://other.test1.com')
+
+        self.ws1.register_duplicate(wt1)
+
+        self.assertTrue(created)
+        self.assertEquals(wt1.duplicate_of, self.ws1)
+
+        wt2, created = WebSite.get_or_create_website('http://other.test1.com')
+
+        self.assertFalse(created)
+        self.assertNotEquals(wt2, wt1)
+        self.assertEquals(wt2, self.ws1)
+
+        # should fail.
+        #self.ws2.register_duplicate(wt1)
+
+        #
+        # TODO: finish this test case.
+        #
+
+    def test_websites_duplicates(self):
+        pass
+
+
+class AuthorsTest(TestCase):
+
+
+    pass
+

@@ -19,6 +19,7 @@ from constance import config
 from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
 
+from celery import group as tasks_group
 from celery.contrib.methods import task as celery_task_method
 from celery.exceptions import SoftTimeLimitExceeded
 
@@ -83,7 +84,14 @@ CONTENT_FETCH_LIKELY_MULTIPAGE = 2
 
 # MORE CONTENT_PREPARSING_NEEDS_* TO COME
 
-ARTICLE_ORPHANED_BASE = u'http://1flow.io/orphaned/article/'
+ORIGIN_TYPE_NONE          = 0
+ORIGIN_TYPE_GOOGLE_READER = 1
+ORIGIN_TYPE_FEEDPARSER    = 2
+ORIGIN_TYPE_STANDALONE    = 3
+ORIGIN_TYPE_TWITTER       = 4
+
+ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
+                        settings.SITE_DOMAIN)
 
 # These classes will be re-used inside every worker; we instanciate only once.
 STRAINER_EXTRACTOR  = strainer.Strainer(parser='lxml', add_score=True)
@@ -119,10 +127,125 @@ feedparser.registerDateHandler(dateutilDateHandler)
 global_ghost_lock = RedisExpiringLock('__ghost.py__')
 
 
+class DocumentHelperMixin(object):
+    """ Because, as of MongoEngine 0.8.3,
+        subclassing `Document` is not possible o_O
+
+        […]
+          File "/Users/olive/sources/1flow/oneflow/core/models/nonrel.py", line 141, in <module> # NOQA
+            class Source(Document):
+          File "/Users/olive/.virtualenvs/1flow/lib/python2.7/site-packages/mongoengine/base/metaclasses.py", line 332, in __new__ # NOQA
+            new_class = super_new(cls, name, bases, attrs)
+          File "/Users/olive/.virtualenvs/1flow/lib/python2.7/site-packages/mongoengine/base/metaclasses.py", line 120, in __new__ # NOQA
+            base.__name__)
+        ValueError: Document Document may not be subclassed
+
+    """
+
+    @property
+    def _db_name(self):
+
+        # We need to workaround
+        # https://github.com/MongoEngine/mongoengine/pull/441
+        try:
+            return self._get_db().name
+
+        except:
+            return self._get_db()().name
+
+    def register_duplicate(self, duplicate, force=False):
+
+        # be sure this helper method is called
+        # on a document that has the atribute.
+        assert hasattr(duplicate, 'duplicate_of')
+
+        _cls_name_   = self.__class__.__name__
+
+        # TODO: get this from a class attribute?
+        # I'm not sure for MongoEngine models.
+        lower_plural = _cls_name_.lower() + u's'
+
+        if duplicate.duplicate_of:
+            if duplicate.duplicate_of != self:
+                # NOTE: for Article, this situation can't happen IRL
+                # (demonstrated with Willian 20130718).
+                #
+                # Any "second" duplicate *will* resolve to the master via the
+                # redirect chain. It will *never* resolve to an intermediate
+                # URL in the chain.
+                #
+                # For other objects it should happen too, because the
+                # `get_or_create()` methods should return the `.duplicate_of`
+                # attribute if it is not None.
+
+                LOGGER.warning(u'%s %s is already a duplicate of '
+                               u'another instance, not %s. Aborting.',
+                               _cls_name_, duplicate, duplicate.duplicate_of)
+                return
+
+        LOGGER.info(u'Registering %s %s as duplicate of %s…',
+                    _cls_name_, duplicate, self)
+
+        # Register the duplication immediately, for other
+        # background operations to use ourselves as value.
+        duplicate.duplicate_of = self
+        duplicate.save()
+
+        statsd.gauge('%s.counts.duplicates' % lower_plural, 1, delta=True)
+
+        try:
+            #
+            # Until https://github.com/celery/celery/issues/1478 is resolved,
+            # we cannot use EAGER on tests, which make them fail if the
+            # following is ran as a task. Must run // for now. Bummer!
+            #
+            self.replace_duplicate_everywhere(duplicate)
+            #self.replace_duplicate_everywhere.apply_async((duplicate, ),
+            #                                              queue='low')
+
+        except AttributeError:
+            LOGGER.debug(u'Object %s does not have a '
+                         u'`replace_duplicate_everywhere()` task.', self)
+
+    def offload_attribute(self, attribute_name, remove=False):
+        """ NOTE: this method is not used as of 20130816, but I keep it because
+            it contains the base for the idea of a global on-disk unique path
+            for each document.
+
+            The unique path can also eventually be used for statistics, to
+            avoid unbrowsable too big folders in Graphite.
+        """
+
+        # TODO: factorize this sometwhere common to all classes.
+        object_path = os.path.join(self.__class__.__name__,
+                                   self.id[-1] + self.id[-2],
+                                   self.id[-3] + self.id[-4],
+                                   self.id[-5] + self.id[-6],
+                                   self.id[-7] + self.id[-8],
+                                   self.id)
+
+        offload_directory = config.ARTICLE_OFFLOAD_DIRECTORY.format(
+            object_path=object_path)
+
+        if not os.path.exists(offload_directory):
+            try:
+                os.makedirs(offload_directory)
+
+            except (OSError, IOError), e:
+                if e.errno != errno.EEXIST:
+                    raise
+
+        with open(os.path.join(offload_directory, attribute_name), 'w') as f:
+            f.write(getattr(self, attribute_name))
+
+        if remove:
+            delattr(self, attribute_name)
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Source
 
 
-class Source(Document):
+class Source(Document, DocumentHelperMixin):
     """ The "original source" for similar articles: they have different authors,
         different contents, but all refer to the same information, which can
         come from the same article on the net (or radio, etc).
@@ -143,7 +266,7 @@ class Source(Document):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
 
 
-class WebSite(Document):
+class WebSite(Document, DocumentHelperMixin):
     """ Simple representation of a web site. Holds options for it.
 
 
@@ -153,7 +276,8 @@ class WebSite(Document):
     """
 
     name = StringField()
-    url = URLField(unique=True)
+    slug = StringField(verbose_name=_(u'slug'))
+    url  = URLField(unique=True)
     duplicate_of = ReferenceField('WebSite')
 
     def __unicode__(self):
@@ -161,24 +285,53 @@ class WebSite(Document):
                                    (_(u'(dupe of #%s)') % self.duplicate_of.id)
                                    if self.duplicate_of else u'')
 
-    @classmethod
-    def get_from_url(cls, url):
+    @staticmethod
+    def split_url(url, split_port=False):
+
+        proto, remaining = url.split('://', 1)
+
         try:
-            # XXX: duplicate code
-            proto, remaining = url.split('://', 1)
+            host_and_port, remaining = remaining.split('/', 1)
+
+        except ValueError:
+            host_and_port = remaining
+            remaining     = ''
+
+        if split_port:
             try:
-                hostname_port, remaining = remaining.split('/', 1)
+                hostname, port = host_and_port.split(':')
 
             except ValueError:
-                hostname_port = remaining
-                remaining     = ''
+                hostname = host_and_port
+                port = '80' if proto == 'http' else '443'
+
+            return proto, hostname, int(port), remaining
+
+        return proto, host_and_port, remaining
+
+    @classmethod
+    def get_from_url(cls, url):
+        """ Will get you the ``WebSite`` object from an :param:`url`, after
+            having striped down the path part
+            (eg. ``http://test.com/my-article`` gives you the web
+             site ``http://test.com``, without the trailing slash).
+
+            .. note:: unlike :meth:`get_or_create_website`, this method will
+                harmonize urls: ``WebSite.get_from_url('http://toto.com')``
+                and  ``WebSite.get_from_url('http://toto.com/')`` will give
+                you back the same result. This is intended, to avoid
+                duplication.
+
+        """
+        try:
+            proto, host_and_port, remaining = WebSite.split_url(url)
 
         except:
             LOGGER.exception('Unable to determine Website from "%s"', url)
             return None
 
         else:
-            base_url = '%s://%s' % (proto, hostname_port)
+            base_url = '%s://%s' % (proto, host_and_port)
 
             try:
                 website, _ = WebSite.get_or_create_website(base_url)
@@ -198,6 +351,7 @@ class WebSite(Document):
                 if the found one is a duplicate (eg. never returns the
                 duplicate one).
         """
+
         try:
             website = cls.objects.get(url=url)
 
@@ -212,6 +366,32 @@ class WebSite(Document):
 
         return website.duplicate_of or website, False
 
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        website = document
+
+        if created:
+            if not website.duplicate_of:
+                # We don't run the post_create() task in the archive
+                # database: the article is already complete.
+                if website._db_name != settings.MONGODB_NAME_ARCHIVE:
+                    website.post_create_task.delay()
+
+    @celery_task_method(name='WebSite.post_create', queue='high')
+    def post_create_task(self):
+
+        if not self.slug:
+            if self.name is None:
+                proto, host_and_port, remaining = WebSite.split_url(self.url)
+                self.name = host_and_port.replace(u'_', u' ').title()
+
+            self.slug = slugify(self.name)
+
+            self.save()
+
+            statsd.gauge('websites.counts.total', 1, delta=True)
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
 
@@ -232,7 +412,7 @@ class WordRelation(EmbeddedDocument):
     relation_score = FloatField()
 
 
-class Tag(Document):
+class Tag(Document, DocumentHelperMixin):
     name     = StringField(verbose_name=_(u'name'), unique=True)
     slug     = StringField(verbose_name=_(u'slug'))
     language = StringField(verbose_name=_(u'language'), default='')
@@ -262,15 +442,23 @@ class Tag(Document):
         return _(u'%s ⚐%s (#%s)') % (self.name, self.language, self.id)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
-        if kwargs.get('created', False):
-            document.post_save_task.delay()
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
 
-    @celery_task_method(name='Tag.post_save', queue='high')
-    def post_save_task(self):
+        tag = document
 
-        self.slug = slugify(self.name)
-        self.save()
+        if created:
+            if tag._db_name != settings.MONGODB_NAME_ARCHIVE:
+                tag.post_create_task.delay()
+
+    @celery_task_method(name='Tag.post_create', queue='high')
+    def post_create_task(self):
+
+        if not self.slug:
+            self.slug = slugify(self.name)
+            self.save()
+
+            statsd.gauge('tags.counts.total', 1, delta=True)
 
     @classmethod
     def get_tags_set(cls, tags_names, origin=None):
@@ -286,33 +474,10 @@ class Tag(Document):
 
             except cls.DoesNotExist:
                 tags.add(cls(name=tag_name, origin=origin).save())
-                statsd.gauge('tags.counts.total', 1, delta=True)
 
         return tags
 
-    def register_duplicate(self, duplicate, force=False):
-
-        if duplicate.duplicate_of:
-            if duplicate.duplicate_of != self:
-                LOGGER.warning(u'Tag %s is already a duplicate of '
-                               u'another tag, not %s. Aborting.',
-                               duplicate, duplicate.duplicate_of)
-                return
-
-        LOGGER.info(u'Registering Tag %s as duplicate of %s…',
-                    duplicate, self)
-
-        # Register the duplication immediately, for other
-        # background operations to use ourselves as value.
-        duplicate.update(set__duplicate_of=self)
-
-        statsd.gauge('tags.counts.duplicates', 1, delta=True)
-
-        # Update the current articles/reads tags in the database
-        # to use the new tag. It can take long, this is a task.
-        self.replace_duplicate_tag.delay()
-
-    @celery_task_method(name='Tag.replace_duplicate_everywhere', queue='low')
+    @celery_task_method(name='Tag.replace_duplicate_everywhere')
     def replace_duplicate_everywhere(self, duplicate, force=False):
 
         #
@@ -376,6 +541,8 @@ class Tag(Document):
                 LOGGER.exception(u'Exception while reverse-adding '
                                  u'parent %s to child %s', self, child)
 
+        return self
+
     def add_parent(self, parent, update_reverse_link=True, full_reload=True):
 
         self.update(add_to_set__parents=parent)
@@ -434,12 +601,17 @@ def feed_subscriptions_count_default(feed, *args, **kwargs):
     return feed.subscriptions.count()
 
 
-class Feed(Document):
+class Feed(Document, DocumentHelperMixin):
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(GenericReferenceField(), default=list)
+    languages      = ListField(StringField(), verbose_name=_(u'Languages'),
+                               help_text=_(u'Set this to more than one '
+                                           u'language to help article '
+                                           u'language detection if none '
+                                           u'is set in articles.'))
     date_added     = DateTimeField(default=datetime(2013, 07, 01),
                                    verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
@@ -450,6 +622,9 @@ class Feed(Document):
     fetch_interval = IntField(default=config.FEED_FETCH_DEFAULT_INTERVAL,
                               verbose_name=_(u'fetch interval'))
     last_fetch     = DateTimeField(verbose_name=_(u'last fetch'))
+
+    # TODO: move this into WebSite to avoid too much parallel fetches
+    # when using multiple feeds from the same origin website.
     fetch_limit_nr = IntField(default=config.FEED_FETCH_PARALLEL_LIMIT,
                               verbose_name=_(u'fetch limit'),
                               help_text=_(u'The maximum number of articles '
@@ -610,10 +785,15 @@ class Feed(Document):
             LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
 
-        # Update the feed with current content.
-        document.refresh.delay()
+        feed = document
+
+        if created:
+            if feed._db_name != settings.MONGODB_NAME_ARCHIVE:
+                # Update the feed immediately after creation.
+                feed.refresh.delay()
 
     def has_option(self, option):
         return option in self.options
@@ -764,7 +944,7 @@ class Feed(Document):
                 title=getattr(article, 'title', u' '),
 
                 content=content, date_published=date_published,
-                feeds=[self], tags=tags)
+                feeds=[self], tags=tags, origin_type=ORIGIN_TYPE_FEEDPARSER)
 
         except:
             # NOTE: duplication handling is already
@@ -1082,7 +1262,7 @@ class Feed(Document):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed-related
 
 
-class Subscription(Document):
+class Subscription(Document, DocumentHelperMixin):
     feed = ReferenceField('Feed')
     user = ReferenceField('User', unique_with='feed')
 
@@ -1098,7 +1278,7 @@ class Subscription(Document):
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article
 
 
-class Article(Document):
+class Article(Document, DocumentHelperMixin):
     title        = StringField(max_length=256, required=True,
                                verbose_name=_(u'Title'))
     slug         = StringField(max_length=256)
@@ -1123,7 +1303,7 @@ class Article(Document):
 
     word_count = IntField(verbose_name=_(u'Word count'))
 
-    authors    = ListField(ReferenceField('User'))
+    authors    = ListField(ReferenceField('Author'))
     publishers = ListField(ReferenceField('User'))
 
     date_published = DateTimeField(verbose_name=_(u'date published'),
@@ -1167,12 +1347,20 @@ class Article(Document):
     # An article references its source (origin blog / newspaper…)
     source = GenericReferenceField()
 
+    origin_type = IntField(default=ORIGIN_TYPE_NONE,
+                           verbose_name=_(u'Origin type'),
+                           help_text=_(u'Origin of article (feedparser, '
+                                       u'twitter, websnap…). Can be 0 '
+                                       u'(none/unknown).'))
+
     # The feed from which we got this article from. Can be ``None`` if the
     # user snapped an article directly from a standalone web page in browser.
     # TODO: remove this in favor of `.feeds`.
     feed = ReferenceField('Feed')
 
     feeds = ListField(ReferenceField('Feed'))
+
+    comments_feed = URLField()
 
     #
     # TODO: activate this on feed > feeds migration
@@ -1301,14 +1489,12 @@ class Article(Document):
         url = requests_response.url
 
         try:
-            # XXX: duplicate code
-            proto, remaining = url.split('://', 1)
-            hostname_port, remaining = remaining.split('/', 1)
+            proto, host_and_port, remaining = WebSite.split_url(url)
 
         except ValueError:
             return url
 
-        if 'da.feedsportal.com' in hostname_port:
+        if 'da.feedsportal.com' in host_and_port:
             # Sometimes the redirect chain breaks and gives us
             # a F*G page with links in many languages "click here
             # to continue".
@@ -1337,7 +1523,7 @@ class Article(Document):
             into:
 
             http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/ # NOQA
-                ?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29 # NOQA
+                ?utm_source=feeurner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29 # NOQA
 
             and then remove all these F*G utm_* parameters to get a clean
             final URL for the current article.
@@ -1439,7 +1625,7 @@ class Article(Document):
                 LOGGER.info(u'Article %s is a duplicate of %s, '
                             u'registering as such.', self, original)
 
-                original.register_duplicate.delay(self)
+                original.register_duplicate(self)
                 return False
 
             # Any other exception will raise. This is intentional.
@@ -1460,12 +1646,52 @@ class Article(Document):
         return True
 
     @celery_task_method(name='Article.postprocess_feedparser_data',
-                        queue='fetch')
+                        queue='low')
+    def postprocess_original_data(self, force=False, commit=True):
+
+        methods_table = {
+            ORIGIN_TYPE_NONE: self.postprocess_guess_origin_data,
+            ORIGIN_TYPE_FEEDPARSER: self.postprocess_feedparser_data,
+        }
+
+        meth = methods_table.get(self.origin_type, None)
+
+        if meth is None:
+            LOGGER.warning(u'No method to post-process origin type %s of '
+                           u'article %s.', self.origin_type, self)
+            return
+
+        # This is a Celery task. reload the object
+        # from the database for up-to-date attributes.
+        self.safe_reload()
+
+        meth(force=force, commit=commit)
+
+    def postprocess_guess_origin_data(self, force=False, commit=True):
+
+        need_save = False
+
+        if self.original_data.feedparser_hydrated:
+            self.origin_type = ORIGIN_TYPE_FEEDPARSER
+            need_save        = True
+
+        elif self.original_data.google_reader_hydrated:
+            self.origin_type = ORIGIN_TYPE_GOOGLE_READER
+            need_save        = True
+
+        if need_save:
+            if commit:
+                self.save()
+
+            # Now that we have an origin type, re-run the real post-processor.
+            self.postprocess_original_data(force=force, commit=commit)
+
     def postprocess_feedparser_data(self, force=False, commit=True):
         """ XXX: should disappear when feedparser_data is useless. """
 
-        # Celery, my love.
-        self.safe_reload()
+        if self.original_data.feedparser_processed and not force:
+            LOGGER.info('feedparser data already post-processed.')
+            return
 
         fpod = self.original_data.feedparser_hydrated
 
@@ -1477,13 +1703,110 @@ class Article(Document):
                             for t in fpod['tags'] if t['term'] is not None),
                             origin=self))
 
-        #
-        # TODO / XXX: continue here.
-        #
+                self.update_tags(tags, initial=True, need_reload=False)
+                self.safe_reload()
 
-    @celery_task_method(name='Article.register_duplicate', queue='low',
-                        default_retry_delay=3600)
-    def register_duplicate(self, duplicate, force=False):
+            if self.authors == []:
+                Author.get_authors_from_feedparser_article(fpod,
+                                                           set_to_article=self)
+
+            if self.language is None:
+                language = fpod.get('summary_detail', {}).get('language', None)
+
+                if language is None:
+                    language = fpod.get('title_detail', {}).get(
+                                        'language', None)
+
+                if language is not None:
+                    self.language = language
+                    self.save()
+
+            if self.orphaned:
+                # We have a chance to get at least *some* content. It will
+                # probably be incomplete, but this is better than nothing.
+
+                detail = fpod.get('summary_detail', {})
+
+                if detail:
+                    detail_type = detail.get('type', None)
+                    detail_value = detail.get('value', '')
+
+                    # We need some *real* data, though
+                    if len(detail_value) > 20:
+
+                        if detail_type == 'text/plain':
+                            self.content = detail_value
+                            self.content_type = CONTENT_TYPE_MARKDOWN
+                            self.save()
+
+                            statsd.gauge('articles.counts.markdown',
+                                         1, delta=True)
+
+                        elif detail_type == 'text/html':
+                            self.content = detail_value
+                            self.content_type = CONTENT_TYPE_HTML
+                            self.save()
+
+                            statsd.gauge('articles.counts.html',
+                                         1, delta=True)
+
+                            self.convert_to_markdown()
+
+                        else:
+                            LOGGER.warning(u'No usable content-type found '
+                                           u'while trying to recover article '
+                                           u'%s content: %s => "%s".', self,
+                                           detail_type, detail_value)
+                    else:
+                        LOGGER.warning(u'Empty (or nearly) content-type '
+                                       u'found while trying to recover '
+                                       u'orphaned article %s '
+                                       u'content: %s => "%s".', self,
+                                       detail_type, detail_value)
+                else:
+                    LOGGER.warning(u'No summary detail found while trying '
+                                   u'to recover orphaned article %s '
+                                   u'content: %s => "%s".', self,
+                                   detail_type, detail_value)
+
+            if self.comments_feed is None:
+
+                comments_feed_url = fpod.get('wfw_commentrss', None)
+
+                if comments_feed_url:
+                    self.comments_feed = comments_feed_url
+                    self.save()
+
+            # We don't care anymore, it's already in another database.
+            #self.offload_attribute('feedparser_original_data')
+
+        self.original_data.update(set__feedparser_processed=True)
+
+    def update_tags(self, tags, initial=False, need_reload=True):
+
+        if initial:
+            self.update(set__tags=tags)
+
+        else:
+            for tag in tags:
+                self.update(add_to_set__tags=tag)
+
+        if need_reload:
+            self.safe_reload()
+
+        for read in self.reads:
+            if initial:
+                read.update(set__tags=tags)
+
+            else:
+                for tag in tags:
+                    read.update(add_to_set__tags=tag)
+
+            if need_reload:
+                read.safe_reload()
+
+    @celery_task_method(name='Article.replace_duplicate_everywhere')
+    def replace_duplicate_everywhere(self, duplicate, force=False):
         """ register :param:`duplicate` as a duplicate content of myself.
 
             redirect/modify all reads and feeds links to me, keeping all
@@ -1494,28 +1817,6 @@ class Article(Document):
         # we added new attributes before the object was pickled to a task.
         self.safe_reload()
         duplicate.safe_reload()
-
-        if duplicate.duplicate_of:
-            if duplicate.duplicate_of != self:
-                # This can't happen IRL (demonstrated with Willian 20130718).
-                # Any "second" duplicate *will* resolve to the master via the
-                # redirect chain. It will *never* resolve to an intermediate
-                # URL in the chain.
-                LOGGER.warning(u'Article %s is already a duplicate of '
-                               u'another article, not %s. Aborting.',
-                               duplicate, duplicate.duplicate_of)
-                return
-
-        LOGGER.info(u'Registering article %s as duplicate of %s…',
-                    duplicate, self)
-
-        # The duplicate will most probably be deleted at some time.
-        duplicate.duplicate_of = self
-        duplicate.save()
-
-        #
-        # Thus, the current article replaces it completely in the chain.
-        #
 
         need_reload = False
 
@@ -1645,7 +1946,6 @@ class Article(Document):
                         if reset_url else u'', new_article,
                         u', '.join(unicode(f) for f in feeds))
 
-            statsd.gauge('articles.counts.total', 1, delta=True)
             return new_article, True
 
     def fetch_content_must_abort(self, force=False, commit=True):
@@ -1671,8 +1971,12 @@ class Article(Document):
                                u'(%s).', self, self.content_error)
                 return True
 
-        if self.orphaned:
+        if self.orphaned and not force:
             LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
+            return True
+
+        if self.duplicate_of and not force:
+            LOGGER.warning(u'Article %s is a duplicate, will not fetch.', self)
             return True
 
         return False
@@ -1808,19 +2112,13 @@ class Article(Document):
         return None
 
     def prepare_content_text(self, url=None):
-        """ :param:`url` should be set in the case of multipage content. """
+        """ :param:`url` should be sinfon the case of multipage content. """
 
         if url is None:
-            # Asolutize only if 'main' article URL,
-            # and not already absolutized.
             fetch_url = self.url
-            absolutize = not self.url_absolute
 
         else:
-            # never absolutize if we are manually given an URL,
-            # it's the one for next page in multi-page text content.
             fetch_url = url
-            absolutize = False
 
         if self.needs_ghost_preparser():
 
@@ -1842,14 +2140,6 @@ class Article(Document):
 
         response = requests.get(fetch_url, headers=REQUEST_BASE_HEADERS)
         encoding = detect_encoding_from_requests_response(response)
-
-        # We do this here to avoid get()ing the URL more than once
-        # and generating more traffic on the target website.
-        if absolutize:
-            if not self.absolutize_url(response):
-                raise StopProcessingException(u'absolutize() reported we '
-                                              u'are a duplicate of some '
-                                              u'other article')
 
         return response.content, encoding
 
@@ -1941,10 +2231,6 @@ class Article(Document):
                 # and BeautifulSoup's str() outputs 'utf-8' encoded strings :-)
                 self.content = str(content)
 
-            with statsd.pipeline() as spipe:
-                spipe.gauge('articles.counts.empty', -1, delta=True)
-                spipe.gauge('articles.counts.html', 1, delta=True)
-
             self.content_type = CONTENT_TYPE_HTML
 
             if self.content_error:
@@ -1953,6 +2239,10 @@ class Article(Document):
 
             if commit:
                 self.save()
+
+            with statsd.pipeline() as spipe:
+                spipe.gauge('articles.counts.empty', -1, delta=True)
+                spipe.gauge('articles.counts.html', 1, delta=True)
 
         #
         # TODO: parse HTML links to find other 1flow articles and convert
@@ -2022,12 +2312,6 @@ class Article(Document):
 
         self.content_type = CONTENT_TYPE_MARKDOWN
 
-        self.postprocess_markdown_links(commit=False)
-
-        with statsd.pipeline() as spipe:
-            spipe.gauge('articles.counts.html', -1, delta=True)
-            spipe.gauge('articles.counts.markdown', 1, delta=True)
-
         if self.content_error:
             statsd.gauge('articles.counts.content_errors', -1, delta=True)
             self.content_error = ''
@@ -2038,6 +2322,12 @@ class Article(Document):
 
         if commit:
             self.save()
+
+        with statsd.pipeline() as spipe:
+            spipe.gauge('articles.counts.html', -1, delta=True)
+            spipe.gauge('articles.counts.markdown', 1, delta=True)
+
+        self.postprocess_markdown_links()
 
         if config.ARTICLE_FETCHING_DEBUG:
             LOGGER.info(u'————————— #%s Markdown %s —————————'
@@ -2081,16 +2371,21 @@ class Article(Document):
             else:
                 return link
 
+        # Use a copy during the operation to ensure we can start
+        # again from scratch in a future call if anything goes wrong.
         content = self.content
 
         if replace_newlines:
             for repl_src in re.findall(ur'[[][^]]+[]][(]', content):
+
+                # In link text, we replace by a space.
                 repl_dst = repl_src.replace(u'\n', u' ')
                 content  = content.replace(repl_src, repl_dst)
 
         for repl_src in re.findall(ur'[]][(][^)]+[)]', content):
 
             if replace_newlines:
+                # In link URLs, we just cut out newlines.
                 repl_dst = repl_src.replace(u'\n', u'')
             else:
                 repl_dst = repl_src
@@ -2102,8 +2397,7 @@ class Article(Document):
             return content
 
         else:
-            # replace self.content only at the end
-            # to avoid any half-terminated job.
+            # Everything went OK. Put back the content where it belongs.
             self.content = content
 
             if replace_newlines:
@@ -2113,44 +2407,59 @@ class Article(Document):
                 self.save()
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
-        if kwargs.get('created', False):
-            #
-            # TODO: find a more robust way to be sure this handler
-            #       runs only on the production 'default' database
-            #       (eg. not on "archive" and possibly others).
-            #
-            if not (document.orphaned or document.duplicate_of):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
 
-                # We need to workaround
-                # https://github.com/MongoEngine/mongoengine/pull/441
-                try:
-                    db_name = document._get_db().name
+        article = document
 
-                except:
-                    db_name = document._get_db()().name
+        if created:
 
-                if db_name == settings.MONGODB_NAME:
-                    # We don't re-run the signal tasks in the archive database.
-                    document.post_save_task.delay()
+            # Some articles are created "already orphaned" or duplicates.
+            # In the archive database this is more immediate than looking
+            # up the database name.
+            if not (article.orphaned or article.duplicate_of):
+                if article._db_name != settings.MONGODB_NAME_ARCHIVE:
+                    article.post_create_task.delay()
 
-    @celery_task_method(name='Article.post_save', queue='high')
-    def post_save_task(self):
+    @celery_task_method(name='Article.post_create', queue='high')
+    def post_create_task(self):
 
-        self.slug = slugify(self.title)
-        self.save()
+        if not self.slug:
+            self.slug = slugify(self.title)
+            self.save()
 
-        statsd.gauge('articles.counts.empty', 1, delta=True)
+            with statsd.pipeline() as spipe:
+                spipe.gauge('articles.counts.total', 1, delta=True)
+                spipe.gauge('articles.counts.empty', 1, delta=True)
 
-        # Manually randomize a little the fetching in 5 seconds, to avoid
+        # Randomize a little to avoid
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
         # as much as possible. This is not yet a full-featured solution,
-        # but it's completed byt the `fetch_limit` semaphore on the Feed.
-        self.fetch_content.apply_async((), countdown=randrange(5))
+        # but it's completed by the `fetch_limit` thing.
+        absolute_result = self.absolutize_url.apply_async(
+                            (), countdown=randrange(5))
+
+        #
+        # Absolutization conditions everything else. If it doesn't succeed:
+        #   - no bother trying to post-process author data for example,
+        #     because we need the absolutized website domain to make
+        #     authors unique and worthfull.
+        #   - no bother fetching content: it uses the same mechanisms as
+        #     absolutize_url(), and will probably fail the same way.
+        #
+
+        if absolute_result.get(interval=1):
+            post_create_tasks_group = tasks_group(
+                self.postprocess_original_data.s(self),
+                self.fetch_content.s(self)
+            )
+
+            post_create_tasks_group.delay()
 
         #
         # TODO: create short_url
         #
+
         # TODO: remove_useless_blocks, eg:
         #       <p><a href="http://addthis.com/bookmark.php?v=250">
         #       <img src="http://cache.addthis.com/cachefly/static/btn/
@@ -2173,13 +2482,17 @@ class Article(Document):
         return
 
 
-class OriginalData(Document):
+class OriginalData(Document, DocumentHelperMixin):
 
     article = ReferenceField('Article', unique=True)
 
     # This should go away soon, after a full re-parsing.
     google_reader = StringField()
     feedparser    = StringField()
+
+    # These are set to True to avoid endless re-processing.
+    google_reader_processed = BooleanField(default=False)
+    feedparser_processed    = BooleanField(default=False)
 
     meta = {
         'db_alias': 'archive',
@@ -2196,7 +2509,7 @@ class OriginalData(Document):
         return None
 
 
-class Read(Document):
+class Read(Document, DocumentHelperMixin):
     user = ReferenceField('User')
     article = ReferenceField('Article', unique_with='user')
     is_read = BooleanField(default=False)
@@ -2218,7 +2531,10 @@ class Read(Document):
     @classmethod
     def signal_pre_save_handler(cls, sender, document, **kwargs):
 
-        document.rating = document.article.default_rating
+        read = document
+
+        if not read.rating:
+            read.rating = read.article.default_rating
 
     def safe_reload(self):
         try:
@@ -2254,7 +2570,7 @@ class Read(Document):
         self.safe_reload()
 
 
-class Comment(Document):
+class Comment(Document, DocumentHelperMixin):
     TYPE_COMMENT = 1
     TYPE_INSIGHT = 10
     TYPE_ANALYSIS = 20
@@ -2296,24 +2612,24 @@ class Comment(Document):
     #             return Comment.TYPE_COMMENT
 
 
-class SnapPreference(Document):
+class SnapPreference(Document, DocumentHelperMixin):
     select_paragraph = BooleanField(_('Select whole paragraph on click'),
                                     default=False)  # , blank=True)
     default_public = BooleanField(_('Grows public by default'),
                                   default=True)  # , blank=True)
 
 
-class NotificationPreference(Document):
+class NotificationPreference(Document, DocumentHelperMixin):
     """ Email and other web notifications preferences. """
     pass
 
 
-class Preference(Document):
+class Preference(Document, DocumentHelperMixin):
     snap = EmbeddedDocumentField('SnapPreference')
     notification = EmbeddedDocumentField('NotificationPreference')
 
 
-class Author(Document):
+class Author(Document, DocumentHelperMixin):
     name        = StringField()
     website     = ReferenceField('WebSite', unique_with='origin_name')
     origin_name = StringField(help_text=_(u'When trying to guess authors, we '
@@ -2345,6 +2661,20 @@ class Author(Document):
 
         except:
             pass
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        author = document
+
+        if created:
+            if author._db_name != settings.MONGODB_NAME_ARCHIVE:
+                author.post_create_task.delay()
+
+    @celery_task_method(name='Author.post_create', queue='high')
+    def post_create_task(self):
+        statsd.gauge('authors.counts.total', 1, delta=True)
 
     @classmethod
     def get_authors_from_feedparser_article(cls, feedparser_article,
@@ -2460,7 +2790,7 @@ def user_django_user_random_default():
                                u' generate a not-taken random ID)…')
 
 
-class User(Document):
+class User(Document, DocumentHelperMixin):
     django_user = IntField(unique=True)
     username    = StringField()
     first_name  = StringField()
@@ -2482,21 +2812,28 @@ class User(Document):
             pass
 
     @classmethod
-    def signal_post_save_handler(cls, sender, document, **kwargs):
-        if kwargs.get('created', False):
-            document.post_save_task.delay()
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
 
-    @celery_task_method(name='User.post_save', queue='high')
-    def post_save_task(self):
+        user = document
 
-        django_user = User.objects.get(id=self.django_user)
+        if created:
+            if user._db_name != settings.MONGODB_NAME_ARCHIVE:
+                # NOT YET. Needs review.
+                #user.post_create_task.delay()
+                pass
+
+    @celery_task_method(name='User.post_create', queue='high')
+    def post_create_task(self):
+
+        django_user = DjangoUser.objects.get(id=self.django_user)
         self.username = django_user.username
         self.last_name = django_user.last_name
         self.first_name = django_user.first_name
         self.save()
 
 
-class Group(Document):
+class Group(Document, DocumentHelperMixin):
     name = StringField(unique_with='creator')
     creator = ReferenceField('User')
     administrators = ListField(ReferenceField('User'))

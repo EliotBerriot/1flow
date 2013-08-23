@@ -14,12 +14,25 @@ TEMPLATE_CONTEXT_PROCESSORS += (
 
 EMAIL_SUBJECT_PREFIX='[1flow DEV] '
 
+PROJECT_APPS = (
+    'oneflow.base',
+    'oneflow.landing',
+    'oneflow.core',
+)
+
 JENKINS_TASKS = (
     'django_jenkins.tasks.with_coverage',
     'django_jenkins.tasks.django_tests',   # select one django or
     #'django_jenkins.tasks.dir_tests'      # directory tests discovery
+
+    # Doesn't work.
+    #'django_jenkins.tasks.run_flake8',
+
+    # Superseded by flake8
     'django_jenkins.tasks.run_pep8',
     'django_jenkins.tasks.run_pyflakes',
+
+    #'django_jenkins.tasks.run_pylint',
     #'django_jenkins.tasks.run_jslint',
     #'django_jenkins.tasks.run_csslint',
     'django_jenkins.tasks.run_sloccount',
@@ -30,7 +43,8 @@ ALLOWED_HOSTS += [
     'localhost',
 ]
 
-INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver', )
+INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver',
+                   'template_debug', )
 
 DEVSERVER_DEFAULT_ADDR = '0.0.0.0'
 DEVSERVER_DEFAULT_PORT = 8000

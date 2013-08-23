@@ -50,6 +50,11 @@ if 'rosetta' in settings.INSTALLED_APPS:
         '', url(r'^translate/', include('rosetta.urls')),
     )
 
+if 'debug_toolbar_user_panel' in settings.INSTALLED_APPS:
+    urlpatterns += patterns(
+        '', url(r'', include('debug_toolbar_user_panel.urls')),
+    )
+
 urlpatterns += patterns(
     '',
     url(r'^grappelli/', include('grappelli.urls')),
