@@ -9,9 +9,9 @@
           <span class="icon-bar"></span>
         </a>
 
-        <div class="brand"><a href="#/">1flow <span
+        <div class="brand">{% ember #linkToAnimated 'index' animations='main:slideRight' %}1flow <span
                 class="badge badge-warning badge-beta"
-                title="{% trans "1flow has not yet reached BETA status" %}">BETA</span></a></div>
+                title="{% trans "1flow has not yet reached BETA status" %}">BETA</span>{% ember /linkToAnimated %}</div>
 
         {% if user.is_authenticated %}
           <div class="btn-group pull-right">
@@ -29,7 +29,7 @@
             {% endif %}
 
             <div class="btn">
-                {% linkto "help" %}{% trans 'Help' %}{% endlinkto %}
+                {% ember #linkToAnimated 'help' animations='main:fade' %}{% trans 'Help' %}{% ember /linkToAnimated %}
             </div>
 
 
@@ -38,7 +38,7 @@
               <span class="caret"></span>
             </a>
             <ul class="dropdown-menu">
-              <li>{% linkto 'profile' %}{% trans 'Profile' %}{% endlinkto %}</li>
+              <li>{% ember #linkToAnimated 'profile' animations='main:fade' %}{% trans 'Profile' %}{% ember /linkToAnimated %}</li>
 
             {% if request.user.is_superuser %}
               <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
@@ -60,7 +60,7 @@
             {% if request.user.is_authenticated %}
 
               {# We use the verb "Read", but link to ember "reads" to stick to conventions #}
-              <li>{% linkto "reads" %}{% trans 'Read' %}{% endlinkto %}</li>
+              <li>{% ember #linkToAnimated 'reads' animations='main:slideLeft' %}{% trans 'Read' %}{% ember /linkToAnimated %}</li>
 
               {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
 
@@ -87,5 +87,5 @@
       </div><!--/.container-fluid -->
     </div><!--/.navbar-inner -->
   </div><!--/.navbar -->
-  {{outlet}}
+  {% ember animatedOutlet name="main" %}
 {% endhandlebars %}
