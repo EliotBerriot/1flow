@@ -249,6 +249,8 @@ class PythonErrorClassifier(object):
 class GenericErrorClassifier(PythonErrorClassifier):
 
     ERR_SOFT_TIMELIMIT_EXCEEDED = u'Soft time limit exceeded'
+    ERR_VALIDATION_GENERIC      = u'MongoDB Document validation error'
+    ERR_VALIDATION_TAGS         = u'MongoDB Tags-related validation error'
 
     def classify_one(self, error_string, objekt):
 
@@ -256,6 +258,14 @@ class GenericErrorClassifier(PythonErrorClassifier):
 
         if error_string.startswith(u'SoftTimeLimit'):
             error = self.ERR_SOFT_TIMELIMIT_EXCEEDED
+
+        elif error_string.startswith('ValidationError'):
+
+            if "['tags']" in error_string:
+                error = self.ERR_VALIDATION_TAGS
+
+            else:
+                error = self.ERR_VALIDATION_GENERIC
 
         self.store(error, objekt)
 
