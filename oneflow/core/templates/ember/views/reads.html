@@ -22,14 +22,14 @@
 
 {% handlebars "read-list-item" %}
   <li class="media read-list-item">
-    <a class="pull-left" href="#">
-        <img class="media-object" data-src="holder.js/64x64">
-        {% ember unbound _view.contentIndex %}
-    </a>
+    <h1 class="pull-left list-item-number muted"
+        {% ember action 'openRead' this %}>
+      {% ember unbound _view.contentIndex %}
+    </h1>
 
     <div class="media-body">
       <h4 class="media-heading">
-        <span data-toggle="collapse" data-target="#content-{% ember unbound id %}">
+        <span {% ember action 'openRead' this %} class="article-title">
           {{{ article.title }}}
         </span>
 
@@ -46,18 +46,6 @@
 
         <a href="{% ember unbound article.public_url %}" target="_blank">
           <i class="icon-circle-arrow-right"></i></a>
-
-        {% if user.is_superuser %}
-          <small class="admin-actions pull-right">
-
-            <a href="/api/v1/article/{% ember unbound article.id %}" target="_blank">
-              <i class="icon-cog"> Article</i>
-            </a>
-            <a href="/api/v1/read/{% ember unbound id %}" target="_blank">
-              <i class="icon-cog"> Read</i>
-            </a>
-          </small>
-        {% endif %}
       </h4>
 
       <p>
@@ -74,10 +62,37 @@
         </p>
       {% ember /if %}
 
-      <div id="content-{% ember unbound id %}" class="collapse">
-        {{{ markdown article.content }}}
-      </div>
     </div><!-- .media-body -->
   </li><!-- .media -->
+{% endhandlebars %}
 
+{% handlebars "reads/show" %}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10">
+        <h3 id="read-item-modal-title">
+          {{{ article.title }}}
+        </h3>
+      </div>
+    </div>
+
+    <div class="row-fluid">
+      <div class="span6 offset3">
+        {% ember markdown article.content %}
+      </div>
+      <div class="span3">
+        {% if user.is_superuser %}
+          <small class="admin-actions pull-right">
+
+            <a href="/api/v1/article/{% ember unbound article.id %}" target="_blank">
+              <i class="icon-cog"> Article</i>
+            </a>
+            <a href="/api/v1/read/{% ember unbound id %}" target="_blank">
+              <i class="icon-cog"> Read</i>
+            </a>
+          </small>
+        {% endif %}
+      </div>
+    </div>
+  </div>
 {% endhandlebars %}
