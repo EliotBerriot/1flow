@@ -96,6 +96,18 @@ class ErrorClassifierTests(TestCase):
         #       database. Only URLs have been changed for tests.
         #
 
+
+        # ValidationError (Article:51fa68957711037f4003a37b) (1.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa68e47711037f3d03a3fe) (5.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa6b6aa24639329b2ce203) (1.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa69c3a24639329a2ce21a) (3.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa67a97711037f3d03a33d) (GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa68e57711037f3d03a413) (4.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa64377711037f3f03a30c) (2.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa69c3a24639329a2ce207) (3.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa6b3f7711037f6a25ae46) (6.GenericReferences can only contain documents: ['tags']): 1
+        # ValidationError (Article:51fa6b68a2463932a02ce2af) (11.GenericReferences can only contain documents: ['tags']): 1
+
         results = ContentErrorClassifier(Article.objects(url_error__ne=''),
                                          'content_error').classify()
 
