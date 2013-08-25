@@ -168,6 +168,13 @@ PIPELINE_CSS = {
         'output_filename': 'css/font-awesome-ie7.css',
     },
 
+    'ember-animated-outlet': {
+        'source_filenames': (
+            'vendor/ember-animated-outlet/ember-animated-outlet.css',
+        ),
+        'output_filename': 'js/ember-animated-outlet.css',
+    },
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
 
     'landing': {
@@ -217,19 +224,17 @@ PIPELINE_JS = {
         'output_filename': 'js/moment.js',
     },
 
-    # TODO: to be removed; see core/templates/…/home.html
-    'temp_handlebars_rc4': {
+    'ember-animated-outlet': {
         'source_filenames': (
-            'js/workarounds/handlebars-1.0.0-rc4/handlebars.js',
+            'vendor/ember-animated-outlet/ember-animated-outlet.js',
         ),
-        'output_filename': 'js/handlebars-1.0.0-rc4.js',
+        'output_filename': 'js/ember-animated-outlet.js',
     },
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
 
     'utils': {
         'source_filenames': (
-            'vendor/holder/holder.js',
             'js/utils/*.js',
         ),
         'output_filename': 'js/utils.js',
