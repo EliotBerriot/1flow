@@ -26,8 +26,15 @@ App.Store = DS.Store.extend({
     })
 });
 
+// Crashes the app without any information.
+// App.Router.reopen({
+//     location: 'history'
+// });
+
 App.Router.map(function(){
-    this.resource('reads');
+    this.resource('reads', function() {
+        this.route('show', { path: '/:read_id' });
+    });
 
     this.resource('teams');
     this.resource('discovery');
@@ -38,7 +45,15 @@ App.Router.map(function(){
     this.resource('profile');
 });
 
-
+App.ApplicationRoute = Ember.Route.extend({
+  events: {
+    goBack: function() {
+      // Will not work until "location: 'history'" works again.
+      Ember.AnimatedContainerView.enqueueAnimations({main: 'slideRight'});
+      window.history.go(-1);
+    }
+  }
+});
 
 
 

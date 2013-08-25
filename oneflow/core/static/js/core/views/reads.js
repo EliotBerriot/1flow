@@ -1,7 +1,4 @@
 
-// App.ReadView = Ember.View.extend(App.ShowSpinnerWhileRendering, {
-// });
-
 App.ReadsView = Ember.View.extend({
   didInsertElement: function() {
 
@@ -29,3 +26,9 @@ App.ReadsView = Ember.View.extend({
     return top === distanceToTop;
   }
 });
+
+App.ReadsShowView = Ember.View.extend();
+
+App.ReadView = Ember.View.extend();
+// App.ReadView = Ember.View.extend(App.ShowSpinnerWhileRendering, {
+// });

@@ -17,6 +17,10 @@ App.ReadsRoute = Ember.Route.extend({
       // NOTE: in the default configuration where the server API sends
       // results paginated, this will automatically load next page.
       return App.Read.find();
+    },
+
+    openRead: function(read) {
+      this.transitionToAnimated('reads.show', {main: 'slideLeft'}, read);
     }
   }
 });
