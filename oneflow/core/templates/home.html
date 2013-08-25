@@ -5,6 +5,8 @@
 {% block title %}{% trans 'Home' %}{% endblock title %}
 
 {% block extrajs_header %}
+    {% compressed_css 'ember-animated-outlet' %}
+
   <script type="text/javascript">
     var url_root = '{{ request.META.SCRIPT_NAME }}';
   </script>
@@ -23,13 +25,11 @@
 
 {% block extrajs_footer %}
 
-    {# NOTE: emberpie_js includes jQuery. #}
-    {% emberpie_js %}
+    {# NOTE: emberpie_js includes jQuery, but it's already loaded by Django.JS #}
+    {% emberpie_js jquery=False %}
 
-    {% compressed_js 'bootstrap' %}
-    {% compressed_js 'showdown' %}
-    {% compressed_js 'moment' %}
-    {% compressed_js 'utils' %}
+    {# NOTE: order matters. #}
+    {% compressed_js 'vendor-all' %}
     {% compressed_js 'core' %}
 
     {# This must stay here (in the template) to get the server-side language. #}
