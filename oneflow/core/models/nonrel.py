@@ -1886,6 +1886,7 @@ class Article(Document, DocumentHelperMixin):
 
         else:
             reset_url = False
+            url = clean_url(url)
 
         new_article = cls(title=title, url=url)
 
