@@ -295,7 +295,7 @@ class WebSite(Document, DocumentHelperMixin):
 
         except ValueError:
             host_and_port = remaining
-            remaining     = ''
+            remaining     = u''
 
         if split_port:
             try:
@@ -1479,7 +1479,7 @@ class Article(Document, DocumentHelperMixin):
 
         if self.url_error:
             if force:
-                self.url_error = ''
+                self.url_error = u''
                 if commit:
                     self.save()
             else:
@@ -1614,7 +1614,7 @@ class Article(Document, DocumentHelperMixin):
             # went fine. We won't need to lookup again the absolute URL.
             statsd.gauge('articles.counts.absolutes', 1, delta=True)
             self.url_absolute = True
-            self.url_error    = ''
+            self.url_error    = u''
 
             self.url = final_url
 
@@ -1891,6 +1891,7 @@ class Article(Document, DocumentHelperMixin):
 
         else:
             reset_url = False
+            url = clean_url(url)
 
         new_article = cls(title=title, url=url)
 
@@ -1966,7 +1967,7 @@ class Article(Document, DocumentHelperMixin):
         if self.content_error:
             if force:
                 statsd.gauge('articles.counts.content_errors', -1, delta=True)
-                self.content_error = ''
+                self.content_error = u''
 
                 if commit:
                     self.save()
@@ -1975,6 +1976,11 @@ class Article(Document, DocumentHelperMixin):
                 LOGGER.warning(u'Article %s has a fetching error, aborting '
                                u'(%s).', self, self.content_error)
                 return True
+
+        if self.url_error:
+            LOGGER.warning(u'Article %s has an url error. Absolutize it to '
+                           u'clear: %s.', self, self.url_error)
+            return True
 
         if self.orphaned and not force:
             LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
@@ -2211,7 +2217,7 @@ class Article(Document, DocumentHelperMixin):
             if self.likely_multipage_content():
                 # If everything goes well, 'content' should be an utf-8
                 # encoded strings. See the non-paginated version for details.
-                content    = ''
+                content    = u''
                 next_link  = self.url
                 pages      = 0
 
@@ -2250,7 +2256,7 @@ class Article(Document, DocumentHelperMixin):
 
             if self.content_error:
                 statsd.gauge('articles.counts.content_errors', -1, delta=True)
-                self.content_error = ''
+                self.content_error = u''
 
             if commit:
                 self.save()
@@ -2325,7 +2331,7 @@ class Article(Document, DocumentHelperMixin):
 
         if self.content_error:
             statsd.gauge('articles.counts.content_errors', -1, delta=True)
-            self.content_error = ''
+            self.content_error = u''
 
         #
         # TODO: word count here

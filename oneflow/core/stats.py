@@ -129,136 +129,282 @@ def feed_distribution_by_last_fetch_display(results=None):
     return results, output
 
 
-def classify_error(article):
+class PythonErrorClassifier(object):
+    """ This object helps aggregating and grouping unique (= instance dependant)
+        error strings by returning another more generic error string.
 
-    if 'codec can' in article.content_error:
-        error = 'Encoding error'
+        For example, network-related errors are grouped together by themes
+        (not dynamically configurable, though).
+    """
 
-    #elif article.content_error.startswith("'charmap'"):
-    #    error = 'Charmap encoding error'
+    ERR_PYTHON_MAX_RECURSION = u'Python maximum recursion loop'
+    ERR_NO_ERROR_STRING      = u'<NO_ERROR_STRING_PROVIDED>'
 
-    #elif article.content_error.startswith("'gb2312'"):
-    #    error = 'gb2312 encoding error'
+    def __init__(self, iterables=None, attribute_name=None):
+        """ Calls class.reset() then class.classify(*args, **kwargs) """
 
-    elif article.content_error.startswith("HTTPConnection"):
-        error = 'Socket or bad HTTP error'
+        self.stored_instances = {}
+        self.iterables        = iterables
+        self.attribute_name   = attribute_name
 
-    elif article.content_error.startswith("HTTPSConnection"):
-        error = 'Secure socket error / bad HTTPs'
+    def reset(self):
+        """ clears all stored instances from the class. """
 
-    elif article.content_error.startswith("hostname '"):
-        error = 'HTTPs certificate error'
-    elif '_ssl.c:' in article.content_error:
-        error = 'HTTPs certificate error'
+        self.stored_instances = {}
 
-    elif article.content_error.startswith("HTTP "):
-        error = 'HTTP Error'
-    elif article.content_error.startswith("Exceeded 30 redirects"):
-        error = 'HTTP Error'
+    def store(self, error_string, objekt):
+        """ Stores the :param:`objekt` in the
+            class' :attr:`stored_instances`. """
 
-    elif article.content_error.startswith("<urlopen"):
-        error = 'Socket/urlopen error'
-    elif article.content_error.startswith("[Errno 104] Conn"):
-        error = 'Socket/urlopen error'
-    elif article.content_error.startswith("The read operation"):
-        error = 'Socket/urlopen error'
-    elif article.content_error.startswith("IncompleteRead"):
-        error = 'Socket/urlopen error'
+        if error_string:
+            self.stored_instances.setdefault(error_string, []).append(objekt)
 
-    elif article.content_error.startswith("unknown encoding: image"):
-        error = 'Image instead of HTML article'
+    def classify(self, objekts=None, attribute_name=None):
+        """ Runs :meth:`classify_one` on each member of the
+            iterable :param:`objekts`. Returns a ``dict`` of the form:
 
-    elif article.content_error.startswith(
-            "unknown encoding: application/pdf"):
-        error = 'PDF instead of HTML article'
+                {
+                        u'duration': <the duration in seconds, as integer>,
+                    },
+                }
+        """
 
-    elif article.content_error.startswith("unknown encoding: audio"):
-        error = 'Audio content instead of HTML article'
+        start_time   = pytime.time()
+        seen_objects = 0
+        error_types  = {}
 
-    elif article.content_error.startswith("unknown encoding: video"):
-        error = 'Video content instead of HTML article'
+        if objekts is None:
+            objekts = self.iterables
 
-    elif article.content_error.startswith('unknown encoding:'):
-        error = 'No encoding specified, server side'
+        if attribute_name is None:
+            attribute_name = self.attribute_name
 
-    elif article.content_error.startswith("maximum recursion"):
-        error = 'Python maximum recursion loop'
+        assert objekts is not None
+        assert attribute_name is not None
 
-    #elif article.content_error.startswith("java.lang."):
-    #    error = 'Old Java-BoilerPipe error'
-    #    boiler_errors.append(article)
+        for objekt in objekts:
 
-    else:
-        error = article.content_error
+            error = self.classify_one(getattr(objekt, attribute_name), objekt)
 
-    return error
+            error_types[error] = error_types.setdefault(error, 0) + 1
+            seen_objects += 1
+
+        return {
+            u'duration': pytime.time() - start_time,
+            u'seen_objects': seen_objects,
+            u'error_types': error_types,
+            u'stored_instances': self.stored_instances,
+        }
+
+    def classify_one(self, error_string, objekt):
+        """ As the root of all classifiers, this one has a special behaviour
+            to be sure *any* error gets stored in the end, if not already
+            catched by any subclass.
+
+            Thus, to create your own classifier, take example on subclasses
+            implementations, but not this one.
+        """
+
+        error = None
+
+        if error_string.startswith(u'maximum recursion'):
+            error = self.ERR_PYTHON_MAX_RECURSION
+
+        if error is None:
+            error = error_string or self.ERR_NO_ERROR_STRING
+
+        self.store(error, objekt)
+
+        return error
+
+    @classmethod
+    def to_string(cls, results):
+        """ results must be the value returned by a call
+            of :meth:`classify`. """
+
+        errors = results.get(u'error_types')
+
+        output = (u'>> %s error types: %s distinct on %s instances, '
+                  u'computed in %s\n' % (
+                      cls.__name__[:-15],
+                      len(errors),
+                      results.get(u'seen_objects'),
+                      naturaldelta(results.get(u'duration'))))
+
+        stored = results.get('stored_instances')
+
+        output += u'\n'.join(u'%s: %s' % (k, v) for k, v in sorted(
+                             errors.items(),
+                             key=operator.itemgetter(1),
+                             reverse=True)) + u'\n\n'
+
+        output += u'>> to get them, stored by error kind:\n'
+
+        output += u'\n'.join(u'results.get("stored_instances").get("%s")'
+                             % s for s in stored)
+
+        return output
 
 
-def article_error_types():
+class GenericErrorClassifier(PythonErrorClassifier):
 
-    start_time     = pytime.time()
-    seen_articles  = 0
-    error_types    = {}
-    timeout_errors = []
-    codec_errors   = []
-    ascii_errors   = []
-    utf8_errors    = []
+    ERR_SOFT_TIMELIMIT_EXCEEDED = u'Soft time limit exceeded'
+
+    def classify_one(self, error_string, objekt):
+
+        error = None
+
+        if error_string.startswith(u'SoftTimeLimit'):
+            error = self.ERR_SOFT_TIMELIMIT_EXCEEDED
+
+        self.store(error, objekt)
+
+        return error or super(GenericErrorClassifier,
+                              self).classify_one(error_string, objekt)
+
+
+class UrlErrorClassifier(GenericErrorClassifier):
+
+    ERR_NETWORK_DOWN        = u'Network down or no route, or DNS lookup failed'
+    ERR_NETWORK_CERTIFICATE = u'HTTPs certificate error'
+    ERR_NETWORK_TIMEOUT     = u'Connection timeout'
+    ERR_NETWORK_REFUSED     = u'Connection refused'
+    ERR_NETWORK_RESET       = u'Connection reset'
+    ERR_NETWORK_HTTPS_ERROR = u'Secure socket error / bad HTTPs'
+    ERR_NETWORK_OTHER       = u'Other socket or HTTP Error'
+    ERR_NETWORK_URLOPEN     = u'Socket/urlopen error'
+
+    def classify_one(self, error_string, objekt):
+
+        error = None
+
+        if '[Errno 60] Operation timed out' in error_string:
+            error = self.ERR_NETWORK_TIMEOUT
+
+        elif '[Errno 61] Connection refused' in error_string:
+            error = self.ERR_NETWORK_REFUSED
+
+        elif '[Errno 54] Connection reset by peer' in error_string:
+            error = self.ERR_NETWORK_RESET
+
+        elif '[Errno 50] Network is down' in error_string \
+            or '[Errno 8] nodename nor servname provided' in error_string \
+                or '[Errno 65] No route to host' in error_string:
+            error = self.ERR_NETWORK_DOWN
+
+        elif error_string.startswith("HTTPSConnection"):
+            error = self.ERR_NETWORK_HTTPS_ERROR
+
+        elif error_string.startswith("hostname '") \
+                or '_ssl.c:' in error_string:
+            error = self.ERR_NETWORK_CERTIFICATE
+
+        # Too generic for an URL error.
+        #
+        #elif error_string.startswith("HTTPConnection"):
+        #    error = 'Socket or bad HTTP error'
+        # elif error_string.startswith("HTTP "):
+        #     error = 'HTTP Error'
+        # elif error_string.startswith("Exceeded 30 redirects"):
+        #     error = 'HTTP Error'
+
+        elif error_string.startswith("HTTPConnection") \
+            or error_string.startswith("HTTP ") \
+                or error_string.startswith("Exceeded 30 redirects"):
+            error = self.ERR_NETWORK_OTHER
+
+        elif error_string.startswith("<urlopen") \
+            or error_string.startswith("[Errno 104] Conn") \
+            or error_string.startswith("The read operation") \
+                or error_string.startswith("IncompleteRead"):
+            error = self.ERR_NETWORK_URLOPEN
+
+        self.store(error, objekt)
+
+        return error or super(UrlErrorClassifier,
+                              self).classify_one(error_string, objekt)
+
+
+class ContentErrorClassifier(UrlErrorClassifier):
+
+    ERR_ENCODING_GENERIC     = u'Encoding error'
+    ERR_IMAGE_CONTENT        = u'Image instead of HTML article'
+    ERR_PDF_CONTENT          = u'PDF instead of HTML article'
+    ERR_AUDIO_CONTENT        = u'Audio content instead of HTML article'
+    ERR_VIDEO_CONTENT        = u'Video content instead of HTML article'
+    ERR_ENCODING_UNSPECIFIED = u'No encoding specified server side'
+
+    def classify_one(self, error_string, objekt):
+
+        error = None
+
+        if 'codec can' in error_string:
+            error = self.ERR_ENCODING_GENERIC
+
+        #elif error_string.startswith("'charmap'"):
+        #    error = u'Charmap encoding error'
+
+        #elif error_string.startswith("'gb2312'"):
+        #    error = u'gb2312 encoding error'
+
+        elif error_string.startswith("unknown encoding: image"):
+            error = self.ERR_IMAGE_CONTENT
+
+        elif error_string.startswith(
+                "unknown encoding: application/pdf"):
+            error = self.ERR_PDF_CONTENT
+
+        elif error_string.startswith("unknown encoding: audio"):
+            error = self.ERR_AUDIO_CONTENT
+
+        elif error_string.startswith("unknown encoding: video"):
+            error = self.ERR_VIDEO_CONTENT
+
+        elif error_string.startswith('unknown encoding:'):
+            error = self.ERR_ENCODING_UNSPECIFIED
+
+        self.store(error, objekt)
+
+        return error or super(ContentErrorClassifier,
+                              self).classify_one(error_string, objekt)
+
+
+def article_url_error_types():
 
     # Next to investigate:
     #    list index out of range: 758
     #    'NoneType' object has no attribute 'findAll': 137
 
-    for article in Article.objects(content_error__ne=''):
-
-        seen_articles += 1
-
-        if article.content_error.startswith("'ascii'"):
-            ascii_errors.append(article)
-            codec_errors.append(article)
-
-        elif article.content_error.startswith("'utf8'"):
-            #error = 'UTF8 encoding error'
-            utf8_errors.append(article)
-            codec_errors.append(article)
-
-        elif article.content_error.startswith('SoftTimeLimit'):
-            timeout_errors.append(article)
-
-        error = classify_error(article)
-
-        if error in error_types:
-            error_types[error] += 1
-        else:
-            error_types[error] = 1
-
-    return {
-        'meta': {
-            'duration': pytime.time() - start_time,
-        },
-        'error_types': error_types,
-        'seen_articles': seen_articles,
-        'timeout_errors': timeout_errors,
-        'codec_errors': codec_errors,
-        'utf8_errors': utf8_errors,
-        'ascii_errors': ascii_errors,
-    }
+    return UrlErrorClassifier(
+        Article.objects(url_error__ne='').no_cache(),
+        'url_error'
+    ).classify()
 
 
-def article_error_types_display(results=None, articles_results=None):
+def article_url_error_types_display(results=None):
 
     if results is None:
-        results = article_error_types(articles_results)
+        results = article_url_error_types()
 
-    output = '>> Error types: %s (total: %s, computed in %s)\n' % (
-        len(results.get('error_types')),
-        results.get('seen_articles'),
-        results.get('dupes_errors'),
-        naturaldelta(results.get('meta').get('duration')))
+    output = UrlErrorClassifier.to_string(results)
 
-    output += '\n'.join('%s: %s' % (k, v) for k, v in sorted(
-                    results.get('error_types').items(),
-                    key=operator.itemgetter(1),
-                    reverse=True))
+    return results, output
+
+
+def article_content_error_types():
+
+    return ContentErrorClassifier(
+        Article.objects(content_error__ne='').no_cache(),
+        'content_error'
+    ).classify()
+
+
+def article_content_error_types_display(results=None):
+
+    if results is None:
+        results = article_content_error_types()
+
+    output = ContentErrorClassifier.to_string(results)
 
     return results, output
 
