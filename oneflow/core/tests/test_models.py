@@ -1,33 +1,25 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=E1103,C0103
 
-import redis
 import logging
 
 from constance import config
-from mongoengine.connection import connect, disconnect
 
-from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 #from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite, Author
+from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite
 from oneflow.base.utils import RedisStatsCounter
+from oneflow.base.tests import (connect_mongodb_testsuite, TEST_REDIS)
 
 LOGGER = logging.getLogger(__file__)
-
-TEST_REDIS = redis.StrictRedis(host=settings.REDIS_TEST_HOST,
-                               port=settings.REDIS_TEST_PORT,
-                               db=settings.REDIS_TEST_DB)
-
 
 # Use the test database not to pollute the production/development one.
 RedisStatsCounter.REDIS = TEST_REDIS
 
 TEST_REDIS.flushdb()
 
-disconnect()
-connect('{0}_testsuite'.format(settings.MONGODB_NAME))
+connect_mongodb_testsuite()
 
 
 class ThrottleIntervalTest(TestCase):
@@ -235,6 +227,7 @@ class ArticleDuplicateTest(TestCase):
         # TODO: finish this test case.
         #
 
+
 class AbsolutizeTest(TestCase):
 
     def setUp(self):
@@ -320,7 +313,6 @@ class TagsTest(TestCase):
         self.assertEquals(self.t3 in self.t1.children, True)
 
 
-
 class WebSitesTest(TestCase):
     def setUp(self):
 
@@ -389,7 +381,4 @@ class WebSitesTest(TestCase):
 
 
 class AuthorsTest(TestCase):
-
-
     pass
-
