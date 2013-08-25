@@ -141,6 +141,8 @@ PIPELINE_CSS = {
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• vendor
 
+    # TODO: the 'vendor-all' target.
+
     'bootstrap': {
         'source_filenames': (
             'vendor/bootstrap/less/bootstrap.less',
@@ -198,6 +200,30 @@ PIPELINE_JS = {
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• vendor
 
+    'vendor-all': {
+        # This one includes all external dependancies
+        # (eg. non 1flow sources) for a one-file-only dep.
+        'source_filenames': (
+            # WARNING: order matters: tooltip must be included before popover.
+            'vendor/bootstrap/js/bootstrap-[a-o]*.js',
+            'vendor/bootstrap/js/bootstrap-t*.js',
+            'vendor/bootstrap/js/bootstrap-p*.js',
+            'vendor/bootstrap/js/bootstrap-[q-s]*.js',
+            'vendor/bootstrap/js/bootstrap-[u-z]*.js',
+
+            'vendor/showdown/showdown.js',
+            'vendor/showdown/extensions/twitter.js',
+
+            'vendor/moment/moment.js',
+            'vendor/moment/langs/*.js',
+
+            'vendor/ember-animated-outlet/ember-animated-outlet.js',
+
+            'js/utils/*.js',
+        ),
+        'output_filename': 'js/home-extras.js',
+    },
+
     'bootstrap': {
         'source_filenames': (
             # WARNING: order matters: tooltip must be included before popover.
@@ -209,6 +235,7 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/bootstrap.js',
     },
+
     'showdown': {
         'source_filenames': (
             'vendor/showdown/showdown.js',
@@ -216,6 +243,7 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/showdown.js',
     },
+
     'moment': {
         'source_filenames': (
             'vendor/moment/moment.js',
