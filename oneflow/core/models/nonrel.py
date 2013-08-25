@@ -1972,6 +1972,11 @@ class Article(Document, DocumentHelperMixin):
                                u'(%s).', self, self.content_error)
                 return True
 
+        if self.url_error:
+            LOGGER.warning(u'Article %s has an url error. Absolutize it to '
+                           u'clear: %s.', self, self.url_error)
+            return True
+
         if self.orphaned and not force:
             LOGGER.warning(u'Article %s is orphaned, cannot fetch.', self)
             return True
