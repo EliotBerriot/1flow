@@ -1344,10 +1344,6 @@ class Article(Document, DocumentHelperMixin):
     content_error = StringField(verbose_name=_(u'Error'), default='',
                                 help_text=_(u'Error when fetching content'))
 
-    # This should go away soon, after a full re-parsing.
-    google_reader_original_data = StringField()
-    feedparser_original_data    = StringField()
-
     # A snap / a serie of snaps references the original article.
     # An article references its source (origin blog / newspaper…)
     source = GenericReferenceField()
@@ -1407,10 +1403,6 @@ class Article(Document, DocumentHelperMixin):
             super(Article, self).validate(*args, **kwargs)
 
         except ValidationError as e:
-            # Ignore errors about these fields:
-            e.errors.pop('google_reader_original_data', None)
-            e.errors.pop('feedparser_original_data', None)
-
             title_error = e.errors.get('title', None)
 
             if title_error and str(title_error).startswith(
@@ -1786,6 +1778,10 @@ class Article(Document, DocumentHelperMixin):
             #self.offload_attribute('feedparser_original_data')
 
         self.original_data.update(set__feedparser_processed=True)
+
+    def postprocess_google_reader_data(self, force=False, commit=True):
+        LOGGER.warning(u'postprocess_google_reader_data() is not implemented '
+                       u'yet but it was called for article %s!', self)
 
     def update_tags(self, tags, initial=False, need_reload=True):
 
@@ -2524,6 +2520,15 @@ class OriginalData(Document, DocumentHelperMixin):
         if self.feedparser:
             return ast.literal_eval(re.sub(r'time.struct_time\([^)]+\)',
                                     '""', self.feedparser))
+
+        return None
+
+    @property
+    def google_reader_hydrated(self):
+        """ XXX: should disappear when google_reader_data is useless. """
+
+        if self.feedparser:
+            return ast.literal_eval(self.google_reader)
 
         return None
 
