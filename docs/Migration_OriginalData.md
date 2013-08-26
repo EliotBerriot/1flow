@@ -177,8 +177,6 @@ Needs a repair (currently impossible because of too-low disk space to hold 2 cop
     fab prod workers start
     fab prod op
 
-
-
 # Second run, the in-error articles
 
     agr = Article.objects(google_reader_original_data__ne=None)
@@ -209,3 +207,17 @@ Needs a repair (currently impossible because of too-low disk space to hold 2 cop
     agr.count()
 
     # 0
+
+# Clean the database
+
+    db.article.update({ "feedparser_original_data": { $exists: true }},
+                      { $unset: { "feedparser_original_data": 1 }}, false, true);
+    db.article.find({ "feedparser_original_data": { $exists: true }}).count(true);
+
+    db.article.update({ "google_reader_original_data": { $exists: true }},
+                      { $unset: { "google_reader_original_data": 1 }}, false, true);
+    db.article.find({ "google_reader_original_data": { $exists: true }}).count(true);
+
+    db.repairDatabase()
+
+And global database size shrank from 20680309816 to 15421747988 (-25%) :-D
