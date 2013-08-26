@@ -420,13 +420,16 @@ class Tag(Document, DocumentHelperMixin):
     children = ListField(ReferenceField('self'), default=list)
     origin   = GenericReferenceField(verbose_name=_(u'Origin'),
                                      help_text=_(u'Initial origin from where '
-                                     u'the tag was created from, to eventually '
-                                     u'help defining other attributes.'))
+                                                 u'the tag was created from, '
+                                                 u'to eventually help '
+                                                 u'defining other attributes.'))
     duplicate_of = ReferenceField('Tag', verbose_name=_(u'Duplicate of'),
                                   help_text=_(u'Put a "master" tag here to '
-                                  u'help avoiding too much different tags '
-                                  u'(eg. singular and plurals) with the same '
-                                  u'meaning and loss of information.'))
+                                              u'help avoiding too much '
+                                              u'different tags (eg. singular '
+                                              u'and plurals) with the same '
+                                              u'meaning and loss of '
+                                              u'information.'))
 
     meta = {
         'indexes': ['name', ]
@@ -1270,9 +1273,10 @@ class Subscription(Document, DocumentHelperMixin):
     name = StringField()
 
     tags = ListField(GenericReferenceField(), default=list,
-                     verbose_name=_(u'tags'), help_text=_(u'Subscription tags, '
-                     u'which can also be seen as folders from the user point '
-                     u'of view.'))
+                     verbose_name=_(u'tags'),
+                     help_text=_(u'Subscription tags, which can also be '
+                                 u'seen as folders from the user point '
+                                 u'of view.'))
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article
@@ -1316,8 +1320,9 @@ class Article(Document, DocumentHelperMixin):
                                                u'to the 1flow database.'))
 
     tags = ListField(GenericReferenceField(), default=list,
-                     verbose_name=_(u'Tags'), help_text=_(u'Default tags that '
-                     u'will be applied to new reads of this article.'))
+                     verbose_name=_(u'Tags'),
+                     help_text=_(u'Default tags that will be applied to '
+                                 u'new reads of this article.'))
     default_rating = FloatField(default=0.0, verbose_name=_(u'default rating'),
                                 help_text=_(u'Rating used as a base when a '
                                             u'user has not already rated the '
@@ -2530,8 +2535,8 @@ class Read(Document, DocumentHelperMixin):
     date_read = DateTimeField()
     date_auto_read = DateTimeField()
     tags = ListField(GenericReferenceField(), default=list,
-                     verbose_name=_(u'Tags'), help_text=_(u'User set of tags '
-                     u'for this read.'))
+                     verbose_name=_(u'Tags'),
+                     help_text=_(u'User set of tags for this read.'))
 
     # This will be set to Article.default_rating
     # until the user sets it manually.
