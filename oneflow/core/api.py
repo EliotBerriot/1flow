@@ -10,7 +10,6 @@ from tastypie.fields import CharField
 
 from .models.nonrel import Subscription, Feed, Article, Read, Author
 
-from ..base.utils.dateutils import now
 from ..base.api import (UserResource,
                         common_authentication,
                         UserObjectsOnlyAuthorization, )
@@ -102,7 +101,7 @@ class ReadResource(MongoEngineResource):
         allowed_methods    = ('get', 'post', 'put', 'delete')
         collection_name    = 'objects'
         resource_name      = 'read'
-        filtering          = {'id': ALL, }
+        filtering          = {'id': ALL, 'is_read': ALL, }
         ordering           = ALL
         excludes           = ('article', 'user', )
 
