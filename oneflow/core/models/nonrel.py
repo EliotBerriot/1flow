@@ -2098,8 +2098,8 @@ class Article(Document, DocumentHelperMixin):
     def needs_ghost_preparser(self):
 
         try:
+            # TODO: this should be coming from the website, not the feed.
             return config.FEED_FETCH_GHOST_ENABLED and \
-                # TODO: this should be coming from the website, not the feed.
                 self.feed.has_option(CONTENT_PREPARSING_NEEDS_GHOST)
 
         except AttributeError:
