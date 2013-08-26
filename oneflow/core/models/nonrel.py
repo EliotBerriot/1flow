@@ -1358,24 +1358,24 @@ class Article(Document, DocumentHelperMixin):
                                        u'twitter, websnap…). Can be 0 '
                                        u'(none/unknown).'))
 
-    # The feed from which we got this article from. Can be ``None`` if the
-    # user snapped an article directly from a standalone web page in browser.
-    # TODO: remove this in favor of `.feeds`.
-    feed = ReferenceField('Feed')
-
-    feeds = ListField(ReferenceField('Feed'))
+    feeds = ListField(ReferenceField('Feed'), default=list)
 
     comments_feed = URLField()
 
-    #
-    # TODO: activate this on feed > feeds migration
-    # @property
-    # def feed(self):
-    #     """ return the first available feed. """
-    #     try:
-    #         return self.feeds[0]
-    #     except IndexError:
-    #         return None
+    @property
+    def feed(self):
+        """ return the first available feed for this article (an article can
+            be mutualized in many RSS feeds and thus have more than one).
+
+            .. note:: Can be ``None``, for example if the user snapped an
+                article directly from a standalone web page in browser.
+        """
+
+        try:
+            return self.feeds[0]
+
+        except IndexError:
+            return None
 
     # Allow quick find of duplicates if we ever want to delete them.
     duplicate_of = ReferenceField('Article', verbose_name=_(u'Duplicate of'),
@@ -2022,13 +2022,11 @@ class Article(Document, DocumentHelperMixin):
         #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
 
         try:
+            # TODO/FIXME: this *_limit() thing should bo into WebSite.
             if self.feed:
                 with self.feed.fetch_limit:
                     self.fetch_content_text(force=force, commit=commit)
             else:
-                #
-                # TODO: implement the fetch limit by website…
-                #
                 self.fetch_content_text(force=force, commit=commit)
 
         except (NoResourceAvailableException, AlreadyLockedException):
@@ -2050,6 +2048,8 @@ class Article(Document, DocumentHelperMixin):
         except requests.ConnectionError, e:
 
             if 'Errno 104' in str(e):
+                # TODO/FIXME: this *_limit() thing should bo into WebSite.
+
                 if self.feed:
                     # Special case, we probably hit a remote parallel limit.
                     self.feed.set_fetch_limit()
@@ -2099,6 +2099,7 @@ class Article(Document, DocumentHelperMixin):
 
         try:
             return config.FEED_FETCH_GHOST_ENABLED and \
+                # TODO: this should be coming from the website, not the feed.
                 self.feed.has_option(CONTENT_PREPARSING_NEEDS_GHOST)
 
         except AttributeError:
@@ -2108,6 +2109,7 @@ class Article(Document, DocumentHelperMixin):
     def likely_multipage_content(self):
 
         try:
+            # TODO: this should be coming from the website, not the feed.
             return self.feed.has_option(CONTENT_FETCH_LIKELY_MULTIPAGE)
 
         except AttributeError:
