@@ -6,9 +6,9 @@ import logging
 from constance import config
 
 from django.test import TestCase  # TransactionTestCase
-#from django.test.utils import override_settings
+from django.test.utils import override_settings
 
-from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite
+from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite, Author
 from oneflow.base.utils import RedisStatsCounter
 from oneflow.base.tests import (connect_mongodb_testsuite, TEST_REDIS)
 
@@ -20,6 +20,15 @@ RedisStatsCounter.REDIS = TEST_REDIS
 TEST_REDIS.flushdb()
 
 connect_mongodb_testsuite()
+
+# Empty the database before starting in case an old test failed to tearDown().
+Article.drop_collection()
+Read.drop_collection()
+User.drop_collection()
+Feed.drop_collection()
+Tag.drop_collection()
+WebSite.drop_collection()
+Author.drop_collection()
 
 
 class ThrottleIntervalTest(TestCase):
@@ -149,29 +158,23 @@ class ThrottleIntervalTest(TestCase):
                           '', 'last_mod'), config.FEED_FETCH_MIN_INTERVAL)
 
 
-#
-# Doesn't work because of https://github.com/celery/celery/issues/1478
-#
-# @override_settings(STATICFILES_STORAGE=
-#                    'pipeline.storage.NonPackagingPipelineStorage',
-#                    CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
-#                    CELERY_ALWAYS_EAGER=True,
-#                    BROKER_BACKEND='memory',)
-#
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
 class ArticleDuplicateTest(TestCase):
 
     def setUp(self):
 
-        Article.drop_collection()
-        User.drop_collection()
-        Feed.drop_collection()
-
+        # NOTE: we need real web pages, else the absolutization won't work or
+        # will find duplicates and tests will fail for a real-life reason.
         self.article1 = Article(title='test1',
-                                url='http://test.com/test1').save()
+                                url='http://blog.1flow.io/post/59410536612/1flow-blog-has-moved').save() # NOQA
         self.article2 = Article(title='test2',
-                                url='http://test.com/test2').save()
+                                url='http://obi.1flow.io/fr/').save()
         self.article3 = Article(title='test3',
-                                url='http://test.com/test3').save()
+                                url='http://obi.1flow.io/en/').save()
 
         # User & Reads creation
         for u in xrange(1, 6):
@@ -187,13 +190,21 @@ class ArticleDuplicateTest(TestCase):
             f = Feed(name='test feed #%s' % f,
                      url='http://test-feed%s.com' % f).save()
             self.article1.update(add_to_set__feeds=f)
+
             self.article1.reload()
 
         for f in xrange(6, 11):
             f = Feed(name='test feed #%s' % f,
                      url='http://test-feed%s.com' % f).save()
             self.article2.update(add_to_set__feeds=f)
+
             self.article2.reload()
+
+    def tearDown(self):
+        Article.drop_collection()
+        User.drop_collection()
+        Read.drop_collection()
+        Feed.drop_collection()
 
     def test_register_duplicate_bare(self):
 
@@ -201,6 +212,10 @@ class ArticleDuplicateTest(TestCase):
                           duplicate_of__exists=False).count(), 3)
 
         self.article1.register_duplicate(self.article2)
+
+        # needed because feeds are modified in another instance of the
+        # same dabase record, via the celery task.
+        self.article1.safe_reload()
 
         self.assertEquals(self.article1.reads.count(), 10)
 
@@ -220,6 +235,7 @@ class ArticleDuplicateTest(TestCase):
     def test_register_duplicate_not_again(self):
 
         self.article1.register_duplicate(self.article2)
+        self.article1.safe_reload()
 
         self.assertEquals(self.article2.duplicate_of, self.article1)
 
@@ -228,12 +244,17 @@ class ArticleDuplicateTest(TestCase):
         #
 
 
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
 class AbsolutizeTest(TestCase):
 
     def setUp(self):
 
-        Article.drop_collection()
-        Feed.drop_collection()
+        #Article.drop_collection()
+        #Feed.drop_collection()
 
         self.article1 = Article(title=u'test1',
                                 url=u'http://rss.feedsportal.com/c/707/f/9951/s/2b27496a/l/0L0Sreseaux0Etelecoms0Bnet0Cactualites0Clire0Elancement0Emondial0Edu0Esamsung0Egalaxy0Es40E25980A0Bhtml/story01.htm').save() # NOQA
@@ -245,6 +266,10 @@ class AbsolutizeTest(TestCase):
                                 url=u'http://host.non.exixstentz.com/absolutize_test').save() # NOQA
         self.article5 = Article(title=u'test5',
                                 url=u'http://1flow.io/absolutize_test_404').save() # NOQA
+
+    def tearDown(self):
+        Article.drop_collection()
+        Feed.drop_collection()
 
     def test_absolutize(self):
         self.article1.absolutize_url()
@@ -280,15 +305,21 @@ class AbsolutizeTest(TestCase):
         self.assertEquals(self.article4.url_error[:108], u"HTTPConnectionPool(host='host.non.exixstentz.com', port=80): Max retries exceeded with url: /absolutize_test") # NOQA
 
 
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
 class TagsTest(TestCase):
 
     def setUp(self):
 
-        Tag.drop_collection()
-
         self.t1 = Tag(name='test1').save()
         self.t2 = Tag(name='test2').save()
         self.t3 = Tag(name='test3').save()
+
+    def tearDown(self):
+        Tag.drop_collection()
 
     def test_add_parent(self):
 
@@ -313,6 +344,11 @@ class TagsTest(TestCase):
         self.assertEquals(self.t3 in self.t1.children, True)
 
 
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
 class WebSitesTest(TestCase):
     def setUp(self):
 
@@ -321,6 +357,10 @@ class WebSitesTest(TestCase):
 
         self.ws1 = WebSite(url='http://test1.com').save()
         self.ws2 = WebSite(url='http://test2.com').save()
+
+    def tearDown(self):
+        WebSite.drop_collection()
+        Article.drop_collection()
 
     def test_get_or_create_website(self):
 
@@ -380,5 +420,10 @@ class WebSitesTest(TestCase):
         pass
 
 
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
 class AuthorsTest(TestCase):
     pass
