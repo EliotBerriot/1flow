@@ -869,7 +869,8 @@ class Feed(Document, DocumentHelperMixin):
             self.fetch_limit_nr = new_limit
             self.save()
 
-            LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
+            LOGGER.info(u'Feed %s parallel fetch limit set to %s.',
+                        self, new_limit)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
