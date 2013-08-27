@@ -15,7 +15,7 @@ prod-fastdeploy:
 #	SPARKS_DJANGO_SETTINGS=chani_app ./manage.py runserver 0.0.0.0:8000
 
 runserver:
-	honcho -f Procfile.development start
+	honcho -f Procfile.development start --quiet flower,shell,celery_beat
 
 run: runserver
 
