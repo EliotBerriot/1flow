@@ -221,8 +221,12 @@ def production():
         },
         'worker_queues': {
             # The fetchers help on main queues, except 'low' which is… low.
-            'worker_fetch@worker-02.1flow.io': 'fetch,medium',
-            'worker_fetch@worker-04.1flow.io': 'fetch,high',
+            # Fetchers and swarmers share the background queue, which has
+            # no dedicated workers.
+            'worker_fetch@worker-02.1flow.io': 'fetch,medium,background',
+            'worker_fetch@worker-04.1flow.io': 'fetch,high,background',
+            'worker_swarm@worker-02.1flow.io': 'swarm,background',
+            'worker_swarm@worker-04.1flow.io': 'swarm,background',
         },
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
