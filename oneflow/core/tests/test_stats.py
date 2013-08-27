@@ -4,6 +4,7 @@
 import logging
 
 from django.test import TestCase
+from django.test.utils import override_settings
 
 from oneflow.base.tests import connect_mongodb_testsuite
 from oneflow.core.models import Article
@@ -14,15 +15,25 @@ LOGGER = logging.getLogger(__file__)
 
 connect_mongodb_testsuite()
 
+Article.drop_collection()
 
+
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
 class ErrorClassifierTests(TestCase):
 
     def setUp(self):
 
-        Article.drop_collection()
-
+        # NOTE: we need real web pages, else the absolutization won't work or
+        # will find duplicates and tests will fail for a real-life reason.
+        # Here we need to keep an article without any url_error, so we have
+        # to make it point to a real working URL.
         self.a1 = Article(title='ErrorClassifierTests #1',
-                          url='http://t.co/t1').save()
+                          url='http://blog.1flow.io/post/59410536612/1flow-blog-has-moved').save() # NOQA
+
         self.a2 = Article(title='ErrorClassifierTests #2',
                           url='http://t.co/t2',
                           url_error="HTTPConnectionPool(host='t.co', port=80): Max retries exceeded with url: /t1 (Caused by <class 'socket.error'>: [Errno 60] Operation timed out)").save() # NOQA
@@ -38,6 +49,9 @@ class ErrorClassifierTests(TestCase):
         self.a6 = Article(title='ErrorClassifierTests #6',
                           url='http://t.co/6',
                           url_error="HTTPConnectionPool(host='t.co', port=80): Max retries exceeded with url: /t6 (Caused by <class 'socket.error'>: [Errno 54] Connection reset by peer)").save() # NOQA
+
+    def tearDown(self):
+        Article.drop_collection()
 
     def test_python_errors_classifiers(self):
 
@@ -95,8 +109,6 @@ class ErrorClassifierTests(TestCase):
         # NOTE: these errors strings are directly taken from the production
         #       database. Only URLs have been changed for tests.
         #
-
-
         # ValidationError (Article:51fa68957711037f4003a37b) (1.GenericReferences can only contain documents: ['tags']): 1
         # ValidationError (Article:51fa68e47711037f3d03a3fe) (5.GenericReferences can only contain documents: ['tags']): 1
         # ValidationError (Article:51fa6b6aa24639329b2ce203) (1.GenericReferences can only contain documents: ['tags']): 1
@@ -108,6 +120,8 @@ class ErrorClassifierTests(TestCase):
         # ValidationError (Article:51fa6b3f7711037f6a25ae46) (6.GenericReferences can only contain documents: ['tags']): 1
         # ValidationError (Article:51fa6b68a2463932a02ce2af) (11.GenericReferences can only contain documents: ['tags']): 1
 
+        # TODO: url_error__ne -> content_error__ne
+        # when we fully implement this test method.
         results = ContentErrorClassifier(Article.objects(url_error__ne=''),
                                          'content_error').classify()
 

@@ -1,4 +1,36 @@
 # -*- coding: utf-8 -*-
+"""
+
+
+    .. note:: as of Celery 3.0.20, there are many unsolved problems related
+        to tasks-as-methods. Just to name a few:
+        - https://github.com/celery/celery/issues/1458
+        - https://github.com/celery/celery/issues/1459
+        - https://github.com/celery/celery/issues/1478
+
+        As I have no time to dive into celery celery and fix them myself,
+        I just turned tasks-as-methods into standard tasks calling the "old"
+        method inside the task.
+
+        This has the side-effect-benefit of avoiding any `.reload()` call
+        inside the tasks methods themselves, but forces us to write extraneous
+        functions only for the tasks, which is duplicate work for me.
+
+        But in the meantime, this allows tests to work correctly, which is
+        a much bigger benefit.
+
+    .. warning:: **convention** says tasks that call `Class.method()` must
+        be named `class_method()` (``class`` as lowercase). Lookups rely on
+        this.
+
+        And special post-create tasks must be
+        named ``def class_post_create_task()``, not
+        just ``class_article_post_create``. This is because these special
+        methods are not meant to be called in the app normal life, only at a
+        special moment (after database record creation, exactly).
+        BUT, I prefer the ``name=`` of the celery task to stay without
+        the ``_task`` for shortyness and readability in celery flower.
+"""
 
 import os
 import re
@@ -19,8 +51,8 @@ from constance import config
 from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
 
-from celery import group as tasks_group
-from celery.contrib.methods import task as celery_task_method
+from celery import task, group as tasks_group
+
 from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
@@ -144,14 +176,7 @@ class DocumentHelperMixin(object):
 
     @property
     def _db_name(self):
-
-        # We need to workaround
-        # https://github.com/MongoEngine/mongoengine/pull/441
-        try:
-            return self._get_db().name
-
-        except:
-            return self._get_db()().name
+        return self._get_db().name
 
     def register_duplicate(self, duplicate, force=False):
 
@@ -159,7 +184,7 @@ class DocumentHelperMixin(object):
         # on a document that has the atribute.
         assert hasattr(duplicate, 'duplicate_of')
 
-        _cls_name_   = self.__class__.__name__
+        _cls_name_ = self.__class__.__name__
 
         # TODO: get this from a class attribute?
         # I'm not sure for MongoEngine models.
@@ -194,18 +219,16 @@ class DocumentHelperMixin(object):
         statsd.gauge('%s.counts.duplicates' % lower_plural, 1, delta=True)
 
         try:
-            #
-            # Until https://github.com/celery/celery/issues/1478 is resolved,
-            # we cannot use EAGER on tests, which make them fail if the
-            # following is ran as a task. Must run // for now. Bummer!
-            #
-            self.replace_duplicate_everywhere(duplicate)
-            #self.replace_duplicate_everywhere.apply_async((duplicate, ),
-            #                                              queue='low')
+            # Having tasks not as methods because of Celery bugs forces
+            # us to do strange things. We have to "guess" and lookup the
+            # task name in the current module. OK, not *that* big deal.
+            globals()[self.__class__.__name__.lower()
+                      + '_replace_duplicate_everywhere'].delay(self.id,
+                                                               duplicate)
 
-        except AttributeError:
-            LOGGER.debug(u'Object %s does not have a '
-                         u'`replace_duplicate_everywhere()` task.', self)
+        except KeyError:
+            LOGGER.warning(u'Object %s does not have a '
+                           u'`replace_duplicate_everywhere()` task.', self)
 
     def offload_attribute(self, attribute_name, remove=False):
         """ NOTE: this method is not used as of 20130816, but I keep it because
@@ -264,6 +287,12 @@ class Source(Document, DocumentHelperMixin):
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
+
+@task(name='WebSite.post_create', queue='high')
+def website_post_create_task(website_id):
+
+    website = WebSite.objects.get(id=website_id)
+    website.post_create_task()
 
 
 class WebSite(Document, DocumentHelperMixin):
@@ -377,10 +406,10 @@ class WebSite(Document, DocumentHelperMixin):
                 # We don't run the post_create() task in the archive
                 # database: the article is already complete.
                 if website._db_name != settings.MONGODB_NAME_ARCHIVE:
-                    website.post_create_task.delay()
+                    website_post_create_task.delay(website.id)
 
-    @celery_task_method(name='WebSite.post_create', queue='high')
     def post_create_task(self):
+        """ Method meant to be run from a celery task. """
 
         if not self.slug:
             if self.name is None:
@@ -392,6 +421,7 @@ class WebSite(Document, DocumentHelperMixin):
             self.save()
 
             statsd.gauge('websites.counts.total', 1, delta=True)
+
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
 
@@ -410,6 +440,20 @@ class WordRelation(EmbeddedDocument):
                                            verbose_name=_(u'Relation with'),
                                            help_text=_(u'The word'))
     relation_score = FloatField()
+
+
+@task(name='Tag.post_create', queue='high')
+def tag_post_create_task(tag_id, *args, **kwargs):
+
+    tag = Tag.objects.get(id=tag_id)
+    tag.post_create_task(*args, **kwargs)
+
+
+@task(name='Tag.replace_duplicate_everywhere')
+def tag_replace_duplicate_everywhere(tag_id, *args, **kwargs):
+
+    tag = Tag.objects.get(id=tag_id)
+    tag.replace_duplicate_everywhere(*args, **kwargs)
 
 
 class Tag(Document, DocumentHelperMixin):
@@ -452,10 +496,10 @@ class Tag(Document, DocumentHelperMixin):
 
         if created:
             if tag._db_name != settings.MONGODB_NAME_ARCHIVE:
-                tag.post_create_task.delay()
+                tag_post_create_task.delay(tag.id)
 
-    @celery_task_method(name='Tag.post_create', queue='high')
     def post_create_task(self):
+        """ Method meant to be run from a celery task. """
 
         if not self.slug:
             self.slug = slugify(self.name)
@@ -480,7 +524,6 @@ class Tag(Document, DocumentHelperMixin):
 
         return tags
 
-    @celery_task_method(name='Tag.replace_duplicate_everywhere')
     def replace_duplicate_everywhere(self, duplicate, force=False):
 
         #
@@ -500,6 +543,10 @@ class Tag(Document, DocumentHelperMixin):
 
             article.update(pull__tags=duplicate)
             article.update(add_to_set__tags=self)
+
+        #
+        # TODO: do the same for feeds, reads (, subscriptions?) …
+        #
 
     def safe_reload(self):
         """ Because it fails if no object present. """
@@ -604,6 +651,41 @@ def feed_subscriptions_count_default(feed, *args, **kwargs):
     return feed.subscriptions.count()
 
 
+@task(name='Feed.update_latest_article_date_published', queue='low')
+def feed_update_latest_article_date_published(feed_id, *args, **kwargs):
+
+    feed = Feed.objects.get(id=feed_id)
+    feed.update_latest_article_date_published(*args, **kwargs)
+
+
+@task(name='Feed.update_recent_articles_count', queue='low')
+def feed_update_recent_articles_count(feed_id, *args, **kwargs):
+
+    feed = Feed.objects.get(id=feed_id)
+    feed.update_recent_articles_count(*args, **kwargs)
+
+
+@task(name='Feed.update_subscriptions_count', queue='low')
+def feed_update_subscriptions_count(feed_id, *args, **kwargs):
+
+    feed = Feed.objects.get(id=feed_id)
+    feed.update_subscriptions_count(*args, **kwargs)
+
+
+@task(name='Feed.update_all_articles_count', queue='low')
+def feed_update_all_articles_count(feed_id, *args, **kwargs):
+
+    feed = Feed.objects.get(id=feed_id)
+    feed.update_all_articles_count(*args, **kwargs)
+
+
+@task(name='Feed.refresh', queue='medium')
+def feed_refresh(feed_id, *args, **kwargs):
+
+    feed = Feed.objects.get(id=feed_id)
+    feed.refresh(*args, **kwargs)
+
+
 class Feed(Document, DocumentHelperMixin):
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
@@ -678,8 +760,6 @@ class Feed(Document, DocumentHelperMixin):
         except:
             return None
 
-    @celery_task_method(name='Feed.update_latest_article_date_published',
-                        queue='low')
     def update_latest_article_date_published(self):
         """ This seems simple, but this operations costs a lot in MongoDB. """
 
@@ -702,7 +782,6 @@ class Feed(Document, DocumentHelperMixin):
                 - timedelta(
                     days=config.FEED_ADMIN_MEANINGFUL_DELTA))
 
-    @celery_task_method(name='Feed.update_recent_articles_count', queue='low')
     def update_recent_articles_count(self, force=False):
         """ This task is protected to run only once per day,
             even if is called more. """
@@ -725,7 +804,6 @@ class Feed(Document, DocumentHelperMixin):
 
         return Subscription.objects.filter(feed=self)
 
-    @celery_task_method(name='Feed.update_subscriptions_count', queue='low')
     def update_subscriptions_count(self):
 
         self.subscriptions_count = self.subscriptions.count()
@@ -734,7 +812,6 @@ class Feed(Document, DocumentHelperMixin):
     def all_articles(self):
         return Article.objects.filter(feed=self)
 
-    @celery_task_method(name='Feed.update_all_articles_count', queue='low')
     def update_all_articles_count(self):
 
         self.all_articles_count = self.all_articles.count()
@@ -785,7 +862,8 @@ class Feed(Document, DocumentHelperMixin):
             self.fetch_limit_nr = new_limit
             self.save()
 
-            LOGGER.info('Feed %s parallel fetch limit set to %s.' % new_limit)
+            LOGGER.info(u'Feed %s parallel fetch limit set to %s.',
+                        self, new_limit)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -796,7 +874,7 @@ class Feed(Document, DocumentHelperMixin):
         if created:
             if feed._db_name != settings.MONGODB_NAME_ARCHIVE:
                 # Update the feed immediately after creation.
-                feed.refresh.delay()
+                feed_refresh.delay(feed.id)
 
     def has_option(self, option):
         return option in self.options
@@ -1119,7 +1197,6 @@ class Feed(Document, DocumentHelperMixin):
 
         return interval
 
-    @celery_task_method(name='Feed.refresh', queue='medium')
     def refresh(self, force=False):
         """ Find new articles in an RSS feed.
 
@@ -1145,16 +1222,10 @@ class Feed(Document, DocumentHelperMixin):
         try:
             feed_status = http_logger.log[-1]['status']
 
-        except IndexError:
+        except IndexError, e:
             # The website could not be reached? Network
             # unavailable? on my production server???
-
-            # NOT until https://github.com/celery/celery/issues/1458 is fixed. # NOQA
-            #raise self.refresh.retry(exc=e)
-
-            self.error('Highly probable network error (http_log is empty)',
-                       last_fetch=True)
-            return
+            raise feed_refresh.retry((self.id, ), exc=e)
 
         # Stop on HTTP errors before stopping on feedparser errors,
         # because he is much more lenient in many conditions.
@@ -1280,6 +1351,41 @@ class Subscription(Document, DocumentHelperMixin):
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article
+
+
+@task(name='Article.absolutize_url', queue='swarm', default_retry_delay=3600)
+def article_absolutize_url(article_id, *args, **kwargs):
+
+    article = Article.objects.get(id=article_id)
+    article.absolutize_url(*args, **kwargs)
+
+
+@task(name='Article.postprocess_original_data', queue='low')
+def article_postprocess_original_data(article_id, *args, **kwargs):
+
+    article = Article.objects.get(id=article_id)
+    article.postprocess_original_data(*args, **kwargs)
+
+
+@task(name='Article.replace_duplicate_everywhere')
+def article_replace_duplicate_everywhere(article_id, *args, **kwargs):
+
+    article = Article.objects.get(id=article_id)
+    article.replace_duplicate_everywhere(*args, **kwargs)
+
+
+@task(name='Article.fetch_content', queue='fetch', default_retry_delay=3600)
+def article_fetch_content(article_id, *args, **kwargs):
+
+    article = Article.objects.get(id=article_id)
+    article.fetch_content(*args, **kwargs)
+
+
+@task(name='Article.post_create', queue='high')
+def article_post_create_task(article_id, *args, **kwargs):
+
+    article = Article.objects.get(id=article_id)
+    article.post_create_task(*args, **kwargs)
 
 
 class Article(Document, DocumentHelperMixin):
@@ -1472,11 +1578,13 @@ class Article(Document, DocumentHelperMixin):
         if self.url_error:
             if force:
                 self.url_error = u''
+
                 if commit:
                     self.save()
             else:
-                LOGGER.warning(u'Article %s has an URL error, aborting '
-                               u'(%s).', self, self.url_error)
+                LOGGER.warning(u'Article %s already has an URL error, '
+                               u'aborting absolutization (currently: %s).',
+                               self, self.url_error)
                 return True
 
         return False
@@ -1510,8 +1618,6 @@ class Article(Document, DocumentHelperMixin):
         # last URL we got. Better than nothing.
         return clean_url(requests_response.url)
 
-    @celery_task_method(name='Article.absolutize_url', queue='swarm',
-                        default_retry_delay=3600)
     def absolutize_url(self, requests_response=None, force=False, commit=True):
         """ Make the current article URL absolute. Eg. transform:
 
@@ -1642,8 +1748,6 @@ class Article(Document, DocumentHelperMixin):
 
         return True
 
-    @celery_task_method(name='Article.postprocess_feedparser_data',
-                        queue='low')
     def postprocess_original_data(self, force=False, commit=True):
 
         methods_table = {
@@ -1806,7 +1910,6 @@ class Article(Document, DocumentHelperMixin):
             if need_reload:
                 read.safe_reload()
 
-    @celery_task_method(name='Article.replace_duplicate_everywhere')
     def replace_duplicate_everywhere(self, duplicate, force=False):
         """ register :param:`duplicate` as a duplicate content of myself.
 
@@ -1988,8 +2091,6 @@ class Article(Document, DocumentHelperMixin):
 
         return False
 
-    @celery_task_method(name='Article.fetch_content', queue='fetch',
-                        default_retry_delay=3600, soft_time_limit=180)
     def fetch_content(self, force=False, commit=True):
 
         # In tasks, doing this is often useful, if
@@ -2003,20 +2104,6 @@ class Article(Document, DocumentHelperMixin):
         # TODO: implement switch based on content type.
         #
 
-        # Testing for https://github.com/celery/celery/issues/1459
-        #
-        # from celery import current_task
-        #
-        # LOGGER.warning('>>> %s %s RAISING!', self, current_task.__self__)
-        # e = RuntimeError('TESTING_CURRENT_TASK')
-        # self.content_error = str(e)
-        # self.save()
-        #
-        # raise self.fetch_content.retry(exc=e, countdown=randrange(60))
-
-        # retry() won't work because of issue 1458, we have to fake.
-        #raise self.fetch_content.retry(exc=e, countdown=randrange(60))
-
         try:
             # TODO/FIXME: this *_limit() thing should bo into WebSite.
             if self.feed:
@@ -2026,15 +2113,15 @@ class Article(Document, DocumentHelperMixin):
                 self.fetch_content_text(force=force, commit=commit)
 
         except (NoResourceAvailableException, AlreadyLockedException):
-            # TODO: use retry() when celery#1458 is solved
             countdown = randrange(60)
+
             LOGGER.warning(u'Feed %s has already the maximum '
                            u'number of fetchers, re-planning '
                            u'fetch of article %s in %s.', self.feed,
                            self, naturaldelta(countdown))
-            self.fetch_content.apply_async((force, commit),
-                                           countdown=countdown)
-            return
+
+            raise article_fetch_content.retry((self.id, force, commit),
+                                              countdown=countdown)
 
         except StopProcessingException, e:
             LOGGER.info(u'Stopping processing of article %s on behalf of '
@@ -2050,10 +2137,10 @@ class Article(Document, DocumentHelperMixin):
                     # Special case, we probably hit a remote parallel limit.
                     self.feed.set_fetch_limit()
 
-                # TODO: use retry() when celery#1458 is solved
-                self.fetch_content.apply_async((force, commit),
-                                               countdown=randrange(60))
-                return
+                countdown = randrange(60)
+
+                raise article_fetch_content.retry((self.id, force, commit),
+                                                  countdown=countdown)
 
             statsd.gauge('articles.counts.content_errors', 1, delta=True)
             self.content_error = str(e)
@@ -2434,10 +2521,10 @@ class Article(Document, DocumentHelperMixin):
             # up the database name.
             if not (article.orphaned or article.duplicate_of):
                 if article._db_name != settings.MONGODB_NAME_ARCHIVE:
-                    article.post_create_task.delay()
+                    article_post_create_task.delay(article.id)
 
-    @celery_task_method(name='Article.post_create', queue='high')
     def post_create_task(self):
+        """ Method meant to be run from a celery task. """
 
         if not self.slug:
             self.slug = slugify(self.title)
@@ -2451,8 +2538,8 @@ class Article(Document, DocumentHelperMixin):
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
         # as much as possible. This is not yet a full-featured solution,
         # but it's completed by the `fetch_limit` thing.
-        absolute_result = self.absolutize_url.apply_async(
-                            (), countdown=randrange(5))
+        absolute_result = article_absolutize_url.apply_async(
+                            (self.id, ), countdown=randrange(5))
 
         #
         # Absolutization conditions everything else. If it doesn't succeed:
@@ -2465,8 +2552,8 @@ class Article(Document, DocumentHelperMixin):
 
         if absolute_result.get(interval=1):
             post_create_tasks_group = tasks_group(
-                self.postprocess_original_data.s(self),
-                self.fetch_content.s(self)
+                article_postprocess_original_data.s(self.id),
+                article_fetch_content.s(self.id)
             )
 
             post_create_tasks_group.delay()
@@ -2653,6 +2740,13 @@ class Preference(Document, DocumentHelperMixin):
     notification = EmbeddedDocumentField('NotificationPreference')
 
 
+@task(name='Author.post_create', queue='high')
+def author_post_create_task(author_id, *args, **kwargs):
+
+    author = Author.objects.get(id=author_id)
+    author.post_create_task(*args, **kwargs)
+
+
 class Author(Document, DocumentHelperMixin):
     name        = StringField()
     website     = ReferenceField('WebSite', unique_with='origin_name')
@@ -2694,10 +2788,11 @@ class Author(Document, DocumentHelperMixin):
 
         if created:
             if author._db_name != settings.MONGODB_NAME_ARCHIVE:
-                author.post_create_task.delay()
+                author_post_create_task.delay(author.id)
 
-    @celery_task_method(name='Author.post_create', queue='high')
     def post_create_task(self):
+        """ Method meant to be run from a celery task. """
+
         statsd.gauge('authors.counts.total', 1, delta=True)
 
     @classmethod
@@ -2814,6 +2909,13 @@ def user_django_user_random_default():
                                u' generate a not-taken random ID)…')
 
 
+@task(name='User.post_create', queue='high')
+def user_post_create_task(user_id, *args, **kwargs):
+
+    user = User.objects.get(id=user_id)
+    user.post_create_task(*args, **kwargs)
+
+
 class User(Document, DocumentHelperMixin):
     django_user = IntField(unique=True)
     username    = StringField()
@@ -2844,11 +2946,11 @@ class User(Document, DocumentHelperMixin):
         if created:
             if user._db_name != settings.MONGODB_NAME_ARCHIVE:
                 # NOT YET. Needs review.
-                #user.post_create_task.delay()
+                #user_post_create_task.delay(user.id)
                 pass
 
-    @celery_task_method(name='User.post_create', queue='high')
     def post_create_task(self):
+        """ Method meant to be run from a celery task. """
 
         django_user = DjangoUser.objects.get(id=self.django_user)
         self.username = django_user.username
