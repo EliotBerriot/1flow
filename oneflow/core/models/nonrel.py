@@ -176,14 +176,7 @@ class DocumentHelperMixin(object):
 
     @property
     def _db_name(self):
-
-        # We need to workaround
-        # https://github.com/MongoEngine/mongoengine/pull/441
-        try:
-            return self._get_db().name
-
-        except:
-            return self._get_db()().name
+        return self._get_db().name
 
     def register_duplicate(self, duplicate, force=False):
 
