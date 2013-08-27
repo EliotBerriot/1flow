@@ -517,10 +517,15 @@ class Tag(Document, DocumentHelperMixin):
 
             try:
                 tag = cls.objects.get(name=tag_name)
-                tags.add(tag.duplicate_of or tag)
 
             except cls.DoesNotExist:
-                tags.add(cls(name=tag_name, origin=origin).save())
+                try:
+                    tag = cls(name=tag_name, origin=origin).save()
+
+                except (NotUniqueError, DuplicateKeyError):
+                    tag = cls.objects.get(name=tag_name)
+
+            tags.add(tag.duplicate_of or tag)
 
         return tags
 
@@ -2868,8 +2873,14 @@ class Author(Document, DocumentHelperMixin):
                 return cls.objects.get(origin_name=email, website=website)
 
             except cls.DoesNotExist:
-                return cls(origin_name=email, website=website,
-                           is_unsure=False).save()
+                try:
+                    return cls(origin_name=email, website=website,
+                               is_unsure=False).save()
+
+                except (NotUniqueError, DuplicateKeyError):
+                    # We just hit the race condition with two creations
+                    # At the same time. Same player shoots again.
+                    return cls.objects.get(origin_name=email, website=website)
 
         origin_name = author_dict.get('name', None)
 
@@ -2879,9 +2890,15 @@ class Author(Document, DocumentHelperMixin):
                                        website=website)
 
             except cls.DoesNotExist:
-                return cls(origin_name=origin_name,
-                           website=website,
-                           is_unsure=True).save()
+                try:
+                    return cls(origin_name=origin_name,
+                               website=website,
+                               is_unsure=True).save()
+                except (NotUniqueError, DuplicateKeyError):
+                    # We just hit the race condition with two creations
+                    # At the same time. Same player shoots again.
+                    return cls.objects.get(origin_name=origin_name,
+                                           website=website)
 
         return None
 
