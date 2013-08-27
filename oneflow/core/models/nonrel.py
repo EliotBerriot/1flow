@@ -2868,8 +2868,14 @@ class Author(Document, DocumentHelperMixin):
                 return cls.objects.get(origin_name=email, website=website)
 
             except cls.DoesNotExist:
-                return cls(origin_name=email, website=website,
-                           is_unsure=False).save()
+                try:
+                    return cls(origin_name=email, website=website,
+                               is_unsure=False).save()
+
+                except (NotUniqueError, DuplicateKeyError):
+                    # We just hit the race condition with two creations
+                    # At the same time. Same player shoots again.
+                    return cls.objects.get(origin_name=email, website=website)
 
         origin_name = author_dict.get('name', None)
 
