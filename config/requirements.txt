@@ -11,18 +11,19 @@
 -e git+https://github.com/kmmbvnr/django-jenkins.git@master#egg=django-jenkins-dev
 -e git+https://github.com/noirbizarre/django-ember.git@47b5dad4f623efaccd3492c11d96fa4afdf8fb33#egg=django_ember-origin/HEAD
 -e git+https://github.com/noirbizarre/django.js.git@e3fb6b87f5eb98aaa0b87498db58fc354b46dcee#egg=django.js-origin/HEAD
+-e git+https://github.com/nickstenning/honcho.git@master#egg=honcho-dev
 amqp==1.0.12
 anyjson==0.3.3
 beautifulsoup4==4.2.1
-billiard==2.7.3.31
+billiard==2.7.3.32
 blinker==1.3
-celery==3.0.21
+celery==3.0.22
 chardet==2.1.1
 Cython==0.19.1
 dj-database-url==0.2.1
 django-absolute==0.3
 django-bcrypt==0.9.2
-django-celery==3.0.17
+django-celery==3.0.21
 django-constance==0.6
 django-cors-headers==0.11
 django-debug-toolbar==0.9.4
@@ -56,11 +57,10 @@ futures==2.1.4
 greenlet==0.4.1
 gunicorn==0.17.4
 hiredis==0.1.1
-honcho==0.4.2
 html2text==3.200.3
 html5lib==1.0b2
-Jinja2==2.7
-kombu==2.5.12
+Jinja2==2.7.1
+kombu==2.5.13
 lxml==3.2.1
 manifesto==0.4.1
 markdown2==2.1.0

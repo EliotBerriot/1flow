@@ -446,14 +446,14 @@ class WordRelation(EmbeddedDocument):
 def tag_post_create_task(tag_id, *args, **kwargs):
 
     tag = Tag.objects.get(id=tag_id)
-    tag.post_create_task(*args, **kwargs)
+    return tag.post_create_task(*args, **kwargs)
 
 
 @task(name='Tag.replace_duplicate_everywhere')
 def tag_replace_duplicate_everywhere(tag_id, *args, **kwargs):
 
     tag = Tag.objects.get(id=tag_id)
-    tag.replace_duplicate_everywhere(*args, **kwargs)
+    return tag.replace_duplicate_everywhere(*args, **kwargs)
 
 
 class Tag(Document, DocumentHelperMixin):
@@ -655,35 +655,35 @@ def feed_subscriptions_count_default(feed, *args, **kwargs):
 def feed_update_latest_article_date_published(feed_id, *args, **kwargs):
 
     feed = Feed.objects.get(id=feed_id)
-    feed.update_latest_article_date_published(*args, **kwargs)
+    return feed.update_latest_article_date_published(*args, **kwargs)
 
 
 @task(name='Feed.update_recent_articles_count', queue='low')
 def feed_update_recent_articles_count(feed_id, *args, **kwargs):
 
     feed = Feed.objects.get(id=feed_id)
-    feed.update_recent_articles_count(*args, **kwargs)
+    return feed.update_recent_articles_count(*args, **kwargs)
 
 
 @task(name='Feed.update_subscriptions_count', queue='low')
 def feed_update_subscriptions_count(feed_id, *args, **kwargs):
 
     feed = Feed.objects.get(id=feed_id)
-    feed.update_subscriptions_count(*args, **kwargs)
+    return feed.update_subscriptions_count(*args, **kwargs)
 
 
 @task(name='Feed.update_all_articles_count', queue='low')
 def feed_update_all_articles_count(feed_id, *args, **kwargs):
 
     feed = Feed.objects.get(id=feed_id)
-    feed.update_all_articles_count(*args, **kwargs)
+    return feed.update_all_articles_count(*args, **kwargs)
 
 
 @task(name='Feed.refresh', queue='medium')
 def feed_refresh(feed_id, *args, **kwargs):
 
     feed = Feed.objects.get(id=feed_id)
-    feed.refresh(*args, **kwargs)
+    return feed.refresh(*args, **kwargs)
 
 
 class Feed(Document, DocumentHelperMixin):
@@ -1357,35 +1357,35 @@ class Subscription(Document, DocumentHelperMixin):
 def article_absolutize_url(article_id, *args, **kwargs):
 
     article = Article.objects.get(id=article_id)
-    article.absolutize_url(*args, **kwargs)
+    return article.absolutize_url(*args, **kwargs)
 
 
 @task(name='Article.postprocess_original_data', queue='low')
 def article_postprocess_original_data(article_id, *args, **kwargs):
 
     article = Article.objects.get(id=article_id)
-    article.postprocess_original_data(*args, **kwargs)
+    return article.postprocess_original_data(*args, **kwargs)
 
 
 @task(name='Article.replace_duplicate_everywhere')
 def article_replace_duplicate_everywhere(article_id, *args, **kwargs):
 
     article = Article.objects.get(id=article_id)
-    article.replace_duplicate_everywhere(*args, **kwargs)
+    return article.replace_duplicate_everywhere(*args, **kwargs)
 
 
 @task(name='Article.fetch_content', queue='fetch', default_retry_delay=3600)
 def article_fetch_content(article_id, *args, **kwargs):
 
     article = Article.objects.get(id=article_id)
-    article.fetch_content(*args, **kwargs)
+    return article.fetch_content(*args, **kwargs)
 
 
 @task(name='Article.post_create', queue='high')
 def article_post_create_task(article_id, *args, **kwargs):
 
     article = Article.objects.get(id=article_id)
-    article.post_create_task(*args, **kwargs)
+    return article.post_create_task(*args, **kwargs)
 
 
 class Article(Document, DocumentHelperMixin):
@@ -2744,7 +2744,7 @@ class Preference(Document, DocumentHelperMixin):
 def author_post_create_task(author_id, *args, **kwargs):
 
     author = Author.objects.get(id=author_id)
-    author.post_create_task(*args, **kwargs)
+    return author.post_create_task(*args, **kwargs)
 
 
 class Author(Document, DocumentHelperMixin):
@@ -2913,7 +2913,7 @@ def user_django_user_random_default():
 def user_post_create_task(user_id, *args, **kwargs):
 
     user = User.objects.get(id=user_id)
-    user.post_create_task(*args, **kwargs)
+    return user.post_create_task(*args, **kwargs)
 
 
 class User(Document, DocumentHelperMixin):
