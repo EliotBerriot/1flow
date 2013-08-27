@@ -517,10 +517,15 @@ class Tag(Document, DocumentHelperMixin):
 
             try:
                 tag = cls.objects.get(name=tag_name)
-                tags.add(tag.duplicate_of or tag)
 
             except cls.DoesNotExist:
-                tags.add(cls(name=tag_name, origin=origin).save())
+                try:
+                    tag = cls(name=tag_name, origin=origin).save()
+
+                except (NotUniqueError, DuplicateKeyError):
+                    tag = cls.objects.get(name=tag_name)
+
+            tags.add(tag.duplicate_of or tag)
 
         return tags
 
