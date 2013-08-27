@@ -176,3 +176,48 @@ Needs a repair (currently impossible because of too-low disk space to hold 2 cop
 
     fab prod workers start
     fab prod op
+
+# Second run, the in-error articles
+
+    agr = Article.objects(google_reader_original_data__ne=None)
+    agr.count()
+
+    # 554
+
+    failed_add = []
+    failed_del = []
+
+    with benchmark('Moving %s Google Reader data' % agr.count()):
+        for article in agr:
+            try:
+                article.add_original_data('google_reader', unicode(article.google_reader_original_data))
+            except:
+                failed_add.append(article)
+                LOGGER.exception("%s AOD failed", article)
+            else:
+                try:
+                    article.update(set__google_reader_original_data=None)
+                except:
+                    failed_del.append(article)
+                    LOGGER.exception('%s GRD failed')
+
+    # Moving 554 Google Reader data started 2013-08-26 17:14, ran in 4 seconds.
+
+    agr = Article.objects(google_reader_original_data__ne=None)
+    agr.count()
+
+    # 0
+
+# Clean the database
+
+    db.article.update({ "feedparser_original_data": { $exists: true }},
+                      { $unset: { "feedparser_original_data": 1 }}, false, true);
+    db.article.find({ "feedparser_original_data": { $exists: true }}).count(true);
+
+    db.article.update({ "google_reader_original_data": { $exists: true }},
+                      { $unset: { "google_reader_original_data": 1 }}, false, true);
+    db.article.find({ "google_reader_original_data": { $exists: true }}).count(true);
+
+    db.repairDatabase()
+
+And global database size shrank from 20680309816 to 15421747988 (-25%) :-D

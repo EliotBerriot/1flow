@@ -24,7 +24,9 @@ from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 from .models import (RATINGS,
-                     Article, Feed, Subscription, Read, User as MongoUser)
+                     Article,
+                     Feed, feed_refresh,
+                     Subscription, Read, User as MongoUser)
 from .stats import synchronize_statsd_articles_gauges
 
 from .gr_import import GoogleReaderImport
@@ -432,7 +434,7 @@ def import_google_reader_starred(user_id, username, gr_feed, wave=0):
                                 feed, [mongo_user], gr_article.read,
                                 gr_article.starred,
                                 [c.label for c
-                                in real_gr_feed.getCategories()])
+                                 in real_gr_feed.getCategories()])
 
         if not subscribed:
             gri.incr_articles()
@@ -610,7 +612,7 @@ def refresh_all_feeds(limit=None):
 
             if feed.last_fetch is None:
 
-                feed.refresh.delay()
+                feed_refresh.delay(feed.id)
 
                 LOGGER.info(u'Launched immediate refresh of feed %s which '
                             u'has never been refreshed.', feed)
@@ -622,11 +624,11 @@ def refresh_all_feeds(limit=None):
 
                 if config.FEED_REFRESH_RANDOMIZE:
                     countdown = randrange(config.FEED_REFRESH_RANDOMIZE_DELAY)
-                    feed.refresh.apply_async((), countdown=countdown)
+                    feed_refresh.apply_async((feed.id, ), countdown=countdown)
 
                 else:
                     countdown = 0
-                    feed.refresh.delay()
+                    feed_refresh.delay(feed.id)
 
                 LOGGER.info(u'%s refresh of feed %s %s (%s late).',
                             u'Scheduled randomized'
@@ -668,15 +670,15 @@ def global_feeds_checker():
     mail_managers(_(u'Reminder: {0} feed(s) closed in last '
                   u'{1} day(s)').format(count, limit_days),
                   _(u"\n\nHere is the list, dates (if any), and reasons "
-                  u"(if any) of closing:\n\n{feed_list}\n\nYou can manually "
-                  u"reopen any of them from the admin interface.\n\n").format(
-                  feed_list='\n\n'.join(
-                  u'- %s,\n'
-                  u'    - admin url: http://%s%s\n'
-                  u'    - public url: %s\n'
-                  u'    - %s\n'
-                  u'    - reason: %s\n'
-                  u'    - last error: %s' % (
+                    u"(if any) of closing:\n\n{feed_list}\n\nYou can manually "
+                    u"reopen any of them from the admin interface.\n\n").format(
+                        feed_list='\n\n'.join(
+                    u'- %s,\n'
+                    u'    - admin url: http://%s%s\n'
+                    u'    - public url: %s\n'
+                    u'    - %s\n'
+                    u'    - reason: %s\n'
+                    u'    - last error: %s' % (
                       feed,
                       settings.SITE_DOMAIN,
                       reverse('admin:%s_%s_change' % (

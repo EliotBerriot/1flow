@@ -10,9 +10,9 @@ web: python manage.py runserver
 shell: python manage.py shell_ipynb
 flower: python manage.py celery flower --logging=warning
 celery_beat: python manage.py celery beat        --loglevel=info
-worker_high: python manage.py celery worker -E   --loglevel=info --queues high   --hostname high.${HOSTNAME} -c 2
-worker_medium: python manage.py celery worker -E --loglevel=info --queues medium --hostname medium.${HOSTNAME} -c 2
+worker_high: python manage.py celery worker -E   --loglevel=info --queues high   --hostname high.${HOSTNAME} -c 8
+worker_medium: python manage.py celery worker -E --loglevel=info --queues medium --hostname medium.${HOSTNAME} -c 4
 worker_low: python manage.py celery worker -E    --loglevel=info --queues low    --hostname low.${HOSTNAME} -c 2
-worker_fetch: python manage.py celery worker -E  --loglevel=info --queues fetch  --hostname fetch.${HOSTNAME} -c 8
-worker_swarm: python manage.py celery worker -E  --loglevel=info --queues swarm  --hostname swarm.${HOSTNAME} -c 24
+worker_fetch: python manage.py celery worker -E  --loglevel=info --queues fetch  --hostname fetch.${HOSTNAME} -c 6
+worker_swarm: python manage.py celery worker -E  --loglevel=info --queues swarm  --hostname swarm.${HOSTNAME} -c 12
 
