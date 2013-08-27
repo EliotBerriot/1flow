@@ -11,6 +11,7 @@
 -e git+https://github.com/noirbizarre/django-ember.git@master#egg=django_ember-dev
 -e git+https://github.com/noirbizarre/django.js.git@master#egg=django.js-dev
 -e git+https://github.com/kmmbvnr/django-jenkins.git@master#egg=django-jenkins-dev
+-e git+https://github.com/nickstenning/honcho.git@master#egg=honcho-dev
 amqp==1.0.12
 anyjson==0.3.3
 beautifulsoup4==4.2.1
@@ -55,10 +56,9 @@ futures==2.1.4
 greenlet==0.4.1
 gunicorn==0.17.4
 hiredis==0.1.1
-honcho==0.4.2
 html2text==3.200.3
 html5lib==1.0b2
-Jinja2==2.7
+Jinja2==2.7.1
 kombu==2.5.13
 lxml==3.2.1
 manifesto==0.4.1
