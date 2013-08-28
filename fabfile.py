@@ -197,10 +197,10 @@ def production():
         'worker_high':   ['worker-01.1flow.io', ],
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low':    ['worker-05.1flow.io', ],
-        'worker_fetch':  ['worker-02.1flow.io',
-                          'worker-04.1flow.io', ],
-        'worker_swarm':  ['worker-02.1flow.io',
-                          'worker-04.1flow.io', ],
+        'worker_fetch':  ['worker-02.1flow.io', ],
+                          #'worker-04.1flow.io', ],
+        'worker_swarm':  ['worker-02.1flow.io', ],
+                          #'worker-04.1flow.io', ],
     })
     env.sparks_options = {
         'repository': {
@@ -216,13 +216,15 @@ def production():
             'worker_fetch@worker-04.1flow.io': 6,
 
             'worker_swarm@worker-04.1flow.io': 12,
-            'worker_swarm': 32,
+            'worker_swarm': 16,
+            'worker_high': 12,
             '__all__': 8,
         },
         'worker_queues': {
             # The fetchers help on main queues, except 'low' which is… low.
             # Fetchers and swarmers share the background queue, which has
             # no dedicated workers.
+            'worker_low@worker-05.1flow.io':   'low,swarm,fetch,background',
             'worker_fetch@worker-02.1flow.io': 'fetch,medium,background',
             'worker_fetch@worker-04.1flow.io': 'fetch,high,background',
             'worker_swarm@worker-02.1flow.io': 'swarm,background',
