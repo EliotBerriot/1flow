@@ -2539,13 +2539,17 @@ class Article(Document, DocumentHelperMixin):
                 spipe.gauge('articles.counts.total', 1, delta=True)
                 spipe.gauge('articles.counts.empty', 1, delta=True)
 
-        # Randomize a little to avoid
+        post_absolutize_group = tasks_group(
+            # HEADS UP: both subtasks are immutable, we just
+            # want the group to run *after* the absolutization.
+            article_postprocess_original_data.si(self.id),
+            article_fetch_content.si(self.id)
+        )
+
+        # Randomize the absolutization a little, to avoid
         # http://dev.1flow.net/development/1flow-dev-alternate/group/1243/
         # as much as possible. This is not yet a full-featured solution,
         # but it's completed by the `fetch_limit` thing.
-        absolute_result = article_absolutize_url.apply_async(
-                            (self.id, ), countdown=randrange(5))
-
         #
         # Absolutization conditions everything else. If it doesn't succeed:
         #   - no bother trying to post-process author data for example,
@@ -2554,14 +2558,12 @@ class Article(Document, DocumentHelperMixin):
         #   - no bother fetching content: it uses the same mechanisms as
         #     absolutize_url(), and will probably fail the same way.
         #
-
-        if absolute_result.get(interval=1):
-            post_create_tasks_group = tasks_group(
-                article_postprocess_original_data.s(self.id),
-                article_fetch_content.s(self.id)
-            )
-
-            post_create_tasks_group.delay()
+        # Thus, we link the post_absolutize_group as a callback. It will
+        # be run only if absolutization succeeds. Thanks, celery :-)
+        #
+        article_absolutize_url.apply_async((self.id, ),
+                                           countdown=randrange(5),
+                                           link=post_absolutize_group)
 
         #
         # TODO: create short_url
