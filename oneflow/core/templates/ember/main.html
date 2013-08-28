@@ -87,5 +87,13 @@
       </div><!--/.container-fluid -->
     </div><!--/.navbar-inner -->
   </div><!--/.navbar -->
-  {% ember animatedOutlet name="main" %}
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10 offset1 centered">
+        {% ember view App.NotificationView id="notifications" notificationBinding="notification" %}
+      </div>
+    </div>
+    {% ember animatedOutlet name="main" %}
+  </div>
+
 {% endhandlebars %}
