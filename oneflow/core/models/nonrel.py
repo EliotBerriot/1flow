@@ -2731,10 +2731,10 @@ class Comment(Document, DocumentHelperMixin):
 
 
 class SnapPreference(Document, DocumentHelperMixin):
-    select_paragraph = BooleanField(_('Select whole paragraph on click'),
-                                    default=False)  # , blank=True)
-    default_public = BooleanField(_('Grows public by default'),
-                                  default=True)  # , blank=True)
+    select_paragraph = BooleanField(verbose_name=_(u'Select whole paragraph '
+                                    u'on click'), default=False)
+    default_public = BooleanField(verbose_name=_(u'Grows public by default'),
+                                  default=True)
 
 
 class NotificationPreference(Document, DocumentHelperMixin):
