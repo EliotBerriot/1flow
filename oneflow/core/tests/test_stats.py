@@ -98,11 +98,14 @@ class ErrorClassifierTests(TestCase):
         self.assertEquals(len(errors), 4)
         self.assertEquals(len(stored), 4)
 
-        err404 = stored.get(UrlErrorClassifier.ERR_NETWORK_OTHER)
-        self.assertEquals(len(err404), 2)
+        err404 = stored.get(UrlErrorClassifier.ERR_NETWORK_HTTP404)
 
+        self.assertEquals(len(err404), 2)
         self.assertTrue(self.a3 in err404)
         self.assertTrue(self.a4 in err404)
+
+        err401 = stored.get(UrlErrorClassifier.ERR_NETWORK_HTTP401)
+        self.assertEquals(err401, None)
 
     def test_content_error_classifier(self):
 

@@ -281,6 +281,9 @@ class UrlErrorClassifier(GenericErrorClassifier):
     ERR_NETWORK_REFUSED     = u'Connection refused'
     ERR_NETWORK_RESET       = u'Connection reset'
     ERR_NETWORK_HTTPS_ERROR = u'Secure socket error / bad HTTPs'
+    ERR_NETWORK_HTTP404     = u'404 Not found'
+    ERR_NETWORK_HTTP401     = u'401 Unauthorized'
+    ERR_NETWORK_HTTP500     = u'50x Internal error (temporary or not)'
     ERR_NETWORK_OTHER       = u'Other socket or HTTP Error'
     ERR_NETWORK_URLOPEN     = u'Socket/urlopen error'
 
@@ -288,19 +291,57 @@ class UrlErrorClassifier(GenericErrorClassifier):
 
         error = None
 
-        if '[Errno 60] Operation timed out' in error_string:
+        if u'[Errno 60] Operation timed out' in error_string:
             error = self.ERR_NETWORK_TIMEOUT
 
-        elif '[Errno 61] Connection refused' in error_string:
+        elif u'[Errno 61] Connection refused' in error_string:
             error = self.ERR_NETWORK_REFUSED
 
-        elif '[Errno 54] Connection reset by peer' in error_string:
+        elif u'[Errno 54] Connection reset by peer' in error_string:
             error = self.ERR_NETWORK_RESET
 
-        elif '[Errno 50] Network is down' in error_string \
-            or '[Errno 8] nodename nor servname provided' in error_string \
-                or '[Errno 65] No route to host' in error_string:
-            error = self.ERR_NETWORK_DOWN
+        elif error_string.startswith(u'HTTP Error 50'):
+            error = self.ERR_NETWORK_HTTP500
+
+        elif error_string.startswith(u'HTTP Error 401'):
+            error = self.ERR_NETWORK_HTTP404
+
+        elif error_string.startswith(u'HTTP Error 404'):
+            error = self.ERR_NETWORK_HTTP404
+
+        elif error_string.startswith(u"HTTP ") \
+                or error_string.startswith(u"Exceeded 30 redirects"):
+            error = self.ERR_NETWORK_OTHER
+
+        elif error_string.startswith(u'HTTPConnectionPool(host='):
+            if u'HTTP Error 50' in error_string:
+                error = self.ERR_NETWORK_HTTP500
+
+            elif u'HTTP Error 401' in error_string:
+                error = self.ERR_NETWORK_HTTP401
+
+            elif u'HTTP Error 404' in error_string:
+                error = self.ERR_NETWORK_HTTP404
+
+            elif u'[Errno ' in error_string:
+                if u'[Errno 50] Network is down' in error_string \
+                    or u'[Errno 8] nodename nor servname' in error_string \
+                    or u'[Errno 65] No route to host' in error_string \
+                    or u' [Errno 101] Network is unreac' in error_string \
+                    or u' [Errno -3] Temporary failure ' in error_string \
+                        or u' [Errno 104] Connection reset ' in error_string:
+                    error = self.ERR_NETWORK_DOWN
+
+                else:
+                    # u' [Errno 111] Connection refuse',
+                    # u' [Errno 113] No route to host)',
+                    # u' [Errno 110] Connection timed ',
+                    # u' [Errno -3] Temporary failure ',
+                    # u' [Errno -2] Name or service no',
+                    error = self.ERR_NETWORK_OTHER
+
+            else:
+                error = self.ERR_NETWORK_OTHER
 
         elif error_string.startswith("HTTPSConnection"):
             error = self.ERR_NETWORK_HTTPS_ERROR
@@ -308,20 +349,6 @@ class UrlErrorClassifier(GenericErrorClassifier):
         elif error_string.startswith("hostname '") \
                 or '_ssl.c:' in error_string:
             error = self.ERR_NETWORK_CERTIFICATE
-
-        # Too generic for an URL error.
-        #
-        #elif error_string.startswith("HTTPConnection"):
-        #    error = 'Socket or bad HTTP error'
-        # elif error_string.startswith("HTTP "):
-        #     error = 'HTTP Error'
-        # elif error_string.startswith("Exceeded 30 redirects"):
-        #     error = 'HTTP Error'
-
-        elif error_string.startswith("HTTPConnection") \
-            or error_string.startswith("HTTP ") \
-                or error_string.startswith("Exceeded 30 redirects"):
-            error = self.ERR_NETWORK_OTHER
 
         elif error_string.startswith("<urlopen") \
             or error_string.startswith("[Errno 104] Conn") \
