@@ -1403,7 +1403,7 @@ class Article(Document, DocumentHelperMixin):
                                             u'successfully absolutized '
                                             u'to its unique and final '
                                             u'location.'))
-    url_error  = StringField(verbose_name=_(u'URL fetch error'), default='',
+    url_error  = StringField(verbose_name=_(u'URL fetch error'), default=u'',
                              help_text=_(u'Error when absolutizing the URL'))
     pages_urls = ListField(URLField(), verbose_name=_(u'Next pages URLs'),
                            help_text=_(u'In case of a multi-pages article, '
@@ -1418,8 +1418,8 @@ class Article(Document, DocumentHelperMixin):
 
     word_count = IntField(verbose_name=_(u'Word count'))
 
-    authors    = ListField(ReferenceField('Author'))
-    publishers = ListField(ReferenceField('User'))
+    authors    = ListField(ReferenceField(u'Author'))
+    publishers = ListField(ReferenceField(u'User'))
 
     date_published = DateTimeField(verbose_name=_(u'date published'),
                                    help_text=_(u"When the article first "
@@ -1452,7 +1452,7 @@ class Article(Document, DocumentHelperMixin):
                              verbose_name=_(u'Content type'),
                              help_text=_(u'Type of article content '
                                          u'(text, image…)'))
-    content_error = StringField(verbose_name=_(u'Error'), default='',
+    content_error = StringField(verbose_name=_(u'Error'), default=u'',
                                 help_text=_(u'Error when fetching content'))
 
     # A snap / a serie of snaps references the original article.
@@ -2743,11 +2743,11 @@ class NotificationPreference(Document, DocumentHelperMixin):
 
 
 class Preference(Document, DocumentHelperMixin):
-    snap = EmbeddedDocumentField('SnapPreference')
-    notification = EmbeddedDocumentField('NotificationPreference')
+    snap = EmbeddedDocumentField(u'SnapPreference')
+    notification = EmbeddedDocumentField(u'NotificationPreference')
 
 
-@task(name='Author.post_create', queue='high')
+@task(name=u'Author.post_create', queue=u'high')
 def author_post_create_task(author_id, *args, **kwargs):
 
     author = Author.objects.get(id=author_id)
@@ -2756,7 +2756,7 @@ def author_post_create_task(author_id, *args, **kwargs):
 
 class Author(Document, DocumentHelperMixin):
     name        = StringField()
-    website     = ReferenceField('WebSite', unique_with='origin_name')
+    website     = ReferenceField(u'WebSite', unique_with=u'origin_name')
     origin_name = StringField(help_text=_(u'When trying to guess authors, we '
                               u'have only a "fullname" equivalent. We need to '
                               u'store it for future comparisons in case '
@@ -2769,10 +2769,10 @@ class Author(Document, DocumentHelperMixin):
                              u'be duplicated, but not emails.'),
                              default=False)
 
-    user = ReferenceField('User', required=False, help_text=_(u'Link an '
+    user = ReferenceField(u'User', required=False, help_text=_(u'Link an '
                           u'internet author to a 1flow user.'))
 
-    duplicate_of = ReferenceField('Author')
+    duplicate_of = ReferenceField(u'Author')
 
     def __unicode__(self):
         return u'%s%s #%s for website %s' % (self.name or self.origin_name,
