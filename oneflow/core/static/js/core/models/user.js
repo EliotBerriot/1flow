@@ -1,4 +1,6 @@
 
+// Server side, this is the Django User Model
+
 App.User = DS.Model.extend({
   username: DS.attr('string'),
   first_name: DS.attr('string'),

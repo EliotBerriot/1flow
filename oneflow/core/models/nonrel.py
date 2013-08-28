@@ -2737,14 +2737,29 @@ class SnapPreference(Document, DocumentHelperMixin):
                                   default=True)
 
 
-class NotificationPreference(Document, DocumentHelperMixin):
+class NotificationPreference(EmbeddedDocument):
     """ Email and other web notifications preferences. """
     pass
+
+
+HOME_STYLE_CHOICES = (
+    (u'UL', _(u'Unread list')),
+    (u'TL', _(u'Tiled News')),
+    (u'DB', _(u'Dashboard')),
+)
+
+
+class HomePreference(EmbeddedDocument):
+    """ Various HOME settings. """
+    home_style = StringField(verbose_name=_(u'How the user wants his 1flow '
+                             u'home to appear'), max_length=2,
+                             choices=HOME_STYLE_CHOICES)
 
 
 class Preference(Document, DocumentHelperMixin):
     snap = EmbeddedDocumentField(u'SnapPreference')
     notification = EmbeddedDocumentField(u'NotificationPreference')
+    home = EmbeddedDocumentField('HomePreference')
 
 
 @task(name=u'Author.post_create', queue=u'high')
