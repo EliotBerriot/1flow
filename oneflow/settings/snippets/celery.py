@@ -31,7 +31,8 @@ CELERY_RESULT_PERSISTENT = True
 CELERY_ACKS_LATE = True
 
 # Sometimes, Ask asks us to enable this to debug issues.
-#CELERY_DISABLE_RATE_LIMITS=True
+# BTW, it will save some CPU cycles.
+CELERY_DISABLE_RATE_LIMITS = True
 
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
