@@ -2882,6 +2882,26 @@ class Author(Document, DocumentHelperMixin):
                     # At the same time. Same player shoots again.
                     return cls.objects.get(origin_name=email, website=website)
 
+        home_page = author_dict.get('href', None)
+
+        if home_page:
+            # A home_page is less likely to have a duplicates than a standard
+            # name too. It also takes precedence after email if it exists.
+
+            try:
+                return cls.objects.get(origin_name=home_page, website=website)
+
+            except cls.DoesNotExist:
+                try:
+                    return cls(origin_name=home_page, website=website,
+                               is_unsure=False).save()
+
+                except (NotUniqueError, DuplicateKeyError):
+                    # We just hit the race condition with two creations
+                    # At the same time. Same player shoots again.
+                    return cls.objects.get(origin_name=home_page,
+                                           website=website)
+
         origin_name = author_dict.get('name', None)
 
         if origin_name:
