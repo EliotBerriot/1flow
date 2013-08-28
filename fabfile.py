@@ -224,7 +224,6 @@ def production():
             # The fetchers help on main queues, except 'low' which is… low.
             # Fetchers and swarmers share the background queue, which has
             # no dedicated workers.
-            'worker_low@worker-05.1flow.io':   'low,swarm,fetch,background',
             'worker_fetch@worker-02.1flow.io': 'fetch,medium,background',
             'worker_fetch@worker-04.1flow.io': 'fetch,high,background',
             'worker_swarm@worker-02.1flow.io': 'swarm,background',
