@@ -7,12 +7,14 @@ from constance import config
 
 from django.test import TestCase  # TransactionTestCase
 from django.test.utils import override_settings
+from django.contrib.auth import get_user_model
 
 from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite, Author
 from oneflow.base.utils import RedisStatsCounter
 from oneflow.base.tests import (connect_mongodb_testsuite, TEST_REDIS)
 
-LOGGER = logging.getLogger(__file__)
+DjangoUser = get_user_model()
+LOGGER     = logging.getLogger(__file__)
 
 # Use the test database not to pollute the production/development one.
 RedisStatsCounter.REDIS = TEST_REDIS
@@ -427,3 +429,32 @@ class WebSitesTest(TestCase):
                    BROKER_BACKEND='memory',)
 class AuthorsTest(TestCase):
     pass
+
+
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
+class UsersTest(TestCase):
+    def setUp(self):
+
+        self.django_user = DjangoUser.objects.create_user(
+            username='testuser', password='testpass',
+            email='test-ocE3f6VQqFaaAZ@1flow.io')
+
+        self.mongodb_user = User(django_user=self.django_user.id,
+                                 username='test_user').save()
+
+    def tearDown(self):
+        User.drop_collection()
+
+    def test_user_property(self):
+
+        self.assertEquals(self.django_user.mongo, self.mongodb_user)
+
+    def test_user_preferences(self):
+
+        # We just want to be sure preferences are created when a new
+        # user is, and all the embedded documents are created too.
+        self.assertEquals(self.django_user.mongo.preferences.home.style, None)
