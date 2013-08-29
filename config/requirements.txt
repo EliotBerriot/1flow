@@ -27,6 +27,7 @@ django-celery==3.0.21
 django-constance==0.6
 django-cors-headers==0.11
 django-debug-toolbar==0.9.4
+django-endless-pagination==2.0
 django-grappelli==2.4.5
 django-logentry-admin==0.1.1
 django-maintenancemode==0.10
@@ -59,6 +60,8 @@ gunicorn==0.17.4
 hiredis==0.1.1
 html2text==3.200.3
 html5lib==1.0b2
+ipdb==0.7
+ipdbplugin==1.4
 Jinja2==2.7.1
 kombu==2.5.13
 lxml==3.2.1
@@ -70,6 +73,7 @@ Pillow==2.1.0
 psycopg2==2.5.1
 py-bcrypt==0.3
 pylibmc==1.2.3
+pylint==1.0.0
 pymongo==2.5.2
 pyScss==1.1.5
 pytz==2013b
