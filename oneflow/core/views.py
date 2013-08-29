@@ -21,7 +21,6 @@ from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
 
-from oneflow import VERSION
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed
@@ -56,7 +55,6 @@ def home(request):
     social_count = request.user.social_auth.all().count()
 
     return render(request, 'home.html', {
-        'VERSION': VERSION,
         'MAINTENANCE_MODE': settings.MAINTENANCE_MODE,
         'has_google': has_google,
         'social_count': social_count,
