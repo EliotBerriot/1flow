@@ -70,31 +70,33 @@ def home(request):
     })
 
 
-def set_preference(request, preference_name, new_value):
+def set_preference(request, base, sub, value):
+
+    prefs = request.user.mongo.preferences
 
     try:
-        base, sub = preference_name.split(u'.')
+        base_pref = getattr(prefs, base)
+        setattr(base_pref, sub, value)
 
     except:
-        return HttpResponseBadRequest(u'Bad preference name.')
-
-    try:
-        base_pref = getattr(request.user.mongo.preferences, base)
-        setattr(base_pref, sub, new_value)
-
-    except:
-        return HttpResponseBadRequest(u'Bad preference value.')
+        return HttpResponseBadRequest(u'Bad preference name or value.')
 
     else:
+
         try:
-            request.user.mongo.preferences.save()
+            prefs.save()
 
         except:
-            LOGGER.exception('BAD')
+            LOGGER.exception(u'Could not save preferences for user %s',
+                             request.user.mongo)
             return HttpResponseTemporaryServerError(
                 u'Could not save preference.')
 
-    return HttpResponseRedirect(reverse(u'home'))
+    if request.is_ajax():
+        return HttpResponse(u'DONE')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                reverse('home')))
 
 
 def toggle(request, klass, id, key):
@@ -113,7 +115,7 @@ def toggle(request, klass, id, key):
         return HttpResponseTemporaryServerError(msg[0] % msg[1:])
 
     if request.is_ajax():
-        return HttpResponse('DONE.')
+        return HttpResponse(u'DONE.')
 
     else:
         return HttpResponseRedirect(request.META.get('HTTP_REFERER',
@@ -134,7 +136,7 @@ def read(request, **kwargs):
 
     if request.is_ajax():
         template = u'snippets/read/read-%s-page.html' % (
-            u'list' if request.user.mongo.preferences.home.style == u'RL'
+            u'list' if request.user.mongo.preferences.get('home.style') == u'RL'
             else u'tiles')
 
     else:

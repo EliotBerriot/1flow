@@ -14,7 +14,7 @@
 
     <div class="row-fluid" id="home-styles-chooser">
       <div class="span3 offset1 alert alert-info home-style home-style-secondary">
-        <a href="{% url 'set_preference' 'home.style' 'RL' %}">
+        <a href="{% url 'set_preference' 'home' 'style' 'RL' %}">
           <h3>{% trans "Read everything" %}</h3>
           <ul class="thumbnails">
             <li class="span12">
@@ -29,7 +29,7 @@
       </div>
 
       <div class="span4 alert alert-success home-style">
-        <a href="{% url 'set_preference' 'home.style' 'TL' %}">
+        <a href="{% url 'set_preference' 'home' 'style' 'TL' %}">
           <h3>{% trans "Electronic Newspaper" %}</h3>
           <ul class="thumbnails">
             <li class="span12">
@@ -44,7 +44,7 @@
       </div>
 
         <div class="span3 alert alert-info home-style home-style-secondary">
-          <a href="{% url 'set_preference' 'home.style' 'DB' %}">
+          <a href="{% url 'set_preference' 'home' 'style' 'DB' %}">
             <h3>{% trans "1flow dashboard" %}</h3>
             <ul class="thumbnails">
               <li class="span12">

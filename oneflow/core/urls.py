@@ -18,7 +18,7 @@ from .views import (home, read, help, toggle,
 urlpatterns = patterns(
     'oneflow.core.views',
     url(_(r'^home/$'), login_required(home), name='home'),
-    url(_(r'^preference/(?P<preference_name>\w+.\w+)/(?P<new_value>\w+)/?$'),
+    url(_(r'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
         login_required(set_preference), name='set_preference'),
     url(_(r'^profile/$'), login_required(profile), name='profile'),
     url(_(r'^read/$'), login_required(read), name='read'),
