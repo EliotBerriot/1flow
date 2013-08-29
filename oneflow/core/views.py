@@ -9,7 +9,10 @@
 import logging
 import humanize
 
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from django.http import (HttpResponseRedirect,
+                         HttpResponseForbidden,
+                         HttpResponseBadRequest,
+                         HttpResponse, Http404)
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -20,10 +23,11 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
+from sparks.django.utils import HttpResponseTemporaryServerError
 
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed
+from .models.nonrel import Feed, Read
 
 from .gr_import import GoogleReaderImport
 
@@ -33,7 +37,6 @@ User = get_user_model()
 # Avoid the very repetitive:
 #       {% load ember js compressed i18n base_utils %}
 # in the Ember application templates.
-add_to_builtins('ember.templatetags.ember')
 add_to_builtins('django.templatetags.i18n')
 add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
@@ -47,7 +50,12 @@ if settings.TEMPLATE_DEBUG:
 
 @never_cache
 def home(request):
-    """ will return the base of the Ember.JS application. """
+    """ root of the application. """
+
+    home_style = request.user.mongo.preferences.home.style
+
+    if home_style and home_style != 'DB':
+        return HttpResponseRedirect(reverse(u'read'))
 
     has_google = request.user.social_auth.filter(
         provider='google-oauth2').count() > 0
@@ -60,6 +68,85 @@ def home(request):
         'social_count': social_count,
         'gr_import': GoogleReaderImport(request.user.id),
     })
+
+
+def set_preference(request, preference_name, new_value):
+
+    try:
+        base, sub = preference_name.split(u'.')
+
+    except:
+        return HttpResponseBadRequest(u'Bad preference name.')
+
+    try:
+        base_pref = getattr(request.user.mongo.preferences, base)
+        setattr(base_pref, sub, new_value)
+
+    except:
+        return HttpResponseBadRequest(u'Bad preference value.')
+
+    else:
+        try:
+            request.user.mongo.preferences.save()
+
+        except:
+            LOGGER.exception('BAD')
+            return HttpResponseTemporaryServerError(
+                u'Could not save preference.')
+
+    return HttpResponseRedirect(reverse(u'home'))
+
+
+def toggle(request, klass, id, key):
+
+    try:
+        obj = globals()[klass].objects.get(id=id)
+
+    except:
+        raise Http404
+
+    try:
+        setattr(obj, key, not getattr(obj, key))
+    except:
+        msg = (u'Unable to toggle %s of %s', key, obj)
+        LOGGER.exception(*msg)
+        return HttpResponseTemporaryServerError(msg[0] % msg[1:])
+
+    if request.is_ajax():
+        return HttpResponse('DONE.')
+
+    else:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                    reverse('home')))
+
+
+def profile(request):
+
+    return render(request, u'profile.html')
+
+
+def help(request):
+
+    return render(request, u'help.html')
+
+
+def read(request, **kwargs):
+
+    if request.is_ajax():
+        template = u'snippets/read/read-%s-page.html' % (
+            u'list' if request.user.mongo.preferences.home.style == u'RL'
+            else u'tiles')
+
+    else:
+        template = u'read.html'
+
+    # Computing tenths_counter here is much efficient than doing:
+    # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
+    # in the template…
+
+    return render(request, template , {u'reads': Read.objects(**kwargs),
+                  u'tenths_counter': (int(request.GET.get('page', 1)) - 1)
+                  * settings.ENDLESS_PAGINATION_PER_PAGE})
 
 
 def register(request):
@@ -94,7 +181,7 @@ def google_reader_import(request, user_id=None):
 
     if user_id is None:
         user_id      = request.user.id
-        fallback_url = reverse('home') + '#/profile'
+        fallback_url = reverse('profile')
 
     else:
         if request.user.is_superuser or request.user.is_staff:

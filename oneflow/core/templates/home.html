@@ -4,66 +4,40 @@
 
 {% block title %}{% trans 'Home' %}{% endblock title %}
 
-{% block extrajs_header %}
-    {% compressed_css 'ember-animated-outlet' %}
-
-  <script type="text/javascript">
-    var url_root = '{{ request.META.SCRIPT_NAME }}';
-  </script>
-{% endblock extrajs_header %}
-
 {% block body %}
-{% include 'ember/main.html' %}
-{% include 'ember/views/index.html' %}
-{% include 'ember/views/reads.html' %}
-{% include 'ember/views/teams.html' %}
-{% include 'ember/views/subscriptions.html' %}
-{% include 'ember/views/discovery.html' %}
-{% include 'ember/views/profile.html' %}
-{% include 'ember/views/help.html' %}
+
+{% include 'snippets/navbar.html' %}
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div id="notifications" class="span10 offset1 centered"></div>
+    </div>
+    {% block application_content %}
+        {% if mongodb_user.preferences.home.style %}
+            {# Any other preference than the dashboard should have redirected to /read/ #}
+            {% include 'snippets/home/dashboard.html' %}
+
+        {% else %}
+            {% include 'snippets/home/choose-home-style.html' %}
+
+        {% endif %}
+    {% endblock application_content %}
+  </div>
+
 {% endblock body %}
 
 {% block extrajs_footer %}
-
-    {# NOTE: emberpie_js includes jQuery, but it's already loaded by Django.JS #}
-    {% emberpie_js jquery=False %}
 
     {# NOTE: order matters. #}
     {% compressed_js 'vendor-all' %}
     {% compressed_js 'core' %}
 
+    {% csrf_token %}
+
     {# This must stay here (in the template) to get the server-side language. #}
     <script type="text/javascript">
         moment.lang('{{ LANGUAGE_CODE }}');
-    </script>
 
-    {% if has_google and gr_import.can_import %}
-        <script type="text/javascript">
-            function update_gri_status() {
-                try {
-                    $.get("{% url 'google_reader_import_status' %}", function(data){
-                        $('#google-reader-import-status').html(data);
-
-                        if (data.indexOf("{% trans "finished" %}") >= 0
-                            || data.indexOf("{% trans "Import your" %}") >= 0
-                            || data.indexOf("{% trans "not active anymore" %}") >= 0) {
-                            clearInterval(gri_interval);
-                        }
-                    });
-                } catch (err) {
-                    // just don't crash the JS in the browser.
-                }
-            }
-
-            update_gri_status();
-
-            var gri_interval = setInterval(update_gri_status, 5000);
-        </script>
-    {% endif %}
-
-    {% csrf_token %}
-
-    <script type="text/javascript">
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
             return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
@@ -73,9 +47,6 @@
             crossDomain: false,
             beforeSend: function(xhr, settings) {
                 if (!csrfSafeMethod(settings.type)) {
-
-                    //console.log('Set CSRF Token to ' + $("input[name='csrfmiddlewaretoken']").val());
-
                     xhr.setRequestHeader("X-CSRFToken",
                         $("input[name='csrfmiddlewaretoken']").val());
                 }

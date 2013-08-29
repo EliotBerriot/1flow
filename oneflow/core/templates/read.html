@@ -1,0 +1,22 @@
+{% extends 'home.html' %}
+
+{% block title %}{% trans 'Read' %}{% endblock title %}
+
+{% block application_content %}
+    {% if mongodb_user.preferences.home.style == 'RL' %}
+        {% include 'snippets/read/read-list-page.html' %}
+
+    {% elif mongodb_user.preferences.home.style == 'TL' %}
+        {% include 'snippets/read/read-tiles-page.html' %}
+
+    {% endif %}
+
+{% endblock application_content %}
+
+{% block extrajs_footer %}
+    {% compressed_js 'endless-pagination' %}
+    <script>$.endlessPaginate({
+            paginateOnScroll: true,
+            paginateOnScrollMargin: 100
+        });</script>
+{% endblock extrajs_footer %}
