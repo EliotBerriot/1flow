@@ -351,7 +351,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     #'social_auth.context_processors.social_auth_login_redirect',
 
     'oneflow.base.context_processors.oneflow_version',
-    #'oneflow.core.context_processors.…',
+    'oneflow.core.context_processors.mongodb_user',
 )
 
 
