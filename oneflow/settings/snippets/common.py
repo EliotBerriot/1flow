@@ -9,7 +9,12 @@ import os
 import sys
 import warnings
 
+
 from django.core.urlresolvers import reverse_lazy
+from django.utils.translation import ugettext_lazy
+
+# dummy ugettext function, as django's docs say
+ugettext = lambda s: s
 
 # This is imported here to benefit to all other included snippets.
 from sparks import platform # NOQA
@@ -40,9 +45,6 @@ ALLOWED_HOSTS = []
 TIME_ZONE     = 'Europe/Paris'
 LANGUAGE_CODE = 'en'
 
-# dummy ugettext function, as django's docs say
-ugettext = lambda s: s
-
 # Translation workflows:
 # - in the DB: all languages variants are accessible and empty by default.
 #      'en' takes precedence on 'en-US'. As translators have access to all
@@ -63,10 +65,10 @@ LANGUAGES = (
     #('en-gb', ugettext(u'English (UK)')),
     ('fr', ugettext(u'Français')),
 
-# Activate these later when we need them.
-#    ('es', ugettext(u'Español')),
-#    ('fr-CA', ugettext(u'Français (FR)')),
-#    ('es-XX', ugettext(u'Español (ES)')),
+    # Activate these later when we need them.
+    #    ('es', ugettext(u'Español')),
+    #    ('fr-CA', ugettext(u'Français (FR)')),
+    #    ('es-XX', ugettext(u'Español (ES)')),
 )
 
 TRANSMETA_LANGUAGES = LANGUAGES + (
@@ -217,7 +219,7 @@ PIPELINE_JS = {
             'vendor/moment/moment.js',
             'vendor/moment/langs/*.js',
 
-            'vendor/ember-animated-outlet/ember-animated-outlet.js',
+            'endless_pagination/js/endless-pagination.js'
 
             'js/utils/*.js',
         ),
@@ -252,11 +254,11 @@ PIPELINE_JS = {
         'output_filename': 'js/moment.js',
     },
 
-    'ember-animated-outlet': {
+    'endless-pagination': {
         'source_filenames': (
-            'vendor/ember-animated-outlet/ember-animated-outlet.js',
+            'endless_pagination/js/endless-pagination.js',
         ),
-        'output_filename': 'js/ember-animated-outlet.js',
+        'output_filename': 'js/endless-pagination.js',
     },
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
@@ -388,7 +390,8 @@ INSTALLED_APPS = (
     'djangojs',
     'pipeline',
     'absolute',
-    'ember',
+    'endless_pagination',
+    'mathfilters',
     'widget_tweaks',
     'oneflow.base',
     'oneflow.profiles',
@@ -399,6 +402,9 @@ INSTALLED_APPS = (
     # Without this, tests fail to create database!
     'social_auth',
 )
+
+ENDLESS_PAGINATION_PER_PAGE = 20
+ENDLESS_PAGINATION_LOADING = ugettext_lazy(u'loading more entries…')
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
