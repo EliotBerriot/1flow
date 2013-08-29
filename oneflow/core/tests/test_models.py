@@ -179,25 +179,31 @@ class ArticleDuplicateTest(TestCase):
                                 url='http://obi.1flow.io/en/').save()
 
         # User & Reads creation
-        for u in xrange(1, 6):
-            u = User(django_user=u, username='test_user_%s' % u).save()
+        for index in xrange(1, 6):
+            username = 'test_user_%s' % index
+            du = DjangoUser.objects.create(username=username,
+                                           email='%s@test.1flow.io' % username)
+            u = User(django_user=du.id, username=username).save()
             Read(user=u, article=self.article1).save()
 
-        for u in xrange(6, 11):
-            u = User(django_user=u, username='test_user_%s' % u).save()
+        for index in xrange(6, 11):
+            username = 'test_user_%s' % index
+            du = DjangoUser.objects.create(username=username,
+                                           email='%s@test.1flow.io' % username)
+            u = User(django_user=du.id, username=username).save()
             Read(user=u, article=self.article2).save()
 
         # Feeds creation
-        for f in xrange(1, 6):
-            f = Feed(name='test feed #%s' % f,
-                     url='http://test-feed%s.com' % f).save()
+        for index in xrange(1, 6):
+            f = Feed(name='test feed #%s' % index,
+                     url='http://test-feed%s.com' % index).save()
             self.article1.update(add_to_set__feeds=f)
 
             self.article1.reload()
 
-        for f in xrange(6, 11):
-            f = Feed(name='test feed #%s' % f,
-                     url='http://test-feed%s.com' % f).save()
+        for index in xrange(6, 11):
+            f = Feed(name='test feed #%s' % index,
+                     url='http://test-feed%s.com' % index).save()
             self.article2.update(add_to_set__feeds=f)
 
             self.article2.reload()
