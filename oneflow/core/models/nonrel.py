@@ -2745,7 +2745,7 @@ class NotificationPreference(EmbeddedDocument):
 
 
 HOME_STYLE_CHOICES = (
-    (u'UL', _(u'Unread list')),
+    (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
     (u'DB', _(u'Dashboard')),
 )
@@ -2755,14 +2755,14 @@ class HomePreference(EmbeddedDocument):
     """ Various HOME settings. """
     style = StringField(verbose_name=_(u'How the user wants his 1flow '
                         u'home to appear'), max_length=2,
-                        choices=HOME_STYLE_CHOICES)
+                        choices=HOME_STYLE_CHOICES, default=u'TL')
 
 
 class Preference(Document, DocumentHelperMixin):
-    snap = EmbeddedDocumentField(SnapPreference, default=SnapPreference)
-    notification = EmbeddedDocumentField(NotificationPreference,
+    snap = EmbeddedDocumentField(u'SnapPreference', default=SnapPreference)
+    notification = EmbeddedDocumentField(u'NotificationPreference',
                                          default=NotificationPreference)
-    home = EmbeddedDocumentField(HomePreference, default=HomePreference)
+    home = EmbeddedDocumentField(u'HomePreference', default=HomePreference)
 
 
 @task(name=u'Author.post_create', queue=u'high')
