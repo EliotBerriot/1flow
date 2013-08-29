@@ -3006,7 +3006,8 @@ class User(Document, DocumentHelperMixin):
                 pass
 
     @classmethod
-    def pre_save_post_validation(cls, sender, document, **kwargs):
+    def signal_pre_save_post_validation_handler(cls, sender,
+                                                document, **kwargs):
 
         if document.preferences is None:
             document.preferences = Preference().save()
