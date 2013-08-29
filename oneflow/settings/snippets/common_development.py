@@ -52,7 +52,7 @@ DEVSERVER_DEFAULT_PORT = 8000
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 JENKINS_TEST_RUNNER='django_jenkins.nose_runner.CINoseTestSuiteRunner'
 
-NOSE_ARGS = ['--stop']
+NOSE_ARGS = ['--stop', '--ipdb', '--ipdb-failures', ]
 
 import logging
 import south.logger
