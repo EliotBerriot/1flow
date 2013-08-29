@@ -69,6 +69,7 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
+from django.contrib.auth import get_user_model
 
 from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
@@ -85,7 +86,8 @@ from .keyval import FeedbackDocument
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
 
-LOGGER = logging.getLogger(__name__)
+LOGGER     = logging.getLogger(__name__)
+DjangoUser = get_user_model()
 
 BASE_1FLOW_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
 feedparser.USER_AGENT = BASE_1FLOW_USER_AGENT
