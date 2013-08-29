@@ -8,7 +8,9 @@ from tastypie_mongoengine.fields import ReferencedListField, ReferenceField
 from tastypie.resources import ALL
 from tastypie.fields import CharField
 
-from .models.nonrel import Subscription, Feed, Article, Read, Author, Preference
+from .models.nonrel import (Feed, Subscription,
+                            Article, Read,
+                            Author, Preferences)
 
 from ..base.api import (UserResource,
                         common_authentication,
@@ -110,10 +112,10 @@ class ReadResource(MongoEngineResource):
         authorization      = UserObjectsOnlyAuthorization()
 
 
-class PreferenceResource(MongoEngineResource):
+class PreferencesResource(MongoEngineResource):
 
     class Meta:
-        queryset = Preference.objects.all()
+        queryset = Preferences.objects.all()
 
         # Ember-data expect the following 2 directives
         always_return_data = True
@@ -130,4 +132,4 @@ class PreferenceResource(MongoEngineResource):
 
 __all__ = ('SubscriptionResource',
            'ReadResource', 'ArticleResource',
-           'AuthorResource', 'PreferenceResource')
+           'AuthorResource', 'PreferencesResource')
