@@ -509,7 +509,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.user.create_user',
     'social_auth.backends.pipeline.social.associate_user',
     'social_auth.backends.pipeline.social.load_extra_data',
-    'social_auth.backends.pipeline.user.update_user_details'
+    'social_auth.backends.pipeline.user.update_user_details',
+    'oneflow.core.social_pipeline.check_1flow_requirements',
 )
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
