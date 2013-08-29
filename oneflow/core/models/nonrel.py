@@ -3013,6 +3013,23 @@ class User(Document, DocumentHelperMixin):
         self.save()
 
 
+def mongo_user(self):
+    try:
+        return self.__mongo_user_cache__
+
+    except:
+        try:
+            self.__mongo_user_cache__ = User.objects.get(django_user=self.id)
+
+        except User.DoesNotExist:
+            self.__mongo_user_cache__ = User.objects(django_user=self.id).save()
+
+        return self.__mongo_user_cache__
+
+# Auto-link the DjangoUser to the mongo one
+DjangoUser.mongo = property(mongo_user)
+
+
 class Group(Document, DocumentHelperMixin):
     name = StringField(unique_with='creator')
     creator = ReferenceField('User')
