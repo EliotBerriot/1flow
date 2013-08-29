@@ -57,7 +57,8 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Document, EmbeddedDocument, ValidationError
+from mongoengine import (Document, EmbeddedDocument,
+                         ValidationError, NULLIFY, PULL, CASCADE)
 from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 DateTimeField,
@@ -267,25 +268,158 @@ class DocumentHelperMixin(object):
             delattr(self, attribute_name)
 
 
-# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Source
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User preferences
 
 
-class Source(Document, DocumentHelperMixin):
-    """ The "original source" for similar articles: they have different authors,
-        different contents, but all refer to the same information, which can
-        come from the same article on the net (or radio, etc).
+class SnapPreference(Document, DocumentHelperMixin):
+    select_paragraph = BooleanField(verbose_name=_(u'Select whole paragraph '
+                                    u'on click'), default=False)
+    default_public = BooleanField(verbose_name=_(u'Grows public by default'),
+                                  default=True)
 
-        Eg:
-            - article1 on Le Figaro
-            - article2 on Liberation
-            - both refer to the same AFP news, but have different content.
 
-    """
-    type    = StringField()
-    uri     = URLField(unique=True)
-    name    = StringField()
-    authors = ListField(ReferenceField('User'))
-    slug    = StringField()
+class NotificationPreference(EmbeddedDocument):
+    """ Email and other web notifications preferences. """
+    pass
+
+
+HOME_STYLE_CHOICES = (
+    (u'RL', _(u'Reading list')),
+    (u'TL', _(u'Tiled News')),
+    (u'DB', _(u'Dashboard')),
+)
+
+
+class HomePreference(EmbeddedDocument):
+    """ Various HOME settings. """
+    style = StringField(verbose_name=_(u'How the user wants his 1flow '
+                        u'home to appear'), max_length=2,
+                        choices=HOME_STYLE_CHOICES)
+
+
+class Preferences(Document, DocumentHelperMixin):
+    snap = EmbeddedDocumentField(u'SnapPreference', default=SnapPreference)
+    notification = EmbeddedDocumentField(u'NotificationPreference',
+                                         default=NotificationPreference)
+    home = EmbeddedDocumentField(u'HomePreference', default=HomePreference)
+
+    def __unicode__(self):
+        return u'Preferences #%s' % self.id
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User & Group
+
+
+def user_django_user_random_default():
+    """ 20130731: unused function but I keep this code for random()-related
+        and future use. """
+
+    count = 1
+
+    while count:
+        random_int = randint(-sys.maxint - 1, -1)
+
+        try:
+            User.objects.get(django_user=random_int)
+
+        except User.DoesNotExist:
+            return random_int
+
+        else:
+            count += 1
+            if count == 10:
+                LOGGER.warning(u'user_django_user_random_default() is trying '
+                               u'to slow down things (more than 10 cycles to '
+                               u' generate a not-taken random ID)…')
+
+
+@task(name='User.post_create', queue='high')
+def user_post_create_task(user_id, *args, **kwargs):
+
+    user = User.objects.get(id=user_id)
+    return user.post_create_task(*args, **kwargs)
+
+
+def new_user_preferences():
+
+    return Preferences().save()
+
+
+class User(Document, DocumentHelperMixin):
+    django_user = IntField(unique=True)
+    username    = StringField()
+    first_name  = StringField()
+    last_name   = StringField()
+    preferences = ReferenceField('Preferences', reverse_delete_rule=NULLIFY,
+                                 default=new_user_preferences)
+
+    def __unicode__(self):
+        return u'%s #%s (Django ID: %s)' % (self.username or u'<UNKNOWN>',
+                                            self.id, self.django_user)
+
+    def get_full_name(self):
+        return '%s %s' % (self.first_name, self.last_name)
+
+    def safe_reload(self):
+        try:
+            self.reload()
+
+        except:
+            pass
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        user = document
+
+        if created:
+            if user._db_name != settings.MONGODB_NAME_ARCHIVE:
+                user_post_create_task.delay(user.id)
+                pass
+
+    @classmethod
+    def signal_pre_save_post_validation_handler(cls, sender,
+                                                document, **kwargs):
+
+        if document.preferences is None:
+            document.preferences = Preferences().save()
+
+    def post_create_task(self):
+        """ Method meant to be run from a celery task. """
+
+        django_user = DjangoUser.objects.get(id=self.django_user)
+        self.username = django_user.username
+        self.last_name = django_user.last_name
+        self.first_name = django_user.first_name
+        self.save()
+
+
+def mongo_user(self):
+    try:
+        return self.__mongo_user_cache__
+
+    except:
+        try:
+            self.__mongo_user_cache__ = User.objects.get(django_user=self.id)
+
+        except User.DoesNotExist:
+            self.__mongo_user_cache__ = User(django_user=self.id).save()
+
+        return self.__mongo_user_cache__
+
+# Auto-link the DjangoUser to the mongo one
+DjangoUser.mongo = property(mongo_user)
+
+
+class Group(Document, DocumentHelperMixin):
+    name = StringField(unique_with='creator')
+    creator = ReferenceField('User', reverse_delete_rule=CASCADE)
+    administrators = ListField(ReferenceField('User',
+                               reverse_delete_rule=PULL))
+    members = ListField(ReferenceField('User',
+                        reverse_delete_rule=PULL))
+    guests = ListField(ReferenceField('User',
+                       reverse_delete_rule=PULL))
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
@@ -309,7 +443,8 @@ class WebSite(Document, DocumentHelperMixin):
     name = StringField()
     slug = StringField(verbose_name=_(u'slug'))
     url  = URLField(unique=True)
-    duplicate_of = ReferenceField('WebSite')
+    duplicate_of = ReferenceField('WebSite',
+                                  reverse_delete_rule=NULLIFY)
 
     def __unicode__(self):
         return u'%s #%s (%s)%s' % (self.name or u'<UNSET>', self.id, self.url,
@@ -428,22 +563,6 @@ class WebSite(Document, DocumentHelperMixin):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Word relations
 
 
-WORD_RELATION_TYPES = (
-    (0, _(u'None')),
-    (1, _(u'Synonym')),
-    (2, _(u'Antonym')),
-)
-
-
-class WordRelation(EmbeddedDocument):
-    relation_type  = IntField(choices=WORD_RELATION_TYPES,
-                              verbose_name=_(u'Relation type'))
-    relation_with  = GenericReferenceField(unique_with='relation_type',
-                                           verbose_name=_(u'Relation with'),
-                                           help_text=_(u'The word'))
-    relation_score = FloatField()
-
-
 @task(name='Tag.post_create', queue='high')
 def tag_post_create_task(tag_id, *args, **kwargs):
 
@@ -462,14 +581,18 @@ class Tag(Document, DocumentHelperMixin):
     name     = StringField(verbose_name=_(u'name'), unique=True)
     slug     = StringField(verbose_name=_(u'slug'))
     language = StringField(verbose_name=_(u'language'), default='')
-    parents  = ListField(ReferenceField('self'), default=list)
-    children = ListField(ReferenceField('self'), default=list)
+    parents  = ListField(ReferenceField('self',
+                         reverse_delete_rule=PULL), default=list)
+    children = ListField(ReferenceField('self',
+                         reverse_delete_rule=PULL), default=list)
+    # reverse_delete_rule=NULLIFY,
     origin   = GenericReferenceField(verbose_name=_(u'Origin'),
                                      help_text=_(u'Initial origin from where '
                                                  u'the tag was created from, '
                                                  u'to eventually help '
                                                  u'defining other attributes.'))
-    duplicate_of = ReferenceField('Tag', verbose_name=_(u'Duplicate of'),
+    duplicate_of = ReferenceField('Tag', reverse_delete_rule=NULLIFY,
+                                  verbose_name=_(u'Duplicate of'),
                                   help_text=_(u'Put a "master" tag here to '
                                               u'help avoiding too much '
                                               u'different tags (eg. singular '
@@ -698,7 +821,8 @@ class Feed(Document, DocumentHelperMixin):
     url            = URLField(unique=True, verbose_name=_(u'url'))
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
-    tags           = ListField(GenericReferenceField(), default=list)
+    tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
+                               default=list)
     languages      = ListField(StringField(), verbose_name=_(u'Languages'),
                                help_text=_(u'Set this to more than one '
                                            u'language to help article '
@@ -1340,21 +1464,206 @@ class Feed(Document, DocumentHelperMixin):
         self.refresh_lock.release()
 
 
-# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed-related
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed Subscriptions
 
 
 class Subscription(Document, DocumentHelperMixin):
-    feed = ReferenceField('Feed')
-    user = ReferenceField('User', unique_with='feed')
+    feed = ReferenceField('Feed', reverse_delete_rule=CASCADE)
+    user = ReferenceField('User', unique_with='feed',
+                          reverse_delete_rule=CASCADE)
 
     # allow the user to rename the field in its own subscription
     name = StringField()
 
-    tags = ListField(GenericReferenceField(), default=list,
-                     verbose_name=_(u'tags'),
+    # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
+    tags = ListField(GenericReferenceField(),
+                     default=list, verbose_name=_(u'tags'),
                      help_text=_(u'Subscription tags, which can also be '
                                  u'seen as folders from the user point '
                                  u'of view.'))
+
+
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Authors
+
+
+@task(name=u'Author.post_create', queue=u'high')
+def author_post_create_task(author_id, *args, **kwargs):
+
+    author = Author.objects.get(id=author_id)
+    return author.post_create_task(*args, **kwargs)
+
+
+class Author(Document, DocumentHelperMixin):
+    name        = StringField()
+    website     = ReferenceField(u'WebSite', unique_with=u'origin_name',
+                                 reverse_delete_rule=CASCADE)
+    origin_name = StringField(help_text=_(u'When trying to guess authors, we '
+                              u'have only a "fullname" equivalent. We need to '
+                              u'store it for future comparisons in case '
+                              u'firstname and lastname get manually modified '
+                              u'after author creation.'))
+
+    is_unsure = BooleanField(help_text=_(u'Set to True when the author '
+                             u'has been found from its origin_name and '
+                             u'not via email; because origin_name can '
+                             u'be duplicated, but not emails.'),
+                             default=False)
+
+    user = ReferenceField(u'User', required=False, help_text=_(u'Link an '
+                          u'internet author to a 1flow user.'),
+                          reverse_delete_rule=NULLIFY)
+
+    duplicate_of = ReferenceField(u'Author', reverse_delete_rule=NULLIFY)
+
+    def __unicode__(self):
+        return u'%s%s #%s for website %s' % (self.name or self.origin_name,
+                                             _(u'(unsure)')
+                                             if self.is_unsure else u'',
+                                             self.id, self.website)
+
+    def safe_reload(self):
+        try:
+            self.reload()
+
+        except:
+            pass
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        author = document
+
+        if created:
+            if author._db_name != settings.MONGODB_NAME_ARCHIVE:
+                author_post_create_task.delay(author.id)
+
+    def post_create_task(self):
+        """ Method meant to be run from a celery task. """
+
+        statsd.gauge('authors.counts.total', 1, delta=True)
+
+    @classmethod
+    def get_authors_from_feedparser_article(cls, feedparser_article,
+                                            set_to_article=None):
+
+        if set_to_article:
+            # This is an absolutized URL, hopefully.
+            article_url = set_to_article.url
+
+        else:
+            article_url = getattr(feedparser_article, 'link',
+                                  '').replace(' ', '%20') or None
+
+        if article_url:
+            website = WebSite.get_from_url(article_url)
+
+        else:
+            LOGGER.critical(u'NO url, cannot get any author.')
+
+        authors = set()
+
+        if 'authors' in feedparser_article:
+            # 'authors' can be [{}], which is useless.
+
+            for author_dict in feedparser_article['authors']:
+                author = cls.get_author_from_feedparser_dict(author_dict,
+                                                             website)
+
+                if author:
+                    if set_to_article:
+                        set_to_article.update(add_to_set__authors=author)
+
+                    authors.add(author)
+
+        if 'author_detail' in feedparser_article:
+            author = cls.get_author_from_feedparser_dict(
+                feedparser_article['author_detail'], website)
+
+            if author:
+                if set_to_article:
+                    set_to_article.update(add_to_set__authors=author)
+
+                authors.add(author)
+
+        if 'author' in feedparser_article:
+            author = cls.get_author_from_feedparser_dict(
+                {'name': feedparser_article['author']}, website)
+
+            if author:
+                if set_to_article:
+                    set_to_article.update(add_to_set__authors=author)
+
+                authors.add(author)
+
+        if set_to_article and authors:
+            set_to_article.reload()
+
+        # Always return a list, else we hit
+        # http://dev.1flow.net/development/1flow-dev/group/4026/
+        return list(authors)
+
+    @classmethod
+    def get_author_from_feedparser_dict(cls, author_dict, website):
+
+        email = author_dict.get('email', None)
+
+        if email:
+            # An email is less likely to have a duplicates than
+            # a standard name. It takes precedence if it exists.
+
+            try:
+                return cls.objects.get(origin_name=email, website=website)
+
+            except cls.DoesNotExist:
+                try:
+                    return cls(origin_name=email, website=website,
+                               is_unsure=False).save()
+
+                except (NotUniqueError, DuplicateKeyError):
+                    # We just hit the race condition with two creations
+                    # At the same time. Same player shoots again.
+                    return cls.objects.get(origin_name=email, website=website)
+
+        home_page = author_dict.get('href', None)
+
+        if home_page:
+            # A home_page is less likely to have a duplicates than a standard
+            # name too. It also takes precedence after email if it exists.
+
+            try:
+                return cls.objects.get(origin_name=home_page, website=website)
+
+            except cls.DoesNotExist:
+                try:
+                    return cls(origin_name=home_page, website=website,
+                               is_unsure=False).save()
+
+                except (NotUniqueError, DuplicateKeyError):
+                    # We just hit the race condition with two creations
+                    # At the same time. Same player shoots again.
+                    return cls.objects.get(origin_name=home_page,
+                                           website=website)
+
+        origin_name = author_dict.get('name', None)
+
+        if origin_name:
+            try:
+                return cls.objects.get(origin_name=origin_name,
+                                       website=website)
+
+            except cls.DoesNotExist:
+                try:
+                    return cls(origin_name=origin_name,
+                               website=website,
+                               is_unsure=True).save()
+                except (NotUniqueError, DuplicateKeyError):
+                    # We just hit the race condition with two creations
+                    # At the same time. Same player shoots again.
+                    return cls.objects.get(origin_name=origin_name,
+                                           website=website)
+
+        return None
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Article
@@ -1420,8 +1729,8 @@ class Article(Document, DocumentHelperMixin):
 
     word_count = IntField(verbose_name=_(u'Word count'))
 
-    authors    = ListField(ReferenceField(u'Author'))
-    publishers = ListField(ReferenceField(u'User'))
+    authors    = ListField(ReferenceField(u'Author', reverse_delete_rule=PULL))
+    publishers = ListField(ReferenceField(u'User', reverse_delete_rule=PULL))
 
     date_published = DateTimeField(verbose_name=_(u'date published'),
                                    help_text=_(u"When the article first "
@@ -1432,8 +1741,8 @@ class Article(Document, DocumentHelperMixin):
                                    help_text=_(u'When the article was added '
                                                u'to the 1flow database.'))
 
-    tags = ListField(GenericReferenceField(), default=list,
-                     verbose_name=_(u'Tags'),
+    tags = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
+                     default=list, verbose_name=_(u'Tags'),
                      help_text=_(u'Default tags that will be applied to '
                                  u'new reads of this article.'))
     default_rating = FloatField(default=0.0, verbose_name=_(u'default rating'),
@@ -1442,7 +1751,6 @@ class Article(Document, DocumentHelperMixin):
                                             u'content.'))
     language       = StringField(verbose_name=_(u'Article language'))
     text_direction = StringField(verbose_name=_(u'Text direction'))
-    comments       = ListField(ReferenceField('Comment'))
 
     abstract      = StringField(verbose_name=_(u'abstract'),
                                 help_text=_(u'Small exerpt of content, '
@@ -1459,7 +1767,7 @@ class Article(Document, DocumentHelperMixin):
 
     # A snap / a serie of snaps references the original article.
     # An article references its source (origin blog / newspaper…)
-    source = GenericReferenceField()
+    source = ReferenceField('self', reverse_delete_rule=NULLIFY)
 
     origin_type = IntField(default=ORIGIN_TYPE_NONE,
                            verbose_name=_(u'Origin type'),
@@ -1467,7 +1775,8 @@ class Article(Document, DocumentHelperMixin):
                                        u'twitter, websnap…). Can be 0 '
                                        u'(none/unknown).'))
 
-    feeds = ListField(ReferenceField('Feed'), default=list)
+    feeds = ListField(ReferenceField('Feed', reverse_delete_rule=PULL),
+                      default=list)
 
     comments_feed = URLField()
 
@@ -1494,7 +1803,8 @@ class Article(Document, DocumentHelperMixin):
                                               u'different URLs (eg. one can be '
                                               u'shortened, the other not), '
                                               u'they lead to the same final '
-                                              u'destination on the web.'))
+                                              u'destination on the web.'),
+                                  reverse_delete_rule=NULLIFY)
 
     meta = {
         'indexes': ['content_type', 'content_error', 'url_error', ]
@@ -2595,7 +2905,8 @@ class Article(Document, DocumentHelperMixin):
 
 class OriginalData(Document, DocumentHelperMixin):
 
-    article = ReferenceField('Article', unique=True)
+    article = ReferenceField('Article', unique=True,
+                             reverse_delete_rule=CASCADE)
 
     # This should go away soon, after a full re-parsing.
     google_reader = StringField()
@@ -2630,15 +2941,18 @@ class OriginalData(Document, DocumentHelperMixin):
 
 
 class Read(Document, DocumentHelperMixin):
-    user = ReferenceField('User')
-    article = ReferenceField('Article', unique_with='user')
+    user = ReferenceField('User', reverse_delete_rule=CASCADE)
+    article = ReferenceField('Article', unique_with='user',
+                             reverse_delete_rule=CASCADE)
     is_read = BooleanField(default=False)
     is_auto_read = BooleanField(default=False)
     date_created = DateTimeField(default=now)
     date_read = DateTimeField()
     date_auto_read = DateTimeField()
-    tags = ListField(GenericReferenceField(), default=list,
-                     verbose_name=_(u'Tags'),
+
+    # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
+    tags = ListField(GenericReferenceField(),
+                     default=list, verbose_name=_(u'Tags'),
                      help_text=_(u'User set of tags for this read.'))
 
     # This will be set to Article.default_rating
@@ -2690,6 +3004,8 @@ class Read(Document, DocumentHelperMixin):
         self.safe_reload()
 
 
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Comment
+
 class Comment(Document, DocumentHelperMixin):
     TYPE_COMMENT = 1
     TYPE_INSIGHT = 10
@@ -2711,12 +3027,12 @@ class Comment(Document, DocumentHelperMixin):
 
     # We don't comment reads. We comment articles.
     #read = ReferenceField('Read')
-    article = ReferenceField('Article')
+    article = ReferenceField('Article', reverse_delete_rule=CASCADE)
 
     # Thus, we must store
-    user = ReferenceField('User')
+    user = ReferenceField('User', reverse_delete_rule=CASCADE)
 
-    in_reply_to = ReferenceField('Comment')  # , null=True)
+    in_reply_to = ReferenceField('Comment', reverse_delete_rule=NULLIFY)
 
     # @property
     # def type(self):
@@ -2732,319 +3048,28 @@ class Comment(Document, DocumentHelperMixin):
     #             return Comment.TYPE_COMMENT
 
 
-class SnapPreference(Document, DocumentHelperMixin):
-    select_paragraph = BooleanField(verbose_name=_(u'Select whole paragraph '
-                                    u'on click'), default=False)
-    default_public = BooleanField(verbose_name=_(u'Grows public by default'),
-                                  default=True)
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Source
 
 
-class NotificationPreference(EmbeddedDocument):
-    """ Email and other web notifications preferences. """
-    pass
+class Source(Document, DocumentHelperMixin):
+    """ The "original source" for similar articles: they have different authors,
+        different contents, but all refer to the same information, which can
+        come from the same article on the net (or radio, etc).
 
+        Eg:
+            - article1 on Le Figaro
+            - article2 on Liberation
+            - both refer to the same AFP news, but have different content.
 
-HOME_STYLE_CHOICES = (
-    (u'RL', _(u'Reading list')),
-    (u'TL', _(u'Tiled News')),
-    (u'DB', _(u'Dashboard')),
-)
+    """
+    type    = StringField()
+    uri     = URLField(unique=True)
+    name    = StringField()
+    authors = ListField(ReferenceField('User', reverse_delete_rule=PULL))
+    slug    = StringField()
 
 
-class HomePreference(EmbeddedDocument):
-    """ Various HOME settings. """
-    style = StringField(verbose_name=_(u'How the user wants his 1flow '
-                        u'home to appear'), max_length=2,
-                        choices=HOME_STYLE_CHOICES, default=u'TL')
-
-
-class Preference(Document, DocumentHelperMixin):
-    snap = EmbeddedDocumentField(u'SnapPreference', default=SnapPreference)
-    notification = EmbeddedDocumentField(u'NotificationPreference',
-                                         default=NotificationPreference)
-    home = EmbeddedDocumentField(u'HomePreference', default=HomePreference)
-
-
-@task(name=u'Author.post_create', queue=u'high')
-def author_post_create_task(author_id, *args, **kwargs):
-
-    author = Author.objects.get(id=author_id)
-    return author.post_create_task(*args, **kwargs)
-
-
-class Author(Document, DocumentHelperMixin):
-    name        = StringField()
-    website     = ReferenceField(u'WebSite', unique_with=u'origin_name')
-    origin_name = StringField(help_text=_(u'When trying to guess authors, we '
-                              u'have only a "fullname" equivalent. We need to '
-                              u'store it for future comparisons in case '
-                              u'firstname and lastname get manually modified '
-                              u'after author creation.'))
-
-    is_unsure = BooleanField(help_text=_(u'Set to True when the author '
-                             u'has been found from its origin_name and '
-                             u'not via email; because origin_name can '
-                             u'be duplicated, but not emails.'),
-                             default=False)
-
-    user = ReferenceField(u'User', required=False, help_text=_(u'Link an '
-                          u'internet author to a 1flow user.'))
-
-    duplicate_of = ReferenceField(u'Author')
-
-    def __unicode__(self):
-        return u'%s%s #%s for website %s' % (self.name or self.origin_name,
-                                             _(u'(unsure)')
-                                             if self.is_unsure else u'',
-                                             self.id, self.website)
-
-    def safe_reload(self):
-        try:
-            self.reload()
-
-        except:
-            pass
-
-    @classmethod
-    def signal_post_save_handler(cls, sender, document,
-                                 created=False, **kwargs):
-
-        author = document
-
-        if created:
-            if author._db_name != settings.MONGODB_NAME_ARCHIVE:
-                author_post_create_task.delay(author.id)
-
-    def post_create_task(self):
-        """ Method meant to be run from a celery task. """
-
-        statsd.gauge('authors.counts.total', 1, delta=True)
-
-    @classmethod
-    def get_authors_from_feedparser_article(cls, feedparser_article,
-                                            set_to_article=None):
-
-        if set_to_article:
-            # This is an absolutized URL, hopefully.
-            article_url = set_to_article.url
-
-        else:
-            article_url = getattr(feedparser_article, 'link',
-                                  '').replace(' ', '%20') or None
-
-        if article_url:
-            website = WebSite.get_from_url(article_url)
-
-        else:
-            LOGGER.critical(u'NO url, cannot get any author.')
-
-        authors = set()
-
-        if 'authors' in feedparser_article:
-            # 'authors' can be [{}], which is useless.
-
-            for author_dict in feedparser_article['authors']:
-                author = cls.get_author_from_feedparser_dict(author_dict,
-                                                             website)
-
-                if author:
-                    if set_to_article:
-                        set_to_article.update(add_to_set__authors=author)
-
-                    authors.add(author)
-
-        if 'author_detail' in feedparser_article:
-            author = cls.get_author_from_feedparser_dict(
-                feedparser_article['author_detail'], website)
-
-            if author:
-                if set_to_article:
-                    set_to_article.update(add_to_set__authors=author)
-
-                authors.add(author)
-
-        if 'author' in feedparser_article:
-            author = cls.get_author_from_feedparser_dict(
-                {'name': feedparser_article['author']}, website)
-
-            if author:
-                if set_to_article:
-                    set_to_article.update(add_to_set__authors=author)
-
-                authors.add(author)
-
-        if set_to_article and authors:
-            set_to_article.reload()
-
-        # Always return a list, else we hit
-        # http://dev.1flow.net/development/1flow-dev/group/4026/
-        return list(authors)
-
-    @classmethod
-    def get_author_from_feedparser_dict(cls, author_dict, website):
-
-        email = author_dict.get('email', None)
-
-        if email:
-            # An email is less likely to have a duplicates than
-            # a standard name. It takes precedence if it exists.
-
-            try:
-                return cls.objects.get(origin_name=email, website=website)
-
-            except cls.DoesNotExist:
-                try:
-                    return cls(origin_name=email, website=website,
-                               is_unsure=False).save()
-
-                except (NotUniqueError, DuplicateKeyError):
-                    # We just hit the race condition with two creations
-                    # At the same time. Same player shoots again.
-                    return cls.objects.get(origin_name=email, website=website)
-
-        home_page = author_dict.get('href', None)
-
-        if home_page:
-            # A home_page is less likely to have a duplicates than a standard
-            # name too. It also takes precedence after email if it exists.
-
-            try:
-                return cls.objects.get(origin_name=home_page, website=website)
-
-            except cls.DoesNotExist:
-                try:
-                    return cls(origin_name=home_page, website=website,
-                               is_unsure=False).save()
-
-                except (NotUniqueError, DuplicateKeyError):
-                    # We just hit the race condition with two creations
-                    # At the same time. Same player shoots again.
-                    return cls.objects.get(origin_name=home_page,
-                                           website=website)
-
-        origin_name = author_dict.get('name', None)
-
-        if origin_name:
-            try:
-                return cls.objects.get(origin_name=origin_name,
-                                       website=website)
-
-            except cls.DoesNotExist:
-                try:
-                    return cls(origin_name=origin_name,
-                               website=website,
-                               is_unsure=True).save()
-                except (NotUniqueError, DuplicateKeyError):
-                    # We just hit the race condition with two creations
-                    # At the same time. Same player shoots again.
-                    return cls.objects.get(origin_name=origin_name,
-                                           website=website)
-
-        return None
-
-
-def user_django_user_random_default():
-    """ 20130731: unused function but I keep this code for random()-related
-        and future use. """
-
-    count = 1
-
-    while count:
-        random_int = randint(-sys.maxint - 1, -1)
-
-        try:
-            User.objects.get(django_user=random_int)
-
-        except User.DoesNotExist:
-            return random_int
-
-        else:
-            count += 1
-            if count == 10:
-                LOGGER.warning(u'user_django_user_random_default() is trying '
-                               u'to slow down things (more than 10 cycles to '
-                               u' generate a not-taken random ID)…')
-
-
-@task(name='User.post_create', queue='high')
-def user_post_create_task(user_id, *args, **kwargs):
-
-    user = User.objects.get(id=user_id)
-    return user.post_create_task(*args, **kwargs)
-
-
-class User(Document, DocumentHelperMixin):
-    django_user = IntField(unique=True)
-    username    = StringField()
-    first_name  = StringField()
-    last_name   = StringField()
-    preferences = ReferenceField('Preference')
-
-    def __unicode__(self):
-        return u'%s #%s (Django ID: %s)' % (self.username or u'<UNKNOWN>',
-                                            self.id, self.django_user)
-
-    def get_full_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
-
-    def safe_reload(self):
-        try:
-            self.reload()
-
-        except:
-            pass
-
-    @classmethod
-    def signal_post_save_handler(cls, sender, document,
-                                 created=False, **kwargs):
-
-        user = document
-
-        if created:
-            if user._db_name != settings.MONGODB_NAME_ARCHIVE:
-                user_post_create_task.delay(user.id)
-                pass
-
-    @classmethod
-    def signal_pre_save_post_validation_handler(cls, sender,
-                                                document, **kwargs):
-
-        if document.preferences is None:
-            document.preferences = Preference().save()
-
-    def post_create_task(self):
-        """ Method meant to be run from a celery task. """
-
-        django_user = DjangoUser.objects.get(id=self.django_user)
-        self.username = django_user.username
-        self.last_name = django_user.last_name
-        self.first_name = django_user.first_name
-        self.save()
-
-
-def mongo_user(self):
-    try:
-        return self.__mongo_user_cache__
-
-    except:
-        try:
-            self.__mongo_user_cache__ = User.objects.get(django_user=self.id)
-
-        except User.DoesNotExist:
-            self.__mongo_user_cache__ = User(django_user=self.id).save()
-
-        return self.__mongo_user_cache__
-
-# Auto-link the DjangoUser to the mongo one
-DjangoUser.mongo = property(mongo_user)
-
-
-class Group(Document, DocumentHelperMixin):
-    name = StringField(unique_with='creator')
-    creator = ReferenceField('User')
-    administrators = ListField(ReferenceField('User'))
-    members = ListField(ReferenceField('User'))
-    guests = ListField(ReferenceField('User'))
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• End classes
 
 
 connect_mongoengine_signals(globals())
