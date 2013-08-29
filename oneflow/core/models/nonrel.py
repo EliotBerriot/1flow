@@ -3031,7 +3031,7 @@ def mongo_user(self):
             self.__mongo_user_cache__ = User.objects.get(django_user=self.id)
 
         except User.DoesNotExist:
-            self.__mongo_user_cache__ = User.objects(django_user=self.id).save()
+            self.__mongo_user_cache__ = User(django_user=self.id).save()
 
         return self.__mongo_user_cache__
 
