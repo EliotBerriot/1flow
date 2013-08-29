@@ -43,8 +43,8 @@ ALLOWED_HOSTS += [
     'localhost',
 ]
 
-INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver',
-                   'template_debug', )
+INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver', )
+                   #'template_debug', )
 
 DEVSERVER_DEFAULT_ADDR = '0.0.0.0'
 DEVSERVER_DEFAULT_PORT = 8000
@@ -52,7 +52,7 @@ DEVSERVER_DEFAULT_PORT = 8000
 TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 JENKINS_TEST_RUNNER='django_jenkins.nose_runner.CINoseTestSuiteRunner'
 
-NOSE_ARGS = ['--stop', '--ipdb', '--ipdb-failures', ]
+NOSE_ARGS = ['--stop'] #, '--ipdb', '--ipdb-failures', ]
 
 import logging
 import south.logger
