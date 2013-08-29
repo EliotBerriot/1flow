@@ -32,13 +32,13 @@
 
 
           <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="icon-user"></i> {{ request.user.username }}
+            <i class="icon-user"></i> {{ user.username }}
             <span class="caret"></span>
           </a>
           <ul class="dropdown-menu">
             <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
 
-          {% if request.user.is_superuser %}
+          {% if user.is_superuser %}
             <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
           {% endif %}
 
@@ -55,8 +55,7 @@
       {% endif %}
       <div class="nav-collapse">
         <ul class="nav">
-          {% if request.user.is_authenticated %}
-
+          {% if user.is_authenticated and mongodb_user.preferences.home.style %}
             <li><a href="{% url 'read' %}">{% trans 'Read' %}</a></li>
 
             {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
@@ -73,9 +72,10 @@
 
             {% endif %}
           {% else %}
-
-            <li><a href="{% url 'about' %}">{% trans 'About' %}</a></li>
-            <li><a href="{% url 'contact' %}">{% trans 'Contact' %}</a></li>
+            <!--
+              <li><a href="#">{% trans 'About' %}</a></li>
+              <li><a href="#">{% trans 'Contact' %}</a></li>
+            -->
 
           {% endif %}
         </ul>
