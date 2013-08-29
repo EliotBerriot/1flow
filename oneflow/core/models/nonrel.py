@@ -2753,15 +2753,16 @@ HOME_STYLE_CHOICES = (
 
 class HomePreference(EmbeddedDocument):
     """ Various HOME settings. """
-    home_style = StringField(verbose_name=_(u'How the user wants his 1flow '
-                             u'home to appear'), max_length=2,
-                             choices=HOME_STYLE_CHOICES)
+    style = StringField(verbose_name=_(u'How the user wants his 1flow '
+                        u'home to appear'), max_length=2,
+                        choices=HOME_STYLE_CHOICES)
 
 
 class Preference(Document, DocumentHelperMixin):
-    snap = EmbeddedDocumentField(u'SnapPreference')
-    notification = EmbeddedDocumentField(u'NotificationPreference')
-    home = EmbeddedDocumentField('HomePreference')
+    snap = EmbeddedDocumentField(SnapPreference, default=SnapPreference)
+    notification = EmbeddedDocumentField(NotificationPreference,
+                                         default=NotificationPreference)
+    home = EmbeddedDocumentField(HomePreference, default=HomePreference)
 
 
 @task(name=u'Author.post_create', queue=u'high')
@@ -3001,9 +3002,14 @@ class User(Document, DocumentHelperMixin):
 
         if created:
             if user._db_name != settings.MONGODB_NAME_ARCHIVE:
-                # NOT YET. Needs review.
-                #user_post_create_task.delay(user.id)
+                user_post_create_task.delay(user.id)
                 pass
+
+    @classmethod
+    def pre_save_post_validation(cls, sender, document, **kwargs):
+
+        if document.preferences is None:
+            document.preferences = Preference().save()
 
     def post_create_task(self):
         """ Method meant to be run from a celery task. """
