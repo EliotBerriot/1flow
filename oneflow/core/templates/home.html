@@ -13,12 +13,13 @@
       <div id="notifications" class="span10 offset1 centered"></div>
     </div>
     {% block application_content %}
-        {% if mongodb_user.preferences.home.style %}
-            {# Any other preference than the dashboard should have redirected to /read/ #}
-            {% include 'snippets/home/dashboard.html' %}
+
+        {% if wizards.show_all and not wizards.welcome_beta %}
+
+          {% include 'snippets/wizards/welcome-beta/welcome-beta.html' %}
 
         {% else %}
-            {% include 'snippets/home/choose-home-style.html' %}
+            { SHOW SUBSCRIPTIONS HERE }
 
         {% endif %}
     {% endblock application_content %}

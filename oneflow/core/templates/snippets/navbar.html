@@ -55,7 +55,8 @@
       {% endif %}
       <div class="nav-collapse">
         <ul class="nav">
-          {% if user.is_authenticated and mongodb_user.preferences.home.style %}
+          {% if user.is_authenticated %}
+
             <li><a href="{% url 'read' %}">{% trans 'Read' %}</a></li>
 
             {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
@@ -69,7 +70,6 @@
                         placeholder="{% trans 'Search…' %}">
                   </form>
               </li>
-
             {% endif %}
           {% else %}
             <!--
