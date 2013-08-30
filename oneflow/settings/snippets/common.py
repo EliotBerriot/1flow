@@ -410,7 +410,7 @@ INSTALLED_APPS = (
     'social_auth',
 )
 
-ENDLESS_PAGINATION_PER_PAGE = 20
+ENDLESS_PAGINATION_PER_PAGE = 40
 ENDLESS_PAGINATION_LOADING = ugettext_lazy(u'loading more entries…')
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
