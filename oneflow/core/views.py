@@ -23,6 +23,9 @@ from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 from oneflow.core.forms import UserProfileEditForm
+
+from endless_pagination.utils import get_page_number_from_request
+
 from sparks.django.utils import HttpResponseTemporaryServerError
 
 from .forms import FullUserCreationForm
@@ -70,6 +73,32 @@ def home(request):
     })
 
 
+@never_cache
+def read(request, **kwargs):
+
+    if request.is_ajax():
+        template = u'snippets/read/read-%s-page.html' % (
+            u'list' if request.user.mongo.preferences.home.style == u'RL'
+            else u'tiles')
+
+    else:
+        template = u'read.html'
+
+    # Computing tenths_counter here is much efficient than doing:
+    # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
+    # in the template…
+
+    is_read        = request.GET.get('is_read', False)
+    tenths_counter = (get_page_number_from_request(request)
+                      - 1) * settings.ENDLESS_PAGINATION_PER_PAGE
+
+    return render(request, template, {
+                  u'reads': Read.objects(is_read=is_read),
+                  u'tenths_counter': tenths_counter
+                  })
+
+
+@never_cache
 def set_preference(request, base, sub, value):
 
     prefs = request.user.mongo.preferences
@@ -99,6 +128,7 @@ def set_preference(request, base, sub, value):
                                 reverse('home')))
 
 
+@never_cache
 def toggle(request, klass, id, key):
 
     try:
@@ -122,6 +152,7 @@ def toggle(request, klass, id, key):
                                     reverse('home')))
 
 
+@never_cache
 def profile(request):
 
     if request.POST:
@@ -139,25 +170,6 @@ def profile(request):
 def help(request):
 
     return render(request, u'help.html')
-
-
-def read(request, **kwargs):
-
-    if request.is_ajax():
-        template = u'snippets/read/read-%s-page.html' % (
-            u'list' if request.user.mongo.preferences.get('home.style') == u'RL'
-            else u'tiles')
-
-    else:
-        template = u'read.html'
-
-    # Computing tenths_counter here is much efficient than doing:
-    # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
-    # in the template…
-
-    return render(request, template , {u'reads': Read.objects(**kwargs),
-                  u'tenths_counter': (int(request.GET.get('page', 1)) - 1)
-                  * settings.ENDLESS_PAGINATION_PER_PAGE})
 
 
 def register(request):
