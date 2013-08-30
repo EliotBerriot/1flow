@@ -16,3 +16,4 @@ def mongodb_user(request):
         u'preferences': request.user.mongo.preferences,
         u'wizards': request.user.mongo.preferences.wizards,
     }
+

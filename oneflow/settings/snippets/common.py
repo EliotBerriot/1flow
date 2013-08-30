@@ -359,7 +359,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     #'social_auth.context_processors.social_auth_login_redirect',
 
+    # `base` processors
     'oneflow.base.context_processors.oneflow_version',
+    'oneflow.base.context_processors.settings_and_config',
+
+    # `core` processors
     'oneflow.core.context_processors.mongodb_user',
 )
 
