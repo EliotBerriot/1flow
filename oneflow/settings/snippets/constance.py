@@ -13,8 +13,9 @@ CONSTANCE_CONFIG = {
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
 
-    'READ_INFINITE_AUTOSCROLL': (False, ugettext(u'Make the read view '
-                                 u'automatically display new articles.')),
+    'READ_INFINITE_AUTOSCROLL': (True, ugettext(u'Make the read view (either '
+                                 u'list or tiles) automatically load new '
+                                 u'content when reaching end of page.')),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
 
