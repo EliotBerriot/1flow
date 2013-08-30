@@ -838,6 +838,7 @@ class Feed(Document, DocumentHelperMixin):
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
                                default=list)
+    default_image_url  = StringField(verbose_name=_(u'default image url'))
     languages      = ListField(StringField(), verbose_name=_(u'Languages'),
                                help_text=_(u'Set this to more than one '
                                            u'language to help article '
@@ -1705,6 +1706,13 @@ def article_replace_duplicate_everywhere(article_id, *args, **kwargs):
     return article.replace_duplicate_everywhere(*args, **kwargs)
 
 
+@task(name='Article.find_image', queue='fetch', default_retry_delay=3600)
+def article_find_image(article_id, *args, **kwargs):
+
+    article = Article.objects.get(id=article_id)
+    return article.find_image(*args, **kwargs)
+
+
 @task(name='Article.fetch_content', queue='fetch', default_retry_delay=3600)
 def article_fetch_content(article_id, *args, **kwargs):
 
@@ -1720,6 +1728,7 @@ def article_post_create_task(article_id, *args, **kwargs):
 
 
 class Article(Document, DocumentHelperMixin):
+
     title        = StringField(max_length=256, required=True,
                                verbose_name=_(u'Title'))
     slug         = StringField(max_length=256)
@@ -1767,6 +1776,7 @@ class Article(Document, DocumentHelperMixin):
     language       = StringField(verbose_name=_(u'Article language'))
     text_direction = StringField(verbose_name=_(u'Text direction'))
 
+    image_url     = StringField(verbose_name=_(u'image URL'))
     abstract      = StringField(verbose_name=_(u'abstract'),
                                 help_text=_(u'Small exerpt of content, '
                                             u'if applicable'))
@@ -2497,6 +2507,47 @@ class Article(Document, DocumentHelperMixin):
             LOGGER.exception(u'Extraction failed for article %s.', self)
             return
 
+    def find_image_must_abort(self, force=False, commit=True):
+
+        if self.image_url and not force:
+            LOGGER.warning(u'Article %s image already found.', self)
+            return True
+
+        if not self.content_type in (CONTENT_TYPE_MARKDOWN, ):
+            LOGGER.warning(u'Article %s has no content, cannot find image.',
+                           self)
+            return True
+
+    def find_image(self, force=False, commit=True):
+
+        # In tasks, doing this is often useful, if
+        # the task waited a long time before running.
+        self.safe_reload()
+
+        if self.find_image_must_abort(force=force, commit=commit):
+            return
+
+        try:
+            for match in re.finditer(ur'![[][^]]+[]][(]([^)]+)[)]',
+                                     self.content):
+                if match:
+                    self.image_url = match.group(1)
+
+                    if commit:
+                        self.save()
+                    break
+
+            if not self.image_url:
+                if self.feed and self.feed.default_image_url:
+                    self.image_url = self.feed.default_image_url
+
+                    if commit:
+                        self.save()
+
+        except Exception:
+            LOGGER.exception(u'Image extraction failed for article %s.', self)
+            return
+
     def fetch_content_image(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_IMAGE_DISABLED:
@@ -2752,6 +2803,7 @@ class Article(Document, DocumentHelperMixin):
         #
         # TODO: word count here
         #
+        self.postprocess_markdown_links(commit=False, force=force)
 
         if commit:
             self.save()
@@ -2760,8 +2812,6 @@ class Article(Document, DocumentHelperMixin):
             spipe.gauge('articles.counts.html', -1, delta=True)
             spipe.gauge('articles.counts.markdown', 1, delta=True)
 
-        self.postprocess_markdown_links()
-
         if config.ARTICLE_FETCHING_DEBUG:
             LOGGER.info(u'————————— #%s Markdown %s —————————'
                         u'\n%s\n'
@@ -2769,7 +2819,8 @@ class Article(Document, DocumentHelperMixin):
                         self.id, self.content.__class__.__name__,
                         self.content, self.id)
 
-    def postprocess_markdown_links(self, commit=True, test_only=False):
+    def postprocess_markdown_links(self, force=False,
+                                   commit=True, test_only=False):
         """ Be sure we have no external links without the website part missing,
             else 1flow article internal links all point to 1flow, which makes
             them unusable.
@@ -2835,6 +2886,8 @@ class Article(Document, DocumentHelperMixin):
 
             if replace_newlines:
                 self.content_type = CONTENT_TYPE_MARKDOWN
+
+            self.find_image(commit=False, force=force)
 
             if commit:
                 self.save()
