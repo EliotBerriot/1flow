@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 21:37+0200\n"
-"PO-Revision-Date: 2013-06-27 21:41+0009\n"
+"POT-Creation-Date: 2013-08-30 18:41+0200\n"
+"PO-Revision-Date: 2013-08-30 18:57+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,69 +19,149 @@ msgstr ""
 "X-Generator: Poedit 1.5.5\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: admin.py:29
+#: admin.py:35
 msgid "Google Reader import"
 msgstr "Import Google Reader"
 
-#: admin.py:30
+#: admin.py:36
 msgid "Google Reader imports"
 msgstr "Imports Google Reader"
 
-#: admin.py:57
+#: admin.py:63
 msgid "articles"
 msgstr "articles"
 
-#: admin.py:70
+#: admin.py:76
 msgid "feeds"
 msgstr "flux"
 
-#: admin.py:83
+#: admin.py:89
 msgid "reads"
 msgstr "lus"
 
-#: admin.py:96
+#: admin.py:102
 msgid "starred"
 msgstr "favoris"
 
-#: admin.py:109
+#: admin.py:115
 msgid "executed"
 msgstr "exécuté"
 
-#: admin.py:125
+#: admin.py:131
 msgid "duration"
 msgstr "durée"
 
-#: admin.py:139
+#: admin.py:145
 msgid "ETA"
 msgstr "fin"
 
-#: admin.py:151
+#: admin.py:157
 msgid "stop"
 msgstr "arrêter"
 
-#: admin.py:157
+#: admin.py:163
 msgid "start"
 msgstr "démarrer"
 
-#: admin.py:158
+#: admin.py:164
 msgid "restart"
 msgstr "relancer"
 
-#: admin.py:162
+#: admin.py:168
 msgid "import"
 msgstr "import"
 
-#: admin.py:171
+#: admin.py:177
 msgid "deny"
 msgstr "bloquer"
 
-#: admin.py:172
+#: admin.py:178
 msgid "allow"
 msgstr "autoriser"
 
-#: admin.py:174
+#: admin.py:180
 msgid "Permission"
 msgstr "Permission"
+
+#: admin.py:212
+msgid "Parents"
+msgstr "Parents"
+
+#: admin.py:225
+msgid "Children"
+msgstr "Enfants"
+
+#: admin.py:274
+msgid "URLs"
+msgstr "URLs"
+
+#: admin.py:287
+#, python-brace-format
+msgid ""
+"<span title=\"Last 3 errors:\n"
+"{0}\" style=\"cursor: pointer\">{1} error(s)</span>"
+msgstr ""
+
+#: admin.py:290
+#, python-format
+msgid "%s: %s"
+msgstr "%s : %s"
+
+#: admin.py:296
+msgid "Errors"
+msgstr "Erreurs"
+
+#: admin.py:304
+msgid "Private?"
+msgstr "Privé(e) ?"
+
+#: admin.py:312
+msgid "Recent"
+msgstr "Récents"
+
+#: admin.py:319
+msgid "Total"
+msgstr "Total"
+
+#: admin.py:330
+msgid "Latest"
+msgstr "Derniers"
+
+#: admin.py:338
+msgid "Added"
+msgstr "Ajouté(e)"
+
+#: admin.py:349
+msgid "Interval"
+msgstr "Intervalle"
+
+#: admin.py:358
+msgid "never"
+msgstr "jamais"
+
+#: admin.py:363
+msgid "Refreshed"
+msgstr "Rafraîchi(e)"
+
+#: admin.py:370
+msgid "Subs."
+msgstr "Sous…"
+
+#: admin.py:377
+msgid "reopen"
+msgstr "ré-ouvrir"
+
+#: admin.py:378
+msgid "close"
+msgstr "fermer"
+
+#: admin.py:381
+msgid "The feed is open"
+msgstr "Le flux est ouvert"
+
+#: admin.py:383
+msgid "Closed?"
+msgstr "Fermé(e) ?"
 
 #: forms.py:24
 msgid "The two password fields didn't match."
@@ -99,102 +179,620 @@ msgstr "Confirmation"
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: urls.py:17
+#: tasks.py:670
+#, python-brace-format
+msgid "Reminder: {0} feed(s) closed in last {1} day(s)"
+msgstr "Rappel : {0} flux fermé(s) ce(s) {1} dernier(s) jour(s)"
+
+#: tasks.py:672
+#, python-brace-format
+msgid ""
+"\n"
+"\n"
+"Here is the list, dates (if any), and reasons (if any) of closing:\n"
+"\n"
+"{feed_list}\n"
+"\n"
+"You can manually reopen any of them from the admin interface.\n"
+"\n"
+msgstr ""
+
+#: urls.py:20
 msgid "^home/$"
 msgstr "^accueil/$"
 
-#: urls.py:18
+#: urls.py:21
+msgid "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
+msgstr "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
+
+#: urls.py:23
+#, fuzzy
+msgid "^profile/$"
+msgstr "Profil"
+
+#: urls.py:24
+#, fuzzy
+msgid "^read/$"
+msgstr "lus"
+
+#: urls.py:26
+msgid "^(?P<klass>\\w+)/(?P<id>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
+msgstr "^(?P<klass>\\w+)/(?P<id>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
+
+#: urls.py:29
+msgid "^help/$"
+msgstr "^aide/$"
+
+#: urls.py:31
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:19
+#: urls.py:32
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:21
+#: urls.py:34
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:24
+#: urls.py:37
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:27
+#: urls.py:40
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:30
+#: urls.py:43
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:36
+#: urls.py:45
+msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
+msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
+
+#: urls.py:52
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:38
+#: urls.py:54
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:105
+#: views.py:224
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:109
+#: views.py:228
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:113
+#: views.py:232
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:120
+#: views.py:239
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:124
+#: views.py:243
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:130
+#: views.py:249
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:133
+#: views.py:252
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
-#: models/nonrel.py:179
+#: models/nonrel.py:275
 msgid "Select whole paragraph on click"
 msgstr "Sélectionner le paragraphe entier lors du clic"
 
-#: models/nonrel.py:181
+#: models/nonrel.py:277
 msgid "Grows public by default"
 msgstr "Les pousses sont publiques par défaut"
 
-#: models/oldrel.py:58 models/reldb.py:208
+#: models/nonrel.py:287
+msgid "Reading list"
+msgstr ""
+
+#: models/nonrel.py:288
+msgid "Tiled News"
+msgstr ""
+
+#: models/nonrel.py:289
+msgid "Dashboard"
+msgstr ""
+
+#: models/nonrel.py:296
+msgid "How the user wants his 1flow home to appear"
+msgstr ""
+
+#: models/nonrel.py:459 models/nonrel.py:597 models/nonrel.py:838
+msgid "slug"
+msgstr ""
+
+#: models/nonrel.py:466
+#, python-format
+msgid "(dupe of #%s)"
+msgstr "(duplicata de #%s)"
+
+#: models/nonrel.py:596 models/nonrel.py:835
+msgid "name"
+msgstr "nom"
+
+#: models/nonrel.py:598
+msgid "language"
+msgstr "langue"
+
+#: models/nonrel.py:604
+msgid "Origin"
+msgstr "Origine"
+
+#: models/nonrel.py:605
+msgid ""
+"Initial origin from where the tag was created from, to eventually help "
+"defining other attributes."
+msgstr ""
+
+#: models/nonrel.py:610 models/nonrel.py:1824
+msgid "Duplicate of"
+msgstr "Duplicata de"
+
+#: models/nonrel.py:611
+msgid ""
+"Put a \"master\" tag here to help avoiding too much different tags (eg. "
+"singular and plurals) with the same meaning and loss of information."
+msgstr ""
+
+#: models/nonrel.py:629
+#, python-format
+msgid "%s ⚐%s (#%s)"
+msgstr "%s ⚐%s (#%s)"
+
+#: models/nonrel.py:836
+msgid "url"
+msgstr "url"
+
+#: models/nonrel.py:837
+msgid "web site"
+msgstr "site web"
+
+#: models/nonrel.py:841
+msgid "default image url"
+msgstr "URL d'image par défaut"
+
+#: models/nonrel.py:842
+msgid "Languages"
+msgstr "Langues"
+
+#: models/nonrel.py:843
+msgid ""
+"Set this to more than one language to help article language detection if "
+"none is set in articles."
+msgstr ""
+
+#: models/nonrel.py:848
+msgid "date added"
+msgstr "date d'ajout"
+
+#: models/nonrel.py:849
+#, fuzzy
+msgid "restricted"
+msgstr "relancer"
+
+#: models/nonrel.py:850
+msgid "closed"
+msgstr "fermé"
+
+#: models/nonrel.py:851
+msgid "date closed"
+msgstr "date de fermeture"
+
+#: models/nonrel.py:852
+msgid "closed reason"
+msgstr "raison de la fermeture"
+
+#: models/nonrel.py:855
+msgid "fetch interval"
+msgstr "intervalle de récupération"
+
+#: models/nonrel.py:856
+msgid "last fetch"
+msgstr "dernière récupération"
+
+#: models/nonrel.py:861
+msgid "fetch limit"
+msgstr "limite de récupération"
+
+#: models/nonrel.py:862
+#, python-format
+msgid ""
+"The maximum number of articles that can be fetched from the feed in "
+"parallel. If less than %s, do not touch: the workers have already tuned it "
+"from real-life results."
+msgstr ""
+
+#: models/nonrel.py:870
+msgid "last etag"
+msgstr "dernier Etag"
+
+#: models/nonrel.py:871
+msgid "modified"
+msgstr "modifié"
+
+#: models/nonrel.py:983
+#, python-format
+msgid "%s (#%s)"
+msgstr "%s (#%s)"
+
+#: models/nonrel.py:1496
+msgid "tags"
+msgstr "tags"
+
+#: models/nonrel.py:1497
+msgid ""
+"Subscription tags, which can also be seen as folders from the user point of "
+"view."
+msgstr ""
+
+#: models/nonrel.py:1516
+msgid ""
+"When trying to guess authors, we have only a \"fullname\" equivalent. We "
+"need to store it for future comparisons in case firstname and lastname get "
+"manually modified after author creation."
+msgstr ""
+
+#: models/nonrel.py:1522
+msgid ""
+"Set to True when the author has been found from its origin_name and not via "
+"email; because origin_name can be duplicated, but not emails."
+msgstr ""
+
+#: models/nonrel.py:1528
+msgid "Link an internet author to a 1flow user."
+msgstr "Lier un auteur internet à un utilisateur 1flow."
+
+#: models/nonrel.py:1536
+msgid "(unsure)"
+msgstr "(non confirmé)"
+
+#: models/nonrel.py:1733
+msgid "Title"
+msgstr "Titre"
+
+#: models/nonrel.py:1735
+msgid "Public URL"
+msgstr "URL publique"
+
+#: models/nonrel.py:1736
+msgid "Absolute URL"
+msgstr "URL absolue"
+
+#: models/nonrel.py:1737
+msgid ""
+"The article URL has been successfully absolutized to its unique and final "
+"location."
+msgstr ""
+
+#: models/nonrel.py:1741
+msgid "URL fetch error"
+msgstr "Erreur de récupération de l'URL"
+
+#: models/nonrel.py:1742
+msgid "Error when absolutizing the URL"
+msgstr "Erreur pendant l'absolutisation de l'URL"
+
+#: models/nonrel.py:1743
+msgid "Next pages URLs"
+msgstr "URLs des pages suivantes"
+
+#: models/nonrel.py:1744
+msgid "In case of a multi-pages article, other pages URLs will be here."
+msgstr ""
+
+#: models/nonrel.py:1749
+msgid "Orphaned"
+msgstr "Orphelin"
+
+#: models/nonrel.py:1750
+msgid ""
+"This article has no public URL anymore, or is unfetchable for some reason."
+msgstr ""
+"Cet article n'a plus d'URL publique, ou son contenu n'est plus récupérable "
+"pour un autre raison."
+
+#: models/nonrel.py:1754
+msgid "Word count"
+msgstr "Nombre de mots"
+
+#: models/nonrel.py:1759
+msgid "date published"
+msgstr "date de publication"
+
+#: models/nonrel.py:1760
+msgid "When the article first appeared on the publisher's website."
+msgstr "Quand l'article est apparu la première fois sur le site de l'éditeur."
+
+#: models/nonrel.py:1764
+msgid "Date added"
+msgstr "Date d'ajout"
+
+#: models/nonrel.py:1765
+msgid "When the article was added to the 1flow database."
+msgstr ""
+
+#: models/nonrel.py:1769 models/nonrel.py:3022
+msgid "Tags"
+msgstr "Tags"
+
+#: models/nonrel.py:1770
+msgid "Default tags that will be applied to new reads of this article."
+msgstr ""
+
+#: models/nonrel.py:1772
+#, fuzzy
+msgid "default rating"
+msgstr "durée"
+
+#: models/nonrel.py:1773
+msgid "Rating used as a base when a user has not already rated the content."
+msgstr ""
+
+#: models/nonrel.py:1776
+msgid "Article language"
+msgstr "Langue de l'article"
+
+#: models/nonrel.py:1777
+msgid "Text direction"
+msgstr "Direction du texte"
+
+#: models/nonrel.py:1779
+msgid "image URL"
+msgstr "URL de l'image"
+
+#: models/nonrel.py:1780
+msgid "abstract"
+msgstr "extrait"
+
+#: models/nonrel.py:1781
+msgid "Small exerpt of content, if applicable"
+msgstr ""
+
+#: models/nonrel.py:1784
+msgid "Content"
+msgstr "Contenu"
+
+#: models/nonrel.py:1785
+msgid "Article content"
+msgstr "Contenu de l'article"
+
+#: models/nonrel.py:1787
+msgid "Content type"
+msgstr "Type de contenu"
+
+#: models/nonrel.py:1788
+msgid "Type of article content (text, image…)"
+msgstr ""
+
+#: models/nonrel.py:1790
+msgid "Error"
+msgstr "Erreur"
+
+#: models/nonrel.py:1791
+msgid "Error when fetching content"
+msgstr ""
+
+#: models/nonrel.py:1798
+msgid "Origin type"
+msgstr "Type d'origine"
+
+#: models/nonrel.py:1799
+msgid ""
+"Origin of article (feedparser, twitter, websnap…). Can be 0 (none/unknown)."
+msgstr ""
+
+#: models/nonrel.py:1825
+msgid ""
+"This article is a duplicate of another, which is referenced here. Even if "
+"they have different URLs (eg. one can be shortened, the other not), they "
+"lead to the same final destination on the web."
+msgstr ""
+
+#: models/nonrel.py:1839
+#, python-format
+msgid "%s (#%s) from %s"
+msgstr "%s (#%s) de %s"
+
+#: models/nonrel.py:3023
+msgid "User set of tags for this read."
+msgstr "Ensemble des tags de l'utilisateur pour cette lecture."
+
+#: models/nonrel.py:3048
+#, python-format
+msgid "%s∞%s (#%s) %s %s"
+msgstr "%s∞%s (#%s) %s %s"
+
+#: models/nonrel.py:3050
+#, fuzzy
+msgid "read"
+msgstr "lus"
+
+#: models/nonrel.py:3050
+#, fuzzy
+msgid "unread"
+msgstr "lus"
+
+#: models/oldrel.py:58 models/reldb.py:211
 msgid "Categories"
 msgstr "Catégories"
 
-#: templates/home.html:3
+#: templates/help.html:3 templates/snippets/navbar.html:30
+msgid "Help"
+msgstr "Aide"
+
+#: templates/help.html:10
+msgid "1flow minimal help"
+msgstr "Aide minimale 1flow"
+
+#: templates/help.html:13
+msgid ""
+"\n"
+"## Google Reader import\n"
+"\n"
+"The Google Reader import takes places in the background. You can safely\n"
+"logout of **1flow** or close your browser window without disrupting it.\n"
+"\n"
+"Importing data will take longer if many users are importing at once as we\n"
+"have finite computing resources. Your import status is updated every 5 seconds.\n"
+"\n"
+"Upon completion, the number of imported articles may be less than the number\n"
+"of processed articles due to duplicate content in Google data.\n"
+"\n"
+"About the approximate ETA… Well… Given the nature of the data we fetch\n"
+"from Google, it's **very** approximate. Don't rely on it; we don't do.\n"
+"The import will probably end before the ETA. It pleased our developer\n"
+"to display it.\n"
+msgstr ""
+"\n"
+"## Import Google Reader\n"
+"\n"
+"Cet import est réalisé en arrière-plan. Vous pouvez vous déconnecter de **1flow** ou fermer votre navigateur sans qu'il soit perturbé.\n"
+"\n"
+"L'import de vos données sera ralenti lorsque d'autres utilisateurs lanceront la même procédure, car nous avons des ressources informatiques limitées.\n"
+"\n"
+"L'état d'import de vos données est mis à jour toutes les 5 secondes.\n"
+"\n"
+"Le nombre réel d'articles importés pourra être inférieur à celui des \n"
+"articles traités, à cause de certaines données dupliquées chez Google.\n"
+"\n"
+"À propos de la « fin approximative »… Hé bien… Vu la nature des données que nous récupérons de Google, elle est vraiment **très** approximative ! Ne vous y fiez pas ; nous ne nous y fions pas. L'import se terminera très probablement avant cette estimation. Ça faisait plaisir à notre développeur de la mettre.\n"
+
+#: templates/help.html:32
+msgid ""
+"\n"
+"## Reaching us\n"
+"\n"
+"If you need to reach real people, you can use:\n"
+"\n"
+"- the **feedback form** (on the right), which links to our help forums,\n"
+"- the **chat** widget, to which we are connected in real time (it's not a robot!).\n"
+"\n"
+"Note: If you use twitter to contact us, please be patient: we use it primarily\n"
+"for publishing informations and don't read it very regularly.\n"
+msgstr ""
+"\n"
+"## Nous joindre\n"
+"\n"
+"Si vous souhaitez joindre des humains, vous avez à votre disposition :\n"
+"\n"
+"- le **formulaire de feedback** (sur la droite), qui pointe vers nos forums d'aide,\n"
+"- la fenêtre de **tchat**, à la quelle nous sommes connectés en temps réel (ce n'est pas un robot!).\n"
+"\n"
+"Note : ne comptez pas trop sur Twitter dans un premier temps: nous l'utilisons principalement pour y publier des informations et ne le lisons que rarement actuellement.\n"
+
+#: templates/home.html:5
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/home.html:55
-msgid "finished"
-msgstr "terminé"
+#: templates/profile.html:5 templates/snippets/navbar.html:39
+msgid "Profile"
+msgstr "Profil"
 
-#: templates/home.html:56
-msgid "Import your"
-msgstr "Importer vos"
+#: templates/profile.html:16
+msgid "Your profile"
+msgstr "Profil"
 
-#: templates/home.html:57
-msgid "not active anymore"
-msgstr "n'est plus disponible"
+#: templates/profile.html:22
+msgid "username"
+msgstr "identifiant"
+
+#: templates/profile.html:27
+msgid "First name"
+msgstr "Prénom"
+
+#: templates/profile.html:31
+msgid "Last name"
+msgstr "Nom"
+
+#: templates/profile.html:35
+msgid "e-mail"
+msgstr "courriel"
+
+#: templates/profile.html:39
+msgid "Last login: "
+msgstr "Dernière connexion :"
+
+#: templates/profile.html:43
+#, fuzzy
+msgid "Registered:"
+msgstr "Enregistrement"
+
+#: templates/profile.html:51
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/profile.html:64
+msgid "Profile data it not yet editable."
+msgstr "Les données de profil ne sont pas encore modifiables."
+
+#: templates/profile.html:68
+msgid "Social accounts"
+msgstr "Comptes de réseaux sociaux"
+
+#: templates/profile.html:72
+msgid "Currently associated"
+msgstr "Actuellement associés"
+
+#: templates/profile.html:76
+msgid ""
+"\n"
+"Click to disassociate any of your accounts, but beware:\n"
+"if it's the account you're signed in, you will be\n"
+"immediately disconnected from **1flow**.\n"
+msgstr ""
+"\n"
+"Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**.\n"
+
+#: templates/profile.html:82
+msgid ""
+"\n"
+"As you have currently only one social account, you cannot de-associate it\n"
+"from **1flow**: this would leave you lost in cyberspace without any way to\n"
+"find back the spaceport.\n"
+msgstr ""
+"\n"
+"Vous n'avez actuellement qu'un seul compte social ; vous ne pouvez pas le déconnecter de **1flow** : cela vous perdrait dans le cyber-espace sans aucun moyen de revenir au spacio-port. \n"
+
+#: templates/profile.html:105
+#, python-format
+msgid "Cannot disconnect from %(backend_name)s"
+msgstr "Impossible de déconnecter %(backend_name)s"
+
+#: templates/profile.html:111
+#, python-format
+msgid "Disconnect from %(backend_name)s"
+msgstr "Se déconnecter de %(backend_name)s"
+
+#: templates/profile.html:121
+msgid "Associate more accounts"
+msgstr "Associer d'autres comptes"
+
+#: templates/profile.html:123
+msgid "Associate accounts"
+msgstr "Associer des comptes"
+
+#: templates/read.html:3 templates/snippets/navbar.html:60
+msgid "Read"
+msgstr "Lecture"
 
 #: templates/register.html:3
 msgid "Register"
@@ -230,7 +828,7 @@ msgstr ""
 "\n"
 "Vous pouvez utiliser un compte de réseau social pour vous enregistrer en un clic sur <strong>1flow</strong>. Ceci importera automatiquement vos données dans  <strong>1flow</strong>. D'une pierre deux coups !"
 
-#: templates/signin.html:3 templates/ember/main.html:39
+#: templates/signin.html:3 templates/snippets/navbar.html:52
 msgid "Sign in…"
 msgstr "Connexion…"
 
@@ -303,212 +901,6 @@ msgid ""
 msgstr ""
 "\n"
 "Désirez-vous <a href=\"%(signin_url)s\">vous identifier à nouveau</a> avec un autre compte ?"
-
-#: templates/ember/main.html:13
-msgid "1flow has not yet reached BETA status"
-msgstr "1flow n'a pas encore atteint la BETA"
-
-#: templates/ember/main.html:18
-msgid "Help"
-msgstr "Aide"
-
-#: templates/ember/main.html:26
-msgid "Profile"
-msgstr "Profil"
-
-#: templates/ember/main.html:29
-msgid "Django Admin."
-msgstr "Admin. Django"
-
-#: templates/ember/main.html:33
-msgid "Sign Out"
-msgstr "Déconnexion"
-
-#: templates/ember/main.html:49
-msgid "flowboard"
-msgstr "flowboard"
-
-#: templates/ember/main.html:50
-msgid "teams"
-msgstr "équipes"
-
-#: templates/ember/main.html:51
-msgid "subscriptions"
-msgstr "abonnements"
-
-#: templates/ember/main.html:52
-msgid "discovery"
-msgstr "découverte"
-
-#: templates/ember/main.html:56
-msgid "Search…"
-msgstr "Rechercher…"
-
-#: templates/ember/main.html:63
-msgid "about"
-msgstr "à propos"
-
-#: templates/ember/main.html:64
-msgid "contact"
-msgstr "contact"
-
-#: templates/ember/views/discovery.html:8
-#: templates/ember/views/recommended.html:8
-msgid "Not implemented"
-msgstr "Non implémenté"
-
-#: templates/ember/views/discovery.html:10
-#: templates/ember/views/recommended.html:10
-msgid "This is just a waiting view. Please be patient!"
-msgstr "Ceci est une vue d'attente. Soyez patient(e) !"
-
-#: templates/ember/views/help.html:8
-msgid "1flow minimal help"
-msgstr "Aide minimale 1flow"
-
-#: templates/ember/views/help.html:11
-msgid ""
-"\n"
-"## Google Reader import\n"
-"\n"
-"The Google Reader import takes places in the background. You can safely\n"
-"logout of **1flow** or close your browser window without disrupting it.\n"
-"\n"
-"Importing data will take longer if many users are importing at once as we\n"
-"have finite computing resources. Your import status is updated every 5 seconds.\n"
-"\n"
-"Upon completion, the number of imported articles may be less than the number\n"
-"of processed articles due to duplicate content in Google data.\n"
-"\n"
-"About the approximate ETA… Well… Given the nature of the data we fetch\n"
-"from Google, it's **very** approximate. Don't rely on it; we don't do.\n"
-"The import will probably end before the ETA. It pleased our developer\n"
-"to display it.\n"
-msgstr ""
-"\n"
-"## Import Google Reader\n"
-"\n"
-"Cet import est réalisé en arrière-plan. Vous pouvez vous déconnecter de **1flow** ou fermer votre navigateur sans qu'il soit perturbé.\n"
-"\n"
-"L'import de vos données sera ralenti lorsque d'autres utilisateurs lanceront la même procédure, car nous avons des ressources informatiques limitées.\n"
-"\n"
-"L'état d'import de vos données est mis à jour toutes les 5 secondes.\n"
-"\n"
-"Le nombre réel d'articles importés pourra être inférieur à celui des \n"
-"articles traités, à cause de certaines données dupliquées chez Google.\n"
-"\n"
-"À propos de la « fin approximative »… Hé bien… Vu la nature des données que nous récupérons de Google, elle est vraiment **très** approximative ! Ne vous y fiez pas ; nous ne nous y fions pas. L'import se terminera très probablement avant cette estimation. Ça faisait plaisir à notre développeur de la mettre.\n"
-
-#: templates/ember/views/help.html:30
-msgid ""
-"\n"
-"## Reaching us\n"
-"\n"
-"If you need to reach real people, you can use:\n"
-"\n"
-"- the **feedback form** (on the right), which links to our help forums,\n"
-"- the **chat** widget, to which we are connected in real time (it's not a robot!).\n"
-"\n"
-"Note: If you use twitter to contact us, please be patient: we use it primarily\n"
-"for publishing informations and don't read it very regularly.\n"
-msgstr ""
-"\n"
-"## Nous joindre\n"
-"\n"
-"Si vous souhaitez joindre des humains, vous avez à votre disposition :\n"
-"\n"
-"- le **formulaire de feedback** (sur la droite), qui pointe vers nos forums d'aide,\n"
-"- la fenêtre de **tchat**, à la quelle nous sommes connectés en temps réel (ce n'est pas un robot!).\n"
-"\n"
-"Note : ne comptez pas trop sur Twitter dans un premier temps: nous l'utilisons principalement pour y publier des informations et ne le lisons que rarement actuellement.\n"
-
-#: templates/ember/views/index.html:8
-msgid "Welcome!"
-msgstr "Bienvenue !"
-
-#: templates/ember/views/profile.html:14
-msgid "Your profile"
-msgstr "Profil"
-
-#: templates/ember/views/profile.html:16
-msgid "Profile data it not yet editable."
-msgstr "Les données de profil ne sont pas encore modifiables."
-
-#: templates/ember/views/profile.html:22
-msgid "Social accounts"
-msgstr "Comptes de réseaux sociaux"
-
-#: templates/ember/views/profile.html:26
-msgid "Currently associated"
-msgstr "Actuellement associés"
-
-#: templates/ember/views/profile.html:30
-msgid ""
-"\n"
-"Click to disassociate any of your accounts, but beware:\n"
-"if it's the account you're signed in, you will be\n"
-"immediately disconnected from **1flow**.\n"
-msgstr ""
-"\n"
-"Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**.\n"
-
-#: templates/ember/views/profile.html:36
-msgid ""
-"\n"
-"As you have currently only one social account, you cannot de-associate it\n"
-"from **1flow**: this would leave you lost in cyberspace without any way to\n"
-"find back the spaceport.\n"
-msgstr ""
-"\n"
-"Vous n'avez actuellement qu'un seul compte social ; vous ne pouvez pas le déconnecter de **1flow** : cela vous perdrait dans le cyber-espace sans aucun moyen de revenir au spacio-port. \n"
-
-#: templates/ember/views/profile.html:59
-#, python-format
-msgid "Cannot disconnect from %(backend_name)s"
-msgstr "Impossible de déconnecter %(backend_name)s"
-
-#: templates/ember/views/profile.html:65
-#, python-format
-msgid "Disconnect from %(backend_name)s"
-msgstr "Se déconnecter de %(backend_name)s"
-
-#: templates/ember/views/profile.html:75
-msgid "Associate more accounts"
-msgstr "Associer d'autres comptes"
-
-#: templates/ember/views/profile.html:77
-msgid "Associate accounts"
-msgstr "Associer des comptes"
-
-#: templates/ember/views/subscriptions.html:8
-msgid "Subscriptions"
-msgstr "Abonnements"
-
-#: templates/ember/views/subscriptions.html:14
-msgid "Collapse"
-msgstr "Refermer"
-
-#: templates/ember/views/subscriptions.html:16
-msgid "Details"
-msgstr "Détails"
-
-#: templates/ember/views/subscriptions.html:21
-msgid "Add one?"
-msgstr "En ajouter une ?"
-
-#: templates/ember/views/subscriptions.html:22
-#, python-format
-msgid ""
-"\n"
-"              No subscription yet. %(add_one)s\n"
-"            "
-msgstr ""
-"\n"
-"Aucun abonnement pour l'instant. %(add_one)s"
-
-#: templates/ember/views/teams.html:4
-msgid "Your teams"
-msgstr "Vos équipes"
 
 #: templates/snippets/google-reader-import-status.html:9
 msgid ""
@@ -625,6 +1017,183 @@ msgid ""
 msgstr ""
 "\n"
 "Pour importer vos données Google Reader, merci de <a href=\"%(gg_url)s\">vous connecter via Google</a> d'abord."
+
+#: templates/snippets/navbar.html:19
+msgid "Maintenance"
+msgstr "Maintenance"
+
+#: templates/snippets/navbar.html:42
+msgid "Django Admin."
+msgstr "Admin. Django"
+
+#: templates/snippets/navbar.html:46
+msgid "Sign Out"
+msgstr "Déconnexion"
+
+#: templates/snippets/navbar.html:64
+#, fuzzy
+msgid "Teams"
+msgstr "équipes"
+
+#: templates/snippets/navbar.html:65
+msgid "Subscriptions"
+msgstr "Abonnements"
+
+#: templates/snippets/navbar.html:66
+#, fuzzy
+msgid "Discovery"
+msgstr "découverte"
+
+#: templates/snippets/navbar.html:70
+msgid "Search…"
+msgstr "Rechercher…"
+
+#: templates/snippets/navbar.html:76
+#, fuzzy
+msgid "About"
+msgstr "à propos"
+
+#: templates/snippets/navbar.html:77
+#, fuzzy
+msgid "Contact"
+msgstr "contact"
+
+#: templates/snippets/home/choose-home-style.html:7
+msgid "Welcome!"
+msgstr "Bienvenue !"
+
+#: templates/snippets/home/choose-home-style.html:9
+#, python-format
+msgid ""
+"\n"
+"            Please choose your 1flow home style. You can change it later in <a href=\"%(profile_url)s\">your preferences</a>.\n"
+"        "
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:18
+msgid "Read everything"
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:26
+msgid "Shows all your unread articles"
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:27
+msgid "Go straight to the information, the classic way."
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:33
+msgid "Electronic Newspaper"
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:41
+msgid "Tiled sources and articles"
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:42
+msgid "Comfortable and easy to use. Perfect for tablets."
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:48
+#, fuzzy
+msgid "1flow dashboard"
+msgstr "flowboard"
+
+#: templates/snippets/home/choose-home-style.html:56
+msgid "Summary and statistics of all your content."
+msgstr ""
+
+#: templates/snippets/home/choose-home-style.html:57
+msgid "Embrace your world in a sight. For experts."
+msgstr ""
+
+#: templates/snippets/read/read-list-page.html:24
+#: templates/snippets/read/read-tiles-page.html:20
+msgid "Nothing to read yet. Buy a book?"
+msgstr "Rien à lire. Achetez-vous un livre ;-)"
+
+#: templates/snippets/read/read-list-row.html:16
+#: templates/snippets/read/read-list-row.html:17
+#: templates/snippets/read/read-tiles-tile.html:23
+#: templates/snippets/read/read-tiles-tile.html:24
+msgid "mark as unread"
+msgstr "marquer non-lu"
+
+#: templates/snippets/read/read-list-row.html:20
+#: templates/snippets/read/read-list-row.html:21
+#: templates/snippets/read/read-tiles-tile.html:27
+#: templates/snippets/read/read-tiles-tile.html:28
+msgid "mark as read"
+msgstr "marquer lu"
+
+#: templates/snippets/read/read-list-row.html:26
+#: templates/snippets/read/read-tiles-tile.html:33
+msgid "Open this article on the original website"
+msgstr "Ouvrir cet article sur le site web d'origine"
+
+#: templates/snippets/read/read-list-row.html:32
+#: templates/snippets/read/read-tiles-tile.html:40
+msgid "in"
+msgstr "dans"
+
+#: templates/snippets/read/read-list-row.html:33
+#: templates/snippets/read/read-tiles-tile.html:41
+msgid ", rated "
+msgstr ", noté"
+
+#: templates/snippets/read/read-list-row.html:37
+#: templates/snippets/read/read-tiles-tile.html:46
+msgid "by"
+msgstr "par"
+
+#: templates/snippets/read/read-tiles-page.html:16
+msgid "Load more entries"
+msgstr "Charger plus d'articles"
+
+#: templates/snippets/read/read-tiles-page.html:16
+msgid "Loading…"
+msgstr "Chargement…"
+
+#~ msgid "finished"
+#~ msgstr "terminé"
+
+#~ msgid "Import your"
+#~ msgstr "Importer vos"
+
+#~ msgid "not active anymore"
+#~ msgstr "n'est plus disponible"
+
+#~ msgid "1flow has not yet reached BETA status"
+#~ msgstr "1flow n'a pas encore atteint la BETA"
+
+#~ msgid "subscriptions"
+#~ msgstr "abonnements"
+
+#~ msgid "Not implemented"
+#~ msgstr "Non implémenté"
+
+#~ msgid "This is just a waiting view. Please be patient!"
+#~ msgstr "Ceci est une vue d'attente. Soyez patient(e) !"
+
+#~ msgid "Collapse"
+#~ msgstr "Refermer"
+
+#~ msgid "Details"
+#~ msgstr "Détails"
+
+#~ msgid "Add one?"
+#~ msgstr "En ajouter une ?"
+
+#~ msgid ""
+#~ "\n"
+#~ "              No subscription yet. %(add_one)s\n"
+#~ "            "
+#~ msgstr ""
+#~ "\n"
+#~ "Aucun abonnement pour l'instant. %(add_one)s"
+
+#~ msgid "Your teams"
+#~ msgstr "Vos équipes"
 
 #~ msgid "There is nothing much more ready, except the Google Reader import."
 #~ msgstr "Pour l'instant, seul l'import Google Reader est disponible."
