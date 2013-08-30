@@ -269,18 +269,25 @@ PIPELINE_JS = {
         ),
         'output_filename': 'js/utils.js',
     },
-
     'core': {
         'source_filenames': (
-            'js/core/core.js',
-            'js/core/controllers/*.js',
-            'js/core/models/*.js',
-            'js/core/views/*.js',
-            'js/core/routes/*.js',
-            'js/core/helpers/*.js',
-            'js/core/end.js',
+            'js/utils/*.js',
+            'js/common.js',
         ),
         'output_filename': 'js/core.js',
+    },
+
+    'ember-core': {
+        'source_filenames': (
+            'js/ember-core/core.js',
+            'js/ember-core/controllers/*.js',
+            'js/ember-core/models/*.js',
+            'js/ember-core/views/*.js',
+            'js/ember-core/routes/*.js',
+            'js/ember-core/helpers/*.js',
+            'js/ember-core/end.js',
+        ),
+        'output_filename': 'js/ember-core.js',
     }
 }
 
@@ -496,12 +503,14 @@ LOGIN_URL          = reverse_lazy('signin')
 LOGOUT_URL         = reverse_lazy('signout')
 LOGIN_REDIRECT_URL = reverse_lazy('home')
 LOGIN_ERROR_URL    = reverse_lazy('signin_error')
+#SOCIAL_AUTH_BACKEND_ERROR_URL = reverse_lazy('signin_error')
 
 # See SOCIAL_AUTH_USER_MODEL earlier in this file.
 #SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 #SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
 SOCIAL_AUTH_EXTRA_DATA = True
 SOCIAL_AUTH_SESSION_EXPIRATION = False
+#SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
