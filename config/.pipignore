@@ -1,6 +1,8 @@
+astroid
 bencode
 distribute
 httplib2
+logilab-common
 mccabe
 mimeparse
 nose
