@@ -11,6 +11,11 @@ CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 
 CONSTANCE_CONFIG = {
 
+    # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
+
+    'READ_INFINITE_AUTOSCROLL': (False, ugettext(u'Make the read view '
+                                 u'automatically display new articles.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
 
     # SEMANTIC NOTE: we use 'disabled' (and not 'enabled') because the rss

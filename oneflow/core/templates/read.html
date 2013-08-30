@@ -41,9 +41,11 @@
 {% block extrajs_footer %}
     {% compressed_js 'endless-pagination' %}
     <script>
-        // $.endlessPaginate({
-        //     paginateOnScroll: true,
-        //     paginateOnScrollMargin: 100
-        // });
+        $.endlessPaginate({
+        {% if config.READ_INFINITE_AUTOSCROLL %}
+            paginateOnScroll: true,
+            paginateOnScrollMargin: 100
+        {% endif %}
+        });
     </script>
 {% endblock extrajs_footer %}
