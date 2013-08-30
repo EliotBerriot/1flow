@@ -7,7 +7,7 @@
   <div class="span3 read-list-item read-tile">
     <div class="media">
       <h1 class="pull-left list-item-number muted">
-        {{ forloop.counter }}
+        {{ forloop.counter|add:tenths_counter }}
       </h1>
 
       {% with read.article as article %}

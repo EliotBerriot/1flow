@@ -64,8 +64,19 @@
     }
 }
 
+.read-tile {
+    min-height: 140px;
+
+    .article-title {
+        font-size: 14px;
+    }
+
+}
+
+/* ------------------------------------------------------- Endless pagination */
 
 .endless_container {
+    text-align: center;
     font-size: 200%;
 
     .endless_more {
@@ -77,14 +88,7 @@
     }
 }
 
-.read-tile {
-    min-height: 140px;
-
-    .article-title {
-        font-size: 14px;
-    }
-
-}
+/* -------------------------------------------------------------------- Other */
 
 /*  fullscreen for bootstrap modal
 

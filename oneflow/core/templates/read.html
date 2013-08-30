@@ -40,7 +40,7 @@
 
 {% block extrajs_footer %}
     {% compressed_js 'endless-pagination' %}
-    <script>
+    <script type="text/javascript">
         $.endlessPaginate({
         {% if config.READ_INFINITE_AUTOSCROLL %}
             paginateOnScroll: true,
