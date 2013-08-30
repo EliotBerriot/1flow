@@ -1872,8 +1872,7 @@ class Article(Document, DocumentHelperMixin):
                 else:
                     LOGGER.warning(u'No summary detail found while trying '
                                    u'to recover orphaned article %s '
-                                   u'content: %s => "%s".', self,
-                                   detail_type, detail_value)
+                                   u'content.', self)
 
             if self.comments_feed is None:
 
