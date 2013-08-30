@@ -226,8 +226,9 @@ def production():
             # no dedicated workers.
             'worker_fetch@worker-02.1flow.io': 'fetch,medium,background',
             'worker_fetch@worker-04.1flow.io': 'fetch,high,background',
-            'worker_swarm@worker-02.1flow.io': 'swarm,background',
-            'worker_swarm@worker-04.1flow.io': 'swarm,background',
+            'worker_swarm':  'swarm,background',
+            'worker_medium': 'medium,fetch',
+            'worker_low':    'low,fetch,background',
         },
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
