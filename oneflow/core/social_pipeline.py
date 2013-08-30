@@ -2,7 +2,7 @@
 
 import logging
 
-from .models.nonrel import Preference
+from .models.nonrel import Preferences
 
 
 LOGGER = logging.getLogger(__name__)
@@ -16,6 +16,6 @@ def check_1flow_requirements(social_auth, user, details, request,
     try:
         mongodb_user.preferences
 
-    except Preference.DoesNotExist:
-        mongodb_user.preferences = Preference().save()
+    except Preferences.DoesNotExist:
+        mongodb_user.preferences = Preferences().save()
         mongodb_user.save()
