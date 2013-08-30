@@ -1,48 +1,58 @@
-  <li class="media read-list-item">
-    <h1 class="pull-left list-item-number muted">
-      {{ forloop.counter }}
-    </h1>
 
-    {% with read.article as article %}
+{% if not forloop.first and forloop.counter0|divisibleby:'4' %}
+</div>
+<div class="row-fluid">
+{% endif %}
 
-    <div class="media-body">
-      <h4 class="media-heading">
-        <span class="article-title">
-          {{ article.title }}
-        </span>
+  <div class="span3 read-list-item read-tile">
+    <div class="media">
+      <h1 class="pull-left list-item-number muted">
+        {{ forloop.counter }}
+      </h1>
 
-        {% if read.is_read %}
-          <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
-              title="{% trans "mark as unread" %}" data-toggle="tooltip">
-            <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
-        {% else %}
-          <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
-              title="{% trans "mark as read" %}" data-toggle="tooltip">
-            <i class="icon-check" alt="{% trans "mark as read" %}"></i>
-        {% endif %}
-        </a>
+      {% with read.article as article %}
 
-        <a href="{{ article.url }}" target="_blank"
-            title="{% trans "Open this article on the original website" %}">
-          <i class="icon-circle-arrow-right"></i></a>
-      </h4>
+      <div class="media-body">
+        <h4 class="media-heading">
+          <span class="article-title">
+            {{ article.title }}
+          </span>
 
-      <p>
-        {{ article.date_published }}{% if read.tags %},
-        {% trans "in" %} {{ read.tags }}{% endif %}
-        {% if read.rating %}{% trans ", rated " %}{{ read.rating }}.{% endif %}
-      </p>
+          {% if read.is_read %}
+            <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+                title="{% trans "mark as unread" %}" data-toggle="tooltip">
+              <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
+          {% else %}
+            <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+                title="{% trans "mark as read" %}" data-toggle="tooltip">
+              <i class="icon-check" alt="{% trans "mark as read" %}"></i>
+          {% endif %}
+          </a>
 
-      {% if article.authors %}
-        <p>{% trans "by" %}
-        {% for author in article.authors %}
-            {{ author.name }},
-        {% endfor %}
+          <a href="{{ article.url }}" target="_blank"
+              title="{% trans "Open this article on the original website" %}">
+            <i class="icon-circle-arrow-right"></i>
+          </a>
+        </h4>
+
+        <p>
+          {{ article.date_published }}{% if read.tags %},
+          {% trans "in" %} {%for tag in read.tags %}{{tag}}{% endfor %}{% endif %}
+          {% if read.rating %}{% trans ", rated " %}{{ read.rating }}.{% endif %}
         </p>
-      {% endif %}
 
-    </div><!-- .media-body -->
+        {% if article.authors %}
+          <p>
+            {% trans "by" %}
+            {% for author in article.authors %}
+                {{ author.name }},
+            {% endfor %}
+          </p>
+        {% endif %}
 
-    {% endwith %}
+      </div><!-- .media-body -->
 
-  </li><!-- .media -->
+      {% endwith %}
+
+    </div><!-- .media -->
+</div><!-- .read-list-item -->

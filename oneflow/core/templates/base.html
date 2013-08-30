@@ -8,6 +8,7 @@
 
     {% compressed_css 'bootstrap-responsive' %}
     {% compressed_css 'font-awesome' %}
+    {% compressed_css 'core' %}
 
     <!--[if IE 7]>
       {% compressed_css 'font-awesome-ie7' %}
@@ -18,7 +19,7 @@
     <![endif]-->
 
     {% django_js %}
-    {% compressed_css 'core' %}
+
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
   <body id="{% block body_id %}{% endblock body_id %}">

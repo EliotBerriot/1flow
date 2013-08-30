@@ -1,31 +1,24 @@
 {% load endless %}
 
-
 <div class="row-fluid">
-  <div class="span10"></div>
-</div>
-    <div class="row-fluid">
-      <div class="span8 offset2">
 
-        {% if reads %}
+    {% if reads %}
 
-            <ul class="media-list">
+        {% lazy_paginate reads %}
 
-            {% lazy_paginate reads %}
+        {% for read in reads %}
+            {% include 'snippets/read/read-tiles-tile.html' %}
+        {% endfor %}
 
-            {% for read in reads %}
-                {% include 'snippets/read/read-tiles-tile.html' %}
-            {% endfor %}
-
+        <div class="span12 centered" id="show-more">
             {% show_more %}
-            </ul>
+        </div>
 
-        {% else %}
-            <div class="hero-unit">
-                <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
-            </div>
+    {% else %}
+        <div class="hero-unit">
+            <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
+        </div>
 
-        {% endif %}
+    {% endif %}
 
-      </div>
-    </div>
+</div>

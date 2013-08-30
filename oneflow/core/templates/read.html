@@ -3,10 +3,35 @@
 {% block title %}{% trans 'Read' %}{% endblock title %}
 
 {% block application_content %}
+
+    <div class="row-fluid">
+        <div class="span12">
+            <div class="btn-toolbar pull-right">
+
+                {% with home_style=preferences.home.style %}
+                    <div class="btn-group" data-toggle="buttons-checkbox"
+                        data-preference="home.style"
+                        data-preference-reload-url="{{ request.path }}">
+                        <button class="btn preference {% if home_style == 'RL' %}active{% endif %}"
+                            data-preference-value="RL"
+                            title=""><i class="icon-list"></i></button>
+                        <button class="btn preference {% if home_style == 'TL' %}active{% endif %}"
+                            data-preference-value="TL"
+                            title=""><i class="icon-th-large"></i></button>
+                    </div>
+                {% endwith %}
+            </div>
+        </div>
+    </div>
+
     {% if mongodb_user.preferences.home.style == 'RL' %}
         {% include 'snippets/read/read-list-page.html' %}
 
     {% elif mongodb_user.preferences.home.style == 'TL' %}
+        {% include 'snippets/read/read-tiles-page.html' %}
+
+    {% else %}
+        {# no value #}
         {% include 'snippets/read/read-tiles-page.html' %}
 
     {% endif %}
@@ -15,8 +40,10 @@
 
 {% block extrajs_footer %}
     {% compressed_js 'endless-pagination' %}
-    <script>$.endlessPaginate({
-            paginateOnScroll: true,
-            paginateOnScrollMargin: 100
-        });</script>
+    <script>
+        // $.endlessPaginate({
+        //     paginateOnScroll: true,
+        //     paginateOnScrollMargin: 100
+        // });
+    </script>
 {% endblock extrajs_footer %}

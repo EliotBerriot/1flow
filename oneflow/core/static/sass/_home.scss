@@ -65,9 +65,17 @@
     }
 }
 
-.endless_loading {
+
+.endless_container {
     font-size: 200%;
-    opacity: 0.5;
+
+    .endless_more {
+        opacity: 0.5;
+    }
+
+    .endless_loading {
+        opacity: 0.25;
+    }
 }
 
 .read-tile {
