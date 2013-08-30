@@ -4,8 +4,15 @@ import mongoengine
 
 # will be filled by sub-snippets
 DATABASES = {
-    'default': dj_database_url.config()
+    'default': dj_database_url.config(),
 }
+
+DATABASES['default']['OPTIONS'] = {
+    'autocommit': True,
+}
+
+
+
 
 MONGODB_NAME = os.environ.get('MONGODB_NAME')
 MONGODB_NAME_ARCHIVE = os.environ.get('MONGODB_NAME_ARCHIVE')

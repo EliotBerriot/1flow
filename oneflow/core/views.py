@@ -22,7 +22,7 @@ from django.template import add_to_builtins
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
-
+from oneflow.core.forms import UserProfileEditForm
 from sparks.django.utils import HttpResponseTemporaryServerError
 
 from .forms import FullUserCreationForm
@@ -124,7 +124,16 @@ def toggle(request, klass, id, key):
 
 def profile(request):
 
-    return render(request, u'profile.html')
+    if request.POST:
+        form = UserProfileEditForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+    else:
+        form = UserProfileEditForm(instance=request.user)
+
+    context = {'form': form}
+    return render(request, 'profile.html', context)
 
 
 def help(request):
