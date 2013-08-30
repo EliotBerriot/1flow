@@ -271,14 +271,14 @@ class DocumentHelperMixin(object):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User preferences
 
 
-class SnapPreference(Document, DocumentHelperMixin):
+class SnapPreferences(Document, DocumentHelperMixin):
     select_paragraph = BooleanField(verbose_name=_(u'Select whole paragraph '
                                     u'on click'), default=False)
     default_public = BooleanField(verbose_name=_(u'Grows public by default'),
                                   default=True)
 
 
-class NotificationPreference(EmbeddedDocument):
+class NotificationPreferences(EmbeddedDocument):
     """ Email and other web notifications preferences. """
     pass
 
@@ -290,21 +290,36 @@ HOME_STYLE_CHOICES = (
 )
 
 
-class HomePreference(EmbeddedDocument):
+class HomePreferences(EmbeddedDocument):
     """ Various HOME settings. """
+
     style = StringField(verbose_name=_(u'How the user wants his 1flow '
                         u'home to appear'), max_length=2,
                         choices=HOME_STYLE_CHOICES)
 
 
+class HelpWizards(EmbeddedDocument):
+    """ Stores if the user viewed the wizards / assistants or not.
+        Special attribute is :attr:`show_all` via which the user
+        can avoid them to be showed complely or not.
+    """
+    show_all     = BooleanField(default=True)
+    welcome_beta = BooleanField(default=False)
+
+
 class Preferences(Document, DocumentHelperMixin):
-    snap = EmbeddedDocumentField(u'SnapPreference', default=SnapPreference)
-    notification = EmbeddedDocumentField(u'NotificationPreference',
-                                         default=NotificationPreference)
-    home = EmbeddedDocumentField(u'HomePreference', default=HomePreference)
+    snap         = EmbeddedDocumentField(u'SnapPreferences',
+                                         default=SnapPreferences)
+    notification = EmbeddedDocumentField(u'NotificationPreferences',
+                                         default=NotificationPreferences)
+    home         = EmbeddedDocumentField(u'HomePreferences',
+                                         default=HomePreferences)
+    wizards      = EmbeddedDocumentField(u'HelpWizards',
+                                         default=HelpWizards)
 
     def __unicode__(self):
         return u'Preferences #%s' % self.id
+
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User & Group
 
