@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from constance import config
-
 from django.conf import settings
 
 from oneflow import VERSION
@@ -11,9 +9,8 @@ def oneflow_version(request):
     return {'oneflow_version': VERSION, 'VERSION': VERSION}
 
 
-def settings_and_config(request):
+def django_settings(request):
 
     return {
         u'settings': settings,
-        u'config': config,
     }

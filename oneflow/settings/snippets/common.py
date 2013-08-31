@@ -361,7 +361,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
     # `base` processors
     'oneflow.base.context_processors.oneflow_version',
-    'oneflow.base.context_processors.settings_and_config',
+    'oneflow.base.context_processors.django_settings',
 
     # `core` processors
     'oneflow.core.context_processors.mongodb_user',
