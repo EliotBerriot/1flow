@@ -87,8 +87,7 @@ def read_with_endless_pagination(request, **kwargs):
 
     is_read = request.GET.get('is_read', False)
     reads   = Read.objects(user=request.user.mongo,
-                           is_read=is_read).order_by(
-                                '-date_created').no_cache()
+                           is_read=is_read).order_by('-id').no_cache()
 
     context = {
         u'reads': reads,
