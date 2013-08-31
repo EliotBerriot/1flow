@@ -23,7 +23,7 @@ include_snippets(
         'mail_development',
         'common_development',
         'rosetta',
-        'djdt',
+        #'djdt',
     ),
     __file__, globals()
 )
@@ -41,4 +41,3 @@ SITE_DOMAIN = 'lil.1flow.io'
 EMAIL_HOST = 'gurney'
 #EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 #EMAIL_FILE_PATH = '/tmp/1flow.mail'
-
