@@ -373,14 +373,14 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    #'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #'grappelli.dashboard',
     'grappelli',
     'mongoadmin',
     'django.contrib.admin',
-    'django.contrib.admindocs',
+    #'django.contrib.admindocs',
     'django_reset',
     'django_shell_ipynb',
     'gunicorn',
@@ -394,7 +394,7 @@ INSTALLED_APPS = (
     'tastypie_mongoengine',
     'overextends',
     'redis_sessions',
-    'redisboard',
+    #'redisboard',
     'djcelery',
     'memcache_status',
     'markdown_deux',
@@ -402,7 +402,13 @@ INSTALLED_APPS = (
     'pipeline',
     'absolute',
     'endless_pagination',
-    'mathfilters',
+
+    # `infinite_pagination` doesn't work on MongoEngine QuerySet.
+    #'infinite_pagination',
+
+    # We don't use `mathfilters` as of 20130831.
+    #'mathfilters',
+
     'widget_tweaks',
     'oneflow.base',
     'oneflow.profiles',
@@ -414,8 +420,10 @@ INSTALLED_APPS = (
     'social_auth',
 )
 
-ENDLESS_PAGINATION_PER_PAGE = 40
-ENDLESS_PAGINATION_LOADING = ugettext_lazy(u'loading more entries…')
+ENDLESS_PAGINATION_PER_PAGE = 100
+
+# This is done directly in the templates.
+#ENDLESS_PAGINATION_LOADING  = ugettext_lazy(u'loading more entries…')
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
