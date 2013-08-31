@@ -19,11 +19,14 @@ from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render
 from django.template import add_to_builtins
+#from django.views.generic import ListView
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
+
 from oneflow.core.forms import UserProfileEditForm
 
+#from infinite_pagination.paginator import InfinitePaginator
 from endless_pagination.utils import get_page_number_from_request
 
 from sparks.django.utils import HttpResponseTemporaryServerError
@@ -74,7 +77,23 @@ def home(request):
 
 
 @never_cache
-def read(request, **kwargs):
+def read_with_endless_pagination(request, **kwargs):
+
+    # Computing tenths_counter here is much efficient than doing:
+    # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
+    # in the template…
+    tenths_counter = (get_page_number_from_request(request)
+                      - 1) * settings.ENDLESS_PAGINATION_PER_PAGE
+
+    is_read = request.GET.get('is_read', False)
+    reads   = Read.objects(user=request.user.mongo,
+                           is_read=is_read).order_by(
+                                '-date_created').no_cache()
+
+    context = {
+        u'reads': reads,
+        u'tenths_counter': tenths_counter,
+    }
 
     if request.is_ajax():
         template = u'snippets/read/read-%s-page.html' % (
@@ -83,19 +102,9 @@ def read(request, **kwargs):
 
     else:
         template = u'read.html'
+        context[u'reads_count'] = reads.count()
 
-    # Computing tenths_counter here is much efficient than doing:
-    # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
-    # in the template…
-
-    is_read        = request.GET.get('is_read', False)
-    tenths_counter = (get_page_number_from_request(request)
-                      - 1) * settings.ENDLESS_PAGINATION_PER_PAGE
-
-    return render(request, template, {
-                  u'reads': Read.objects(is_read=is_read),
-                  u'tenths_counter': tenths_counter
-                  })
+    return render(request, template, context)
 
 
 @never_cache
