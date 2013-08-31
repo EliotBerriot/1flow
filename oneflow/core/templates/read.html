@@ -22,9 +22,12 @@
                 {% endwith %}
             </div>
 
-            <h1>{% blocktrans %}
+            <h1>{% blocktrans count reads_count as reads %}
                 Read
-                <small>(<span id="reads_count">{{ reads_count }}</span>)</small>
+                <small>(<span id="reads_count">{{ reads }}</span> article)</small>
+                {% plural %}
+                Read
+                <small>(<span id="reads_count">{{ reads }}</span> articles)</small>
             {% endblocktrans %} </h1>
 
         </div>
@@ -51,6 +54,8 @@
 {% endblock application_content %}
 
 {% block extrajs_footer %}
+    {{ block.super }}
+
     {% compressed_js 'endless-pagination' %}
     <script type="text/javascript">
         $.endlessPaginate({
