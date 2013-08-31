@@ -21,6 +21,10 @@
                     </div>
                 {% endwith %}
             </div>
+
+            <h1>{% trans "Read" %} <small>(<span
+                id="unread_count">{{ reads.count }}</span>)</small></h1>
+
         </div>
     </div>
 
@@ -37,15 +41,3 @@
     {% endif %}
 
 {% endblock application_content %}
-
-{% block extrajs_footer %}
-    {% compressed_js 'endless-pagination' %}
-    <script type="text/javascript">
-        $.endlessPaginate({
-        {% if config.READ_INFINITE_AUTOSCROLL %}
-            paginateOnScroll: true,
-            paginateOnScrollMargin: 100
-        {% endif %}
-        });
-    </script>
-{% endblock extrajs_footer %}
