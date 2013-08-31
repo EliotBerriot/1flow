@@ -38,12 +38,22 @@
         }
     }
 
-    .list-item-number {
+
+    .superuser-item {
+        position: relative;
+        right: 0;
+        top: 0;
         text-align: right;
-        min-width: 50px;
-        margin-top: 0;
-        padding-top: 0;
-        cursor: pointer;
+        margin-top: -50px;
+        margin-right: 15px;
+
+        .muted {
+            opacity: 0.9;
+        }
+    }
+
+    .list-item-number {
+
     }
 
     .media-heading {
@@ -65,7 +75,11 @@
 }
 
 .read-tile {
-    min-height: 140px;
+    min-height: 300px;
+    height: 300px;
+    max-height: 300px;
+
+    overflow: hidden;
 
     .article-title {
         font-size: 14px;
