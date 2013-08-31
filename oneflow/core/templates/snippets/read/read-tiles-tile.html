@@ -1,56 +1,63 @@
+<li class="span2 read-list-item read-tile">
+  <div class="thumbnail">
+    {% if article.image_url %}
+      <img src="{{ article.image_url }}" alt="{% trans 'Article main image' %}" />
+    {% else %}
+        <img src="http://lorempixel.com/150/150/abstract/{% trans "Placeholder-" %}{{ read.id  }}"
+        alt="{% trans 'No Image for this Article, this is a default one' %}" />
 
-{% if not forloop.first and forloop.counter0|divisibleby:'4' %}
-</div>
-<div class="row-fluid">
-{% endif %}
+    {% endif %}
 
-  <div class="span3 read-list-item read-tile">
-    <div class="media">
-      <h1 class="pull-left list-item-number muted">
-        {{ forloop.counter|add:tenths_counter }}
-      </h1>
+    {% with read.article as article %}
 
-      {% with read.article as article %}
+      {% if user.is_superuser %}
+        <div class="superuser-item">
+          <h1 class="list-item-number muted">
+            {{ forloop.counter|add:tenths_counter }}
+          </h1>
+        </div>
+      {% endif %}
 
-      <div class="media-body">
-        <h4 class="media-heading">
-          <span class="article-title">
-            {{ article.title }}
-          </span>
+      <h4>
+        <span class="article-title">
+          {{ article.title }}
+        </span>
 
-          {% if read.is_read %}
-            <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
-                title="{% trans "mark as unread" %}" data-toggle="tooltip">
-              <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
-          {% else %}
-            <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
-                title="{% trans "mark as read" %}" data-toggle="tooltip">
-              <i class="icon-check" alt="{% trans "mark as read" %}"></i>
-          {% endif %}
-          </a>
+        {% comment %}
 
-          <a href="{{ article.url }}" target="_blank"
-              title="{% trans "Open this article on the original website" %}">
-            <i class="icon-circle-arrow-right"></i>
-          </a>
-        </h4>
+        {% if read.is_read %}
+          <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+              title="{% trans "mark as unread" %}" data-toggle="tooltip">
+            <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
+        {% else %}
+          <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+              title="{% trans "mark as read" %}" data-toggle="tooltip">
+            <i class="icon-check" alt="{% trans "mark as read" %}"></i>
+        {% endif %}
+        </a>
 
-        <p>
-          {{ article.date_published }}{% if read.tags %},
-          {% trans "in" %} {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% if read.rating %}{% trans ", rated " %}{{ read.rating }}{% endif %}.
+        {% endcomment %}
 
-          {% if article.authors %}
-              {% trans "By" %}
-              {% for author in article.authors %}
-                {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+        <a href="{{ article.url }}" target="_blank"
+            title="{% trans "Open this article on the original website" %}">
+          <i class="icon-circle-arrow-right"></i>
+        </a>
+      </h4>
 
-              {% endfor %}
-          {% endif %}
-        </p>
+      <p>
+        {{ article.date_published }}{% if read.tags %},
+        {% trans "in" %} {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% if read.rating %}{% trans ", rated " %}{{ read.rating }}{% endif %}.
 
-      </div><!-- .media-body -->
+        {% if article.authors %}
+            {% trans "By" %}
+            {% for author in article.authors %}
+              {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
 
-      {% endwith %}
+            {% endfor %}
+        {% endif %}
+      </p>
 
-    </div><!-- .media -->
-</div><!-- .read-list-item -->
+    {% endwith %}
+
+  </div><!-- .thumbnail -->
+</li><!-- .read-list-item -->
