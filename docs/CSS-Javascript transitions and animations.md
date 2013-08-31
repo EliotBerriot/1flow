@@ -8,6 +8,9 @@ http://tympanus.net/Development/PageTransitions/
 https://github.com/ded/bonzo
 
 
+http://www.mobify.com/blog/multiline-ellipsis-in-pure-css/
+
+
 # Bootstrap plugins
 
 - pinstrap pour les images
