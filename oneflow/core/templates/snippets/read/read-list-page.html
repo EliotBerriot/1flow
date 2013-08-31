@@ -1,34 +1,15 @@
 {% load endless %}
 
+{% with items_per_fetch=config.READ_INFINITE_ITEMS_PER_FETCH %}
 
-<div class="row-fluid">
-  <div class="span10"></div>
-</div>
-    <div class="row-fluid">
-      <div class="span8 offset2">
+    {% lazy_paginate items_per_fetch reads %}
 
-        {% if reads %}
-
-            <ul class="media-list">
-            {% lazy_paginate reads %}
-
-            {% for read in reads %}
-                {% include 'snippets/read/read-list-row.html' %}
-            {% endfor %}
-
-            {% show_more %}
-            </ul>
-
-        {% else %}
-            <div class="hero-unit">
-                <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
-            </div>
-
-        {% endif %}
-
-      </div>
-    </div>
-
-
-
-
+    <ul class="media-list">
+        {% for read in reads %}
+            {% include 'snippets/read/read-list-row.html' %}
+        {% endfor %}
+    </ul>
+    <ul class="media-list">
+        {% show_more %}
+    </ul>
+{% endwith %}

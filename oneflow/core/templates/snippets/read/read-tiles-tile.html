@@ -37,18 +37,16 @@
 
         <p>
           {{ article.date_published }}{% if read.tags %},
-          {% trans "in" %} {%for tag in read.tags %}{{tag}}{% endfor %}{% endif %}
-          {% if read.rating %}{% trans ", rated " %}{{ read.rating }}.{% endif %}
-        </p>
+          {% trans "in" %} {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}{% if read.rating %}{% trans ", rated " %}{{ read.rating }}{% endif %}.
 
-        {% if article.authors %}
-          <p>
-            {% trans "by" %}
-            {% for author in article.authors %}
-                {{ author.name }},
-            {% endfor %}
-          </p>
-        {% endif %}
+          {% if article.authors %}
+              {% trans "By" %}
+              {% for author in article.authors %}
+                {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+
+              {% endfor %}
+          {% endif %}
+        </p>
 
       </div><!-- .media-body -->
 
