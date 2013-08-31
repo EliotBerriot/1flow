@@ -1533,7 +1533,7 @@ class Author(Document, DocumentHelperMixin):
 
     def __unicode__(self):
         return u'%s%s #%s for website %s' % (self.name or self.origin_name,
-                                             _(u'(unsure)')
+                                             _(u' (unsure)')
                                              if self.is_unsure else u'',
                                              self.id, self.website)
 
