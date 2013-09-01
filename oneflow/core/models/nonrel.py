@@ -2620,7 +2620,7 @@ class OriginalData(Document, DocumentHelperMixin):
     def google_reader_hydrated(self):
         """ XXX: should disappear when google_reader_data is useless. """
 
-        if self.feedparser:
+        if self.google_reader:
             return ast.literal_eval(self.google_reader)
 
         return None
