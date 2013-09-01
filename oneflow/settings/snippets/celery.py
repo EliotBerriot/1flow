@@ -84,7 +84,7 @@ CELERYBEAT_SCHEDULE = {
     },
     'archive-documents': {
         'task': 'oneflow.core.tasks.archive_documents',
-        'schedule': crontab(hour='3', minute='3'),
+        'schedule': crontab(hour='*', minute='44'),
     },
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Cleaning tasks
