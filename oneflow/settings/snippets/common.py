@@ -336,9 +336,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'maintenancemode.middleware.MaintenanceModeMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    #'pipeline.middleware.MinifyHTMLMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
 )
+
+if not DEBUG:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES[:-1] + (
+        'pipeline.middleware.MinifyHTMLMiddleware',
+    ) + MIDDLEWARE_CLASSES[-1:]
 
 #SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 SESSION_ENGINE = 'redis_sessions.session'
