@@ -359,6 +359,11 @@ def new_user_preferences():
     return Preferences().save()
 
 
+def user_has_content(user, *args, **kwargs):
+
+    return Read.objects(user=user).count()
+
+
 class User(Document, DocumentHelperMixin):
     django_user = IntField(unique=True)
     username    = StringField()
@@ -407,6 +412,9 @@ class User(Document, DocumentHelperMixin):
         self.last_name = django_user.last_name
         self.first_name = django_user.first_name
         self.save()
+
+    has_content = IntRedisDescriptor(
+        attr_name='u.h_c', default=user_has_content, set_default=True)
 
 
 def mongo_user(self):
