@@ -1,3 +1,16 @@
+/* --------------------------------------------------------------- Overrides */
+
+.navbar {
+    .brand {
+        .badge {
+            vertical-align: top;
+            padding-top: 4px;
+        }
+
+        text-transform: none;
+    }
+}
+
 
 /* --------------------------------------------------------------- Home index */
 
@@ -20,6 +33,49 @@
     }
     .home-style-secondary {
         margin-top: 40px;
+    }
+}
+
+/* --------------------------------------------------------------------- Help */
+
+#arrow-show-help {
+    position: fixed;
+    right: 135px;
+    top: 50px;
+}
+
+#arrow-show-chat {
+    position: fixed;
+    right: 40px;
+    top: 35%;
+}
+
+
+/* ------------------------------------------------------------------ Welcome */
+
+#welcome-beta {
+
+    .float-right {
+        float: right;
+        img {
+            padding-left: 20px;
+        }
+    }
+
+    h1 {
+        font-size: 500%;
+        padding: 50px 0 20px;
+    }
+
+    h2 {
+        font-size: 250%;
+        padding: 20px 0 50px;
+    }
+
+    p {
+        font-size: 150%;
+        font-weight: 300;
+        padding-bottom: 10px;
     }
 }
 
@@ -103,6 +159,8 @@
     }
 }
 
+
+
 /* -------------------------------------------------------------------- Other */
 
 /*  fullscreen for bootstrap modal
@@ -119,3 +177,4 @@
     height: 100%;
 }
 */
+

@@ -172,13 +172,6 @@ PIPELINE_CSS = {
         'output_filename': 'css/font-awesome-ie7.css',
     },
 
-    'ember-animated-outlet': {
-        'source_filenames': (
-            'vendor/ember-animated-outlet/ember-animated-outlet.css',
-        ),
-        'output_filename': 'js/ember-animated-outlet.css',
-    },
-
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
 
     'landing': {
@@ -190,9 +183,17 @@ PIPELINE_CSS = {
         'output_filename': 'css/landing.css',
     },
 
-    'core': {
+    'core-bootstrap-detail': {
         'source_filenames': (
-            'sass/styles.scss',
+            'bootstrap-overrides.css',
+            'sass/styles-core-bootstrap-detail.scss',
+        ),
+        'output_filename': 'css/core-details.css',
+    },
+
+    'core-bootstrap-bare': {
+        'source_filenames': (
+            'sass/styles-core-bootstrap-bare.scss',
         ),
         'output_filename': 'css/core.css',
     }

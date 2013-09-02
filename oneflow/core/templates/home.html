@@ -4,14 +4,20 @@
 
 {% block title %}{% trans 'Home' %}{% endblock title %}
 
+{% block extrajs_header %}
+    {% compressed_css 'core-bootstrap-detail' %}
+{% endblock extrajs_header %}
+
 {% block body %}
 
 {% include 'snippets/navbar.html' %}
+{% include 'snippets/help-arrows.html' %}
 
   <div class="container-fluid">
     <div class="row-fluid">
       <div id="notifications" class="span10 offset1 centered"></div>
     </div>
+    <div class="application">
     {% block application_content %}
 
         {% if wizards.show_all and not wizards.welcome_beta %}
@@ -22,6 +28,7 @@
 
         {% endif %}
     {% endblock application_content %}
+    </div>
   </div>
 
 {% endblock body %}
@@ -29,8 +36,9 @@
 {% block extrajs_footer %}
 
     {# NOTE: order matters. #}
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
     {% compressed_js 'vendor-all' %}
-    {% compressed_js 'core' %}
+    {#{% compressed_js 'core' %}#}
 
     {% csrf_token %}
 

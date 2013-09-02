@@ -1,5 +1,5 @@
 <!-- navbar-static-top -->
-<div class="navbar navbar-fixed-top">
+<div class="navbar navbar-fixed-top navbar-inverse">
   <div class="navbar-inner">
     <div class="container-fluid">
       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
@@ -8,44 +8,56 @@
         <span class="icon-bar"></span>
       </a>
 
-      <div class="brand"><a href="{% url 'home' %}">1flow <span
-              class="badge badge-warning badge-beta">BETA</span></a></div>
+      <a class="brand" href="{% url 'home' %}">1flow <span
+              class="badge badge-warning badge-beta">BETA</span></a>
 
       {% if user.is_authenticated %}
-        <div class="btn-group pull-right">
+        <ul class="nav pull-right">
+
+          <li>
+              <form>
+                <input class="search"
+                    placeholder="{% trans 'Search…' %}">
+              </form>
+          </li>
+
           {% if user.is_staff or user.is_superuser %}
             {% if MAINTENANCE_MODE %}
-              <div class="btn btn-danger" disabled="disabled">
+              <li>
+                <a href="#" disabled="disabled">
                   {% trans "Maintenance" %}
-              </div>
+                </a>
+              </li>
 
             {% endif %}
 
-            <div class="btn" disabled="disabled">
-                version {{ VERSION }}
-            </div>
+            <li><a href="#">v{{ VERSION }}</a></li>
+
           {% endif %}
 
-          <div class="btn">
+          <li>
               <a href="{% url 'help' %}">{% trans 'Help' %}</a>
-          </div>
+          </li>
 
 
-          <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-            <i class="icon-user"></i> {{ user.username }}
-            <span class="caret"></span>
-          </a>
-          <ul class="dropdown-menu">
-            <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
+          <li class="dropdown" >
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              <i class="icon-user"></i> {{ user.username }}
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
 
-          {% if user.is_superuser %}
-            <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
-          {% endif %}
+            {% if user.is_superuser %}
+              <li><a href="/translate/" target="_blank">{% trans 'Translations' %}</a></li>
+              <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
+            {% endif %}
 
-            <li class="divider"></li>
-            <li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>
-          </ul>
-        </div>
+              <li class="divider"></li>
+              <li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>
+            </ul>
+          </li>
+        </ul>
 
       {% else %}
         <ul class="nav pull-right">
@@ -53,6 +65,7 @@
         </ul>
 
       {% endif %}
+
       <div class="nav-collapse">
         <ul class="nav">
           {% if user.is_authenticated %}
@@ -64,12 +77,6 @@
               <li><a href="{% url 'teams' %}">{% trans 'Teams' %}</a></li>
               <li><a href="{% url 'subscriptions' %}">{% trans 'Subscriptions' %}</a></li>
               <li><a href="{% url 'discovery' %}">{% trans 'Discovery' %}</a></li>
-              <li>
-                  <form class="navbar-search">
-                    <input type="text" class="search-query input-small"
-                        placeholder="{% trans 'Search…' %}">
-                  </form>
-              </li>
             {% endif %}
           {% else %}
             <!--
