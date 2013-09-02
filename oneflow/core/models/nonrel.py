@@ -369,6 +369,7 @@ class User(Document, DocumentHelperMixin):
     username    = StringField()
     first_name  = StringField()
     last_name   = StringField()
+    avatar_url  = URLField()
     preferences = ReferenceField('Preferences', reverse_delete_rule=NULLIFY,
                                  default=new_user_preferences)
 

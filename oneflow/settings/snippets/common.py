@@ -532,7 +532,7 @@ LOGIN_ERROR_URL    = reverse_lazy('signin_error')
 #SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
 SOCIAL_AUTH_EXTRA_DATA = True
 SOCIAL_AUTH_SESSION_EXPIRATION = False
-#SOCIAL_AUTH_RAISE_EXCEPTIONS = True
+# SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
@@ -547,7 +547,9 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.associate_user',
     'social_auth.backends.pipeline.social.load_extra_data',
     'social_auth.backends.pipeline.user.update_user_details',
-    'oneflow.core.social_pipeline.check_1flow_requirements',
+
+    #'oneflow.core.social_pipeline.check_1flow_requirements',
+    'oneflow.core.social_pipeline.get_social_avatar',
 )
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
