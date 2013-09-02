@@ -51,7 +51,7 @@ from constance import config
 from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
 
-from celery import task, group as tasks_group
+from celery import task, chain as tasks_chain
 
 from celery.exceptions import SoftTimeLimitExceeded
 
@@ -2918,11 +2918,11 @@ class Article(Document, DocumentHelperMixin):
                 spipe.gauge('articles.counts.total', 1, delta=True)
                 spipe.gauge('articles.counts.empty', 1, delta=True)
 
-        post_absolutize_group = tasks_group(
+        post_absolutize_chain = tasks_chain(
             # HEADS UP: both subtasks are immutable, we just
             # want the group to run *after* the absolutization.
+            article_fetch_content.si(self.id),
             article_postprocess_original_data.si(self.id),
-            article_fetch_content.si(self.id)
         )
 
         # Randomize the absolutization a little, to avoid
@@ -2937,12 +2937,12 @@ class Article(Document, DocumentHelperMixin):
         #   - no bother fetching content: it uses the same mechanisms as
         #     absolutize_url(), and will probably fail the same way.
         #
-        # Thus, we link the post_absolutize_group as a callback. It will
+        # Thus, we link the post_absolutize_chain as a callback. It will
         # be run only if absolutization succeeds. Thanks, celery :-)
         #
         article_absolutize_url.apply_async((self.id, ),
                                            countdown=randrange(5),
-                                           link=post_absolutize_group)
+                                           link=post_absolutize_chain)
 
         #
         # TODO: create short_url
@@ -3001,7 +3001,7 @@ class OriginalData(Document, DocumentHelperMixin):
     def google_reader_hydrated(self):
         """ XXX: should disappear when google_reader_data is useless. """
 
-        if self.feedparser:
+        if self.google_reader:
             return ast.literal_eval(self.google_reader)
 
         return None

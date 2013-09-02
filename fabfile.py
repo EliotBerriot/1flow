@@ -230,6 +230,11 @@ def production():
             'worker_medium': 'medium,fetch',
             'worker_low':    'low,fetch,background',
         },
+        'max_tasks_per_child': {
+            'worker_swarm': '50',
+            'worker_fetch': '20',
+            '__all__': '100',
+        },
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
         #'worker_soft_time_limit': {
