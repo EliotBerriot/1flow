@@ -14,8 +14,9 @@
       {% compressed_css 'font-awesome-ie7' %}
     <![endif]-->
     {# HTML5 shim, for IE6-8 support of HTML5 elements #}
+
     <!--[if lt IE 9]>
-      {% js 'js/html5shiv.js' %}
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
     {% django_js %}
