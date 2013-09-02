@@ -15,56 +15,55 @@
           <div class="span5">
             <h1>{% trans "Your profile" %}</h1>
 
-            <table  class="table table-hover">
-              <form method='POST' class="subemail span8 offset2">
-                    {% csrf_token %}
+            <form method='POST'>
+              {% csrf_token %}
+
+              <table class="table table-hover">
                 <tr>
                   <td>{% trans "username" %}</td>
-                  <td><div class="input-prepend"><span class="add-on">@</span>
-                    <input  type="text" value={{user.username}} disabled="disabled"></div></td>
+                  <td>@{{ user.username }}</td>
                 </tr>
                 <tr>
                   <td>{% trans "First name" %}</td>
-                  <td>{% render_field form.first_name %}</td>
+                  <td>{{ user.first_name }}</td>
                 </tr>
                 <tr>
                   <td>{% trans "Last name" %}</td>
-                  <td>{% render_field form.last_name %}</td>
+                  <td>{{ user.last_name }}</td>
                 </tr>
                 <tr>
                   <td>{% trans "e-mail" %}</td>
-                  <td>{{user.email}}</td>
+                  <td>{{ user.email }}</td>
                 </tr>
                 <tr>
                   <td>{% trans "Last login: " %}</td>
-                  <td>{{user.last_login}}</td>
+                  <td>{{ user.last_login }}</td>
                 </tr>
                 <tr>
                   <td>{% trans "Registered:" %}</td>
-                  <td>{{user.date_joined }}</td>
+                  <td>{{ user.date_joined  }}</td>
                 </tr>
-            </table>
+              </table>
 
+            <p class="muted">{% trans "Profile data is editable on your social account provider profile page (eg. Google, Facebook, etc)." %}</p>
 
-                    <div class="input-append control-group {% if form.errors %}error{% endif %}">
+            <!--
 
-                      <button type="submit" class="btn btn-large btn-primary">{% trans "Save" %}</button>
-                    </div>
-
-                    <div class=" control-group {% if form.errors %}error{% endif %}">
-                     {% if form.errors %}
-                         <span class="label label-warning">{% for error in form.errors %}
-                             {{ error }}
-                         {% endfor %}</span>
-                     {% endif %}
-
-                    </div>
+              <div class=" control-group {% if form.errors %}error{% endif %}">
+               {% if form.errors %}
+                   <span class="label label-warning">{% for error in form.errors %}
+                       {{ error }}
+                   {% endfor %}</span>
+               {% endif %}
+              </div>
+              <div class="input-append control-group {% if form.errors %}error{% endif %}">
+                <button type="submit" class="btn-flat">{% trans "Save" %}</button>
+              </div>
+            -->
             </form>
 
-            <p class="muted">{% trans "Profile data it not yet editable." %}</p>
-
           </div>
-          <div class="span5 offset2">
+          <div class="span6 offset1">
             <h1>{% trans "Social accounts" %}</h1>
 
             {% if social_auth.associated %}

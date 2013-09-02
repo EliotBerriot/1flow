@@ -42,7 +42,14 @@
 
           <li class="dropdown" >
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-              <i class="icon-user"></i> {{ user.username }}
+              {% if mongodb_user.avatar_url %}
+                <span class="avatar-frame">
+                  <img src="{{ mongodb_user.avatar_url }}" />
+                </span>
+              {% else %}
+                <i class="icon-user icon-2x"></i>
+              {% endif %}
+              {{ user.username }}
               <b class="caret"></b>
             </a>
             <ul class="dropdown-menu">

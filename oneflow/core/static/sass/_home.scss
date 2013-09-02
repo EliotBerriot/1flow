@@ -9,19 +9,24 @@
 
 .navbar {
     .brand {
-        .badge {
-            /*
-            vertical-align: top;
-            padding-top: 4px;
-            */
-        }
-
         text-transform: none;
+    }
+
+    .avatar-frame {
+        /* Cuts the image on the right. padding-right: 5px; */
+
+        img {
+            width: 24px;
+            height: 24px;
+            -webkit-border-radius: 30px;
+            border-radius: 30px;
+            -moz-border-radius: 30px;
+        }
     }
 }
 
 
-/* --------------------------------------------------------------- Home index */
+/* ------------------------------------------------------------- Home / index */
 
 #home {
     /* Space for the fixed navbar. */
@@ -44,6 +49,16 @@
         margin-top: 40px;
     }
 }
+
+
+/* ------------------------------------------------------------------ Profile */
+
+#profile {
+    h1 {
+        padding-bottom: 20px;
+    }
+}
+
 
 /* --------------------------------------------------------------------- Help */
 
