@@ -220,8 +220,6 @@ PIPELINE_JS = {
             'vendor/moment/moment.js',
             'vendor/moment/langs/*.js',
 
-            'vendor/masonry/masonry-*.js',
-
             # This one is from an external project, not in 1flow's vendor/
             'endless_pagination/js/endless-pagination.js'
 
