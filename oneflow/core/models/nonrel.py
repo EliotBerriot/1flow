@@ -933,7 +933,7 @@ class Feed(Document, DocumentHelperMixin):
     @property
     def recent_articles(self):
         return Article.objects.filter(
-            feed=self).filter(
+            feeds__contains=self).filter(
                 date_published__gt=today()
                 - timedelta(
                     days=config.FEED_ADMIN_MEANINGFUL_DELTA))
@@ -966,7 +966,7 @@ class Feed(Document, DocumentHelperMixin):
 
     @property
     def all_articles(self):
-        return Article.objects.filter(feed=self)
+        return Article.objects.filter(feeds_contains=self)
 
     def update_all_articles_count(self):
 
@@ -1065,10 +1065,10 @@ class Feed(Document, DocumentHelperMixin):
 
         if limit:
             return Article.objects.filter(
-                feed=self).order_by('-date_published').limit(limit)
+                feeds__contains=self).order_by('-date_published').limit(limit)
 
         return Article.objects.filter(
-            feed=self).order_by('-date_published')
+            feeds__contains=self).order_by('-date_published')
 
     def validate(self, *args, **kwargs):
         try:
