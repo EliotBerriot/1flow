@@ -108,6 +108,12 @@
 
 .read-list-item {
 
+	img {
+		min-width: 150px;
+		min-height: 150px;
+        margin: 0 auto;
+	}
+
     .media {
         display: block;
         transition: background 0.5s;
@@ -119,53 +125,44 @@
         }
     }
 
-
     .superuser-item {
         position: relative;
         right: 0;
-        top: 0;
+        bottom: 0;
         text-align: right;
-        margin-top: -50px;
-        margin-right: 15px;
+        padding-bottom: 20px;
+        margin-top: -55px;
+
+        h1 {
+            font-size: 800%;
+        }
 
         .muted {
-            opacity: 0.9;
+            opacity: 0.05;
         }
     }
 
     .list-item-number {
-
-    }
-
-    .media-heading {
-        .article-title {
-            cursor: pointer;
-        }
-    }
-
-    .media-body {
-        a:hover {
-            text-decoration: none;
-            cursor: pointer;
-        }
-
-        .admin-actions: {
-            padding-top: 5px;
-        }
     }
 }
 
 .read-tile {
-    min-height: 300px;
-    height: 300px;
-    max-height: 300px;
-
-    overflow: hidden;
+    width: 170px;
+    padding: 0 10px;
+    margin-bottom: 20px;
 
     .article-title {
         font-size: 14px;
     }
 
+    .hover-muted {
+        opacity: 0;
+    }
+
+    .muted {
+       opacity: 0.2;
+
+    }
 }
 
 /* ------------------------------------------------------- Endless pagination */
