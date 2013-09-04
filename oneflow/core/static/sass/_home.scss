@@ -168,6 +168,13 @@
 /* ------------------------------------------------------- Endless pagination */
 
 .endless_container {
+    /*
+        We don't display the endless container,
+        it doesn't play well with isotope().
+    */
+
+    display: none;
+
     text-align: center;
     font-size: 200%;
     padding: 30px 0 50px;

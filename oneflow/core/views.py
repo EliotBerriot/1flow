@@ -9,6 +9,8 @@
 import logging
 import humanize
 
+from constance import config
+
 from django.http import (HttpResponseRedirect,
                          HttpResponseForbidden,
                          HttpResponseBadRequest,
@@ -83,7 +85,7 @@ def read_with_endless_pagination(request, **kwargs):
     # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
     # in the template…
     tenths_counter = (get_page_number_from_request(request)
-                      - 1) * settings.ENDLESS_PAGINATION_PER_PAGE
+                      - 1) * config.READ_INFINITE_ITEMS_PER_FETCH
 
     is_read = request.GET.get('is_read', False)
     reads   = Read.objects(user=request.user.mongo,
@@ -92,6 +94,10 @@ def read_with_endless_pagination(request, **kwargs):
     context = {
         u'reads': reads,
         u'tenths_counter': tenths_counter,
+
+        # are we rendering the first "main"
+        # page, or just a subset via ajax?
+        u'initial': False,
     }
 
     if request.is_ajax():
@@ -102,6 +108,7 @@ def read_with_endless_pagination(request, **kwargs):
     else:
         template = u'read.html'
         context[u'reads_count'] = reads.count()
+        context[u'initial']     = True
 
     return render(request, template, context)
 
