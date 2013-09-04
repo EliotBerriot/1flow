@@ -9,7 +9,12 @@ body {
 }
 h1,h2,h3,h4,h5 {
 	margin: 0;
-	line-height: inherit;
+	/*
+		OC 20130904, else the "Read" H1 is badly
+		aligned with bootstrap toolbar on /read/
+
+		line-height: inherit;
+	*/
 	color: #29323d;
 
 	small {
