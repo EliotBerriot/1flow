@@ -61,52 +61,52 @@ function preference_from_radio_group(event){
     objekt = $(event.delegateTarget);
     parent = objekt.parent();
 
+    pref_url        = preference_data(objekt, 'preference-url', null);
+    pref_value      = preference_data(objekt, 'preference', null);
     pref_convert    = preference_data(parent, 'preference-convert', 'False');
     pref_reload     = parseBool(preference_data(parent, 'preference-reload', 'true'));
     pref_reload_url = preference_data(parent, 'preference-reload-url', null);
 
-    $.get('/preferences/'
-                + parent.data('preference') + '/'
-                + objekt.data('preference-value') + '/'
-                + pref_convert,
-            function(data) {
-                if (pref_reload) {
-                    if (pref_reload_url){
-                        document.location = pref_reload_url;
+    //assert(pref_url, objekt + " HAS NO preference URL!");
 
-                    } else {
-                        location.reload();
-                    }
+    $.get(pref_url,
+        function(data) {
+            if (pref_reload) {
+                if (pref_reload_url){
+                    document.location = pref_reload_url;
+
+                } else {
+                    location.reload();
                 }
-    });
+            }
+        }
+    );
 }
 function preference_toggle(event) {
 
-    objekt          = $(event.delegateTarget);
+    objekt = $(event.delegateTarget);
 
-    //console.log('pref toggle');
-    //console.log(objekt);
-
+    pref_value      = preference_data(objekt, 'preference', null);
+    pref_url        = preference_data(objekt, 'preference-url', null);
     pref_reload     = parseBool(preference_data(objekt, 'preference-reload', 'true'));
     pref_reload_url = preference_data(objekt, 'preference-reload-url', null);
 
-    $.get('/preferences/toggle/'
-            + objekt.data('preference'), function(data) {
-                if (pref_reload) {
-                    if (pref_reload_url){
-                        document.location = pref_reload_url;
+    //assert(pref_url, objekt + " HAS NO preference URL!");
 
-                    } else {
-                        location.reload();
-                    }
+    $.get(pref_url,
+        function(data) {
+            if (pref_reload) {
+                if (pref_reload_url){
+                    document.location = pref_reload_url;
+
+                } else {
+                    location.reload();
                 }
-    });
+            }
+        }
+    );
 }
 function setup_preferences_actions(parent) {
-
-    if (typeof parent == 'undefined') {
-        parent = $('body');
-    }
 
     function setup_preference(index, objekt) {
 
@@ -140,9 +140,7 @@ function setup_preferences_actions(parent) {
         }
     }
 
-    if (parent.hasClass('preference')) {
-        setup_preference(0, parent);
-    }
+    find_start(parent, 'preference').each(setup_preference);
 
-    parent.find('.preference').each(setup_preference);
+    console.debug('setup_preferences_actions() finished.');
 }

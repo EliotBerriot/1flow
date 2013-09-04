@@ -11,6 +11,10 @@ function find_start(parent, klass){
     } else {
         start = parent.find('.' + klass);
     }
+
+    console.debug('start for ' + klass + ' in ' + parent + ':');
+    console.debug(start);
+
     return start;
 }
 function parseBool(val) {
@@ -206,11 +210,11 @@ function setup_hover_muters(parent){
 
     find_start(parent, 'hover-unmute-children')
         .hover(function() {
-            $(this).children('.hover-muted').animate({
+            $(this).find('.hover-muted').animate({
                 opacity: 1
             });
         }, function() {
-            $(this).children('.hover-muted').stop(true, true).animate({
+            $(this).find('.hover-muted').stop(true, true).animate({
                 opacity: 0
             });
     });
@@ -348,7 +352,8 @@ function setup_keyboard() {
         }
     });
 }
-$(document).ready(function() {
+function common_init() {
+
     setup_everything();
 
     //setup_table_sorter();
@@ -356,4 +361,4 @@ $(document).ready(function() {
 
     setup_keyboard();
 
-});
+}
