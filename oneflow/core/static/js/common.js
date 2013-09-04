@@ -1,5 +1,18 @@
 var page_cleaner_interval;
 
+function find_start(parent, klass){
+
+    if (typeof parent == 'undefined') {
+        parent = $('body');
+    }
+
+    if (parent.hasClass(klass)){
+        start = parent;
+    } else {
+        start = parent.find('.' + klass);
+    }
+    return start;
+}
 function parseBool(val) {
     if (typeof val === 'string') {
         if (val.toLowerCase() === 'true') {
@@ -189,6 +202,19 @@ function setup_popovers(parent){
         $(this).popover('toggle');
     });
 }
+function setup_hover_muters(parent){
+
+    find_start(parent, 'hover-unmute-children')
+        .hover(function() {
+            $(this).children('.hover-muted').animate({
+                opacity: 1
+            });
+        }, function() {
+            $(this).children('.hover-muted').stop(true, true).animate({
+                opacity: 0
+            });
+    });
+}
 function setup_tooltips(parent){
 
     if (typeof parent == 'undefined') {
@@ -282,6 +308,7 @@ function launch_faders(parent) {
 function setup_everything(parent) {
 
     setup_tooltips(parent);
+    setup_hover_muters(parent);
     setup_popovers(parent);
     setup_clickovers(parent);
     setup_delayed_loaders(parent);
@@ -305,6 +332,8 @@ function setup_keyboard() {
 
     $(document).keydown(function(ev) {
 
+        var goto_location = null;
+
         if(ev.which == 37) {
             goto_location = $('a#previous');
         }
@@ -313,7 +342,7 @@ function setup_keyboard() {
             goto_location = $('a#next');
         }
 
-        if (goto_location.length) {
+        if (!!goto_location) {
             document.location = goto_location.attr('href');
             return false; // don't execute the default action (scrolling or whatever)
         }
@@ -322,7 +351,7 @@ function setup_keyboard() {
 $(document).ready(function() {
     setup_everything();
 
-    setup_table_sorter();
+    //setup_table_sorter();
     setup_auto_cleaner();
 
     setup_keyboard();
