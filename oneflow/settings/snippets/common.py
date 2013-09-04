@@ -220,21 +220,15 @@ PIPELINE_JS = {
             'vendor/moment/moment.js',
             'vendor/moment/langs/*.js',
 
-            'vendor/other/modernizr-*.js',
-            'vendor/other/isotope-*.js',
+            'vendor/other/*.js',
 
-            # This one is from an external project, not in 1flow's vendor/
-            'endless_pagination/js/endless-pagination.js',
-
-            # Other things not requiring their own directory,
-            # but still not coming from 1flow.
-            'js/utils/*.js',
-
+            # NOTE: we use or own implementation
+            # of django-endless-pagination JS.
         ),
-        'output_filename': 'js/vendor-all.js',
+        'output_filename': 'js/min/vendor-all.js',
     },
 
-    'bootstrap': {
+    'vendor-bootstrap': {
         'source_filenames': (
             # WARNING: order matters: tooltip must be included before popover.
             'vendor/bootstrap/js/bootstrap-[a-o]*.js',
@@ -243,30 +237,32 @@ PIPELINE_JS = {
             'vendor/bootstrap/js/bootstrap-[q-s]*.js',
             'vendor/bootstrap/js/bootstrap-[u-z]*.js',
         ),
-        'output_filename': 'js/bootstrap.js',
+        'output_filename': 'js/min/bootstrap.js',
     },
 
-    'showdown': {
+    'vendor-showdown': {
         'source_filenames': (
             'vendor/showdown/showdown.js',
             'vendor/showdown/extensions/twitter.js',
         ),
-        'output_filename': 'js/showdown.js',
+        'output_filename': 'js/min/showdown.js',
     },
 
-    'moment': {
+    'vendor-moment': {
         'source_filenames': (
             'vendor/moment/moment.js',
             'vendor/moment/langs/*.js',
         ),
-        'output_filename': 'js/moment.js',
+        'output_filename': 'js/min/moment.js',
     },
 
-    'endless-pagination': {
+    # NOTE: we use or own implementation
+    # of django-endless-pagination JS.
+    'vendor-endless-pagination': {
         'source_filenames': (
             'endless_pagination/js/endless-pagination.js',
         ),
-        'output_filename': 'js/endless-pagination.js',
+        'output_filename': 'js/min/endless-pagination.js',
     },
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
@@ -275,14 +271,24 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/utils/*.js',
         ),
-        'output_filename': 'js/utils.js',
+        'output_filename': 'js/min/utils.js',
     },
+
+    'read': {
+        'source_filenames': (
+            'js/utils/*.js',
+            'js/common.js',
+            'js/read.js',
+        ),
+        'output_filename': 'js/min/read.js',
+    },
+
     'core': {
         'source_filenames': (
             'js/utils/*.js',
             'js/common.js',
         ),
-        'output_filename': 'js/core.js',
+        'output_filename': 'js/min/core.js',
     },
 
     'ember-core': {
@@ -295,7 +301,7 @@ PIPELINE_JS = {
             'js/ember-core/helpers/*.js',
             'js/ember-core/end.js',
         ),
-        'output_filename': 'js/ember-core.js',
+        'output_filename': 'js/min/ember-core.js',
     }
 }
 
