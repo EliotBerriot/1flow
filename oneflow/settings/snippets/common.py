@@ -220,14 +220,18 @@ PIPELINE_JS = {
             'vendor/moment/moment.js',
             'vendor/moment/langs/*.js',
 
+            'vendor/other/modernizr-*.js',
+            'vendor/other/isotope-*.js',
+
             # This one is from an external project, not in 1flow's vendor/
-            'endless_pagination/js/endless-pagination.js'
+            'endless_pagination/js/endless-pagination.js',
 
             # Other things not requiring their own directory,
             # but still not coming from 1flow.
             'js/utils/*.js',
+
         ),
-        'output_filename': 'js/home-extras.js',
+        'output_filename': 'js/vendor-all.js',
     },
 
     'bootstrap': {
