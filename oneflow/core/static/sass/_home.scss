@@ -107,22 +107,26 @@
 /* --------------------------------------------------------------------- Read */
 
 .read-list-item {
+    padding: 5px;
+    transition: background 0.5s;
 
-	img {
-		min-width: 150px;
-		min-height: 150px;
-        margin: 0 auto;
-	}
+    /* cancel Twitter's media margin. */
+    margin-top: 0;
 
-    .media {
-        display: block;
-        transition: background 0.5s;
+    &:hover {
+        background: #eee;
+        border-radius: 5px;
+        transition: background 0.2s;
+    }
 
-        &:hover {
-            background: #eee;
-            border-radius: 5px;
-            transition: background 0.2s;
+    .media-body {
+        p {
+            margin-bottom: 0;
         }
+    }
+
+    .hover-muted {
+        opacity: 0;
     }
 
     .superuser-item {
@@ -141,27 +145,32 @@
             opacity: 0.05;
         }
     }
+}
 
+.read-list-row {
     .list-item-number {
+        min-width: 100px;
+        text-align: right;
     }
 }
 
 .read-tile {
     width: 170px;
-    padding: 0 10px;
-    margin-bottom: 20px;
+    padding: 10px;
+    /*margin-bottom: 20px;*/
+
+    img {
+        min-width: 150px;
+        min-height: 150px;
+        margin: 0 10px;
+    }
 
     .article-title {
         font-size: 14px;
     }
 
-    .hover-muted {
-        opacity: 0;
-    }
-
     .muted {
        opacity: 0.2;
-
     }
 }
 
