@@ -4,11 +4,12 @@
 
     {% lazy_paginate items_per_fetch reads %}
 
-        {% for read in reads %}
-            {% include 'snippets/read/read-list-row.html' %}
-        {% endfor %}
+    {% for read in reads %}
+        {% include 'snippets/read/read-tiles-experimental-tile.html' %}
+    {% endfor %}
 
     {% if not initial %}
         {% show_more _('Load more entries') _('Loading…') %}
     {% endif %}
+
 {% endwith %}

@@ -1,11 +1,12 @@
 {% extends 'home.html' %}
+{% load endless %}
 
 {% block title %}{% trans 'Read' %}{% endblock title %}
 
 {% block application_content %}
 
     <div class="row-fluid">
-        <div class="span12">
+        <div class="span11 offset1">
             <div class="btn-toolbar pull-right">
 
                 {% with home_style=preferences.home.style %}
@@ -15,9 +16,17 @@
                         <button class="btn preference {% if home_style == 'RL' %}active{% endif %}"
                             data-preference-value="RL"
                             title=""><i class="icon-list"></i></button>
+
+
                         <button class="btn preference {% if home_style == 'TL' %}active{% endif %}"
                             data-preference-value="TL"
                             title=""><i class="icon-th-large"></i></button>
+
+                    {% if user.is_superuser %}
+                        <button class="btn preference {% if home_style == 'T1' %}active{% endif %}"
+                            data-preference-value="T1"
+                            title="{% trans "Experimental tiles #1" %}"><i class="icon-th"></i></button>
+                    {% endif %}
                     </div>
                 {% endwith %}
             </div>
@@ -32,37 +41,44 @@
 
         </div>
     </div>
+    <div class="row-fluid">
+        <div class="span11 offset1">
+        {% if reads %}
+            {% with items_per_fetch=config.READ_INFINITE_ITEMS_PER_FETCH %}
 
-    {% if reads %}
-        {% if mongodb_user.preferences.home.style == 'RL' %}
-            <ul class="media-list">
-                {% include 'snippets/read/read-list-page.html' %}
-            </ul>
+                {% lazy_paginate items_per_fetch reads %}
+
+                {% if preferences.home.style == 'RL' %}
+                    <ul class="media-list">
+                        {% include 'snippets/read/read-list-page.html' %}
+                    </ul>
+
+                {% elif preferences.home.style == 'T1' %}
+                    <div id="reads-container">
+                        {% include 'snippets/read/read-tiles-experimental-page.html' %}
+                    </div>
+
+                {% else %}
+                    <div id="reads-container">
+                        {% include 'snippets/read/read-tiles-page.html' %}
+                    </div>
+                {% endif %}
+
+                {% show_more _('Load more entries') _('Loading…') %}
+
+            {% endwith %}
 
         {% else %}
-                {% include 'snippets/read/read-tiles-page.html' %}
+            <div class="hero-unit">
+                <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
+            </div>
 
         {% endif %}
-
-    {% else %}
-        <div class="hero-unit">
-            <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
         </div>
-
-    {% endif %}
-
+    </div>
 {% endblock application_content %}
 
 {% block extrajs_footer %}
     {{ block.super }}
-
-    {% compressed_js 'endless-pagination' %}
-    <script type="text/javascript">
-        $.endlessPaginate({
-        {% if config.READ_INFINITE_AUTOSCROLL_ENABLED %}
-            paginateOnScroll: true,
-            paginateOnScrollMargin: 500
-        {% endif %}
-        });
-    </script>
+    {% compressed_js 'read' %}
 {% endblock extrajs_footer %}

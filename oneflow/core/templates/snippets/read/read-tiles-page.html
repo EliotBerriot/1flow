@@ -1,17 +1,23 @@
 {% load endless %}
 
-{% with items_per_fetch=config.READ_INFINITE_ITEMS_PER_FETCH %}
+{% if initial %}
 
-    {% lazy_paginate items_per_fetch reads %}
+    {% for read in reads %}
+        {% include 'snippets/read/read-tiles-tile.html' %}
+    {% endfor %}
 
-    <ul class="thumbnails js-masonry"
-        data-masonry-options='{ "itemSelector": ".read-list-item", "columnWidth": 200 }'>
+{% else %}
+
+    {% with items_per_fetch=config.READ_INFINITE_ITEMS_PER_FETCH %}
+
+        {% lazy_paginate items_per_fetch reads %}
 
         {% for read in reads %}
             {% include 'snippets/read/read-tiles-tile.html' %}
         {% endfor %}
 
         {% show_more _('Load more entries') _('Loading…') %}
-    </ul>
 
-{% endwith %}
+    {% endwith %}
+
+{% endif %}

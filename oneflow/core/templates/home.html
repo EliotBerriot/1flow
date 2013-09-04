@@ -37,13 +37,14 @@
 
     {# NOTE: order matters. #}
     <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+
     {% compressed_js 'vendor-all' %}
     {#{% compressed_js 'core' %}#}
 
     {% csrf_token %}
 
-    {# This must stay here (in the template) to get the server-side language. #}
     <script type="text/javascript">
+        {# This must stay here (in the template) to get the server-side language. #}
         moment.lang('{{ LANGUAGE_CODE }}');
 
         function csrfSafeMethod(method) {
