@@ -1,0 +1,79 @@
+
+{% url 'help' as help_url %}
+{% captureas chat_fake_url %}chat-fake-url{% endcaptureas %}
+
+<div id="welcome-beta">
+    <div class="row-fluid">
+        <div id="welcome-beta-page-1" class="span8 offset2">
+{% filter markdown %}{% blocktrans %}
+
+# Welcome to 1flow,
+
+## your new home to read and write digital content.
+
+![VIDEO TUTORIAL HERE](http://lorempixel.com/360/240/abstract/video-tutorial-here/ "VIDEO TUTORIAL HERE")
+
+We hope to bring the best possible experience in these domains. Please take time to discover the interface, and watch the following screencast if you need guidance.
+
+While you're here, keep in mind that we are a small team and a young project. As such, some things will probably feel unpolished to you. In the meantime, we fix problems very quickly. 1flow gets better everyday. Sometimes even faster, when our developer went kitesurfing the day before.
+
+When you need help, there is the [help button]({{ help_url }} "Go to help") (you already guessed it, didn't you?). You can reach us via the [feedback chat](#{{ chat_fake_url }}) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.
+
+We hope you'll enjoy 1flow as much as we enjoy building it.
+
+Cheers,
+
+--
+[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),
+1flow founders
+
+{% endblocktrans %}{% endfilter %}
+        </div>
+
+        <div id="welcome-beta-page-2" class="span2 welcome-next hide">
+            <div class="row-fluid">
+                {% if mongodb_user.has_content %}
+                    <div class="span12">
+                        <button class="btn-flat btn-block btn-flat.info preference"
+                            data-toggle="button"
+                            data-preference=""
+                            title=""><i class="icon-bolt">
+                        </i> {% trans "Bring me to my news<br />and don't show this again!" %}</button>
+                    </div>
+
+                {% endif %}
+
+            </div>
+
+            <div class="row-fluid">
+                <div class="spacer20"></div>
+            </div>
+
+            <div class="row-fluid">
+                <div class="span12 {% if not mongodb_user.has_content %}offset6{% endif %}">
+                    <button class="btn-flat btn-block btn-flat.success preference"
+                            data-toggle="button"
+                            data-preference=""
+                            title=""><i class="icon-plus">
+                        </i> {% trans "Start adding some sources" %}</button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function(){
+
+        $('#welcome-beta a[href^="http"]').attr('target','_blank');
+        $('#welcome-beta-page-1 img').parent().addClass('float-right');
+
+        {% if wizards.welcome_beta_buttons %}
+            $('#welcome-beta-page-2').delay(1000).fadeIn();
+
+        {% else %}
+            $('#welcome-beta-page-2').delay(15000).fadeIn();
+
+        {% endif %}
+
+    });
+</script>

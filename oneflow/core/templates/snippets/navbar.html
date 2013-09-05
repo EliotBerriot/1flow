@@ -1,0 +1,99 @@
+<!-- navbar-static-top -->
+<div class="navbar navbar-fixed-top navbar-inverse">
+  <div class="navbar-inner">
+    <div class="container-fluid">
+      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </a>
+
+      <a class="brand" href="{% url 'home' %}">1flow <span
+              class="badge badge-warning badge-beta">BETA</span></a>
+
+      {% if user.is_authenticated %}
+        <ul class="nav pull-right">
+
+          <li>
+              <form>
+                <input class="search"
+                    placeholder="{% trans 'Search…' %}">
+              </form>
+          </li>
+
+          {% if user.is_staff or user.is_superuser %}
+            {% if MAINTENANCE_MODE %}
+              <li>
+                <a href="#" disabled="disabled">
+                  {% trans "Maintenance" %}
+                </a>
+              </li>
+
+            {% endif %}
+
+            <li><a href="#">v{{ VERSION }}</a></li>
+
+          {% endif %}
+
+          <li>
+              <a href="{% url 'help' %}">{% trans 'Help' %}</a>
+          </li>
+
+
+          <li class="dropdown" >
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+              {% if mongodb_user.avatar_url %}
+                <span class="avatar-frame">
+                  <img src="{{ mongodb_user.avatar_url }}" />
+                </span>
+              {% else %}
+                <i class="icon-user icon-2x"></i>
+              {% endif %}
+              {{ user.username }}
+              <b class="caret"></b>
+            </a>
+            <ul class="dropdown-menu">
+              <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
+
+            {% if user.is_superuser %}
+              <li><a href="/translate/" target="_blank">{% trans 'Translations' %}</a></li>
+              <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
+            {% endif %}
+
+              <li class="divider"></li>
+              <li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>
+            </ul>
+          </li>
+        </ul>
+
+      {% else %}
+        <ul class="nav pull-right">
+          <li><a href="{% url 'signin' %}">{% trans 'Sign in…' %}</a></li>
+        </ul>
+
+      {% endif %}
+
+      <div class="nav-collapse">
+        <ul class="nav">
+          {% if user.is_authenticated %}
+
+            <li><a href="{% url 'read' %}">{% trans 'Read' %}</a></li>
+
+            {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
+
+              <li><a href="{% url 'teams' %}">{% trans 'Teams' %}</a></li>
+              <li><a href="{% url 'subscriptions' %}">{% trans 'Subscriptions' %}</a></li>
+              <li><a href="{% url 'discovery' %}">{% trans 'Discovery' %}</a></li>
+            {% endif %}
+          {% else %}
+            <!--
+              <li><a href="#">{% trans 'About' %}</a></li>
+              <li><a href="#">{% trans 'Contact' %}</a></li>
+            -->
+
+          {% endif %}
+        </ul>
+      </div><!--/.nav-collapse -->
+    </div><!--/.container-fluid -->
+  </div><!--/.navbar-inner -->
+</div><!--/.navbar -->

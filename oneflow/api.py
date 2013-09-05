@@ -38,6 +38,8 @@ for app_name in settings.INSTALLED_APPS:
                                     'class_name': objekt_name})
 
                 except TypeError:
+                    LOGGER.exception('Exception while determining subclass '
+                                     'of %s.%s.', module_name, objekt_name)
                     # Not a class. Forget it.
                     pass
 

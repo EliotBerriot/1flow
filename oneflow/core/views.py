@@ -9,22 +9,33 @@
 import logging
 import humanize
 
-from django.http import HttpResponseRedirect, HttpResponseForbidden
+from constance import config
+
+from django.http import (HttpResponseRedirect,
+                         HttpResponseForbidden,
+                         HttpResponseBadRequest,
+                         HttpResponse, Http404)
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib import messages
 from django.shortcuts import render
 from django.template import add_to_builtins
+#from django.views.generic import ListView
 from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
+from oneflow.core.forms import UserProfileEditForm
 
-from oneflow import VERSION
+#from infinite_pagination.paginator import InfinitePaginator
+from endless_pagination.utils import get_page_number_from_request
+
+from sparks.django.utils import HttpResponseTemporaryServerError
+
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed
+from .models.nonrel import Feed, Read
 
 from .gr_import import GoogleReaderImport
 
@@ -34,7 +45,6 @@ User = get_user_model()
 # Avoid the very repetitive:
 #       {% load ember js compressed i18n base_utils %}
 # in the Ember application templates.
-add_to_builtins('ember.templatetags.ember')
 add_to_builtins('django.templatetags.i18n')
 add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
@@ -48,7 +58,12 @@ if settings.TEMPLATE_DEBUG:
 
 @never_cache
 def home(request):
-    """ will return the base of the Ember.JS application. """
+    """ root of the application. """
+
+    home_style = request.user.mongo.preferences.home.style
+
+    if home_style and home_style != 'T1':
+        return HttpResponseRedirect(reverse(u'read'))
 
     has_google = request.user.social_auth.filter(
         provider='google-oauth2').count() > 0
@@ -56,12 +71,127 @@ def home(request):
     social_count = request.user.social_auth.all().count()
 
     return render(request, 'home.html', {
-        'VERSION': VERSION,
         'MAINTENANCE_MODE': settings.MAINTENANCE_MODE,
         'has_google': has_google,
         'social_count': social_count,
         'gr_import': GoogleReaderImport(request.user.id),
     })
+
+
+@never_cache
+def read_with_endless_pagination(request, **kwargs):
+
+    # Computing tenths_counter here is much efficient than doing:
+    # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
+    # in the template…
+    tenths_counter = (get_page_number_from_request(request)
+                      - 1) * config.READ_INFINITE_ITEMS_PER_FETCH
+
+    is_read = request.GET.get('is_read', False)
+    reads   = Read.objects(user=request.user.mongo,
+                           is_read=is_read).order_by('-id').no_cache()
+
+    read_item_templates = {
+        u'RL': 'snippets/read/read-list-row.html',
+        u'TL': 'snippets/read/read-tiles-tile.html',
+        u'T1': 'snippets/read/read-tiles-experimental-tile.html',
+    }
+
+    context = {
+        u'reads': reads,
+        u'tenths_counter': tenths_counter,
+
+        # are we rendering the first "main"
+        # page, or just a subset via ajax?
+        u'initial': False,
+    }
+
+    if request.is_ajax():
+        context[u'read_item_template'] = read_item_templates.get(
+            request.user.mongo.preferences.home.style,
+            'snippets/read/read-tiles-tile.html',)
+        template = u'snippets/read/read-endless-page.html'
+
+    else:
+        template = u'read.html'
+        context[u'reads_count'] = reads.count()
+        context[u'initial']     = True
+
+    return render(request, template, context)
+
+
+@never_cache
+def set_preference(request, base, sub, value):
+
+    prefs = request.user.mongo.preferences
+
+    try:
+        base_pref = getattr(prefs, base)
+        setattr(base_pref, sub, value)
+
+    except:
+        return HttpResponseBadRequest(u'Bad preference name or value.')
+
+    else:
+
+        try:
+            prefs.save()
+
+        except:
+            LOGGER.exception(u'Could not save preferences for user %s',
+                             request.user.mongo)
+            return HttpResponseTemporaryServerError(
+                u'Could not save preference.')
+
+    if request.is_ajax():
+        return HttpResponse(u'DONE')
+
+    return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                reverse('home')))
+
+
+@never_cache
+def toggle(request, klass, id, key):
+
+    try:
+        obj = globals()[klass].objects.get(id=id)
+
+    except:
+        raise Http404
+
+    try:
+        setattr(obj, key, not getattr(obj, key))
+    except:
+        msg = (u'Unable to toggle %s of %s', key, obj)
+        LOGGER.exception(*msg)
+        return HttpResponseTemporaryServerError(msg[0] % msg[1:])
+
+    if request.is_ajax():
+        return HttpResponse(u'DONE.')
+
+    else:
+        return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                    reverse('home')))
+
+
+@never_cache
+def profile(request):
+
+    if request.POST:
+        form = UserProfileEditForm(request.POST, instance=request.user)
+
+        if form.is_valid():
+            form.save()
+    else:
+        form = UserProfileEditForm(instance=request.user)
+
+    context = {'form': form}
+    return render(request, 'profile.html', context)
+
+
+def help(request):
+
+    return render(request, u'help.html')
 
 
 def register(request):
@@ -96,7 +226,7 @@ def google_reader_import(request, user_id=None):
 
     if user_id is None:
         user_id      = request.user.id
-        fallback_url = reverse('home') + '#/profile'
+        fallback_url = reverse('profile')
 
     else:
         if request.user.is_superuser or request.user.is_staff:

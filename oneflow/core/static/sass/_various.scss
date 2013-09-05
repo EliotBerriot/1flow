@@ -1,3 +1,47 @@
+
+@mixin multiline-ellipsis($height, $lineheight, $ellipsiswidth) {
+
+$ellipsiswidth: 3em !default;
+
+    .ellipsis {
+        overflow: hidden;
+        height: $height;
+        line-height: $lineheight; }
+
+    .ellipsis:before {
+        content:"";
+        float: left;
+        width: 5px; height: $height; }
+
+    .ellipsis > *:first-child {
+        float: right;
+        width: 100%;
+        margin-left: -5px; }
+
+    .ellipsis:after {
+        content: "\02026";
+
+        float: right; position: relative;
+        top: -25px; left: 100%;
+        width: $ellipsiswidth; margin-left: -$ellipsiswidth;
+        padding-right: 5px;
+
+        text-align: right;
+        background: white;
+        background: -webkit-gradient(linear, left top, right top,
+                from(rgba(255, 255, 255, 0)), to(white), color-stop(50%, white));
+            background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+            background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+            background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+            background: linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white)
+    }
+
+}
+
+a.brand {
+    text-transform: none;
+}
+
 .spinner-wrapper {
     text-align: center;
     vertical-align: middle;
@@ -18,7 +62,17 @@ ul.social-auth {
     }
 }
 
+.centered {
+    text-align: center;
+}
+
+img.centered {
+    margin-left: auto;
+    margin-right: auto;
+}
+
 /* Thanks https://github.com/twitter/bootstrap/issues/4286 */
+
 .spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer10  { height: 10px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer15  { height: 15px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
@@ -31,3 +85,43 @@ ul.social-auth {
 .spacer50  { height: 50px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer100 { height: 100px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer200 { height: 200px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+
+/* ------------------------------------------------------- Isotope animations */
+
+.isotope,
+.isotope .isotope-item {
+  /* change duration value to whatever you like */
+  -webkit-transition-duration: 0.3s;
+     -moz-transition-duration: 0.3s;
+      -ms-transition-duration: 0.3s;
+       -o-transition-duration: 0.3s;
+          transition-duration: 0.3s;
+}
+
+.isotope {
+  -webkit-transition-property: height, width;
+     -moz-transition-property: height, width;
+      -ms-transition-property: height, width;
+       -o-transition-property: height, width;
+          transition-property: height, width;
+}
+
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity;
+     -moz-transition-property:    -moz-transform, opacity;
+      -ms-transition-property:     -ms-transform, opacity;
+       -o-transition-property:      -o-transform, opacity;
+          transition-property:         transform, opacity;
+}
+
+/**** disabling Isotope CSS3 transitions ****/
+
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+     -moz-transition-duration: 0s;
+      -ms-transition-duration: 0s;
+       -o-transition-duration: 0s;
+          transition-duration: 0s;
+}

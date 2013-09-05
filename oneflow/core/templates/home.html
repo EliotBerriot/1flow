@@ -1,74 +1,66 @@
 {% extends 'base.html' %}
 
-{% block body_style %}style="padding-top: 40px;"{% endblock body_style %}
+{% block body_id %}home{% endblock body_id %}
 
 {% block title %}{% trans 'Home' %}{% endblock title %}
 
 {% block extrajs_header %}
-  <script type="text/javascript">
-    var url_root = '{{ request.META.SCRIPT_NAME }}';
-  </script>
+    {% compressed_css 'core-bootstrap-detail' %}
 {% endblock extrajs_header %}
 
 {% block body %}
-{% include 'ember/main.html' %}
-{% include 'ember/views/index.html' %}
-{% include 'ember/views/teams.html' %}
-{% include 'ember/views/subscriptions.html' %}
-{% include 'ember/views/discovery.html' %}
-{% include 'ember/views/profile.html' %}
-{% include 'ember/views/help.html' %}
+
+{% include 'snippets/navbar.html' %}
+{% include 'snippets/help-arrows.html' %}
+
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div id="notifications" class="span10 offset1 centered"></div>
+    </div>
+    <div class="application">
+    {% block application_content %}
+
+        {% if wizards.show_all and not wizards.welcome_beta %}
+          {% include 'snippets/wizards/welcome-beta/welcome-beta.html' %}
+
+        {% else %}
+            { SHOW SUBSCRIPTIONS HERE }
+
+        {% endif %}
+    {% endblock application_content %}
+    </div>
+  </div>
+
 {% endblock body %}
 
 {% block extrajs_footer %}
 
-    {% jquery_js %}
-    {% compressed_js 'temp_handlebars_rc4' %}
-    {% ember_js %}
-    {% ember_data_js %}
-    {% tastypie_adapter_js %}
+    {# NOTE: order matters. #}
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
 
-    {% comment %}
-    restore {% emberpie_js %}
-    when
-        http://discuss.emberjs.com/t/ember-rc-5-is-not-working-properly-with-handlebars-1-0-0/1391
-    is resolved
-    {% endcomment %}
-
-    {% compressed_js 'bootstrap' %}
-    {% compressed_js 'showdown' %}
-    {% compressed_js 'moment' %}
-    {% compressed_js 'utils' %}
-    {% compressed_js 'core' %}
-
-    {# This must stay here (in the template) to get the server-side language. #}
-    <script type="text/javascript">
-        moment.lang('{{ LANGUAGE_CODE }}');
-    </script>
-
-    {% if has_google and gr_import.can_import %}
-        <script type="text/javascript">
-            function update_gri_status() {
-                try {
-                    $.get("{% url 'google_reader_import_status' %}", function(data){
-                        $('#google-reader-import-status').html(data);
-
-                        if (data.indexOf("{% trans "finished" %}") >= 0
-                            || data.indexOf("{% trans "Import your" %}") >= 0
-                            || data.indexOf("{% trans "not active anymore" %}") >= 0) {
-                            clearInterval(gri_interval);
-                        }
-                    });
-                } catch (err) {
-                    // just don't crash the JS in the browser.
-                }
-            }
-
-            update_gri_status();
-
-            var gri_interval = setInterval(update_gri_status, 5000);
-        </script>
-    {% endif %}
+    {% compressed_js 'vendor-all' %}
+    {#{% compressed_js 'core' %}#}
 
     {% csrf_token %}
+
+    <script type="text/javascript">
+        {# This must stay here (in the template) to get the server-side language. #}
+        moment.lang('{{ LANGUAGE_CODE }}');
+
+        function csrfSafeMethod(method) {
+            // these HTTP methods do not require CSRF protection
+            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+        }
+
+        $.ajaxSetup({
+            crossDomain: false,
+            beforeSend: function(xhr, settings) {
+                if (!csrfSafeMethod(settings.type)) {
+                    xhr.setRequestHeader("X-CSRFToken",
+                        $("input[name='csrfmiddlewaretoken']").val());
+                }
+            }
+        });
+    </script>
+
 {% endblock extrajs_footer %}

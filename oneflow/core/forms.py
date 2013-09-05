@@ -58,3 +58,10 @@ class FullUserCreationForm(forms.ModelForm):
             user.save()
 
         return user
+
+
+class UserProfileEditForm(forms.ModelForm):
+
+    class Meta:
+        model  = User
+        fields = ['first_name', 'last_name',]

@@ -1,0 +1,48 @@
+
+{% url 'help' as help_url %}
+{% captureas chat_url %}javascript:UE.Chat.show(4); return false;{% endcaptureas %}
+{% captureas chat_fake_url %}#chat-fake-url{% endcaptureas %}
+
+
+<div id="arrow-show-help" class="hide">
+    <i class="icon-arrow-up icon-4x"></i>
+</div>
+<div id="arrow-show-chat" class="hide">
+    <i class="icon-arrow-right icon-4x"></i>
+</div>
+
+<script>
+    $(document).ready(function(){
+
+        // This one is tricky, we have no real-link and need to patch it.
+        $('.container-fluid a[href="{{ chat_fake_url }}"]').each(function(){
+            //$(this).attr('href', '#');
+            $(this).attr('onclick', '{{ chat_url }}');
+        });
+
+        _.map({
+            help: '{{ help_url }}',
+            chat: '{{ chat_fake_url }}'
+        }, function(url, key){
+            $('div.application a[href="' + url + '"]').hover(
+                function(){
+
+                    $('#arrow-show-' + key)
+                        .fadeIn(500)
+                        .fadeOut(100)
+                        .fadeIn(500)
+                        .fadeOut(100)
+                        .fadeIn(500)
+                        .fadeOut(100)
+                        .fadeIn(500);
+
+                    // setTimeout(function(){
+                    //     $('#arrow-show-' + key).fadeout();
+                    // }, 2500);
+
+                }, function(){
+                    $('#arrow-show-' + key).stop(true, true).fadeOut();
+            });
+        });
+    });
+</script>

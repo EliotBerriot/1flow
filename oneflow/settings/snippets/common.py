@@ -9,7 +9,12 @@ import os
 import sys
 import warnings
 
+
 from django.core.urlresolvers import reverse_lazy
+from django.utils.translation import ugettext_lazy
+
+# dummy ugettext function, as django's docs say
+ugettext = lambda s: s
 
 # This is imported here to benefit to all other included snippets.
 from sparks import platform # NOQA
@@ -40,9 +45,6 @@ ALLOWED_HOSTS = []
 TIME_ZONE     = 'Europe/Paris'
 LANGUAGE_CODE = 'en'
 
-# dummy ugettext function, as django's docs say
-ugettext = lambda s: s
-
 # Translation workflows:
 # - in the DB: all languages variants are accessible and empty by default.
 #      'en' takes precedence on 'en-US'. As translators have access to all
@@ -63,10 +65,10 @@ LANGUAGES = (
     #('en-gb', ugettext(u'English (UK)')),
     ('fr', ugettext(u'Français')),
 
-# Activate these later when we need them.
-#    ('es', ugettext(u'Español')),
-#    ('fr-CA', ugettext(u'Français (FR)')),
-#    ('es-XX', ugettext(u'Español (ES)')),
+    # Activate these later when we need them.
+    #    ('es', ugettext(u'Español')),
+    #    ('fr-CA', ugettext(u'Français (FR)')),
+    #    ('es-XX', ugettext(u'Español (ES)')),
 )
 
 TRANSMETA_LANGUAGES = LANGUAGES + (
@@ -141,6 +143,8 @@ PIPELINE_CSS = {
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• vendor
 
+    # TODO: the 'vendor-all' target.
+
     'bootstrap': {
         'source_filenames': (
             'vendor/bootstrap/less/bootstrap.less',
@@ -179,9 +183,17 @@ PIPELINE_CSS = {
         'output_filename': 'css/landing.css',
     },
 
-    'core': {
+    'core-bootstrap-detail': {
         'source_filenames': (
-            'sass/styles.scss',
+            'bootstrap-overrides.css',
+            'sass/styles-core-bootstrap-detail.scss',
+        ),
+        'output_filename': 'css/core-details.css',
+    },
+
+    'core-bootstrap-bare': {
+        'source_filenames': (
+            'sass/styles-core-bootstrap-bare.scss',
         ),
         'output_filename': 'css/core.css',
     }
@@ -191,7 +203,32 @@ PIPELINE_JS = {
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• vendor
 
-    'bootstrap': {
+    'vendor-all': {
+        # This one includes all external dependancies
+        # (eg. non 1flow sources) for a one-file-only dep.
+        'source_filenames': (
+            # WARNING: order matters: tooltip must be included before popover.
+            'vendor/bootstrap/js/bootstrap-[a-o]*.js',
+            'vendor/bootstrap/js/bootstrap-t*.js',
+            'vendor/bootstrap/js/bootstrap-p*.js',
+            'vendor/bootstrap/js/bootstrap-[q-s]*.js',
+            'vendor/bootstrap/js/bootstrap-[u-z]*.js',
+
+            'vendor/showdown/showdown.js',
+            'vendor/showdown/extensions/twitter.js',
+
+            'vendor/moment/moment.js',
+            'vendor/moment/langs/*.js',
+
+            'vendor/other/*.js',
+
+            # NOTE: we use or own implementation
+            # of django-endless-pagination JS.
+        ),
+        'output_filename': 'js/min/vendor-all.js',
+    },
+
+    'vendor-bootstrap': {
         'source_filenames': (
             # WARNING: order matters: tooltip must be included before popover.
             'vendor/bootstrap/js/bootstrap-[a-o]*.js',
@@ -200,29 +237,32 @@ PIPELINE_JS = {
             'vendor/bootstrap/js/bootstrap-[q-s]*.js',
             'vendor/bootstrap/js/bootstrap-[u-z]*.js',
         ),
-        'output_filename': 'js/bootstrap.js',
+        'output_filename': 'js/min/bootstrap.js',
     },
-    'showdown': {
+
+    'vendor-showdown': {
         'source_filenames': (
             'vendor/showdown/showdown.js',
             'vendor/showdown/extensions/twitter.js',
         ),
-        'output_filename': 'js/showdown.js',
+        'output_filename': 'js/min/showdown.js',
     },
-    'moment': {
+
+    'vendor-moment': {
         'source_filenames': (
             'vendor/moment/moment.js',
             'vendor/moment/langs/*.js',
         ),
-        'output_filename': 'js/moment.js',
+        'output_filename': 'js/min/moment.js',
     },
 
-    # TODO: to be removed; see core/templates/…/home.html
-    'temp_handlebars_rc4': {
+    # NOTE: we use or own implementation
+    # of django-endless-pagination JS.
+    'vendor-endless-pagination': {
         'source_filenames': (
-            'js/workarounds/handlebars-1.0.0-rc4/handlebars.js',
+            'endless_pagination/js/endless-pagination.js',
         ),
-        'output_filename': 'js/handlebars-1.0.0-rc4.js',
+        'output_filename': 'js/min/endless-pagination.js',
     },
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
@@ -231,19 +271,37 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/utils/*.js',
         ),
-        'output_filename': 'js/utils.js',
+        'output_filename': 'js/min/utils.js',
+    },
+
+    'read': {
+        'source_filenames': (
+            'js/utils/*.js',
+            'js/common.js',
+            'js/read.js',
+        ),
+        'output_filename': 'js/min/read.js',
     },
 
     'core': {
         'source_filenames': (
-            'js/core/core.js',
-            'js/core/controllers/*.js',
-            'js/core/models/*.js',
-            'js/core/routes/*.js',
-            'js/core/helpers/*.js',
-            'js/core/init.js',
+            'js/utils/*.js',
+            'js/common.js',
         ),
-        'output_filename': 'js/core.js',
+        'output_filename': 'js/min/core.js',
+    },
+
+    'ember-core': {
+        'source_filenames': (
+            'js/ember-core/core.js',
+            'js/ember-core/controllers/*.js',
+            'js/ember-core/models/*.js',
+            'js/ember-core/views/*.js',
+            'js/ember-core/routes/*.js',
+            'js/ember-core/helpers/*.js',
+            'js/ember-core/end.js',
+        ),
+        'output_filename': 'js/min/ember-core.js',
     }
 }
 
@@ -286,9 +344,13 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
     'maintenancemode.middleware.MaintenanceModeMiddleware',
     'django.middleware.gzip.GZipMiddleware',
-    #'pipeline.middleware.MinifyHTMLMiddleware',
     'django.middleware.cache.FetchFromCacheMiddleware',
 )
+
+if not DEBUG:
+    MIDDLEWARE_CLASSES = MIDDLEWARE_CLASSES[:-1] + (
+        'pipeline.middleware.MinifyHTMLMiddleware',
+    ) + MIDDLEWARE_CLASSES[-1:]
 
 #SESSION_ENGINE = "django.contrib.sessions.backends.cached_db"
 SESSION_ENGINE = 'redis_sessions.session'
@@ -315,8 +377,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'social_auth.context_processors.social_auth_backends',
     #'social_auth.context_processors.social_auth_login_redirect',
 
+    # `base` processors
     'oneflow.base.context_processors.oneflow_version',
-    #'oneflow.core.context_processors.…',
+    'oneflow.base.context_processors.django_settings',
+
+    # `core` processors
+    'oneflow.core.context_processors.mongodb_user',
 )
 
 
@@ -325,14 +391,14 @@ INSTALLED_APPS = (
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
-    'django.contrib.sites',
+    #'django.contrib.sites',
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #'grappelli.dashboard',
     'grappelli',
     'mongoadmin',
     'django.contrib.admin',
-    'django.contrib.admindocs',
+    #'django.contrib.admindocs',
     'django_reset',
     'django_shell_ipynb',
     'gunicorn',
@@ -346,14 +412,21 @@ INSTALLED_APPS = (
     'tastypie_mongoengine',
     'overextends',
     'redis_sessions',
-    'redisboard',
+    #'redisboard',
     'djcelery',
     'memcache_status',
     'markdown_deux',
     'djangojs',
     'pipeline',
     'absolute',
-    'ember',
+    'endless_pagination',
+
+    # `infinite_pagination` doesn't work on MongoEngine QuerySet.
+    #'infinite_pagination',
+
+    # We don't use `mathfilters` as of 20130831.
+    #'mathfilters',
+
     'widget_tweaks',
     'oneflow.base',
     'oneflow.profiles',
@@ -364,6 +437,11 @@ INSTALLED_APPS = (
     # Without this, tests fail to create database!
     'social_auth',
 )
+
+ENDLESS_PAGINATION_PER_PAGE = 100
+
+# This is done directly in the templates.
+#ENDLESS_PAGINATION_LOADING  = ugettext_lazy(u'loading more entries…')
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
@@ -408,6 +486,8 @@ MARKDOWN_DEUX_STYLES = {
 
 # Defaults to ['json', 'xml', 'yaml', 'html', 'plist']
 TASTYPIE_DEFAULT_FORMATS = ('json', )
+API_LIMIT_PER_PAGE = 10
+
 
 AUTHENTICATION_BACKENDS = (
     # WARNING: when activating Twitter, we MUST implement the email pipeline,
@@ -453,12 +533,14 @@ LOGIN_URL          = reverse_lazy('signin')
 LOGOUT_URL         = reverse_lazy('signout')
 LOGIN_REDIRECT_URL = reverse_lazy('home')
 LOGIN_ERROR_URL    = reverse_lazy('signin_error')
+#SOCIAL_AUTH_BACKEND_ERROR_URL = reverse_lazy('signin_error')
 
 # See SOCIAL_AUTH_USER_MODEL earlier in this file.
 #SOCIAL_AUTH_SANITIZE_REDIRECTS = False
 #SOCIAL_AUTH_PROTECTED_USER_FIELDS = ['email',]
 SOCIAL_AUTH_EXTRA_DATA = True
 SOCIAL_AUTH_SESSION_EXPIRATION = False
+# SOCIAL_AUTH_RAISE_EXCEPTIONS = True
 
 SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.social_auth_user',
@@ -472,7 +554,10 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.user.create_user',
     'social_auth.backends.pipeline.social.associate_user',
     'social_auth.backends.pipeline.social.load_extra_data',
-    'social_auth.backends.pipeline.user.update_user_details'
+    'social_auth.backends.pipeline.user.update_user_details',
+
+    #'oneflow.core.social_pipeline.check_1flow_requirements',
+    'oneflow.core.social_pipeline.get_social_avatar',
 )
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging

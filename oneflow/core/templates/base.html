@@ -6,22 +6,24 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link type="text/plain" rel="author" href="http://1flow.io/humans.txt" />
 
-    {% compressed_css 'bootstrap-responsive' %}
-    {% compressed_css 'font-awesome' %}
+    <link href="//netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css"
+      rel="stylesheet">
+    <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
 
     <!--[if IE 7]>
       {% compressed_css 'font-awesome-ie7' %}
     <![endif]-->
     {# HTML5 shim, for IE6-8 support of HTML5 elements #}
+
     <!--[if lt IE 9]>
-      {% js 'js/html5shiv.js' %}
+      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    {% django_js_init %}
-    {% compressed_css 'core' %}
+    {% django_js %}
+
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
-  <body {% block body_style %}{% endblock body_style %}>
+  <body id="{% block body_id %}{% endblock body_id %}">
     {% block body %}{% endblock body %}
     {% block extrajs_footer %}{% endblock extrajs_footer %}
 

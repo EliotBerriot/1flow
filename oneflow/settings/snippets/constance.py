@@ -11,6 +11,17 @@ CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 
 CONSTANCE_CONFIG = {
 
+    # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
+
+    'READ_INFINITE_AUTOSCROLL_ENABLED': (True, ugettext(u'Make the read view '
+                                         u'(either list or tiles) '
+                                         u'automatically load new content '
+                                         u'when reaching end of page.')),
+
+    'READ_INFINITE_ITEMS_PER_FETCH': (ENDLESS_PAGINATION_PER_PAGE,
+                                      ugettext(u'Number of items per ajax '
+                                      u'fetch on infinite pagination pages.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
 
     # SEMANTIC NOTE: we use 'disabled' (and not 'enabled') because the rss
