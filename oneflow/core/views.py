@@ -62,7 +62,7 @@ def home(request):
 
     home_style = request.user.mongo.preferences.home.style
 
-    if home_style and home_style != 'T1':
+    if home_style and home_style == 'T1':
         return HttpResponseRedirect(reverse(u'read'))
 
     has_google = request.user.social_auth.filter(
