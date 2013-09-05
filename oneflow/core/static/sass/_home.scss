@@ -1,0 +1,218 @@
+
+@import url('http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800');
+
+/*
+@import url('http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic');
+*/
+
+/* --------------------------------------------------------------- Overrides */
+
+.navbar {
+    .brand {
+        text-transform: none;
+    }
+
+    .avatar-frame {
+        /* Cuts the image on the right. padding-right: 5px; */
+
+        img {
+            width: 24px;
+            height: 24px;
+            -webkit-border-radius: 30px;
+            border-radius: 30px;
+            -moz-border-radius: 30px;
+        }
+    }
+}
+
+
+/* ------------------------------------------------------------- Home / index */
+
+#home {
+    /* Space for the fixed navbar. */
+    padding-top: 40px;
+}
+
+#home-styles-chooser {
+
+    /* Separate chooser from the intro text. */
+    padding-top: 30px;
+
+    .home-style {
+        text-align: center;
+        cursor: pointer;
+
+        /* Cancel the bootstrap "alert" padding-right. */
+        padding-right: 14px;
+    }
+    .home-style-secondary {
+        margin-top: 40px;
+    }
+}
+
+
+/* ------------------------------------------------------------------ Profile */
+
+#profile {
+    h1 {
+        padding-bottom: 20px;
+        line-height: 0.9em;
+    }
+}
+
+
+/* --------------------------------------------------------------------- Help */
+
+#arrow-show-help {
+    position: fixed;
+    right: 135px;
+    top: 50px;
+}
+
+#arrow-show-chat {
+    position: fixed;
+    right: 40px;
+    top: 35%;
+}
+
+
+/* ------------------------------------------------------------------ Welcome */
+
+#welcome-beta {
+
+    .float-right {
+        float: right;
+        img {
+            padding-left: 20px;
+        }
+    }
+
+    h1 {
+        font-size: 500%;
+        padding: 50px 0 20px;
+    }
+
+    h2 {
+        font-size: 250%;
+        padding: 20px 0 50px;
+    }
+
+    p {
+        font-size: 150%;
+        font-weight: 300;
+        padding-bottom: 10px;
+    }
+}
+
+/* --------------------------------------------------------------------- Read */
+
+.read-list-item {
+    padding: 5px;
+    transition: background 0.5s;
+
+    /* cancel Twitter's media margin. */
+    margin-top: 0;
+
+    &:hover {
+        background: #eee;
+        border-radius: 5px;
+        transition: background 0.2s;
+    }
+
+    .media-body {
+        p {
+            margin-bottom: 0;
+        }
+    }
+
+    .hover-muted {
+        opacity: 0;
+    }
+
+    .superuser-item {
+        position: relative;
+        right: 0;
+        bottom: 0;
+        text-align: right;
+        padding-bottom: 20px;
+        margin-top: -55px;
+
+        h1 {
+            font-size: 800%;
+        }
+
+        .muted {
+            opacity: 0.05;
+        }
+    }
+}
+
+.read-list-row {
+    .list-item-number {
+        min-width: 100px;
+        text-align: right;
+    }
+}
+
+.read-tile {
+    width: 170px;
+    padding: 10px;
+    /*margin-bottom: 20px;*/
+
+    img {
+        min-width: 150px;
+        min-height: 150px;
+        margin: 0 10px;
+    }
+
+    .article-title {
+        font-size: 14px;
+    }
+
+    .muted {
+       opacity: 0.2;
+    }
+}
+
+/* ------------------------------------------------------- Endless pagination */
+
+.endless_container {
+    /*
+        We don't display the endless container,
+        it doesn't play well with isotope().
+    */
+
+    display: none;
+
+    text-align: center;
+    font-size: 200%;
+    padding: 30px 0 50px;
+
+    .endless_more {
+        opacity: 0.5;
+    }
+
+    .endless_loading {
+        opacity: 0.25;
+    }
+}
+
+
+
+/* -------------------------------------------------------------------- Other */
+
+/*  fullscreen for bootstrap modal
+
+    Unused as of 20130826, but keeping it because
+    it took me long to find how to do it.
+
+#read-item-modal {
+    width: 100%;
+    left: 0;
+    margin-left: 0;
+    top: 0;
+    margin-top: 0 !important;
+    height: 100%;
+}
+*/
+

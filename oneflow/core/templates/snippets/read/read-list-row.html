@@ -1,0 +1,55 @@
+  <li class="media read-list-item read-list-row hover-unmute-children">
+    <h1 class="pull-left list-item-number muted hover-muted">
+      {{ tenths_counter|add:forloop.counter }}
+    </h1>
+
+    {% with read.article as article %}
+
+    <div class="media-body">
+
+      <div class="btn-group pull-right hover-muted">
+        {% if read.is_read %}
+          <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+              title="{% trans "mark as unread" %}" data-toggle="tooltip"
+              class="btn">
+            <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
+        {% else %}
+          <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+              title="{% trans "mark as read" %}" data-toggle="tooltip"
+              class="btn">
+            <i class="icon-check" alt="{% trans "mark as read" %}"></i>
+        {% endif %}
+        </a>
+
+        <a href="{{ article.url }}" target="_blank"
+            title="{% trans "Open this article on the original website" %}"
+            class="btn">
+          <i class="icon-circle-arrow-right"></i></a>
+      </div>
+
+      <h4 class="media-heading">
+        <span class="article-title">
+          {{ article.title }}
+        </span>
+
+      </h4>
+
+      <p class="hover-muted">
+        {{ article.date_published }}{% if read.tags %},
+        {% trans "in" %} {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
+        {% if read.rating %}{% trans ", rated " %}{{ read.rating }}.{% endif %}
+
+
+      {% if article.authors %}
+        {% trans "by" %}
+        {% for author in article.authors %}
+            {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+        {% endfor %}
+      {% endif %}
+
+      </p>
+    </div><!-- .media-body -->
+
+    {% endwith %}
+
+  </li><!-- .media -->

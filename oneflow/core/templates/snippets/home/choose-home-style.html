@@ -1,0 +1,61 @@
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span10">&nbsp;</div>
+    </div>
+    <div class="row-fluid">
+      <div class="span8 offset3">
+        <h1>{% trans "Welcome!" %}</h1>
+        {% url 'profile' as profile_url %}
+        <p>{% blocktrans %}
+            Please choose your 1flow home style. You can change it later in <a href="{{ profile_url }}">your preferences</a>.
+        {% endblocktrans %}</p>
+      </div>
+    </div>
+
+    <div class="row-fluid" id="home-styles-chooser">
+      <div class="span3 offset1 alert alert-info home-style home-style-secondary">
+        <a href="{% url 'set_preference' 'home' 'style' 'RL' %}">
+          <h3>{% trans "Read everything" %}</h3>
+          <ul class="thumbnails">
+            <li class="span12">
+              <div class="thumbnail">
+                <img src="/static/img/index/classic.jpg" alt="" >
+              </div>
+            </li>
+          </ul>
+          <h4>{% trans "Shows all your unread articles" %}</h4>
+          <p>{% trans "Go straight to the information, the classic way." %}</p>
+        </a>
+      </div>
+
+      <div class="span4 alert alert-success home-style">
+        <a href="{% url 'set_preference' 'home' 'style' 'TL' %}">
+          <h3>{% trans "Electronic Newspaper" %}</h3>
+          <ul class="thumbnails">
+            <li class="span12">
+              <div class="thumbnail">
+                <img src="/static/img/index/tiles.jpg" alt="">
+              </div>
+            </li>
+          </ul>
+          <h4>{% trans "Tiled sources and articles" %}</h4>
+          <p>{% trans "Comfortable and easy to use. Perfect for tablets." %}</p>
+        </a>
+      </div>
+
+        <div class="span3 alert alert-info home-style home-style-secondary">
+          <a href="{% url 'set_preference' 'home' 'style' 'DB' %}">
+            <h3>{% trans "1flow dashboard" %}</h3>
+            <ul class="thumbnails">
+              <li class="span12">
+                <div class="thumbnail">
+                  <img src="/static/img/index/dashboard.jpg" alt="">
+                </div>
+              </li>
+            </ul>
+            <h4>{% trans "Summary and statistics of all your content." %}</h4>
+            <p>{% trans "Embrace your world in a sight. For experts." %}</p>
+          </a>
+        </div>
+    </div>
+  </div>

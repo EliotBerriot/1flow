@@ -1,11 +1,16 @@
 # -*- coding: utf-8 -*-
-from django.conf.urls import patterns, include, url
+
+from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
+#from django.views.decorators.cache import never_cache
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
-from .views import (home, register,
+from .views import (home, read_with_endless_pagination,
+                    help, toggle,
+                    register, profile,
+                    set_preference,
                     feed_closed_toggle,
                     google_reader_import,
                     google_reader_import_stop,
@@ -15,6 +20,19 @@ from .views import (home, register,
 urlpatterns = patterns(
     'oneflow.core.views',
     url(_(r'^home/$'), login_required(home), name='home'),
+
+    url(_(r'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
+        login_required(set_preference), name='set_preference'),
+    url(_(r'^profile/$'), login_required(profile), name='profile'),
+
+    url(_(r'^read/$'), login_required(read_with_endless_pagination),
+        name='read'),
+
+    url(_(r'^(?P<klass>\w+)/(?P<id>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
+        login_required(toggle), name='toggle'),
+
+    url(_(r'^help/$'), login_required(help), name='help'),
+
     url(_(r'^register/$'), register, name='register'),
     url(_(r'^signin_error/$'), TemplateView.as_view(
         template_name='signin_error.html'), name='signin_error'),

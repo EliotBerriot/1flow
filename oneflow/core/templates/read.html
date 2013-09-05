@@ -1,0 +1,149 @@
+{% extends 'home.html' %}
+{% load endless %}
+
+{% block title %}{% trans 'Read' %}{% endblock title %}
+
+{% block application_content %}
+{% with home_style=preferences.home.style %}
+
+    <div class="row-fluid">
+        <div class="span10 offset1">
+            <div class="btn-toolbar pull-right">
+                <div class="btn-group" data-toggle="buttons-radio">
+                    <button class="btn preference {% if home_style == 'RL' %}active{% endif %}"
+                        data-preference-url="{% url 'set_preference' base='home' sub='style' value='RL' %}"
+                        data-preference-value="RL"
+                        title=""><i class="icon-list"></i></button>
+
+                    <button class="btn preference {% if home_style == 'TL' %}active{% endif %}"
+                        data-preference-url="{% url 'set_preference' base='home' sub='style' value='TL' %}"
+                        data-preference-value="TL"
+                        title=""><i class="icon-th-large"></i></button>
+
+                {% if user.is_superuser %}
+                    <button class="btn btn-warning preference {% if home_style == 'T1' %}active{% endif %}"
+                        data-preference-url="{% url 'set_preference' base='home' sub='style' value='T1' %}"
+                        data-preference-value="T1"
+                        title="{% trans "Experimental tiles #1" %}"><i class="icon-th"></i></button>
+
+                {% endif %}
+                </div>
+            </div>
+
+            <h1>{% blocktrans count reads_count as reads %}
+                Read
+                <small>(<span id="reads_count">{{ reads }}</span> article)</small>
+                {% plural %}
+                Read
+                <small>(<span id="reads_count">{{ reads }}</span> articles)</small>
+            {% endblocktrans %} </h1>
+
+        </div>
+    </div>
+    <div class="row-fluid">
+        <div class="span{% if home_style == 'RL' %}10{% else %}11{% endif %} offset1">
+        {% if reads %}
+            {% with items_per_fetch=config.READ_INFINITE_ITEMS_PER_FETCH %}
+
+                {% lazy_paginate items_per_fetch reads %}
+
+                {% if preferences.home.style == 'RL' %}
+                    <ul id="reads-container" class="media-list">
+                        {% with read_item_template='snippets/read/read-list-row.html' %}
+                            {% include 'snippets/read/read-endless-page.html' %}
+                        {% endwith %}
+                    </ul>
+
+                {% elif preferences.home.style == 'T1' %}
+                    <div id="reads-container">
+                        {% with read_item_template='snippets/read/read-tiles-experimental-tile.html' %}
+                            {% include 'snippets/read/read-endless-page.html' %}
+                        {% endwith %}
+                    </div>
+
+                {% else %}
+                    {# by default, with no preference, we use the TILING mode #}
+
+                    <div id="reads-container">
+                        {% with read_item_template='snippets/read/read-tiles-tile.html' %}
+                            {% include 'snippets/read/read-endless-page.html' %}
+                        {% endwith %}
+                    </div>
+                {% endif %}
+
+                {% show_more _('Load more entries') _('Loading…') %}
+
+            {% endwith %}
+
+        {% else %}
+            <div class="hero-unit">
+                <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
+            </div>
+
+        {% endif %}
+        </div>
+    </div>
+{% endwith %}
+{% endblock application_content %}
+
+{% block extrajs_footer %}
+    {{ block.super }}
+    {% compressed_js 'read' %}
+
+    <script type="text/javascript">
+
+    function endless_new_page_load_completed(context, fragment) {
+        // console.log('Label:', $(this).text());
+        //console.log('URL:', context.url);
+        //console.log('Querystring key:', context.key);
+        // console.log('Fragment:', fragment);
+
+        $('body').find('.endless_container').remove();
+
+        var new_items   = $(fragment);
+        var new_endless = new_items.find('.endless_container');
+
+        // NOTE: .after() moved the new_endless.
+        // No need to remove it from the fragment.
+
+        reads_container
+            .after(new_endless)
+            .append(new_items)
+        {% if preferences.home.style|slice:'1' == 'T' %}
+            .isotope('appended', new_items);
+        {% else %}
+            ;
+        {% endif %}
+
+        setup_everything(new_items);
+
+        console.debug('Finished loading ', context.url);
+
+        // We return false to avoid
+        // endless normal processing.
+        return false;
+    }
+
+    var reads_container = $('#reads-container');
+
+    {% if preferences.home.style|slice:'1' == 'T' %}
+
+        reads_container.isotope({
+          itemSelector: '.read-list-item'
+        });
+
+    {% endif %}
+
+    $.endlessPaginate({
+
+        {% if config.READ_INFINITE_AUTOSCROLL_ENABLED %}
+            paginateOnScroll: true,
+            paginateOnScrollMargin: 300,
+
+        {% endif %}
+
+        onCompleted: endless_new_page_load_completed
+    });
+
+    </script>
+{% endblock extrajs_footer %}

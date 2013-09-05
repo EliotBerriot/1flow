@@ -1,0 +1,23 @@
+{% load endless %}
+
+{% if initial %}
+
+    {% for read in reads %}
+        {% include read_item_template %}
+    {% endfor %}
+
+{% else %}
+
+    {% with items_per_fetch=config.READ_INFINITE_ITEMS_PER_FETCH %}
+
+        {% lazy_paginate items_per_fetch reads %}
+
+        {% for read in reads %}
+            {% include read_item_template %}
+        {% endfor %}
+
+        {% show_more _('Load more entries') _('Loading…') %}
+
+    {% endwith %}
+
+{% endif %}
