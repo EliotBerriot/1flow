@@ -1,15 +1,15 @@
--e git+https://github.com/gregmuellegger/django-reset.git@e8bbc9286849a16adcc664ef3c0943be75af90a8#egg=django_reset-0.2.0
--e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-master
--e git+https://github.com/Karmak23/django-mongoadmin.git@master#egg=mongoadmin-master
--e git+https://github.com/Karmak23/django-mongodbforms.git@master#egg=mongodbforms-master
--e git+https://github.com/Karmak23/humanize.git@master#egg=humanize-master
--e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-master
--e git+https://github.com/Karmak23/soup-strainer.git@master#egg=strainer-master
--e git+https://github.com/Karmak23/sparks.git@master#egg=sparks-master
--e git+https://github.com/kmmbvnr/django-jenkins.git@a3a283125a0c3391c833c9c86794bb892fea8f7f#egg=django_jenkins-master
--e git+https://github.com/nickstenning/honcho.git@b172b30d6c53edde2434687b1e4eb8cac114ff15#egg=honcho-master
--e git+https://github.com/noirbizarre/django-ember.git@47b5dad4f623efaccd3492c11d96fa4afdf8fb33#egg=django_ember-master
--e git+https://github.com/noirbizarre/django.js.git@e3fb6b87f5eb98aaa0b87498db58fc354b46dcee#egg=django.js-dev
+-e git+https://github.com/gregmuellegger/django-reset.git@e8bbc9286849a16adcc664ef3c0943be75af90a8#egg=django_reset
+-e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield
+-e git+https://github.com/Karmak23/django-mongoadmin.git@master#egg=mongoadmin
+-e git+https://github.com/Karmak23/django-mongodbforms.git@master#egg=mongodbforms
+-e git+https://github.com/Karmak23/humanize.git@master#egg=humanize
+-e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader
+-e git+https://github.com/Karmak23/soup-strainer.git@master#egg=strainer
+-e git+https://github.com/Karmak23/sparks.git@master#egg=sparks
+-e git+https://github.com/kmmbvnr/django-jenkins.git@a3a283125a0c3391c833c9c86794bb892fea8f7f#egg=django_jenkins
+-e git+https://github.com/nickstenning/honcho.git@b172b30d6c53edde2434687b1e4eb8cac114ff15#egg=honcho
+-e git+https://github.com/noirbizarre/django-ember.git@47b5dad4f623efaccd3492c11d96fa4afdf8fb33#egg=django_ember
+-e git+https://github.com/noirbizarre/django.js.git@e3fb6b87f5eb98aaa0b87498db58fc354b46dcee#egg=django.js
 amqp==1.0.12
 anyjson==0.3.3
 astroid==1.0.0
