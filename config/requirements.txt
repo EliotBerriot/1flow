@@ -2,7 +2,7 @@
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield-master
 -e git+https://github.com/Karmak23/django-mongoadmin.git@master#egg=mongoadmin-master
 -e git+https://github.com/Karmak23/django-mongodbforms.git@master#egg=mongodbforms-master
--e git+https://github.com/Karmak23/humanize.git@9master#egg=humanize-master
+-e git+https://github.com/Karmak23/humanize.git@master#egg=humanize-master
 -e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader-master
 -e git+https://github.com/Karmak23/soup-strainer.git@master#egg=strainer-master
 -e git+https://github.com/Karmak23/sparks.git@master#egg=sparks-master
