@@ -185,7 +185,7 @@ PIPELINE_CSS = {
 
     'core-bootstrap-detail': {
         'source_filenames': (
-            'bootstrap-overrides.css',
+            'sass/detail-admin/bootstrap-overrides.scss',
             'sass/styles-core-bootstrap-detail.scss',
         ),
         'output_filename': 'css/core-details.css',
