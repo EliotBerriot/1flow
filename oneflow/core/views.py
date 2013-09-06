@@ -36,6 +36,7 @@ from sparks.django.utils import HttpResponseTemporaryServerError
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Read
+from .models.reldb import HelpContent
 
 from .gr_import import GoogleReaderImport
 
@@ -191,7 +192,9 @@ def profile(request):
 
 def help(request):
 
-    return render(request, u'help.html')
+    help_sections = HelpContent.objects.all()
+
+    return render(request, u'help.html', {'help_sections': help_sections})
 
 
 def register(request):
