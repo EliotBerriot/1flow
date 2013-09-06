@@ -22,7 +22,6 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.template import add_to_builtins
 #from django.views.generic import ListView
-from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
@@ -57,7 +56,6 @@ if settings.TEMPLATE_DEBUG:
     add_to_builtins('template_debug.templatetags.debug_tags')
 
 
-@never_cache
 def home(request):
     """ root of the application. """
 
@@ -79,7 +77,6 @@ def home(request):
     })
 
 
-@never_cache
 def read_with_endless_pagination(request, **kwargs):
 
     # Computing tenths_counter here is much efficient than doing:
@@ -121,7 +118,6 @@ def read_with_endless_pagination(request, **kwargs):
     return render(request, template, context)
 
 
-@never_cache
 def set_preference(request, base, sub, value):
 
     prefs = request.user.mongo.preferences
@@ -151,7 +147,6 @@ def set_preference(request, base, sub, value):
                                 reverse('home')))
 
 
-@never_cache
 def toggle(request, klass, id, key):
 
     try:
@@ -175,7 +170,6 @@ def toggle(request, klass, id, key):
                                     reverse('home')))
 
 
-@never_cache
 def profile(request):
 
     if request.POST:
@@ -330,7 +324,6 @@ def google_reader_import_stop(request, user_id):
     return HttpResponseRedirect(redirect_url)
 
 
-@never_cache
 def google_reader_import_status(request):
     """ An HTML snippet view. """
 
