@@ -42,9 +42,7 @@ from .gr_import import GoogleReaderImport
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
 
-# Avoid the very repetitive:
-#       {% load ember js compressed i18n base_utils %}
-# in the Ember application templates.
+# Avoid repetitive {% load … %} in templates.
 add_to_builtins('django.templatetags.i18n')
 add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
@@ -64,15 +62,7 @@ def home(request):
     if home_style and home_style == 'T1':
         return HttpResponseRedirect(reverse(u'read'))
 
-    has_google = request.user.social_auth.filter(
-        provider='google-oauth2').count() > 0
-
-    social_count = request.user.social_auth.all().count()
-
     return render(request, 'home.html', {
-        'MAINTENANCE_MODE': settings.MAINTENANCE_MODE,
-        'has_google': has_google,
-        'social_count': social_count,
         'gr_import': GoogleReaderImport(request.user.id),
     })
 
@@ -180,8 +170,7 @@ def profile(request):
     else:
         form = UserProfileEditForm(instance=request.user)
 
-    context = {'form': form}
-    return render(request, 'profile.html', context)
+    return render(request, 'profile.html', {'form': form})
 
 
 def help(request):
