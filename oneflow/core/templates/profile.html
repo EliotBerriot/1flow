@@ -122,8 +122,8 @@ find back the spaceport.
               <h3>{% trans "Associate accounts" %}</h3>
 
             {% endif %}
-
-            {% include "snippets/social-auth-signin.html" %}
+              {% captureas next_url%}?next={% absolute 'profile' %}{% endcaptureas %}
+              {% include "snippets/social-auth-signin.html" %}
 
           </div>
         </div>
