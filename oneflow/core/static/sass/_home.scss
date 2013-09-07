@@ -50,6 +50,18 @@
     }
 }
 
+.side-nav.affix {
+  top: 60px;
+}
+
+header {
+    h1 {
+        padding-top: 50px;
+    }
+    h2 {
+        padding-bottom: 15px;
+    }
+}
 
 /* ------------------------------------------------------------------ Profile */
 
@@ -82,13 +94,18 @@
     h2 {
         margin-bottom: 15px;
     }
+
 }
 
 #help-sections {
     h2 {
-        border-bottom: 2px dotted #ddd;
+        border-bottom: 1px solid #ddd;
         margin-top: 100px;
         margin-bottom: 25px;
+
+        &:first-of-type {
+            margin-top: 0;
+        }
     }
     h3 {
         margin-top: 25px;

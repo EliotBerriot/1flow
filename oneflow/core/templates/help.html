@@ -2,15 +2,31 @@
 
 {% block title %}{% trans 'Help' %}{% endblock title %}
 {% block body_id %}help{% endblock body_id %}
+{% block body_data %}data-spy="scroll" data-target="#sidebar"{% endblock body_data %}
+
+{% block application_header %}
+    <header class="subhead">
+    <div class="container-fluid">
+      <div class="row-fluid">
+        <div class="span10 offset1">
+          <h1>{% trans "1flow help" %}</h1>
+          <h2>{% trans "and frequently asked questions" %}</h2>
+          {% filter markdown %}{% blocktrans %}
+Welcome to 1flow help center. If you don't find the answer you need here, please [contact us](#reaching-us) before calling the fire brigade.
+          {% endblocktrans %}{% endfilter %}
+        </div>
+      </div>
+    </div>
+  </header>
+{% endblock application_header %}
 
 {% block application_content %}
+
     <div class="row-fluid">
-      <div>&nbsp;</div>
       <div class="span10 offset1">
         <div class="row-fluid">
-          <div class="span2">
-            <ul class="nav nav-list affix">
-              <li class="spacer50"></li>
+          <div class="span3" id="sidebar">
+            <ul class="nav nav-list side-nav affix-top" data-spy="affix" data-offset-top="200">
               <li><h3>{% trans "Help sections" %}</h3></li>
               {% for section in help_sections %}
                 <li><a href="#{{ section.slug }}">{{ section.name }}</a></li>
@@ -18,18 +34,9 @@
             </ul>
           </div>
 
-          <div class="span8">
-            <h1>{% trans "1flow help" %}</h1>
-            <h2>{% trans "and frequently asked questions" %}</h2>
-            {% filter markdown %}{% blocktrans %}
-Welcome to 1flow help center. If you don't find the answer you need here, please [contact us](#reaching-us) before calling the fire brigade.
-            {% endblocktrans %}{% endfilter %}
-          </div>
-        </div>
-        <div class="row-fluid" id="help-sections">
-          <div class="span8 offset2">
+          <div class="span9" id="help-sections">
               {% for section in help_sections %}
-<a name="{{ section.slug }}"></a>{% filter markdown %}
+<a name="{{ section.slug }}" id="{{ section.slug }}"></a>{% filter markdown %}
 ## {{section.name}}
 
 {{ section.content }}
