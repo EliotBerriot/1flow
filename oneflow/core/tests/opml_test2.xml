@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<opml version="1.0">
+    <head>
+        <title>Olivier subscriptions in feedly Cloud</title>
+    </head>
+    <body>
+        <outline text="Généraliste" title="Généraliste">
+            <outline type="rss" text="Les 400 culs" title="Les 400 culs" xmlUrl="http://sexes.blogs.liberation.fr/agnes_giard/rss.xml" htmlUrl="http://sexes.blogs.liberation.fr/agnes_giard/"/>
+            <outline type="rss" text="A la Une de Rue89" title="A la Une de Rue89" xmlUrl="http://www.rue89.com/homepage/feed" htmlUrl="http://www.rue89.com"/>
+            <outline type="rss" text="Great America" title="Great America" xmlUrl="http://washington.blogs.liberation.fr/great_america/rss.xml" htmlUrl="http://washington.blogs.liberation.fr/great_america/"/>
+        </outline>
+        <outline text="Linux - Libre" title="Linux - Libre">
+            <outline type="rss" text="LinuxFR" title="LinuxFR" xmlUrl="http://linuxfr.org/news.atom" htmlUrl="http://linuxfr.org/news"/>
+            <outline type="rss" text="DragonFly BSD Digest" title="DragonFly BSD Digest" xmlUrl="http://www.shiningsilence.com/dbsdlog/feed" htmlUrl="http://www.shiningsilence.com/dbsdlog"/>
+            <outline type="rss" text="Planet Ubuntu" title="Planet Ubuntu" xmlUrl="http://planet.ubuntu.com/rss20.xml" htmlUrl="http://planet.ubuntu.com/"/>
+            <outline type="rss" text="CruiseControl RSS feed for Archipel" title="CruiseControl RSS feed for Archipel" xmlUrl="http://build.archipelproject.org/projects/Archipel?format=rss" htmlUrl="http://build.archipelproject.org/projects/Archipel"/>
+            <outline type="rss" text="Planet FreeBSD" title="Planet FreeBSD" xmlUrl="http://blogs.freebsdish.org/feed/" htmlUrl="http://blogs.freebsdish.org"/>
+        </outline>
+        <outline text="Photo" title="Photo">
+            <outline type="rss" text="Sophie Delaveau" title="Sophie Delaveau" xmlUrl="http://sophiedelaveau.com/blog/feed/" htmlUrl="http://www.sophiedelaveau.com/blog"/>
+            <outline type="rss" text="Brisbane Wedding Photographer | Jonas Peterson" title="Brisbane Wedding Photographer | Jonas Peterson" xmlUrl="http://jonaspeterson.com/feed/" htmlUrl="http://jonaspeterson.com"/>
+            <outline type="rss" text="Orange County | Los Angeles | Wedding Photographer" title="Orange County | Los Angeles | Wedding Photographer" xmlUrl="http://www.jessicaclaire.net/rss/" htmlUrl="http://www.jessicaclaire.net/index.cfm"/>
+            <outline type="rss" text="French Wedding Photographer Paris Loire vallee Cote d'azur ..." title="French Wedding Photographer Paris Loire vallee Cote d'azur ..." xmlUrl="http://www.olivierlalinweddings.com/feed/"/>
+            <outline type="rss" text="DPReviews" title="DPReviews" xmlUrl="http://www.dpreview.com/feeds/reviews.xml" htmlUrl="http://www.dpreview.com/reviews/"/>
+            <outline type="rss" text="Kevin Tran" title="Kevin Tran" xmlUrl="http://www.kevintran.fr/blog/feed/" htmlUrl="http://www.kevintran.fr/blog"/>
+            <outline type="rss" text="Nikon Rumors" title="Nikon Rumors" xmlUrl="http://feeds2.feedburner.com/NikonRumors" htmlUrl="http://nikonrumors.com"/>
+            <outline type="rss" text="California Wedding Photographer, Photography Worldwide - Victor ..." title="California Wedding Photographer, Photography Worldwide - Victor ..." xmlUrl="http://www.vcsphoto.com/blog/feed/" htmlUrl="http://www.vcsphoto.com/blog"/>
+            <outline type="rss" text="Canon Rumors" title="Canon Rumors" xmlUrl="http://www.canonrumors.com/feed/" htmlUrl="http://www.canonrumors.com"/>
+            <outline type="rss" text="» Wedding Photography | Best Wedding Photographer Directory | ISPWP" title="» Wedding Photography | Best Wedding Photographer Directory | ISPWP" xmlUrl="http://www.ispwp.com/feed" htmlUrl="http://www.ispwp.com"/>
+            <outline type="rss" text="David Huitorel" title="David Huitorel" xmlUrl="http://blog.davidhuitorel.com/?feed=rss2" htmlUrl="http://www.davidhuitorelblog.com"/>
+        </outline>
+        <outline text="Mac et iPhone" title="Mac et iPhone">
+            <outline type="rss" text="MacGeneration" title="MacGeneration" xmlUrl="http://feed.macgeneration.com/megaflux" htmlUrl="http://www.macg.co/"/>
+            <outline type="rss" text="MacBidouille.com" title="MacBidouille.com" xmlUrl="http://www.macbidouille.com/macbidouille.rss" htmlUrl="http://www.macbidouille.com"/>
+        </outline>
+        <outline text="Social Pro" title="Social Pro">
+            <outline type="rss" text="Canonical Job Feed" title="Canonical Job Feed" xmlUrl="https://tbe.taleo.net/NA3/ats/servlet/Rss?org=CANONICAL&amp;cws=1&amp;WebPage=SRCHR&amp;WebVersion=0&amp;_rss_version=2" htmlUrl="https://ch.tbe.taleo.net/CH03/ats/careers/jobSearch.jsp?org=CANONICAL&amp;cws=1"/>
+            <outline type="rss" text="Build 47" title="Build 47" xmlUrl="http://www.build47.com/feed/rss" htmlUrl="http://www.build47.com"/>
+            <outline type="rss" text="Infinit Blog" title="Infinit Blog" xmlUrl="http://blog.infinit.io/rss" htmlUrl="http://blog.infinit.io/"/>
+            <outline type="rss" text="Neopythonic" title="Neopythonic" xmlUrl="http://neopythonic.blogspot.com/feeds/posts/default" htmlUrl="http://neopythonic.blogspot.com/"/>
+            <outline type="rss" text="yongfook" title="yongfook" xmlUrl="http://yongfook.com/rss"/>
+            <outline type="rss" text="The Setup" title="The Setup" xmlUrl="http://usesthis.com/feed/" htmlUrl="http://usesthis.com/"/>
+        </outline>
+        <outline text="Durable" title="Durable">
+            <outline type="rss" text="Développement durable | Actualités développement durable RSS" title="Développement durable | Actualités développement durable RSS" xmlUrl="http://www.developpementdurable.com/rss/actualites/" htmlUrl="http://www.developpementdurable.com/"/>
+            <outline type="rss" text="GreenIT.fr" title="GreenIT.fr" xmlUrl="http://greenit.fr/frontpage/feed" htmlUrl="http://www.greenit.fr/frontpage"/>
+            <outline type="rss" text="Écono Écolo" title="Écono Écolo" xmlUrl="http://www.econo-ecolo.org/spip.php?page=backend" htmlUrl="http://econo-ecolo.org/econo-ecolo-info/"/>
+            <outline type="rss" text="Greenpeace France" title="Greenpeace France" xmlUrl="http://blog.greenpeace.fr/feed" htmlUrl="http://blog.greenpeace.fr"/>
+            <outline type="rss" text="WWF.fr  - Actualités" title="WWF.fr  - Actualités" xmlUrl="http://www.wwf.fr/rss/feed/actualites" htmlUrl="http://www.wwf.fr/flux-rss"/>
+            <outline type="rss" text="notre-planete.info" title="notre-planete.info" xmlUrl="http://www.notre-planete.info/news/news.xml" htmlUrl="http://www.notre-planete.info/actualites/"/>
+            <outline type="rss" text="L'éco-Blog" title="L'éco-Blog" xmlUrl="http://feeds.feedburner.com/ImprimerieVilliere-ImprimerNaturellement?format=xml" htmlUrl="http://blog.imprimerie-villiere.com"/>
+            <outline type="rss" text="Actu-Environnement" title="Actu-Environnement" xmlUrl="http://www.actu-environnement.com/ae/news/archives/rss.php4" htmlUrl="http://www.actu-environnement.com"/>
+            <outline type="rss" text="Surfrider Foundation" title="Surfrider Foundation" xmlUrl="http://www.surfrider.eu/en/accueil/rss.xml" htmlUrl="http://www.surfrider.eu/"/>
+            <outline type="rss" text="Jardins Co-créatifs" title="Jardins Co-créatifs" xmlUrl="http://jardins-cocreatifs.typepad.com/blog/atom.xml" htmlUrl="http://jardins-cocreatifs.typepad.com/blog/"/>
+        </outline>
+        <outline text="Kitesurf et Glisse" title="Kitesurf et Glisse">
+            <outline type="rss" text="01KiteSurf.com - Actualités du kitesurf au quotidien" title="01KiteSurf.com - Actualités du kitesurf au quotidien" xmlUrl="http://www.01kitesurf.com/fluxrss/fluxactualites.php"/>
+            <outline type="rss" text="Flysurf.com news channel" title="Flysurf.com news channel" xmlUrl="http://www.flysurf.com/kitenews.rss" htmlUrl="http://www.flysurf.com/frontblocks/news/news.asp"/>
+            <outline type="rss" text="01KiteSurf.com - Vidéos du kitesurf au quotidien" title="01KiteSurf.com - Vidéos du kitesurf au quotidien" xmlUrl="http://www.01kitesurf.com/fluxrss/fluxvideos.php"/>
+            <outline type="rss" text="APCKITE - Association de kitesurf du bassin d'Arcachon" title="APCKITE - Association de kitesurf du bassin d'Arcachon" xmlUrl="http://apckite.com/index.php?format=feed&amp;type=rss" htmlUrl="http://apckite.com/index.php?option=com_content&amp;view=frontpage"/>
+        </outline>
+        <outline text="Humour" title="Humour">
+            <outline type="rss" text="Vie de merde" title="Vie de merde" xmlUrl="http://feeds.feedburner.com/viedemerde" htmlUrl="http://www.viedemerde.fr"/>
+            <outline type="rss" text="Le flux RSS DTC" title="Le flux RSS DTC" xmlUrl="http://www.bashfr.org/rss.xml" htmlUrl="http://danstonchat.com/"/>
+        </outline>
+        <outline text="Licorn" title="Licorn">
+            <outline type="rss" text="Licorn Blog" title="Licorn Blog" xmlUrl="http://dev.licorn.org/blog?format=rss"/>
+            <outline type="rss" text="Licorn Timeline" title="Licorn Timeline" xmlUrl="http://dev.licorn.org/timeline?ticket=on&amp;changeset=on&amp;wiki=on&amp;milestone=on&amp;max=50&amp;daysback=30&amp;format=rss"/>
+        </outline>
+        <outline text="Python et développement" title="Python et développement">
+            <outline type="rss" text="Python News" title="Python News" xmlUrl="http://www.python.org/channews.rdf" htmlUrl="http://www.python.org/"/>
+            <outline type="rss" text="The History of Python" title="The History of Python" xmlUrl="http://python-history.blogspot.com/feeds/posts/default" htmlUrl="http://python-history.blogspot.com/"/>
+        </outline>
+        <outline text="Technologies" title="Technologies">
+            <outline type="rss" text="Tom's Hardware - Actualité matériel informatique, multimédia, Internet" title="Tom's Hardware - Actualité matériel informatique, multimédia, Internet" xmlUrl="http://www.tomshardware.com/fr/feeds/rss2/presence-pc,1-1.xml" htmlUrl="http://www.presence-pc.com"/>
+            <outline type="rss" text="Silicon.fr" title="Silicon.fr" xmlUrl="http://feeds.silicon.fr/silicon-news"/>
+            <outline type="rss" text="Réseaux &amp; Télécoms" title="Réseaux &amp; Télécoms" xmlUrl="http://www.reseaux-telecoms.net/rss/rss.xml" htmlUrl="http://www.reseaux-telecoms.net/flux-rss//rss.xml"/>
+            <outline type="rss" text="TechCrunch France" title="TechCrunch France" xmlUrl="http://feeds.feedburner.com/francaistechcrunch" htmlUrl="http://techcrunch.com"/>
+        </outline>
+        <outline text="Sciences" title="Sciences">
+            <outline type="rss" text="CNRS" title="CNRS" xmlUrl="http://www2.cnrs.fr/rss.php?id=all" htmlUrl="http://www.cnrs.fr"/>
+        </outline>
+        <outline type="rss" text="Référencement de site internet - Pikock | Scoop.it" title="Référencement de site internet - Pikock | Scoop.it" xmlUrl="http://www.scoop.it/t/referencement-de-site-internet-pikock/rss.xml" htmlUrl="http://www.scoop.it/t/referencement-de-site-internet-pikock"/>
+        <outline type="rss" text="David Winterbottom (@codeinthehole)" title="David Winterbottom (@codeinthehole)" xmlUrl="http://feeds.feedburner.com/codeintheholecom" htmlUrl="http://codeinthehole.com/writing/"/>
+        <outline type="rss" text="dBoite blog" title="dBoite blog" xmlUrl="http://blog.dboite.fr/feed/" htmlUrl="http://blog.dboite.fr"/>
+        <outline type="rss" text="Noyau d'Olive" title="Noyau d'Olive" xmlUrl="http://noyaudolive.net/feed/" htmlUrl="http://noyaudolive.net"/>
+        <outline type="rss" text="delroth's blog" title="delroth's blog" xmlUrl="http://blog.delroth.net/feed/" htmlUrl="http://blog.delroth.net"/>
+        <outline type="rss" text="1flow news" title="1flow news" xmlUrl="http://blog.1flow.net/feeds/atom.xml" htmlUrl="http://blog.1flow.net/"/>
+        <outline type="rss" text="Libération - A la une sur Libération" title="Libération - A la une sur Libération" xmlUrl="http://liberation.fr.feedsportal.com/c/32268/fe.ed/rss.liberation.fr/rss/9/" htmlUrl="http://www.liberation.fr/"/>
+        <outline type="rss" text="Licorn®: efficient server management" title="Licorn®: efficient server management" xmlUrl="http://licorn.org/feeds/all.atom.xml" htmlUrl="http://licorn.org/"/>
+        <outline type="rss" text="Michael Paquier" title="Michael Paquier" xmlUrl="http://michael.otacoo.com/feed/" htmlUrl="http://michael.otacoo.com"/>
+        <outline type="rss" text="zoupic - le propre de l'Om" title="zoupic - le propre de l'Om" xmlUrl="http://www.zoupic.com/feed" htmlUrl="http://www.zoupic.com"/>
+    </body>
+</opml>
