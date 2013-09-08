@@ -22,7 +22,6 @@ from django.contrib import messages
 from django.shortcuts import render
 from django.template import add_to_builtins
 #from django.views.generic import ListView
-from django.views.decorators.cache import never_cache
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
@@ -36,15 +35,14 @@ from sparks.django.utils import HttpResponseTemporaryServerError
 from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Read
+from .models.reldb import HelpContent
 
 from .gr_import import GoogleReaderImport
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
 
-# Avoid the very repetitive:
-#       {% load ember js compressed i18n base_utils %}
-# in the Ember application templates.
+# Avoid repetitive {% load … %} in templates.
 add_to_builtins('django.templatetags.i18n')
 add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
@@ -56,29 +54,19 @@ if settings.TEMPLATE_DEBUG:
     add_to_builtins('template_debug.templatetags.debug_tags')
 
 
-@never_cache
 def home(request):
     """ root of the application. """
 
     home_style = request.user.mongo.preferences.home.style
 
-    if home_style and home_style != 'T1':
+    if home_style and home_style == 'T1':
         return HttpResponseRedirect(reverse(u'read'))
 
-    has_google = request.user.social_auth.filter(
-        provider='google-oauth2').count() > 0
-
-    social_count = request.user.social_auth.all().count()
-
     return render(request, 'home.html', {
-        'MAINTENANCE_MODE': settings.MAINTENANCE_MODE,
-        'has_google': has_google,
-        'social_count': social_count,
         'gr_import': GoogleReaderImport(request.user.id),
     })
 
 
-@never_cache
 def read_with_endless_pagination(request, **kwargs):
 
     # Computing tenths_counter here is much efficient than doing:
@@ -120,7 +108,6 @@ def read_with_endless_pagination(request, **kwargs):
     return render(request, template, context)
 
 
-@never_cache
 def set_preference(request, base, sub, value):
 
     prefs = request.user.mongo.preferences
@@ -150,7 +137,6 @@ def set_preference(request, base, sub, value):
                                 reverse('home')))
 
 
-@never_cache
 def toggle(request, klass, id, key):
 
     try:
@@ -174,7 +160,6 @@ def toggle(request, klass, id, key):
                                     reverse('home')))
 
 
-@never_cache
 def profile(request):
 
     if request.POST:
@@ -185,13 +170,14 @@ def profile(request):
     else:
         form = UserProfileEditForm(instance=request.user)
 
-    context = {'form': form}
-    return render(request, 'profile.html', context)
+    return render(request, 'profile.html', {'form': form})
 
 
 def help(request):
 
-    return render(request, u'help.html')
+    help_sections = HelpContent.objects.all()
+
+    return render(request, u'help.html', {'help_sections': help_sections})
 
 
 def register(request):
@@ -327,7 +313,6 @@ def google_reader_import_stop(request, user_id):
     return HttpResponseRedirect(redirect_url)
 
 
-@never_cache
 def google_reader_import_status(request):
     """ An HTML snippet view. """
 

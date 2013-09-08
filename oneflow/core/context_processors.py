@@ -17,3 +17,13 @@ def mongodb_user(request):
         u'wizards': request.user.mongo.preferences.wizards,
     }
 
+
+def social_things(request):
+
+    dsa = request.user.social_auth
+
+    return {
+        'has_google': dsa.filter(
+            provider='google-oauth2').count() > 0,
+        'social_count': dsa.all().count()
+    }

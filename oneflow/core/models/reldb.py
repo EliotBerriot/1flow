@@ -1,14 +1,17 @@
 # -*- coding: utf-8 -*-
 
 import ast
+import uuid
 import redis
 
 from jsonfield import JSONField
+from transmeta import TransMeta
 
 from django.db import models
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
+from django.utils.text import slugify
 
 #from django.db.models import Q
 #from django.db.models.aggregates import Count
@@ -149,7 +152,7 @@ class Feedback(models.Model):
         if not REDIS.sadd(feedback_list, user.id):
             raise ValueError('Duplicate feedback for '
                              'user {0} on {1} #{2}'.format(
-                             user, self.__class__.__name__, self.id))
+                                 user, self.__class__.__name__, self.id))
 
         pipe = REDIS.pipeline()
 
@@ -255,3 +258,33 @@ class Comment(Feedback, Hierarchy):
 
     user = models.ForeignKey(DjangoUser)
     grow = models.ForeignKey(Grow)
+
+
+class HelpContent(models.Model):
+    __metaclass__ = TransMeta
+
+    name    = models.CharField(_(u'Help section name'),
+                               max_length=128, unique=True,
+                               help_text=_(u'Any text. Will be the title '
+                                           u'of the help section.'))
+    ordering = models.IntegerField(_(u'Ordering'), help_text=_(u'An integer '
+                                   u'that will be used to order help sections '
+                                   u'on the help page.'), default=0)
+    content = models.TextField(_(u'Help section content'),
+                               help_text=_(u'Any text. Entered as Markdown.'))
+
+    def __unicode__(self):
+        return _(u'{field_name}: {truncated_field_value}').format(
+            field_name=self.name, truncated_field_value=self.content[:30]
+            + (self.content[30:] and u'…'))
+
+    @property
+    def slug(self):
+        return slugify(self.name) or uuid.uuid4().hex
+
+    class Meta:
+        app_label = 'core'
+        ordering = ['ordering', 'id']
+        translate = ('content', )
+        verbose_name = _(u'Help section')
+        verbose_name_plural = _(u'Help contents')

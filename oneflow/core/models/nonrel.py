@@ -227,7 +227,7 @@ class DocumentHelperMixin(object):
             # task name in the current module. OK, not *that* big deal.
             globals()[self.__class__.__name__.lower()
                       + '_replace_duplicate_everywhere'].delay(self.id,
-                                                               duplicate)
+                                                               duplicate.id)
 
         except KeyError:
             LOGGER.warning(u'Object %s does not have a '
@@ -596,10 +596,11 @@ def tag_post_create_task(tag_id, *args, **kwargs):
 
 
 @task(name='Tag.replace_duplicate_everywhere')
-def tag_replace_duplicate_everywhere(tag_id, *args, **kwargs):
+def tag_replace_duplicate_everywhere(tag_id, dupe_id, *args, **kwargs):
 
-    tag = Tag.objects.get(id=tag_id)
-    return tag.replace_duplicate_everywhere(*args, **kwargs)
+    tag  = Tag.objects.get(id=tag_id)
+    dupe = Tag.objects.get(id=dupe_id)
+    return tag.replace_duplicate_everywhere(dupe, *args, **kwargs)
 
 
 class Tag(Document, DocumentHelperMixin):
@@ -684,11 +685,6 @@ class Tag(Document, DocumentHelperMixin):
         #
         # TODO: update search engine indexes…
         #
-
-        # ALL celery task methods need to reload the instance in case
-        # we added new attributes before the object was pickled to a task.
-        self.safe_reload()
-        duplicate.safe_reload()
 
         for article in Article.objects(tags=duplicate).no_cache():
             for read in article.reads:
@@ -1710,10 +1706,11 @@ def article_postprocess_original_data(article_id, *args, **kwargs):
 
 
 @task(name='Article.replace_duplicate_everywhere')
-def article_replace_duplicate_everywhere(article_id, *args, **kwargs):
+def article_replace_duplicate_everywhere(article_id, dupe_id, *args, **kwargs):
 
     article = Article.objects.get(id=article_id)
-    return article.replace_duplicate_everywhere(*args, **kwargs)
+    dupe    = Article.objects.get(id=dupe_id)
+    return article.replace_duplicate_everywhere(dupe, *args, **kwargs)
 
 
 @task(name='Article.find_image', queue='fetch', default_retry_delay=3600)
@@ -2267,11 +2264,6 @@ class Article(Document, DocumentHelperMixin):
             redirect/modify all reads and feeds links to me, keeping all
             attributes as they are.
         """
-
-        # ALL celery task methods need to reload the instance in case
-        # we added new attributes before the object was pickled to a task.
-        self.safe_reload()
-        duplicate.safe_reload()
 
         need_reload = False
 

@@ -1,7 +1,7 @@
 .login-bg {
-	background: url("../../img/bgs/landscape.jpg") no-repeat center center fixed;
-	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/bgs/landscape.jpg', sizingMethod='scale');
-	-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/bgs/landscape.jpg', sizingMethod='scale')";
+	background: url("/static/img/detail-admin/bgs/landscape.jpg") no-repeat center center fixed;
+	filter: progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/detail-admin/bgs/landscape.jpg', sizingMethod='scale');
+	-ms-filter: "progid:DXImageTransform.Microsoft.AlphaImageLoader(src='../img/detail-admin/bgs/landscape.jpg', sizingMethod='scale')";
 	-webkit-background-size: cover;
 	-moz-background-size: cover;
 	-o-background-size: cover;
@@ -129,7 +129,7 @@
 	border-radius: 0px 10px 10px 0px;
 	padding: 10px 10px 0px 10px;
 	z-index: 999;
-	
+
 	.bgs .bg {
 		text-align: center;
 		margin-bottom: 13px;

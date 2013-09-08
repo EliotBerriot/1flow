@@ -1,6 +1,6 @@
 
 {% url 'help' as help_url %}
-{% captureas chat_fake_url %}chat-fake-url{% endcaptureas %}
+{% captureas chat_fake_url %}#chat-fake-url{% endcaptureas %}
 
 <div id="welcome-beta">
     <div class="row-fluid">
@@ -17,7 +17,7 @@ We hope to bring the best possible experience in these domains. Please take time
 
 While you're here, keep in mind that we are a small team and a young project. As such, some things will probably feel unpolished to you. In the meantime, we fix problems very quickly. 1flow gets better everyday. Sometimes even faster, when our developer went kitesurfing the day before.
 
-When you need help, there is the [help button]({{ help_url }} "Go to help") (you already guessed it, didn't you?). You can reach us via the [feedback chat](#{{ chat_fake_url }}) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.
+When you need help, there is the [help button]({{ help_url }} "Go to help") (you already guessed it, didn't you?). You can reach us via the [feedback chat]({{ chat_fake_url }}) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.
 
 We hope you'll enjoy 1flow as much as we enjoy building it.
 
@@ -34,11 +34,10 @@ Cheers,
             <div class="row-fluid">
                 {% if mongodb_user.has_content %}
                     <div class="span12">
-                        <button class="btn-flat btn-block btn-flat.info preference"
-                            data-toggle="button"
-                            data-preference=""
+                        <a class="btn-flat btn-block btn-flat.info"
+                            href="{% url 'read' %}"
                             title=""><i class="icon-bolt">
-                        </i> {% trans "Bring me to my news<br />and don't show this again!" %}</button>
+                        </i> {% trans "Bring me to my news<br />and don't show this again!" %}</a>
                     </div>
 
                 {% endif %}
@@ -51,11 +50,10 @@ Cheers,
 
             <div class="row-fluid">
                 <div class="span12 {% if not mongodb_user.has_content %}offset6{% endif %}">
-                    <button class="btn-flat btn-block btn-flat.success preference"
-                            data-toggle="button"
-                            data-preference=""
+                    <a class="btn-flat btn-block btn-flat.success"
+                        href="#"
                             title=""><i class="icon-plus">
-                        </i> {% trans "Start adding some sources" %}</button>
+                        </i> {% trans "Start adding some sources" %}</a>
                 </div>
             </div>
         </div>

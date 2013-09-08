@@ -1,14 +1,16 @@
 # -*- coding: utf-8 -*-
 
 import csv
+import logging
 
 from django.conf import settings
 from django.http import HttpResponse
 from django.template.defaultfilters import slugify
 from django.contrib.admin.util import flatten_fieldsets
 from django.contrib.auth.admin import UserAdmin
-from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import User as DjangoUser
+from django.utils.translation import ugettext_lazy as _
+from django.utils.datastructures import SortedDict
 
 
 from django.contrib import admin as django_admin
@@ -16,8 +18,10 @@ import mongoadmin as admin
 
 from .models import EmailContent, User
 
-
 from sparks.django.admin import languages, truncate_field
+
+
+LOGGER = logging.getLogger(__name__)
 
 
 # •••••••••••••••••••••••••••••••••••••••••••••••• Helpers and abstract classes
@@ -47,31 +51,44 @@ class NearlyReadOnlyAdmin(django_admin.ModelAdmin):
 class CSVAdminMixin(django_admin.ModelAdmin):
     """
     Adds a CSV export action to an admin view.
-    cf. http://djangosnippets.org/snippets/2908/
+    Modified/updated version of http://djangosnippets.org/snippets/2908/
+
+    http://stackoverflow.com/a/16198394/654755 could be a future cool thing
+    to implement, to avoid selecting everyone before exporting.
     """
 
     # This is the maximum number of records that will be written.
     # Exporting massive numbers of records should be done asynchronously.
-    csv_record_limit = 10000
+    # Excel is capped @ 65535 + 1 header line.
+    csv_record_limit = 65535
     extra_csv_fields = ()
 
     def get_actions(self, request):
-        actions = self.actions if hasattr(self, 'actions') else []
+        actions = super(CSVAdminMixin, self).get_actions(request)
+
+        if not actions:
+            actions = SortedDict()
+
+        if hasattr(self, 'actions'):
+
+            if self.actions:
+                # sometimes, for a unknown reason, self.actions is []
+                actions.update(self.actions)
 
         if request.user.is_superuser:
-            actions.append('csv_export')
-
-        super_actions = super(CSVAdminMixin, self).get_actions(request)
-
-        if super_actions:
-            actions.extend(super_actions)
+            actions['csv_export'] = (self.csv_export, 'csv_export',
+                                     self.csv_export.short_description)
 
         return actions
 
     def get_extra_csv_fields(self, request):
         return self.extra_csv_fields
 
-    def csv_export(self, request, qs=None, *args, **kwargs):
+    # NOTE: admin actions are assumed to be normal functions by Django,
+    # not methods. They receive the ModelAdmin instance as first argument.
+    # Thus, we have 2 self arguments… Awkward. I tried to use @staticmethod
+    # without success: the `short_description` cannot be attached to it.
+    def csv_export(self, self_again, request, queryset, *args, **kwargs):
         response = HttpResponse(mimetype='text/csv')
 
         response['Content-Disposition'] = "attachment; filename={}.csv".format(
@@ -108,7 +125,7 @@ class CSVAdminMixin(django_admin.ModelAdmin):
         writer.writerow(header_data)
 
         # Write records.
-        for row in qs[:self.csv_record_limit]:
+        for row in queryset[:self.csv_record_limit]:
             data = {}
             for name in headers:
                 if hasattr(row, name):

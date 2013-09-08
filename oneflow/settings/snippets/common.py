@@ -185,7 +185,7 @@ PIPELINE_CSS = {
 
     'core-bootstrap-detail': {
         'source_filenames': (
-            'bootstrap-overrides.css',
+            'sass/detail-admin/bootstrap-overrides.scss',
             'sass/styles-core-bootstrap-detail.scss',
         ),
         'output_filename': 'css/core-details.css',
@@ -380,9 +380,11 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     # `base` processors
     'oneflow.base.context_processors.oneflow_version',
     'oneflow.base.context_processors.django_settings',
+    'oneflow.base.context_processors.maintenance_mode',
 
     # `core` processors
     'oneflow.core.context_processors.mongodb_user',
+    'oneflow.core.context_processors.social_things',
 )
 
 

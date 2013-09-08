@@ -6,14 +6,20 @@ from humanize.i18n import django_language
 
 from constance import config
 
+from django.conf import settings
+
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
 from .models.nonrel import Tag, Feed
+from .models.reldb import HelpContent
 
+from django.contrib import admin as django_admin
 import mongoadmin as admin
+
+from sparks.django.admin import languages, truncate_field
 
 from ..base.admin import CSVAdminMixin
 from ..base.utils.dateutils import now, naturaldelta, naturaltime
@@ -204,7 +210,7 @@ class TagAdmin(admin.DocumentAdmin):
         if obj.parents:
             return ', '.join(u'<a href="/admin/models/tag/{0}" '
                              u'target="_blank">{1}</a>'.format(
-                             parent.id, parent.name)
+                                 parent.id, parent.name)
                              for parent in obj.parents)
 
         return u'—'
@@ -217,7 +223,7 @@ class TagAdmin(admin.DocumentAdmin):
         if obj.children:
             return ', '.join(u'<a href="/admin/models/tag/{0}" '
                              u'target="_blank">{1}</a>'.format(
-                             child.id, child.name)
+                                 child.id, child.name)
                              for child in obj.children)
 
         return u'—'
@@ -268,8 +274,9 @@ class FeedAdmin(admin.DocumentAdmin):
 
         return (u'<a href="{0}" target="_blank" {2}>RSS</a> '
                 u'<a href="{1}" target="_blank" {1}>www</a>'.format(
-                obj.url, obj.site_url, u'style="text-decoration: line-through;"'
-                if obj.closed else ''))
+                    obj.url, obj.site_url,
+                    u'style="text-decoration: line-through;"'
+                    if obj.closed else ''))
 
     url_display.short_description = _(u'URLs')
     url_display.allow_tags = True
@@ -287,9 +294,9 @@ class FeedAdmin(admin.DocumentAdmin):
                 return _(u'<span title="Last 3 errors:\n{0}" '
                          u'style="cursor: pointer">'
                          u'{1} error(s)</span>').format(u'\n'.join(
-                             _(u'%s: %s') % (naturaltime(
-                                 dateutil.parser.parse(y)), x)
-                             for x, y in last3), len(obj.errors))
+                                _(u'%s: %s') % (naturaltime(
+                                    dateutil.parser.parse(y)), x)
+                                for x, y in last3), len(obj.errors))
 
         return u'—'
 
@@ -377,8 +384,9 @@ class FeedAdmin(admin.DocumentAdmin):
                             kwargs={'feed_id': obj.id}), _(u'reopen')
                             if obj.closed else _(u'close'),
                             u'Closed on {0} because of: {1}'.format(
-                            obj.date_closed, obj.closed_reason) if obj.closed
-                            else _(u'The feed is open'))
+                                obj.date_closed,
+                                obj.closed_reason) if obj.closed
+                                else _(u'The feed is open'))
 
     closed_display.short_description = _(u'Closed?')
     closed_display.allow_tags = True
@@ -386,3 +394,23 @@ class FeedAdmin(admin.DocumentAdmin):
 
 
 admin.site.register(Feed, FeedAdmin)
+
+if settings.FULL_ADMIN:
+    content_fields_names = tuple(('content_' + code)
+                                 for code, lang in languages)
+    content_fields_displays = tuple((field + '_display')
+                                    for field in content_fields_names)
+
+    class HelpContentAdmin(django_admin.ModelAdmin):
+        list_display_links = ('ordering', 'name', )
+        list_display       = ('ordering', 'name', ) + content_fields_displays
+        search_fields      = ('name', ) + content_fields_names
+        ordering           = ('ordering', 'name', )
+        save_as            = True
+
+    for attr, attr_name in zip(content_fields_names,
+                               content_fields_displays):
+        setattr(HelpContentAdmin, attr_name,
+                truncate_field(HelpContent, attr))
+
+    admin.site.register(HelpContent, HelpContentAdmin)
