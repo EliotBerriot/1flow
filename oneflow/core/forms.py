@@ -2,9 +2,13 @@
 
 import logging
 
+from constance import config
+
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
+
+from sparks.django.forms import RestrictedFileField
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -64,4 +68,8 @@ class UserProfileEditForm(forms.ModelForm):
 
     class Meta:
         model  = User
-        fields = ['first_name', 'last_name',]
+        fields = ['first_name', 'last_name', ]
+
+
+class OpmlImportForm(forms.Form):
+    opml_file = RestrictedFileField(max_upload_size=config.IMPORT_MAX_FILE_SIZE)
