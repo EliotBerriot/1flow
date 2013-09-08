@@ -13,6 +13,13 @@ CONSTANCE_CONFIG = {
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
 
+    'IMPORT_MAX_FILE_SIZE': (2097152, ugettext(u'Maximum file size of an '
+                             u'OPML import file. Will be stored in database '
+                             u'during the import, and deleted only if '
+                             u'succeeded, so do not set too high.')),
+
+    # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
+
     'READ_INFINITE_AUTOSCROLL_ENABLED': (True, ugettext(u'Make the read view '
                                          u'(either list or tiles) '
                                          u'automatically load new content '
