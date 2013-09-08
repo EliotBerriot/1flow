@@ -14,3 +14,9 @@ def django_settings(request):
     return {
         u'settings': settings,
     }
+
+
+def maintenance_mode(request):
+    return {
+        'MAINTENANCE_MODE': settings.MAINTENANCE_MODE,
+    }
