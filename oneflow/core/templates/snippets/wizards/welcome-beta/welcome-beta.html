@@ -31,25 +31,24 @@ Cheers,
         </div>
 
         <div id="welcome-beta-page-2" class="span2 welcome-next hide">
-            <div class="row-fluid">
-                {% if mongodb_user.has_content %}
+
+            {% if mongodb_user.has_content %}
+                <div class="row-fluid">
                     <div class="span12">
                         <a class="btn-flat btn-block btn-flat.info"
                             href="{% url 'read' %}"
                             title=""><i class="icon-bolt">
                         </i> {% trans "Bring me to my news<br />and don't show this again!" %}</a>
                     </div>
-
-                {% endif %}
-
-            </div>
+                </div>
+            {% endif %}
 
             <div class="row-fluid">
                 <div class="spacer20"></div>
             </div>
 
             <div class="row-fluid">
-                <div class="span12 {% if not mongodb_user.has_content %}offset6{% endif %}">
+                <div class="span12">
                     <a class="btn-flat btn-block btn-flat.success"
                         href="#"
                             title=""><i class="icon-plus">
