@@ -1,0 +1,27 @@
+{% extends 'home.html' %}
+
+{% block title %}{% if status %}{% trans 'Import status' %}{% else %}{% trans 'Import' %}{% endif %}{% endblock title %}
+
+{% block application_content %}
+
+    <div class="row-fluid">
+        <div class="span8 offset2">
+
+        <div class="spacer50"></div>
+
+        {% with big_spacer="spacer50" small_spacer="spacer25" %}
+
+            {% if status %}
+                {% include 'snippets/import/status.html' %}
+
+            {% else %}
+                {% include 'snippets/import/import.html' %}
+
+            {% endif %}
+
+        {% endwith %}
+
+        </div>
+    </div>
+
+{% endblock application_content %}

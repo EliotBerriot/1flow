@@ -1,0 +1,22 @@
+{% load widget_tweaks %}
+
+<h1>{% trans "OPML import" %}</h1>
+
+<div class="{% firstof small_spacer "spacer10" %}"></div>
+
+<h3>{% trans "Please choose an OPML file to upload. Any format (v1/v2) should work, whatever the sofware it comes from (Google Reader, Feedly…)." %}</h3>
+
+<div class="{% firstof big_spacer "spacer25" %}"></div>
+
+<form method="POST">
+
+  {% render_field form.opml_file|attr:'autofocus' class+="input-xlarge custom" %}
+
+<div class="form-actions">
+    <div class="pull-right">
+        <input class="btn-flat btn-large" type="submit" value="{% trans "Continue" %}">
+    </div>
+</div>
+
+</form>
+
