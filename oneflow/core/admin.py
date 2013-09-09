@@ -200,7 +200,7 @@ class TagAdmin(admin.DocumentAdmin):
     filter_horizontal = ('parents', 'children', )
 
     def change_view(self, request, object_id, extra_context=None):
-        self.exclude = ('origin',)  # 'parents', 'children', )
+        self.exclude = ('origin', )  # 'parents', 'children', )
 
         return super(TagAdmin, self).change_view(request, object_id,
                                                  extra_context=None)
@@ -208,10 +208,10 @@ class TagAdmin(admin.DocumentAdmin):
     def parents_display(self, obj):
 
         if obj.parents:
-            return ', '.join(u'<a href="/admin/models/tag/{0}" '
-                             u'target="_blank">{1}</a>'.format(
-                                 parent.id, parent.name)
-                             for parent in obj.parents)
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  parent.id, parent.name)
+                              for parent in obj.parents)
 
         return u'—'
 
@@ -221,10 +221,10 @@ class TagAdmin(admin.DocumentAdmin):
     def children_display(self, obj):
 
         if obj.children:
-            return ', '.join(u'<a href="/admin/models/tag/{0}" '
-                             u'target="_blank">{1}</a>'.format(
-                                 child.id, child.name)
-                             for child in obj.children)
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  child.id, child.name)
+                              for child in obj.children)
 
         return u'—'
 
