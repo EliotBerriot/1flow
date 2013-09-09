@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
-from .models.nonrel import Tag, Feed, Article
+from .models.nonrel import Tag, Feed, Article, CONTENT_TYPE_MARKDOWN
 from .models.reldb import HelpContent
 
 from django.contrib import admin as django_admin
@@ -195,6 +195,7 @@ class TagAdmin(admin.DocumentAdmin):
     list_display = ('id', 'name', 'language', 'duplicate_of',
                     'parents_display', 'children_display')
     list_display_links = ('id', 'name', )
+    #list_editable = ('language', )
     search_fields = ('name', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
     filter_horizontal = ('parents', 'children', )
@@ -237,13 +238,18 @@ admin.site.register(Tag, TagAdmin)
 
 class ArticleAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'title', 'language', 'duplicate_of_display',
-                    'orphaned',
+    list_display = ('id', 'title', 'language', 'url_absolute',
                     'date_published', 'tags_display',
-                    'content_error_display', 'url_error_display', )
+                    'orphaned', 'duplicate_of_display',
+                    'content_type_display',
+                    'content_error_display',
+                    'url_error_display', )
+    #list_editable = ('language', )
     list_display_links = ('id', 'title', )
     search_fields = ('title', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
+    ordering = ('-date_published', '-date_added', )
+    #date_hierarchy = ('date_published', )
 
     def tags_display(self, obj):
 
@@ -270,6 +276,17 @@ class ArticleAdmin(admin.DocumentAdmin):
     duplicate_of_display.allow_tags        = True
     duplicate_of_display.short_description = _(u'Duplicate of')
     duplicate_of_display.admin_order_field = 'duplicate_of'
+
+    def content_type_display(self, obj):
+
+        if obj.content_type:
+            return u'MD' if obj.content_type == CONTENT_TYPE_MARKDOWN else u'…'
+
+        return u''
+
+    content_type_display.allow_tags        = True
+    content_type_display.short_description = _(u'Content')
+    content_type_display.admin_order_field = 'content_type'
 
     def content_error_display(self, obj):
 
