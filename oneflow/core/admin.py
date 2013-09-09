@@ -237,22 +237,65 @@ admin.site.register(Tag, TagAdmin)
 
 class ArticleAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'title', 'language', 'duplicate_of',
-                    'date_published', 'tags_display')
+    list_display = ('id', 'title', 'language', 'duplicate_of_display',
+                    'orphaned',
+                    'date_published', 'tags_display',
+                    'content_error_display', 'url_error_display', )
     list_display_links = ('id', 'title', )
     search_fields = ('title', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
 
     def tags_display(self, obj):
 
-        return u', '.join(u'<a href="/admin/models/tag/{0}" '
-                          u'target="_blank">{1}</a>'.format(
-                              tag.id, tag.name)
-                          for tag in obj.tags)
+        try:
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  tag.id, tag.name)
+                              for tag in obj.tags)
+        except Exception, e:
+            return unicode(e)
 
     tags_display.allow_tags        = True
     tags_display.short_description = _(u'Tags')
     tags_display.admin_order_field = 'tags'
+
+    def duplicate_of_display(self, obj):
+
+        if obj.duplicate_of:
+            return (u'<a href="/admin/models/article/{0}" '
+                    u'style="cursor: pointer; font-size: 300%;" '
+                    u'target="_blank">∃</a>').format(obj.duplicate_of.id)
+
+        return u''
+    duplicate_of_display.allow_tags        = True
+    duplicate_of_display.short_description = _(u'Duplicate of')
+    duplicate_of_display.admin_order_field = 'duplicate_of'
+
+    def content_error_display(self, obj):
+
+        if obj.content_error:
+            return _(u'<span title="{0}" '
+                     u'style="cursor: pointer; font-size: 300%">'
+                     u'•••</span>').format(obj.content_error)
+
+        return u''
+
+    content_error_display.allow_tags        = True
+    content_error_display.short_description = _(u'Fetch err.')
+    content_error_display.admin_order_field = 'content_error'
+
+    def url_error_display(self, obj):
+
+        if obj.url_error:
+            return _(u'<span title="{0}" '
+                     u'style="cursor: pointer; font-size: 300%;">'
+                     u'•••</span>').format(obj.url_error)
+
+        return u''
+
+    url_error_display.allow_tags        = True
+    url_error_display.short_description = _(u'URL err.')
+    url_error_display.admin_order_field = 'url_error'
 
 
 admin.site.register(Article, ArticleAdmin)
