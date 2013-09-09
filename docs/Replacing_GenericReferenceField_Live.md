@@ -99,12 +99,11 @@ Stopping all workers and letting the queues grow is another option, but I think 
             },
             "$isolated" : True
         }).no_cache()
-    aotids.count()
 
     # Do the replacement, live. Try to avoid hitting the database, but
     # this *will* hit it a lot, whatever you do. In developement, 50k
     # articles total, 11k to migrate: ~40 seconds for each operation.
-    with benchmark():
+    with benchmark("migrate %s Article.tags" % aotids.count()):
         for old_article in aotids:
             old_article.update(set__new_tags=old_article.tags, set__tags=[])
             Article.objects.get(id=old_article.id).update(set__tags=old_article.new_tags)
