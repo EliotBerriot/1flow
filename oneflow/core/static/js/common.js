@@ -1,3 +1,6 @@
+// warning: don't "use strict"; here, it will break things.
+// I need to learn to write good JS first. Sorry for that.
+
 var page_cleaner_interval;
 
 function find_start(parent, klass){
