@@ -64,6 +64,10 @@ Cheers,
         $('#welcome-beta a[href^="http"]').attr('target','_blank');
         $('#welcome-beta-page-1 img').parent().addClass('float-right');
 
+        {% comment %}
+
+            DISABLED UNTIL IMPLEMENTED.
+
         {% if wizards.welcome_beta_buttons %}
             $('#welcome-beta-page-2').delay(1000).fadeIn();
 
@@ -71,6 +75,8 @@ Cheers,
             $('#welcome-beta-page-2').delay(15000).fadeIn();
 
         {% endif %}
+
+        {% endcomment %}
 
     });
 </script>
