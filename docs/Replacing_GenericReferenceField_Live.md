@@ -98,7 +98,7 @@ Stopping all workers and letting the queues grow is another option, but I think 
                 }
             },
             "$isolated" : True
-        })
+        }).no_cache()
     aotids.count()
 
     # Do the replacement, live. Try to avoid hitting the database, but
