@@ -142,5 +142,5 @@ function setup_preferences_actions(parent) {
 
     find_start(parent, 'preference').each(setup_preference);
 
-    console.debug('setup_preferences_actions() finished.');
+    //console.debug('setup_preferences_actions() finished.');
 }

@@ -20,6 +20,9 @@ def mongodb_user(request):
 
 def social_things(request):
 
+    if request.user.is_anonymous():
+        return {}
+
     dsa = request.user.social_auth
 
     return {

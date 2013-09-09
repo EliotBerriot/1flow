@@ -175,7 +175,7 @@ def profile(request):
 
 def help(request):
 
-    help_sections = HelpContent.objects.all()
+    help_sections = HelpContent.objects.filter(active=True)
 
     return render(request, u'help.html', {'help_sections': help_sections})
 

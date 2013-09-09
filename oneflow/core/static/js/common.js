@@ -12,8 +12,8 @@ function find_start(parent, klass){
         start = parent.find('.' + klass);
     }
 
-    console.debug('start for ' + klass + ' in ' + parent + ':');
-    console.debug(start);
+    //console.debug('start for ' + klass + ' in ' + parent + ':');
+    //console.debug(start);
 
     return start;
 }
@@ -162,7 +162,7 @@ function page_cleaner() {
 
     } catch (err) {
         try {
-            console.log('page_cleaner: ' + err);
+            //console.debug('page_cleaner: ' + err);
 
         } catch (err) {
             // nothing. Silently ignored.

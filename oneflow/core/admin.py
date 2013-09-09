@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
-from .models.nonrel import Tag, Feed
+from .models.nonrel import Tag, Feed, Article, CONTENT_TYPE_MARKDOWN
 from .models.reldb import HelpContent
 
 from django.contrib import admin as django_admin
@@ -195,12 +195,13 @@ class TagAdmin(admin.DocumentAdmin):
     list_display = ('id', 'name', 'language', 'duplicate_of',
                     'parents_display', 'children_display')
     list_display_links = ('id', 'name', )
+    #list_editable = ('language', )
     search_fields = ('name', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
     filter_horizontal = ('parents', 'children', )
 
     def change_view(self, request, object_id, extra_context=None):
-        self.exclude = ('origin',)  # 'parents', 'children', )
+        self.exclude = ('origin', )  # 'parents', 'children', )
 
         return super(TagAdmin, self).change_view(request, object_id,
                                                  extra_context=None)
@@ -208,10 +209,10 @@ class TagAdmin(admin.DocumentAdmin):
     def parents_display(self, obj):
 
         if obj.parents:
-            return ', '.join(u'<a href="/admin/models/tag/{0}" '
-                             u'target="_blank">{1}</a>'.format(
-                                 parent.id, parent.name)
-                             for parent in obj.parents)
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  parent.id, parent.name)
+                              for parent in obj.parents)
 
         return u'—'
 
@@ -221,10 +222,10 @@ class TagAdmin(admin.DocumentAdmin):
     def children_display(self, obj):
 
         if obj.children:
-            return ', '.join(u'<a href="/admin/models/tag/{0}" '
-                             u'target="_blank">{1}</a>'.format(
-                                 child.id, child.name)
-                             for child in obj.children)
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  child.id, child.name)
+                              for child in obj.children)
 
         return u'—'
 
@@ -233,6 +234,88 @@ class TagAdmin(admin.DocumentAdmin):
 
 
 admin.site.register(Tag, TagAdmin)
+
+
+class ArticleAdmin(admin.DocumentAdmin):
+
+    list_display = ('id', 'title', 'language', 'url_absolute',
+                    'date_published', 'tags_display',
+                    'orphaned', 'duplicate_of_display',
+                    'content_type_display',
+                    'content_error_display',
+                    'url_error_display', )
+    #list_editable = ('language', )
+    list_display_links = ('id', 'title', )
+    search_fields = ('title', 'slug', )
+    change_list_filter_template = "admin/filter_listing.html"
+    ordering = ('-date_published', '-date_added', )
+    #date_hierarchy = ('date_published', )
+
+    def tags_display(self, obj):
+
+        try:
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  tag.id, tag.name)
+                              for tag in obj.tags)
+        except Exception, e:
+            return unicode(e)
+
+    tags_display.allow_tags        = True
+    tags_display.short_description = _(u'Tags')
+    tags_display.admin_order_field = 'tags'
+
+    def duplicate_of_display(self, obj):
+
+        if obj.duplicate_of:
+            return (u'<a href="/admin/models/article/{0}" '
+                    u'style="cursor: pointer; font-size: 300%;" '
+                    u'target="_blank">∃</a>').format(obj.duplicate_of.id)
+
+        return u''
+    duplicate_of_display.allow_tags        = True
+    duplicate_of_display.short_description = _(u'Duplicate of')
+    duplicate_of_display.admin_order_field = 'duplicate_of'
+
+    def content_type_display(self, obj):
+
+        if obj.content_type:
+            return u'MD' if obj.content_type == CONTENT_TYPE_MARKDOWN else u'…'
+
+        return u''
+
+    content_type_display.allow_tags        = True
+    content_type_display.short_description = _(u'Content')
+    content_type_display.admin_order_field = 'content_type'
+
+    def content_error_display(self, obj):
+
+        if obj.content_error:
+            return _(u'<span title="{0}" '
+                     u'style="cursor: pointer; font-size: 300%">'
+                     u'•••</span>').format(obj.content_error)
+
+        return u''
+
+    content_error_display.allow_tags        = True
+    content_error_display.short_description = _(u'Fetch err.')
+    content_error_display.admin_order_field = 'content_error'
+
+    def url_error_display(self, obj):
+
+        if obj.url_error:
+            return _(u'<span title="{0}" '
+                     u'style="cursor: pointer; font-size: 300%;">'
+                     u'•••</span>').format(obj.url_error)
+
+        return u''
+
+    url_error_display.allow_tags        = True
+    url_error_display.short_description = _(u'URL err.')
+    url_error_display.admin_order_field = 'url_error'
+
+
+admin.site.register(Article, ArticleAdmin)
 
 
 class FeedAdmin(admin.DocumentAdmin):
@@ -402,8 +485,10 @@ if settings.FULL_ADMIN:
                                     for field in content_fields_names)
 
     class HelpContentAdmin(django_admin.ModelAdmin):
-        list_display_links = ('ordering', 'name', )
-        list_display       = ('ordering', 'name', ) + content_fields_displays
+        list_display_links = ('name', )
+        list_display       = ('name', 'ordering', 'active', ) \
+            + content_fields_displays
+        list_editable      = ('ordering', 'active', )
         search_fields      = ('name', ) + content_fields_names
         ordering           = ('ordering', 'name', )
         save_as            = True

@@ -270,6 +270,9 @@ class HelpContent(models.Model):
     ordering = models.IntegerField(_(u'Ordering'), help_text=_(u'An integer '
                                    u'that will be used to order help sections '
                                    u'on the help page.'), default=0)
+    active = models.BooleanField(default=True, help_text=_(u'is this help '
+                                 u'section currently displayed on the '
+                                 u'website?'))
     content = models.TextField(_(u'Help section content'),
                                help_text=_(u'Any text. Entered as Markdown.'))
 
