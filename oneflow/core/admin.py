@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
-from .models.nonrel import Tag, Feed
+from .models.nonrel import Tag, Feed, Article
 from .models.reldb import HelpContent
 
 from django.contrib import admin as django_admin
@@ -233,6 +233,29 @@ class TagAdmin(admin.DocumentAdmin):
 
 
 admin.site.register(Tag, TagAdmin)
+
+
+class ArticleAdmin(admin.DocumentAdmin):
+
+    list_display = ('id', 'title', 'language', 'duplicate_of',
+                    'date_published', 'tags_display')
+    list_display_links = ('id', 'title', )
+    search_fields = ('title', 'slug', )
+    change_list_filter_template = "admin/filter_listing.html"
+
+    def tags_display(self, obj):
+
+        return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                          u'target="_blank">{1}</a>'.format(
+                              tag.id, tag.name)
+                          for tag in obj.tags)
+
+    tags_display.allow_tags        = True
+    tags_display.short_description = _(u'Tags')
+    tags_display.admin_order_field = 'tags'
+
+
+admin.site.register(Article, ArticleAdmin)
 
 
 class FeedAdmin(admin.DocumentAdmin):
