@@ -12,13 +12,16 @@ DATABASES['default']['OPTIONS'] = {
 }
 
 MONGODB_NAME = os.environ.get('MONGODB_NAME')
-MONGODB_NAME_ARCHIVE = os.environ.get('MONGODB_NAME_ARCHIVE')
+MONGODB_HOST = os.environ.get('MONGODB_HOST')
 
-mongoengine.connect(MONGODB_NAME, host=os.environ.get('MONGODB_HOST'),
+MONGODB_NAME_ARCHIVE = os.environ.get('MONGODB_NAME_ARCHIVE')
+MONGODB_HOST_ARCHIVE = os.environ.get('MONGODB_HOST_ARCHIVE')
+
+mongoengine.connect(MONGODB_NAME, host=MONGODB_HOST,
                     tz_aware=USE_TZ)
 
 mongoengine.register_connection('archive', MONGODB_NAME_ARCHIVE,
-                                host=os.environ.get('MONGODB_HOST_ARCHIVE'),
+                                host=MONGODB_HOST_ARCHIVE,
                                 tz_aware=USE_TZ)
 
 REDIS_HOST = os.environ.get('REDIS_HOST', MAIN_SERVER)
