@@ -111,7 +111,9 @@ STATICFILES_FINDERS = (
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
 #PIPELINE_ENABLED = False
-#PIPELINE_DISABLE_WRAPPER = True
+
+# Until our own modules are ready to be wrapped, don't use this.
+PIPELINE_DISABLE_WRAPPER = True
 
 PIPELINE_COMPILERS = (
     'pipeline.compilers.less.LessCompiler',
