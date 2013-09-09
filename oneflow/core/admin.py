@@ -468,8 +468,10 @@ if settings.FULL_ADMIN:
                                     for field in content_fields_names)
 
     class HelpContentAdmin(django_admin.ModelAdmin):
-        list_display_links = ('ordering', 'name', )
-        list_display       = ('ordering', 'name', ) + content_fields_displays
+        list_display_links = ('name', )
+        list_display       = ('name', 'ordering', 'active', ) \
+            + content_fields_displays
+        list_editable      = ('ordering', 'active', )
         search_fields      = ('name', ) + content_fields_names
         ordering           = ('ordering', 'name', )
         save_as            = True
