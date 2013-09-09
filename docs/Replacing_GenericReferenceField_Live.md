@@ -83,10 +83,10 @@ Stopping all workers and letting the queues grow is another option, but I think 
     # the "old way" and will be used to migrate to a temporary field.
     class ArticlesOldTags(Document):
         tags = ListField(GenericReferenceField())
-        new_tags = ListField(ReferenceField('Tag'))
         meta = {
             'collection': 'article'
         }
+    problems = []
 
     # Find all articles with the "old" GenericReferenceField, via JS because
     # we cannot search via standard queries: either the new or the old classes
@@ -105,9 +105,22 @@ Stopping all workers and letting the queues grow is another option, but I think 
     # articles total, 11k to migrate: ~40 seconds for each operation.
     with benchmark("migrate %s Article.tags" % aotids.count()):
         for old_article in aotids:
-            old_article.update(set__new_tags=old_article.tags, set__tags=[])
-            Article.objects.get(id=old_article.id).update(set__tags=old_article.new_tags)
-            old_article.update(unset__new_tags=True)
+            try:
+                tags = old_article.tags
+                old_article.update(set__tags=[])
+                Article.objects.get(id=old_article.id).update(set__tags=tags)
+
+            except Exception, e:
+                problems.append((old_article.id, e))
 
     # Check everything is really done.
     ArticlesOldTags.objects(new_tags__exists=True).count()
+
+
+### Remaining problems
+
+Out of 530K+ articles, 66126 crashed with the same exception as in section #1.
+
+I ran this, directly in MongoDB, to clear them from their tags:
+
+    db.oneflow.article.update({"tags": {"$elemMatch" : {"_cls": "Tag"}}, "$isolated" : true}, {"$unset": {"tags": true}}, false, true)
