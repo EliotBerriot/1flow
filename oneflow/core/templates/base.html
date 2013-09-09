@@ -19,7 +19,9 @@
       <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
     <![endif]-->
 
-    {% django_js %}
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+    {% django_js jquery=false %}
 
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
