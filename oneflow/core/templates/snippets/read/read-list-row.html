@@ -16,6 +16,11 @@
 
       <div class="pull-right actions hover-muted">
 
+        {% if user.is_superuser %}
+          <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;" >
+            <i class="icon-cog"></i></a>
+        {% endif %}
+
         {% if read.is_read %}
           <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
               title="{% trans "mark as unread" %}" data-toggle="tooltip">
@@ -61,6 +66,39 @@
           {% if read.rating %}{% trans ", rated " %}{{ read.rating }}.{% endif %}
         </span>
       </p>
+
+      {% if user.is_superuser %}
+        <div class="hide admin-informations" id="admin-{{ read.id }}">
+          <table class='table table-hover table-stripped table-condensed'>
+            <tbody>
+              <tr>
+                <td>{% trans "Admin stuff" %}</td>
+                <td>{% trans "Read: " %}{{ read.id }}</td>
+                <td>{% trans "Article: " %}{{ article.id }}</td>
+                {% if article.feeds %}
+                    <td>{% trans "Feeds: " %}
+                      {% for feed in article.feeds %}
+                        <a href='/admin/models/feed/{{feed.id}}/'
+                          target='_blank'>{{feed.name}}</a>{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+                    </td>
+
+                {% else %}
+                  <td>{% trans "no feeds" %}</td>
+
+                {% endif %}
+
+              </tr>
+              <!--
+              <tr>
+                <td></td>
+                <td></td>
+              </tr>
+            -->
+            </tbody>
+          </table>
+        </div>
+      {% endif %}
 
     </div>
   {% endwith %}
