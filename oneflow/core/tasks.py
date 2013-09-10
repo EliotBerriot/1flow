@@ -763,6 +763,9 @@ def archive_articles(limit=None):
 
     if counts['duplicates']:
         current = 0
+        LOGGER.info(u'Archiving of %s duplicate article(s) started.',
+                    counts['duplicates'])
+
         with benchmark('Archiving of %s duplicate article(s)'
                        % counts['duplicates']):
             for article in duplicates:
@@ -774,6 +777,8 @@ def archive_articles(limit=None):
 
     if counts['orphaned']:
         current = 0
+        LOGGER.info(u'Archiving of %s orphaned article(s) started.',
+                    counts['orphaned'])
 
         with benchmark('Archiving of %s orphaned article(s)'
                        % counts['orphaned']):
