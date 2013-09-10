@@ -1887,6 +1887,13 @@ class Article(Document, DocumentHelperMixin):
                 self.tags = [t for t in self.tags if t is not None]
                 e.errors.pop('tags')
 
+            comments_error = e.errors.get('comments_feed', None)
+
+            if comments_error and self.comments_feed == '':
+                # Oh please, don't bother me.
+                self.comments_feed = None
+                e.errors.pop('comments_feed')
+
             if e.errors:
                 raise e
 
