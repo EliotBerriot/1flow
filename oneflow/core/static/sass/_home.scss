@@ -234,6 +234,27 @@ header {
         }
     }
 
+    .no-content {
+        text-align: left;
+    }
+
+    .article-content {
+        padding: 20px 14.8936% 20px 7.445%;
+        text-align: justify;
+
+        p {
+            font-size: 150%;
+            line-height: 1.1em;
+            margin: 10px 0 20px;
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+    }
+
     p {
         /* cancel Bootstrap's media margin. */
         margin-bottom: 0;
@@ -255,6 +276,7 @@ header {
     .heading {
         line-height: 20px;
         font-size: 150%;
+        cursor: pointer;
     }
 
     .admin-informations {
@@ -276,6 +298,7 @@ header {
 
     .article-title {
         font-size: 14px;
+        cursor: pointer;
     }
 
     .muted {
