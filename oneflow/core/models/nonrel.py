@@ -2522,15 +2522,14 @@ class Article(Document, DocumentHelperMixin):
             return True
 
         if not self.content_type in (CONTENT_TYPE_MARKDOWN, ):
-            LOGGER.warning(u'Article %s has no content, cannot find image.',
-                           self)
+            LOGGER.warning(u'Article %s is not in Markdown format, '
+                           u'aborting image lookup.', self)
             return True
 
     def find_image(self, force=False, commit=True):
 
-        # In tasks, doing this is often useful, if
-        # the task waited a long time before running.
-        self.safe_reload()
+        LOGGER.warning(u'Article.find_image() needs love, disabled for now.')
+        return
 
         if self.find_image_must_abort(force=force, commit=commit):
             return
