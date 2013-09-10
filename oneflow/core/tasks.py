@@ -10,6 +10,7 @@ from constance import config
 from pymongo.errors import DuplicateKeyError
 from mongoengine.errors import OperationError, NotUniqueError, ValidationError
 from mongoengine.queryset import Q
+from mongoengine.context_managers import no_dereference
 
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
@@ -753,8 +754,9 @@ def archive_articles(limit=None):
     if limit is None:
         limit = config.ARTICLE_ARCHIVE_BATCH_SIZE
 
-    duplicates = Article.objects(duplicate_of__ne=None).limit(limit).no_cache()
-    orphaned   = Article.objects(orphaned=True).limit(limit).no_cache()
+    with no_dereference(Article) as ArticleOnly:
+        duplicates = ArticleOnly.objects(duplicate_of__ne=None).limit(limit).no_cache()
+        orphaned   = ArticleOnly.objects(orphaned=True).limit(limit).no_cache()
 
     counts['duplicates'] = duplicates.count()
     counts['orphaned']   = orphaned.count()
