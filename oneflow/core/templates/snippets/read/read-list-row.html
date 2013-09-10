@@ -74,7 +74,7 @@
               <tr>
                 <td>{% trans "Admin stuff" %}</td>
                 <td>{% trans "Read: " %}{{ read.id }}</td>
-                <td>{% trans "Article: " %}{{ article.id }}</td>
+                <td>{% trans "Article: " %}<a href="/admin/models/article/{{ article.id }}/">{{ article.id }}</a></td>
                 {% if article.feeds %}
                     <td>{% trans "Feeds: " %}
                       {% for feed in article.feeds %}
