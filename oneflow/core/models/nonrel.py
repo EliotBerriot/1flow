@@ -1832,7 +1832,12 @@ class Article(Document, DocumentHelperMixin):
                                   reverse_delete_rule=NULLIFY)
 
     meta = {
-        'indexes': ['content_type', 'content_error', 'url_error', ]
+        'indexes': [
+            'content_type',
+            'content_error',
+            'url_error',
+            'date_published',
+        ]
     }
 
     def __unicode__(self):
