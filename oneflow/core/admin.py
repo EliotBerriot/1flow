@@ -253,7 +253,7 @@ class ArticleAdmin(admin.DocumentAdmin):
 
     # Should really be 'raw_id_fields', but doesn't work on MongoEngine.
     exclude = ('tags', 'authors', 'publishers',
-               'source', 'duplicate_of', )
+               'source', 'duplicate_of', 'feeds', )
 
     def tags_display(self, obj):
 
