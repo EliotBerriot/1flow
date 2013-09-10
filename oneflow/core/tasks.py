@@ -649,6 +649,36 @@ def refresh_all_feeds(limit=None):
 @task(queue='high')
 def global_feeds_checker():
 
+    def pretty_print_feed(feed):
+
+        return (u'- %s,\n'
+                u'    - admin url: http://%s%s\n'
+                u'    - public url: %s\n'
+                u'    - %s\n'
+                u'    - reason: %s\n'
+                u'    - last error: %s') % (
+                feed,
+
+                settings.SITE_DOMAIN,
+
+                reverse('admin:%s_%s_change' % (
+                    feed._meta.get('app_label', 'models'),
+                    feed._meta.get('module_name', 'feed')),
+                    args=[feed.id]),
+
+                feed.url,
+
+                (u'closed on %s' % feed.date_closed)
+                    if feed.date_closed
+                    else u'(no closing date)',
+
+                feed.closed_reason or
+                u'none (or manually closed from the admin interface)',
+
+                feed.errors[0]
+                    if len(feed.errors)
+                    else u'(no error recorded)')
+
     dtnow        = now()
     limit_days   = config.FEED_CLOSED_WARN_LIMIT
     closed_limit = dtnow - timedelta(days=limit_days)
@@ -673,27 +703,8 @@ def global_feeds_checker():
                   _(u"\n\nHere is the list, dates (if any), and reasons "
                     u"(if any) of closing:\n\n{feed_list}\n\nYou can manually "
                     u"reopen any of them from the admin interface.\n\n").format(
-                        feed_list='\n\n'.join(
-                    u'- %s,\n'
-                    u'    - admin url: http://%s%s\n'
-                    u'    - public url: %s\n'
-                    u'    - %s\n'
-                    u'    - reason: %s\n'
-                    u'    - last error: %s' % (
-                      feed,
-                      settings.SITE_DOMAIN,
-                      reverse('admin:%s_%s_change' % (
-                          feed._meta.get('app_label', 'models'),
-                          feed._meta.get('module_name', 'feed')),
-                          args=[feed.id]),
-                      feed.url,
-                      (u'closed on %s' % feed.date_closed)
-                          if feed.date_closed else u'(no closing date)',
-                      feed.closed_reason or
-                          u'none (or manually closed from the admin interface)',
-                      feed.errors[0] if len(feed.errors)
-                          else u'(no error recorded)')
-                  for feed in feeds)))
+                          feed_list='\n\n'.join(pretty_print_feed(feed)
+                                                for feed in feeds)))
 
     start_time = pytime.time()
 
@@ -755,7 +766,8 @@ def archive_articles(limit=None):
         limit = config.ARTICLE_ARCHIVE_BATCH_SIZE
 
     with no_dereference(Article) as ArticleOnly:
-        duplicates = ArticleOnly.objects(duplicate_of__ne=None).limit(limit).no_cache()
+        duplicates = ArticleOnly.objects(duplicate_of__ne=None
+                                         ).limit(limit).no_cache()
         orphaned   = ArticleOnly.objects(orphaned=True).limit(limit).no_cache()
 
     counts['duplicates'] = duplicates.count()

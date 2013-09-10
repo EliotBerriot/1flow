@@ -43,8 +43,7 @@ class LandingTests(TransactionTestCase):
             follow=True
         )
         self.assertEqual(response.status_code, 200)
-        # TODO: test there is "error" in the content
-        #self.assert
+        self.assertContains(response, u'This field is required')
 
     def test_request_invite_nolang(self):
         """ This should send a mail. """
@@ -57,7 +56,7 @@ class LandingTests(TransactionTestCase):
 
         self.assertEqual(mail.outbox[0].subject,
                          'Your boarding card for the 1flow flight')
-        # TODO: assertContains(mail.outbox[0].body, self.test_email)
+        # TODO: assertTrue( "…" in mail.outbox[0].body)
 
     def test_request_invite_then_unsubscribe(self):
         """ This should send a mail, and we should able to unsubscribe. """
@@ -72,7 +71,7 @@ class LandingTests(TransactionTestCase):
 
         self.assertEqual(sent_email.subject,
                          'Your boarding card for the 1flow flight')
-        # TODO: assertContains(mail.outbox[0].body, self.test_email)
+        # TODO: assertTrue( "…" in mail.outbox[0].body)
 
         # TODO: follow unsubscribe link and
         # check in the DB that email_announcements are False

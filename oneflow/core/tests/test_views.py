@@ -13,7 +13,8 @@ from oneflow.core.models.nonrel import (Feed, Article, Read, User, Tag,
                                         WebSite, Author, HOME_STYLE_CHOICES)
 from oneflow.base.utils import RedisStatsCounter
 from oneflow.base.tests import (connect_mongodb_testsuite, TEST_REDIS)
-import unittest
+
+#from unittest import skip
 
 DjangoUser = get_user_model()
 LOGGER     = logging.getLogger(__file__)
@@ -56,12 +57,9 @@ class HomeAndPreferencesViewTest(TestCase):
         User.drop_collection()
         self.client.logout()
 
-    @unittest.skip("dddd")
     def test_home_works(self):
 
         response = self.client.get(reverse('home'), follow=True)
-
-        self.assertEqual(response.status_code, 200)
 
         self.assertEquals(response.context[u'mongodb_user'], None)
 
@@ -71,11 +69,9 @@ class HomeAndPreferencesViewTest(TestCase):
 
         response = self.client.get(reverse('home'), follow=True)
 
-        self.assertEqual(response.status_code, 200)
-
         self.assertEquals(response.context[u'mongodb_user'], self.mongodb_user)
 
-        self.assertContains(response, u"Please choose your 1flow home style")
+        self.assertContains(response, u'Welcome to 1flow,')
 
     def test_profile_works(self):
 
@@ -94,8 +90,6 @@ class HomeAndPreferencesViewTest(TestCase):
         self.assertContains(response, u"Your profile")
 
         self.assertContains(response, u"testuser")
-
-
 
     def test_set_preference(self):
 
@@ -152,3 +146,14 @@ class HomeAndPreferencesViewTest(TestCase):
             self.mongodb_user.preferences.reload()
 
             self.assertEquals(self.mongodb_user.preferences.home.style, code)
+
+    def test_read_works(self):
+
+        login = self.client.login(username='testuser', password='testpass')
+        self.assertTrue(login)
+
+        response = self.client.get(reverse('read'), follow=True)
+
+        self.assertEquals(response.context[u'mongodb_user'], self.mongodb_user)
+
+        self.assertContains(response, u' articles)')

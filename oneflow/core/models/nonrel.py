@@ -963,7 +963,7 @@ class Feed(Document, DocumentHelperMixin):
 
     @property
     def all_articles(self):
-        return Article.objects.filter(feeds_contains=self)
+        return Article.objects.filter(feeds__contains=self)
 
     def update_all_articles_count(self):
 
@@ -1043,20 +1043,13 @@ class Feed(Document, DocumentHelperMixin):
         LOGGER.info(u'Feed %s has just beed re-opened.', self)
 
     def close(self, reason=None, commit=True):
-        self.update(set__closed=True, set__date_closed=now())
-
-        self.closed_reason = reason or u'NO REASON GIVEN'
+        self.update(set__closed=True, set__date_closed=now(),
+                    set__closed_reason=reason or u'NO REASON GIVEN')
 
         LOGGER.info(u'Feed %s closed with reason "%s"!',
                     self, self.closed_reason)
 
-        if commit:
-            self.safe_reload()
-
-        else:
-            # Just make sure the current instance
-            # has the same value as the database.
-            self.closed = True
+        self.safe_reload()
 
     def get_articles(self, limit=None):
 
