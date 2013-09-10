@@ -213,6 +213,11 @@ def production():
             'worker_low': '-n 5',
             'worker_medium': '-n 1',
             'worker_high': '-n -3',
+            'shell': '-n -1',
+        },
+
+        'ionice_arguments': {
+            #'shell': '-n -1',
         },
 
         'repository': {
