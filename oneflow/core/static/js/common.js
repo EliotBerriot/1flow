@@ -208,6 +208,10 @@ function setup_popovers(parent){
             placement: popover_placement }).click(function(e) {
         $(this).popover('toggle');
     });
+
+    // Bootstrap 2.3+
+    parent.find('[data-toggle=popover]').popover();
+
 }
 function setup_hover_muters(parent){
 
@@ -319,16 +323,20 @@ function setup_everything(parent) {
     setup_popovers(parent);
     setup_clickovers(parent);
     setup_delayed_loaders(parent);
+    launch_faders(parent);
 
     try {
-        setup_preferences_actions(parent);
+        // if we are in body#home, try to run home_setup(), and so on.
+        // Don't use eval. Thanks
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
-    } catch (err) {
-        // nothing. the preferences thing exists only
-        //when user is authenticated, else it will fail.
+        window[$('body').attr('id') + '_setup']();
+
+    } catch(err) {
+        console.debug(err);
     }
 
-    launch_faders(parent);
+
 }
 function setup_auto_cleaner() {
     // every 10 minutes, the page is cleaned from old and orphaned elements.
@@ -358,6 +366,17 @@ function setup_keyboard() {
 function common_init() {
 
     setup_everything();
+
+    try {
+        // if we are in body#home, try to run home_init(), and so on.
+        // Don't use eval. Thanks
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+
+        window[$('body').attr('id') + '_init']();
+
+    } catch(err) {
+        console.debug(err);
+    }
 
     //setup_table_sorter();
     setup_auto_cleaner();

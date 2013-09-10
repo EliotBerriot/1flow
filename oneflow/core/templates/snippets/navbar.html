@@ -95,8 +95,11 @@
               <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
 
             {% if user.is_superuser %}
-              <li><a href="/translate/" target="_blank">{% trans 'Translations' %}</a></li>
-              <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
+              <li class="divider"></li>
+              <li><a href="/admin/constance/config/"
+                    target="_blank">{% trans 'Constance config.' %}</a></li>
+              <li><a href="/admin/" target="_blank">{% trans 'Django admin.' %}</a></li>
+              <li><a href="/translate/" target="_blank">{% trans '1flow translations' %}</a></li>
             {% endif %}
 
               <li class="divider"></li>

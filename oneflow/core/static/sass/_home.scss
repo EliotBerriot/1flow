@@ -169,17 +169,11 @@ header {
 
 .read-list-item {
 
-    /* cancel Twitter's media margin. */
+    /* cancel Bootstrap's media margin. */
     margin-top: 0;
 
+    margin-bottom: 5px;
     font-weight: 300;
-    transition: background 0.2s;
-
-    &:hover {
-        background: #eee;
-        border-radius: 5px;
-        transition: background 0.1s;
-    }
 
     .is_unread {
         font-weight: 400;
@@ -188,16 +182,19 @@ header {
     .actions {
         font-size: 300%;
         line-height: 100%;
-        padding-top: 5px;
         padding-right: 10px;
 
         a {
             color: #29313c;
             opacity: 0.5;
+            text-decoration: none;
 
-            &:hover {
-                text-decoration: none;
+            &:hover, &:active {
                 opacity: 1;
+            }
+
+            &:visited, &:active {
+                border: none;
             }
         }
     }
@@ -226,10 +223,26 @@ header {
 
 .read-list-row {
 
-    .action-star {
-        text-align: right;
+    .article {
+        border-bottom: 1px dotted #ddd;
+
+        .meta {
+            .meta {
+                margin-left: 20px;
+            }
+        }
     }
 
+    p {
+        /* cancel Bootstrap's media margin. */
+        margin-bottom: 0;
+    }
+
+    .action-star {
+        text-align: right;
+        /* Cancel .actions right padding, we are on the left. */
+        padding-right: 0;
+    }
 
     .list-item-number {
         font-size: 500%;
@@ -241,6 +254,11 @@ header {
     .heading {
         line-height: 20px;
         font-size: 150%;
+    }
+
+    .admin-informations {
+        /* don't know why, we've got a blank space after the slideToggle(). */
+        margin-bottom: -20px;
     }
 }
 

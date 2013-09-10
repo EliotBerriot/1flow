@@ -3,7 +3,7 @@
 {% if initial %}
 
     {% for read in reads %}
-        {% include read_item_template %}
+        {% include preferences.home.get_template %}
     {% endfor %}
 
 {% else %}
@@ -13,7 +13,7 @@
         {% lazy_paginate items_per_fetch reads %}
 
         {% for read in reads %}
-            {% include read_item_template %}
+            {% include preferences.home.get_template %}
         {% endfor %}
 
         {% show_more _('Load more entries') _('Loading…') %}
