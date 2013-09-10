@@ -1,4 +1,5 @@
   <li class="read-list-item read-list-row hover-unmute-children row-fluid">
+  {% with read.article as article %}
 
     <div class="span1 offset1 actions action-star hover-muted">
       {% comment %}
@@ -26,8 +27,6 @@
         {% endif %}
         </a>
 
-
-
         <a href="{{ article.url }}" target="_blank"
             title="{% trans "Open this article on the original website" %}">
           <i class="icon-circle-arrow-right"></i></a>
@@ -36,10 +35,7 @@
             title="{% trans "Action not yet available" %}">
           <i class="icon-retweet"></i></a>
 
-
       </div>
-
-    {% with read.article as article %}
 
       <h2 class="heading article-title {% if not read.is_read %}is_unread{% endif %}">
           {{ article.title }}
@@ -69,6 +65,5 @@
       </p>
 
     </div>
-    {% endwith %}
-
-  </li><!-- .media -->
+  {% endwith %}
+  </li>
