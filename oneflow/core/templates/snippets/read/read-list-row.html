@@ -1,10 +1,15 @@
   <li class="read-list-item read-list-row hover-unmute-children row-fluid">
   {% with read.article as article %}
 
-    <div class="span1 offset1 actions action-star hover-muted">
+    <div class="span2 actions action-star hover-muted">
       {% comment %}
         {{ tenths_counter|add:forloop.counter }}
       {% endcomment %}
+
+        {% if user.is_superuser %}
+          <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;" >
+            <i class="icon-cog"></i></a>
+        {% endif %}
 
         <a href="{{ article.url }}" target="_blank"
             title="{% trans "Action not yet available" %}">
@@ -15,11 +20,6 @@
     <div class="span10 article">
 
       <div class="pull-right actions hover-muted">
-
-        {% if user.is_superuser %}
-          <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;" >
-            <i class="icon-cog"></i></a>
-        {% endif %}
 
         {% if read.is_read %}
           <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
