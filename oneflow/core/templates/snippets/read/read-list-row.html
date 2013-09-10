@@ -12,7 +12,7 @@
 
     </div>
 
-    <div class="span10">
+    <div class="span10 article">
 
       <div class="pull-right actions hover-muted">
 
@@ -41,11 +41,9 @@
           {{ article.title }}
       </h2>
 
-      <p>
-        <span class="source">
-          {% if article.feeds %}
-
-          {% endif %}
+      <p class="meta">
+        <span class="source muted">
+          {{ article.get_source_unicode }}
         </span>
 
         <span class="meta hover-muted">
