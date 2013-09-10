@@ -22,7 +22,7 @@
 
 /* ------------------------------------------------------------- Home / index */
 
-#home {
+#home, #read, #profile {
     /* Space for the fixed navbar. */
     padding-top: 40px;
 }
@@ -159,22 +159,46 @@ header {
 
 /* --------------------------------------------------------------------- Read */
 
+#read {
+    .article-number {
+        h2 small {
+            margin-left: 0;
+        }
+    }
+}
+
 .read-list-item {
-    padding: 5px;
-    transition: background 0.5s;
 
     /* cancel Twitter's media margin. */
     margin-top: 0;
 
+    font-weight: 300;
+    transition: background 0.2s;
+
     &:hover {
         background: #eee;
         border-radius: 5px;
-        transition: background 0.2s;
+        transition: background 0.1s;
     }
 
-    .media-body {
-        p {
-            margin-bottom: 0;
+    .is_unread {
+        font-weight: 400;
+    }
+
+    .actions {
+        font-size: 300%;
+        line-height: 100%;
+        padding-top: 5px;
+        padding-right: 10px;
+
+        a {
+            color: #29313c;
+            opacity: 0.5;
+
+            &:hover {
+                text-decoration: none;
+                opacity: 1;
+            }
         }
     }
 
@@ -201,9 +225,22 @@ header {
 }
 
 .read-list-row {
-    .list-item-number {
-        min-width: 100px;
+
+    .action-star {
         text-align: right;
+    }
+
+
+    .list-item-number {
+        font-size: 500%;
+        line-height: 100%;
+        vertical-align: center;
+        text-align: right;
+    }
+
+    .heading {
+        line-height: 20px;
+        font-size: 150%;
     }
 }
 
