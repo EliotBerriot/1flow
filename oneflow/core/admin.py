@@ -250,7 +250,10 @@ class ArticleAdmin(admin.DocumentAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     ordering = ('-date_published', '-date_added', )
     #date_hierarchy = ('date_published', )
-    exclude = ('tags', 'authors', 'publishers', 'source', )
+
+    # Should really be 'raw_id_fields', but doesn't work on MongoEngine.
+    exclude = ('tags', 'authors', 'publishers',
+               'source', 'duplicate_of', )
 
     def tags_display(self, obj):
 
