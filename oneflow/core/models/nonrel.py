@@ -74,13 +74,13 @@ from django.contrib.auth import get_user_model
 
 from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
-                           RedisExpiringLock, AlreadyLockedException,
-                           RedisSemaphore, NoResourceAvailableException,
+                           RedisExpiringLock,  # AlreadyLockedException,
+                           RedisSemaphore,  # NoResourceAvailableException,
                            HttpResponseLogProcessor, StopProcessingException)
 
 from ...base.utils.http import clean_url
 from ...base.utils.dateutils import (now, timedelta, today, datetime,
-                                     naturaldelta)
+                                     time, dt_combine)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 
 from .keyval import FeedbackDocument
@@ -1008,6 +1008,10 @@ class Feed(Document, DocumentHelperMixin):
 
     @property
     def fetch_limit(self):
+        """ XXX: not used until correctly implemented.
+            I removed the code calling this method on 20130910.
+        """
+
         try:
             return self.__limit_semaphore
 
@@ -1016,6 +1020,9 @@ class Feed(Document, DocumentHelperMixin):
             return self.__limit_semaphore
 
     def set_fetch_limit(self):
+        """ XXX: not used until correctly implemented.
+            I removed the code calling this method on 20130910.
+        """
 
         new_limit = self.fetch_limit.set_limit()
         cur_limit = self.fetch_limit_nr
@@ -2037,11 +2044,6 @@ class Article(Document, DocumentHelperMixin):
                                                  headers=REQUEST_BASE_HEADERS)
 
             except requests.ConnectionError, e:
-
-                if 'Errno 104' in str(e):
-                    # Special case, we probably hit a remote parallel limit.
-                    self.feed.set_fetch_limit()
-
                 statsd.gauge('articles.counts.url_errors', 1, delta=True)
                 self.url_error = str(e)
                 self.save()
@@ -2481,23 +2483,7 @@ class Article(Document, DocumentHelperMixin):
         #
 
         try:
-            # TODO/FIXME: this *_limit() thing should bo into WebSite.
-            if self.feed:
-                with self.feed.fetch_limit:
-                    self.fetch_content_text(force=force, commit=commit)
-            else:
-                self.fetch_content_text(force=force, commit=commit)
-
-        except (NoResourceAvailableException, AlreadyLockedException):
-            countdown = randrange(60)
-
-            LOGGER.warning(u'Feed %s has already the maximum '
-                           u'number of fetchers, re-planning '
-                           u'fetch of article %s in %s.', self.feed,
-                           self, naturaldelta(countdown))
-
-            raise article_fetch_content.retry((self.id, force, commit),
-                                              countdown=countdown)
+            self.fetch_content_text(force=force, commit=commit)
 
         except StopProcessingException, e:
             LOGGER.info(u'Stopping processing of article %s on behalf of '
@@ -2505,19 +2491,6 @@ class Article(Document, DocumentHelperMixin):
             return
 
         except requests.ConnectionError, e:
-
-            if 'Errno 104' in str(e):
-                # TODO/FIXME: this *_limit() thing should bo into WebSite.
-
-                if self.feed:
-                    # Special case, we probably hit a remote parallel limit.
-                    self.feed.set_fetch_limit()
-
-                countdown = randrange(60)
-
-                raise article_fetch_content.retry((self.id, force, commit),
-                                                  countdown=countdown)
-
             statsd.gauge('articles.counts.content_errors', 1, delta=True)
             self.content_error = str(e)
             self.save()
