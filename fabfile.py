@@ -134,6 +134,12 @@ def preview(branch=None):
     # implicit: else: branch will be 'develop',
     # set directly from the sparks defaults.
     env.sparks_options = {
+        'nice_arguments': {
+            'worker_low': '-n 5',
+            'worker_medium': '-n 1',
+            'worker_high': '-n -3',
+        },
+
         'worker_concurrency': {
             'worker_low': 4,
             'worker_medium': 4,
@@ -203,12 +209,19 @@ def production():
                           'worker-04.1flow.io', ],
     })
     env.sparks_options = {
+        'nice_arguments': {
+            'worker_low': '-n 5',
+            'worker_medium': '-n 1',
+            'worker_high': '-n -3',
+        },
+
         'repository': {
             # We need to patch this because worker-04 is an LXC on the same
             # physical host than dev.1flow.net, and getting from it directly
             # doesn't work because of my NAT configuration.
             'worker-04.1flow.io': 'git@10.0.3.110:1flow.git',
         },
+
         'worker_concurrency': {
             # setting only 'worker-02.1flow.io'
             # would override worker_swarm setting.
@@ -220,6 +233,7 @@ def production():
             'worker_high': 12,
             '__all__': 8,
         },
+
         'worker_queues': {
             # The fetchers help on main queues, except 'low' which is… low.
             # Fetchers and swarmers share the background queue, which has
@@ -230,11 +244,13 @@ def production():
             'worker_medium': 'medium,fetch',
             'worker_low':    'low,fetch,background',
         },
+
         'max_tasks_per_child': {
             'worker_swarm': '50',
             'worker_fetch': '20',
             '__all__': '100',
         },
+
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
         #'worker_soft_time_limit': {
