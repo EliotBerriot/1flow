@@ -963,7 +963,7 @@ class Feed(Document, DocumentHelperMixin):
 
     @property
     def all_articles(self):
-        return Article.objects.filter(feeds_contains=self)
+        return Article.objects.filter(feeds__contains=self)
 
     def update_all_articles_count(self):
 
