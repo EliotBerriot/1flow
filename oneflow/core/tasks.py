@@ -760,16 +760,27 @@ def archive_articles(limit=None):
     counts['orphaned']   = orphaned.count()
 
     if counts['duplicates']:
+        current = 0
         with benchmark('Archiving of %s duplicate article(s)'
                        % counts['duplicates']):
             for article in duplicates:
                 archive_article_one_internal(article, counts)
+                current += 1
+                if current % 50 == 0:
+                    LOGGER.info(u'Archived %s/%s duplicate articles so far.',
+                                current, counts['duplicates'])
 
     if counts['orphaned']:
+        current = 0
+
         with benchmark('Archiving of %s orphaned article(s)'
                        % counts['orphaned']):
             for article in orphaned:
                 archive_article_one_internal(article, counts)
+                current += 1
+                if current % 50 == 0:
+                    LOGGER.info(u'Archived %s/%s orphaned articles so far.',
+                                current, counts['duplicates'])
 
     if counts['duplicates'] or counts['orphaned']:
         synchronize_statsd_articles_gauges(full=True)
