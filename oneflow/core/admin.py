@@ -250,6 +250,7 @@ class ArticleAdmin(admin.DocumentAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     ordering = ('-date_published', '-date_added', )
     #date_hierarchy = ('date_published', )
+    exclude = ('tags', 'authors', 'publishers', 'source', )
 
     def tags_display(self, obj):
 
@@ -332,6 +333,7 @@ class FeedAdmin(admin.DocumentAdmin):
     list_display_links = ('id', 'name', )
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
     search_fields = ('name', 'url', 'site_url', 'closed', )
+    exclude = ('tags', )
 
     # Setting this makes the whole thing unsortable…
     #ordering = ('-last_fetch', )
