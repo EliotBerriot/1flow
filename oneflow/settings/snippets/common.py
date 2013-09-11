@@ -468,6 +468,15 @@ MAINTENANCE_IGNORE_URLS = (
 MARKDOWN_DEUX_STYLES = {
     'default': {
         'extras': {
+            # html2text uses _ by default for EM…
+            #'code-friendly': None,
+            'cuddled-lists': None,
+
+        },
+        'safe_mode': 'escape',
+    },
+    'code': {
+        'extras': {
             'code-friendly': None,
             'cuddled-lists': None,
 
@@ -475,6 +484,15 @@ MARKDOWN_DEUX_STYLES = {
         'safe_mode': 'escape',
     },
     'raw': {
+        'extras': {
+            # html2text uses _ by default for EM…
+            #'code-friendly': None,
+            'cuddled-lists': None,
+
+        },
+        'safe_mode': False,
+    },
+    'code-raw': {
         'extras': {
             'code-friendly': None,
             'cuddled-lists': None,
