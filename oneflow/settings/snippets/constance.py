@@ -22,6 +22,10 @@ CONSTANCE_CONFIG = {
                                       ugettext(u'Number of items per ajax '
                                       u'fetch on infinite pagination pages.')),
 
+    'READ_ARTICLE_MIN_LENGTH': (24, ugettext(u'Minimum length of an article '
+                                u'content. Set to 0 to always display '
+                                u'Markdown content to users, whatever it is.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
 
     # SEMANTIC NOTE: we use 'disabled' (and not 'enabled') because the rss

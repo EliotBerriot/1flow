@@ -236,6 +236,10 @@ header {
 
     .no-content {
         text-align: left;
+
+        h2, p {
+            margin-top: 30px;
+        }
     }
 
     .article-content {
