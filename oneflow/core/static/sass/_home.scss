@@ -242,10 +242,18 @@ header {
         padding: 20px 14.8936% 20px 7.445%;
         text-align: justify;
 
-        p {
+        p, ul {
             font-size: 150%;
             line-height: 1.1em;
             margin: 10px 0 20px;
+        }
+
+        ul li {
+            margin: 5px 0 10px;
+
+            a {
+                font-size: 100%;
+            }
         }
 
         h1, h2, h3 {
