@@ -35,13 +35,12 @@ for app_name in settings.INSTALLED_APPS:
                                     '%(module_name)s.%(class_name)s '
                                     'in the global API.'
                                     % {'module_name': module_name,
-                                    'class_name': objekt_name})
+                                       'class_name': objekt_name})
 
-                except TypeError:
-                    LOGGER.exception('Exception while determining subclass '
-                                     'of %s.%s.', module_name, objekt_name)
-                    # Not a class. Forget it.
-                    pass
+                except TypeError, e:
+                    if not 'issubclass() arg 1 must be a class' in str(e):
+                        LOGGER.exception('Exception while determining subclass '
+                                         'of %s.%s.', module_name, objekt_name)
 
                 except Exception:
                     LOGGER.exception('Exception while determining subclass '
