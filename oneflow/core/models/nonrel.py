@@ -47,6 +47,7 @@ import feedparser
 from statsd import statsd
 from random import randint, randrange
 from constance import config
+from markdown_deux import markdown, get_style
 
 from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
@@ -1929,6 +1930,17 @@ class Article(Document, DocumentHelperMixin):
             return _(u'Multiple sources ({0} feeds)').format(sources_count)
 
         return u' / '.join(x.name for x in source)
+
+    @property
+    def content_display(self):
+
+        if len(self.content) > config.READ_ARTICLE_MIN_LENGTH:
+            try:
+                return markdown(self.content)
+
+            except Exception:
+                LOGGER.exception(u'Live Markdown to HTML conversion '
+                                 u'failed for article %s', self)
 
     @property
     def original_data(self):
