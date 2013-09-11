@@ -1,19 +1,17 @@
-  <li id="{{ read.id }}" class="read-list-item read-list-row hover-unmute-children row-fluid">
+  <li id="{{ read.id }}" class="read-list-item read-list-row hover-unmute-children row-fluid"
+      data-index="{{ tenths_counter|add:forloop.counter }}">
   {% with read.article as article %}
 
     <div class="span2 actions action-star hover-muted">
-      {% comment %}
-        {{ tenths_counter|add:forloop.counter }}
-      {% endcomment %}
 
-        {% if user.is_superuser %}
-          <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;" >
-            <i class="icon-cog"></i></a>
-        {% endif %}
+      {% if user.is_superuser %}
+        <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;" >
+          <i class="icon-cog"></i></a>
+      {% endif %}
 
-        <a href="{{ article.url }}" target="_blank"
-            title="{% trans "Action not yet available" %}">
-          <i class="icon-star-empty"></i></a>
+      <a href="{{ article.url }}" target="_blank"
+          title="{% trans "Action not yet available" %}">
+        <i class="icon-star-empty"></i></a>
 
     </div>
 
@@ -42,13 +40,13 @@
 
       </div>
 
-      <h2 class="heading article-title {% if not read.is_read %}is_unread{% endif %}"
-          onclick="javascript: $('#content-{{read.id}}').slideToggle(); return false;">
+      <h2 id="title-{{ read.id }}" class="heading article-title {% if not read.is_read %}is_unread{% endif %}"
+          onclick="javascript: return toggle_content('{{ read.id }}');">
         {{ article.title }}
       </h2>
 
       <p class="meta pointer"
-          onclick="javascript: $('#content-{{read.id}}').slideToggle(); return false;">
+          onclick="javascript: return toggle_content('{{ read.id }}');">
         <span class="source muted">
           {{ article.get_source_unicode }}
         </span>
