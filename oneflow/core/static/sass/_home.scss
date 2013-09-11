@@ -242,22 +242,43 @@ header {
         padding: 20px 14.8936% 20px 7.445%;
         text-align: justify;
 
-        p, ul {
+        p, ul, ol {
             font-size: 150%;
             line-height: 1.1em;
             margin: 10px 0 20px;
         }
 
-        ul li {
+        .img-legend {
+            font-size: 90%;
+            text-align: center;
+            margin: 0 50px;
+        }
+
+        ul li, ol li {
             margin: 5px 0 10px;
+
+            p {
+                /* Sometimes we find a <p> inside a <li>
+                   http://lil.1flow.io/admin/models/article/523014d3b49d88065d17191e/ */
+                font-size: 100%;
+            }
 
             a {
                 font-size: 100%;
+            }
+
+            ul, ol {
+                margin-left: 30px;
+                font-size: 100%;
+
+                li {
+                }
             }
         }
 
         h1, h2, h3 {
             text-align: left;
+            line-height: 1.1em;
         }
 
         img {

@@ -7,7 +7,7 @@ common_init();
 function read_setup() {
     // this function is run after each ajax call, via setup_everything().
 
-    $(".article-content p").find('img').parent().addClass('centered');
+    $(".article-content p").find('img').parent().addClass('img-legend');
 
 }
 
