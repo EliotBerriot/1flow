@@ -1,16 +1,55 @@
 # -*- coding: utf-8 -*-
 
-from django import template
+import re
+
+from django.template import Library, Node, TemplateSyntaxError
 from django.template.base import Node, TemplateSyntaxError
 from django.utils.encoding import smart_text
 from django.utils.translation import ugettext_lazy as _
+from django.core.urlresolvers import reverse
 
 from sparks.foundations import utils as sfu
 
-register = template.Library()
+register = Library()
 
 
-class CaptureasNode(template.Node):
+@register.simple_tag(takes_context=True)
+def reverse_active(context, url, return_value=None):
+    """ In the template:
+
+            <!-- returns 'active' if the current path
+                            matches the reverse url of "views.name" -->
+            class="{% reverse_active "views.name" %}"
+
+            <!-- returns 'my-active' if the current path
+                            matches the reverse url of "views.name" -->
+            class="{% reverse_active "views.name" "my-active" %}"
+
+        Taken from http://gnuvince.wordpress.com/2007/09/14/a-django-template-tag-for-the-current-active-page/ #NOQA
+        and extended a lot to simplify template calls…
+    """
+
+    if reverse(url) == context['request'].path:
+        return return_value or u'active'
+
+    return u''
+
+
+@register.simple_tag(takes_context=True)
+def active(context, pattern, return_value=None):
+    """ Same as reverse active, but for URLs without any views.
+
+        class="{% active request "/help/" "top-menu-element-active" %}"
+
+    """
+
+    if re.search(pattern, context['request'].path):
+        return return_value or u'active'
+
+    return u''
+
+
+class CaptureasNode(Node):
     def __init__(self, nodelist, varname):
         self.nodelist = nodelist
         self.varname  = varname
@@ -51,7 +90,7 @@ def do_captureas(parser, token):
         tag_name, args = token.contents.split(None, 1)
 
     except ValueError:
-        raise template.TemplateSyntaxError(
+        raise TemplateSyntaxError(
             "'captureas' node requires a variable name.")
 
     nodelist = parser.parse(('endcaptureas',))
@@ -156,3 +195,5 @@ def countdown(value, redirect=None, limit=0, show_seconds=True,
         'show_seconds': show_seconds,
         'counter_test': counter_test,
     }
+
+

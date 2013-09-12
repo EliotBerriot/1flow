@@ -17,7 +17,29 @@
             -moz-border-radius: 30px;
         }
     }
+
+    .nav {
+
+        font-size: 120%;
+
+        li a {
+            border-left: 0;
+            color: #aaa;
+        }
+
+        .dropdown-menu {
+            li a {
+                color: inherit;
+            }
+        }
+
+        .active {
+            color: #fff;
+            text-shadow: 0 0 10px #fff;
+        }
+    }
 }
+
 
 
 /* ------------------------------------------------------------- Home / index */

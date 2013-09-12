@@ -75,19 +75,24 @@
           {% endif %}
 
           <li>
-              <a href="{% url 'help' %}">{% trans 'Help' %}</a>
+              <a href="{% url 'help' %}"
+              class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
           </li>
 
 
           <li class="dropdown" >
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="dropdown-toggle {% reverse_active 'profile' %}"
+            data-toggle="dropdown" href="#">
+
               {% if mongodb_user.avatar_url %}
                 <span class="avatar-frame">
                   <img src="{{ mongodb_user.avatar_url }}" />
                 </span>
               {% else %}
+
                 <i class="icon-user"></i>
               {% endif %}
+
               {{ user.username }}
               <b class="caret"></b>
             </a>
@@ -119,7 +124,8 @@
         <ul class="nav">
           {% if user.is_authenticated %}
 
-            <li><a href="{% url 'read' %}">{% trans 'Read' %}</a></li>
+            <li><a href="{% url 'read' %}"
+              class={% reverse_active 'read' %}>{% trans 'Read' %}</a></li>
 
             {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
 
