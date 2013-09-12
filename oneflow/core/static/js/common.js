@@ -216,15 +216,26 @@ function setup_popovers(parent){
 function setup_hover_muters(parent){
 
     find_start(parent, 'hover-unmute-children')
-        .hover(function() {
-            $(this).find('.hover-muted').animate({
-                opacity: 1
-            });
-        }, function() {
-            $(this).find('.hover-muted').stop(true, true).animate({
-                opacity: 0
-            });
-    });
+        .hover(
+            function() {
+                $(this).find('.hover-muted').animate({
+                    opacity: 1
+                }, function(){
+                    if($(this).hasClass('hide')){
+                        $(this).show();
+                    }
+                });
+            },
+            function() {
+                $(this).find('.hover-muted').stop(true, true).animate({
+                    opacity: 0
+                }, function(){
+                    if($(this).hasClass('hide')){
+                       $(this).hide();
+                    }
+                });
+            }
+        );
 }
 function setup_tooltips(parent){
 
