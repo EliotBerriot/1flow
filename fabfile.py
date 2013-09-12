@@ -138,6 +138,7 @@ def preview(branch=None):
             'worker_low': '-n 5',
             'worker_medium': '-n 1',
             'worker_high': '-n -3',
+            'worker_medium': '-n 1',
         },
 
         'worker_concurrency': {
@@ -203,14 +204,16 @@ def production():
         'worker_high':   ['worker-01.1flow.io', ],
         'worker_medium': ['worker-03.1flow.io', ],
         'worker_low':    ['worker-05.1flow.io', ],
-        'worker_fetch':  [  # 'worker-02.1flow.io',
+        'worker_fetch':  ['worker-02.1flow.io',
                           'worker-04.1flow.io', ],
-        'worker_swarm':  [  # 'worker-02.1flow.io',
+        'worker_swarm':  ['worker-02.1flow.io',
                           'worker-04.1flow.io', ],
     })
     env.sparks_options = {
         'nice_arguments': {
             'worker_low': '-n 5',
+            'worker_fetch': '-n 4',
+            'worker_swarm': '-n 2',
             'worker_medium': '-n 1',
             'worker_high': '-n -3',
             'shell': '-n -1',
