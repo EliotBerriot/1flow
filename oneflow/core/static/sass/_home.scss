@@ -234,14 +234,6 @@ header {
         }
     }
 
-    .no-content {
-        text-align: left;
-
-        h2, p {
-            margin-top: 30px;
-        }
-    }
-
     .article-content {
         padding: 20px 14.8936% 20px 7.445%;
         text-align: justify;
@@ -314,6 +306,26 @@ header {
         line-height: 20px;
         font-size: 150%;
         cursor: pointer;
+    }
+
+    /* NOTE: .no-content must come AFTER .article-content
+            for proper CSS overriding. */
+    .no-content {
+        text-align: left;
+
+        /* Oh my bad… the image has transparent content at the bottom.
+            As I didn't find a way to crop it (animated GIFs…), I
+            fix this directly in the hero-unit… Which is not a good
+            idea if teh image changes. Thus noticed in the template. */
+        padding-bottom: 30px;
+
+
+        p {
+            /* reset the font-size from read-item
+               which is bigger, for reading. */
+            font-size: 120%;
+            margin-top: 40px;
+        }
     }
 
     .admin-informations {
