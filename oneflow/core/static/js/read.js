@@ -71,11 +71,11 @@ function toggle_content(oid) {
                 scrollToElement(me);
             }
 
-            content.slideDown(scroll_speed);
+            content.slideDown(scroll_speed, "swing");
         };
 
     if (content.is(':visible')) {
-        content.slideUp(scroll_speed);
+        content.slideUp(scroll_speed, "swing");
         open_content = null;
 
     } else {
@@ -94,9 +94,12 @@ function toggle_content(oid) {
                 open_me();
             }
 
-            $("#content-" + open_content).slideUp(scroll_speed, function(){
-                open_content = oid;
-        });
+            $("#content-" + open_content).slideUp(
+                scroll_speed, "swing",
+                function(){
+                    open_content = oid;
+                }
+            );
 
         } else {
             open_me();
