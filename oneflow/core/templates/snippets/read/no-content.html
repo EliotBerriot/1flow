@@ -1,7 +1,23 @@
 <div class="hero-unit no-content">
-  <h2>{% trans "No content fetched for this article. Ask us for a refund ;-)" %}</h2>
-  <p>{% with article_url=article.url %}{% blocktrans %}
-Just kidding. The article should be automatically fetched soon.
-Alternatively, you can <a href="{{ article_url }}" target="_blank">read the article on its original website</a>. Sorry for the inconvenience.
-{% endblocktrans %}{% endwith %}</p>
+    <div class="row-fluid">
+        <div class="span3">
+            {# IF YOU CHANGE THIS IMAGE, UPDATE/REMOVE PADDING-BOTTOM IN THE CSS #}
+            <img src="{{ STATIC_URL }}img/read/fa9b289a93424eb5b7a28e910d097f81.gif">
+        </div>
+        <div class="span8 offset1">
+          <h3>
+            {% trans "This article seems empty." %}<br />
+            {% trans "You should ask us for a refund ;-)" %}
+          </h3>
+
+{% with article_url=article.url %}
+{% blocktrans %}
+<p>Just kidding. It should be automatically fetched soon.
+Sorry for the inconvenience.</p>
+<p>
+<a href="{{ article_url }}" target="_blank">Read it on the original website  <i class="icon-double-angle-right"></i></a></p>
+{% endblocktrans %}
+{% endwith %}
+        </div>
+    </div>
 </div>
