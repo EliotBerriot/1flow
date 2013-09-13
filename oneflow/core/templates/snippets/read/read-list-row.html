@@ -9,7 +9,7 @@
           <div class="pull-right actions hover-muted hide">
 
           {% if user.is_superuser %}
-            <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;" >
+            <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;">
               <i class="icon-cog"></i></a>
           {% endif %}
 
@@ -74,7 +74,7 @@
       </div><!-- .article-meta -->
 
       {% if user.is_superuser %}
-        <div class="hide admin-informations" id="admin-{{ read.id }}">
+        <div class="admin-informations slide-togglable hide" id="admin-{{ read.id }}">
           <table class='table table-hover table-stripped table-condensed'>
             <tbody>
               <tr>
@@ -108,7 +108,7 @@
         </div><!-- .admin-informations -->
       {% endif %}
 
-      <div class="hide article-content" id="content-{{ read.id }}">
+      <div class="article-content slide-togglable hide" id="content-{{ read.id }}">
         {% if article.content_type == 3 %}
           {% with content=article.content_display %}
             {% if content %}
