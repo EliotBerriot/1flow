@@ -255,6 +255,17 @@ header {
 
         border-bottom: 1px dotted #ddd;
 
+        /* START bring the body color here for the flash_fade() to work. */
+
+        color: #29323d;
+
+        h1, h2, h3 {
+            color: inherit;
+        }
+
+        /* END flash_fade() color */
+
+
         .article-meta {
             .meta {
                 max-height: 20px;

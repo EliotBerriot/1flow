@@ -1,4 +1,4 @@
-  <li id="{{ read.id }}" class="read-list-item read-list-row hover-unmute-children row-fluid"
+  <li id="{{ read.id }}" class="read-list-row read-list-item hover-unmute-children row-fluid slide-toggle-noticed-parent"
       data-index="{{ tenths_counter|add:forloop.counter }}">
   {% with read.article as article %}
 
@@ -108,7 +108,10 @@
         </div><!-- .admin-informations -->
       {% endif %}
 
-      <div class="article-content slide-togglable hide" id="content-{{ read.id }}">
+      <div class="article-content slide-togglable slide-toggle-notice hide"
+          id="content-{{ read.id }}" data-toggle-id="{{ read.id }}"
+          data-toggle-function="toggle_content"
+          data-toggle-callback="notice_element">
         {% if article.content_type == 3 %}
           {% with content=article.content_display %}
             {% if content %}
