@@ -47,7 +47,7 @@ import feedparser
 from statsd import statsd
 from random import randint, randrange
 from constance import config
-from markdown_deux import markdown, get_style
+from markdown_deux import markdown
 
 from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
