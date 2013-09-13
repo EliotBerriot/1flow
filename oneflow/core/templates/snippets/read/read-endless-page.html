@@ -20,6 +20,12 @@
             {% endif %}
         {% endfor %}
 
+        {% comment %}
+            The 'show_more' button is hidden via CSS, don't try to find
+            it in the page. But it must be present because it holds the
+            necessary data to load the next page.
+        {% endcomment %}
+
         {% show_more _('Load more entries') _('Loading…') %}
 
     {% endwith %}
