@@ -854,7 +854,6 @@ class Feed(Document, DocumentHelperMixin):
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
                                default=list)
-    default_image_url  = StringField(verbose_name=_(u'default image url'))
     languages      = ListField(StringField(), verbose_name=_(u'Languages'),
                                help_text=_(u'Set this to more than one '
                                            u'language to help article '
@@ -889,10 +888,12 @@ class Feed(Document, DocumentHelperMixin):
     mail_warned    = ListField(StringField())
     errors         = ListField(StringField())
     options        = ListField(IntField())
+    duplicate_of   = ReferenceField(u'Feed', reverse_delete_rule=NULLIFY)
     notes          = StringField(verbose_name=_(u'Notes'),
                                  help_text=_(u'Internal notes for 1flow '
                                              u'staff related to this feed.'))
-    good_for_use = BooleanField(verbose_name=_(u'Shows in Add Sources'),
+
+    good_for_use = BooleanField(verbose_name=_(u'Shown in selector'),
                                 default=False,
                                 help_text=_(u'Set to True to make this feed '
                                             u'available to subscribers in '
@@ -900,7 +901,7 @@ class Feed(Document, DocumentHelperMixin):
                                             u'Without this, the user must '
                                             u'manually enter the feed '
                                             u'address to subscribe to it.'))
-    thumbnail_url = URLField(verbose_name=_(u'Thumbnail URL'))
+    thumbnail_url  = URLField(verbose_name=_(u'Thumbnail URL'))
     description_fr = StringField(verbose_name=_(u'Description (FR)'),
                                  help_text=_(u'Public description of the feed '
                                              u'in French language. '
