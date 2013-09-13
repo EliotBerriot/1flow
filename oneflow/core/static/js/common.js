@@ -218,18 +218,25 @@ function setup_hover_muters(parent){
     find_start(parent, 'hover-unmute-children')
         .hover(
             function() {
-                $(this).find('.hover-muted').animate({
-                    opacity: 1
-                }, function(){
-                    if($(this).hasClass('hide')){
-                        $(this).show();
-                    }
-                });
+                objekt = $(this).find('.hover-muted');
+
+                if(objekt.hasClass('hide')){
+                    objekt.show(function(){
+                        $(this).animate({
+                            opacity: 1
+                        }, 250);
+                    });
+
+                } else {
+                    objekt.animate({
+                            opacity: 1
+                    }, 250);
+                }
             },
             function() {
                 $(this).find('.hover-muted').stop(true, true).animate({
                     opacity: 0
-                }, function(){
+                }, 250, function(){
                     if($(this).hasClass('hide')){
                        $(this).hide();
                     }
