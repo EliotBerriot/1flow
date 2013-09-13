@@ -889,6 +889,26 @@ class Feed(Document, DocumentHelperMixin):
     mail_warned    = ListField(StringField())
     errors         = ListField(StringField())
     options        = ListField(IntField())
+    notes          = StringField(verbose_name=_(u'Notes'),
+                                 help_text=_(u'Internal notes for 1flow '
+                                             u'staff related to this feed.'))
+    good_for_use = BooleanField(verbose_name=_(u'Shows in Add Sources'),
+                                default=False,
+                                help_text=_(u'Set to True to make this feed '
+                                            u'available to subscribers in '
+                                            u'the feeds selector wizard. '
+                                            u'Without this, the user must '
+                                            u'manually enter the feed '
+                                            u'address to subscribe to it.'))
+    thumbnail_url = URLField(verbose_name=_(u'Thumbnail URL'))
+    description_fr = StringField(verbose_name=_(u'Description (FR)'),
+                                 help_text=_(u'Public description of the feed '
+                                             u'in French language. '
+                                             u'As Markdown.'))
+    description_en = StringField(verbose_name=_(u'Description (EN)'),
+                                 help_text=_(u'Public description of the feed '
+                                             u'in English language. '
+                                             u'As Markdown.'))
 
     # ••••••••••••••••••••••••••••••• properties, cached descriptors & updaters
 
