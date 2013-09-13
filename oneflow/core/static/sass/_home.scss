@@ -44,9 +44,10 @@
 
 /* ------------------------------------------------------------- Home / index */
 
-#home, #read, #profile {
+section {
     /* Space for the fixed navbar. */
-    padding-top: 40px;
+    /*padding-top: 60px;*/
+    margin-top: 40px;
 }
 
 #home-styles-chooser {
