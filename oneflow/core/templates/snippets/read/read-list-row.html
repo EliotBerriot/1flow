@@ -1,8 +1,8 @@
-  <li id="{{ read.id }}" class="read-list-row read-list-item hover-unmute-children row-fluid slide-toggle-noticed-parent"
+  <li id="{{ read.id }}" class="read-list-row read-list-item row-fluid"
       data-index="{{ tenths_counter|add:forloop.counter }}">
   {% with read.article as article %}
 
-    <div class="span9 offset2 article">
+    <div class="article span9 offset2 hover-unmute-children">
 
       <div class="row-fluid article-meta">
         <div class="span12">
