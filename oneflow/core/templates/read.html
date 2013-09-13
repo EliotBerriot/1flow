@@ -98,6 +98,34 @@
 
     <script type="text/javascript">
 
+    function endless_load_next_if_needed() {
+
+        {% comment %}
+            When there are un-processed articles, they are skipped and not
+            displayed. In that particular case, the reading list page can
+            appear nearly empty if there are a lot of them. We compensate
+            by fetching one or two more to fill the user view.
+
+            We do this only for the first set of pages, to avoid the fuss
+            of selecting and couting a large set of items when the user
+            has already scrolled a lot.
+
+            As a side node, the farther he scrolls, the less non-processed
+            articles he will encounter, because he gets back in the past.
+        {% endcomment %}
+
+        next_page = parseInt($('.endless_more').attr('href').split('=')[1]);
+        //console.log('next_page: ' + next_page);
+
+        if (next_page <= 5) {
+            if ($(".read-list-item").length
+                    < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
+                console.debug('fetching next page to fill the view…');
+                $('.endless_container').find('a.endless_more').click();
+            }
+        }
+    }
+
     function endless_new_page_load_completed(context, fragment) {
         // console.log('Label:', $(this).text());
         //console.log('URL:', context.url);
@@ -125,6 +153,8 @@
 
         console.debug('Finished loading ', context.url);
 
+        endless_load_next_if_needed();
+
         // We return false to avoid
         // endless normal processing.
         return false;
@@ -150,6 +180,8 @@
 
         onCompleted: endless_new_page_load_completed
     });
+
+    endless_load_next_if_needed();
 
     </script>
 {% endblock extrajs_footer %}
