@@ -218,18 +218,25 @@ function setup_hover_muters(parent){
     find_start(parent, 'hover-unmute-children')
         .hover(
             function() {
-                $(this).find('.hover-muted').animate({
-                    opacity: 1
-                }, function(){
-                    if($(this).hasClass('hide')){
-                        $(this).show();
-                    }
-                });
+                objekt = $(this).find('.hover-muted');
+
+                if(objekt.hasClass('hide')){
+                    objekt.show(function(){
+                        $(this).animate({
+                            opacity: 1
+                        }, 250);
+                    });
+
+                } else {
+                    objekt.animate({
+                            opacity: 1
+                    }, 250);
+                }
             },
             function() {
                 $(this).find('.hover-muted').stop(true, true).animate({
                     opacity: 0
-                }, function(){
+                }, 250, function(){
                     if($(this).hasClass('hide')){
                        $(this).hide();
                     }
@@ -305,20 +312,42 @@ function setup_delayed_loaders(parent) {
         });
     });
 }
+
+function flash_fade(objekt, bg_color, fg_color){
+
+    var curfore = objekt.css('color');
+    var curback = objekt.css('backgroundColor');
+
+    if (typeof bg_color == 'undefined') {
+        bg_color = "#ffff99";
+    }
+
+    if (typeof fg_color == 'undefined') {
+        // by default we don't animate the foreground color.
+        fg_color = curfore;
+    }
+
+    objekt.animate({ backgroundColor: bg_color,
+                     color: fg_color }, 50,
+       function() {
+            //.delay(2500) in MyLicorn® (time to notice if we have a lot)
+            //.delay(100) still seems too slow.
+            objekt.animate({ backgroundColor: curback,
+                             color: curfore }, 1000, 'easeOutCubic');
+
+            // Fade is done, object is not "new" anymore.
+            try {
+                objekt.removeClass('new-fade');
+            } catch (err) {
+                // don't crash if the object doesn't have the class.
+                // sometimes we call the function directly.
+            }
+        }
+    );
+}
 function launch_faders(parent) {
     if (typeof parent == 'undefined') {
         parent = $('body');
-    }
-
-    function flash_fade(objekt){
-        curback = objekt.css('backgroundColor');
-
-        objekt.animate({ backgroundColor: "#ffff99" }, 250, function() {
-            objekt.delay(2500).animate({ backgroundColor: curback }, 1000);
-
-            // Fade is done, object is not "new" anymore.
-            objekt.removeClass('new-fade');
-        });
     }
 
     if (parent.hasClass('new-fade')) {

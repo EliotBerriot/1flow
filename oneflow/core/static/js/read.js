@@ -5,6 +5,9 @@
 // need for a $(document).ready(…) call. But it really needs the
 // document fully loaded to operated properly.
 
+// TODO: put this in our own namespace, not in the window…
+
+
 common_init();
 
 function eventually_toggle(event) {
@@ -13,7 +16,32 @@ function eventually_toggle(event) {
     console.log('toggled: ' + event.target);
 
     if ($(event.target).attr('href') == undefined) {
-        $(this).closest('.slide-togglable').slideToggle();
+        var togglable   = $(this).closest('.slide-togglable');
+        var custom_func = togglable.data('toggle-function');
+        var custom_cbk  = togglable.data('toggle-callback');
+        var target_sel  = togglable.data('toggle-id');
+
+        if (custom_func != 'undefined') {
+
+            if (custom_cbk != 'undefined') {
+                window[custom_func](target_sel,
+                                    window[custom_cbk]);
+            }
+
+            window[custom_func](target_sel);
+
+        } else {
+
+            if (custom_cbk != 'undefined') {
+                togglable.slideToggle(function(){
+                    // we have to pass the OID in some way, thus we do not
+                    // simply pass the callback like we do for `custom_func`.
+                    window[custom_cbk](target_sel);
+                });
+            }
+
+            togglable.slideToggle();
+        }
     }
 
     event.stopPropagation();
@@ -40,7 +68,7 @@ var scroll_speed = 750;
 
 function scrollToElement(target, speed, topoffset) {
 
-    var element = jQuery(target);
+    var element = $(target);
 
     if(typeof speed == 'undefined') {
         var speed = scroll_speed;
@@ -58,12 +86,15 @@ function scrollToElement(target, speed, topoffset) {
         topoffset += 10;
     }
 
-    //console.log(target);
-    //console.log(topoffset);
+    // console.log('>>> scrolling back to');
+    // console.log(target);
+    // console.log(element);
+    // console.log('>>> with offset');
+    // console.log(topoffset);
 
     var destination = element.offset().top - topoffset;
 
-    jQuery('html:not(:animated),body:not(:animated)')
+    $('html:not(:animated),body:not(:animated)')
         .animate({scrollTop: destination}, speed, function() {
             // disabled, it doesn't play nice with Bootstrap's
             // topnav: the target get hidden behind, and the end
@@ -75,12 +106,21 @@ function scrollToElement(target, speed, topoffset) {
     return false;
 }
 
-function toggle_content(oid) {
+function notice_element(oid) {
+
+    flash_fade($("#" + oid + " .article"), "#ddd", "#bbb");
+}
+
+function toggle_content(oid, callback) {
+
+    var run_callback = function() {
+        typeof callback === 'function' && callback(oid);
+    };
 
     var me      = "#" + oid,
         content = $("#content-" + oid),
 
-        open_me = function(scrollTo) {
+        open_me = function(scrollTo, callback) {
 
             if(typeof scrollTo == 'undefined') {
                 var scrollTo = true;
@@ -90,11 +130,26 @@ function toggle_content(oid) {
                 scrollToElement(me);
             }
 
-            content.slideDown(scroll_speed, "swing");
+            content.slideDown(scroll_speed, "swing", run_callback);
         };
 
     if (content.is(':visible')) {
-        content.slideUp(scroll_speed, "swing");
+
+        // TODO: if (!inViewport(me))
+        //scrollToElement(me, scroll_speed, $(me).height());
+        //scrollToElement(me, scroll_speed, 0);
+        //scrollToElement(me);
+
+        // put the current item to top of window
+        scrollToElement(me, scroll_speed, 50);
+
+        // put the current item in the center of the window.
+        //scrollToElement(me, scroll_speed, $(window).height() / 2);
+
+        // put the current item in the upper part of the window.
+        //scrollToElement(me, scroll_speed, $(window).height() / 4);
+
+        content.slideUp(scroll_speed, "swing", run_callback);
         open_content = null;
 
     } else {
@@ -103,25 +158,27 @@ function toggle_content(oid) {
             var current    = "#" + open_content,
                 cur_height = $(current).height();
 
-            // compensate the slideUp() of the current open element if
-            // it is before us, else the movement in not visually fluent.
+            // compensate the slideUp() of the current open
+            // element if it's located before us, else the
+            // movement in not visually fluent.
             if ($(current).data('index') < $(me).data('index')) {
                 scrollToElement(me, scroll_speed, cur_height);
                 open_me(false);
 
             } else {
-                open_me();
+                open_me(true, run_callback);
             }
 
             $("#content-" + open_content).slideUp(
                 scroll_speed, "swing",
-                function(){
+                function() {
                     open_content = oid;
+                    run_callback();
                 }
             );
 
         } else {
-            open_me();
+            open_me(true, run_callback);
             open_content = oid;
         }
 

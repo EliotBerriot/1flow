@@ -44,9 +44,10 @@
 
 /* ------------------------------------------------------------- Home / index */
 
-#home, #read, #profile {
+section {
     /* Space for the fixed navbar. */
-    padding-top: 40px;
+    /*padding-top: 60px;*/
+    margin-top: 40px;
 }
 
 #home-styles-chooser {
@@ -194,7 +195,6 @@ header {
     /* cancel Bootstrap's media margin. */
     margin-top: 0;
 
-    padding-bottom: 5px;
     font-weight: 300;
 
     .is_unread {
@@ -251,15 +251,26 @@ header {
 .read-list-row {
 
     .article {
+        padding: 5px 0;
+
         border-bottom: 1px dotted #ddd;
+
+        /* START bring the body color here for the flash_fade() to work. */
+
+        color: #29323d;
+
+        h1, h2, h3 {
+            color: inherit;
+        }
+
+        /* END flash_fade() color */
+
 
         .article-meta {
             .meta {
                 max-height: 20px;
                 overflow: hidden;
                 text-overflow: ellipsis;
-
-                margin-bottom: 5px;
 
                 .meta {
                     margin-left: 20px;
