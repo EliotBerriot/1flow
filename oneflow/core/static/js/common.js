@@ -341,7 +341,7 @@ function setup_everything(parent) {
         // Don't use eval. Thanks
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
-        window[$('body').attr('id') + '_setup']();
+        window[$('body').attr('id') + '_setup'](parent);
 
     } catch(err) {
         console.debug(err);

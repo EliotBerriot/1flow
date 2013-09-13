@@ -1,10 +1,14 @@
 
 'use strict';
 
+// We assume this JS is sourced at the end of any HTML, avoiding the
+// need for a $(document).ready(…) call. But it really needs the
+// document fully loaded to operated properly.
+
 common_init();
 
 
-function read_setup() {
+function read_setup(parent) {
     // this function is run after each ajax call, via setup_everything().
 
     $(".article-content p").find('img').parent().addClass('img-legend');
@@ -111,7 +115,3 @@ function toggle_content(oid) {
     // in case we where clicked.
     return false;
 }
-
-// We assume this JS is sourced at the end of any HTML, avoiding the
-// need for a $(document).ready(…) call. But it really needs the
-// document fully loaded to operated properly.
