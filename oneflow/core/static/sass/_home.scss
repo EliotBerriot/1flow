@@ -195,7 +195,6 @@ header {
     /* cancel Bootstrap's media margin. */
     margin-top: 0;
 
-    padding-bottom: 5px;
     font-weight: 300;
 
     .is_unread {
@@ -252,6 +251,8 @@ header {
 .read-list-row {
 
     .article {
+        padding: 5px 0;
+
         border-bottom: 1px dotted #ddd;
 
         .article-meta {
@@ -259,8 +260,6 @@ header {
                 max-height: 20px;
                 overflow: hidden;
                 text-overflow: ellipsis;
-
-                margin-bottom: 5px;
 
                 .meta {
                     margin-left: 20px;
