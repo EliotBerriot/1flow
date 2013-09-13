@@ -7,11 +7,26 @@
 
 common_init();
 
+function eventually_toggle(event) {
+    // see http://stackoverflow.com/a/9183467/654755 for the base I used.
+
+    console.log('toggled: ' + event.target);
+
+    if ($(event.target).attr('href') == undefined) {
+        $(this).closest('.slide-togglable').slideToggle();
+    }
+
+    event.stopPropagation();
+}
 
 function read_setup(parent) {
     // this function is run after each ajax call, via setup_everything().
 
     $(".article-content p").find('img').parent().addClass('img-legend');
+
+    //console.debug('read setup binding…');
+
+    find_start(parent, 'slide-togglable').click(eventually_toggle);
 
 }
 
