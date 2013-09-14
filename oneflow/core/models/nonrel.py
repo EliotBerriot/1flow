@@ -1954,6 +1954,13 @@ class Article(Document, DocumentHelperMixin):
                 self.comments_feed = None
                 e.errors.pop('comments_feed')
 
+            language_error = e.errors.get('language', None)
+
+            if language_error and self.language in (u'', None):
+                # Oh please, don't bother me.
+                # Again, required=False doesn't work at all.
+                e.errors.pop('language')
+
             if e.errors:
                 raise e
 
