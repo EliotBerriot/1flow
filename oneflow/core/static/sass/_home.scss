@@ -270,20 +270,7 @@ header {
             color: inherit;
         }
 
-        /* END flash_fade() color */
-
-
-        .article-meta {
-            .meta {
-                max-height: 20px;
-                overflow: hidden;
-                text-overflow: ellipsis;
-
-                .meta {
-                    margin-left: 20px;
-                }
-            }
-        }
+        /* END flash_fade() */
     }
 
     .article-meta {
@@ -299,13 +286,28 @@ header {
             vertical-align: top;
             width: auto;
         }
+
+        .meta {
+            max-height: 2em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            .meta {
+                margin-left: 1em;
+
+                /* doesn't work
+                max-height: 1em;
+                overflow: hidden;
+                */
+            }
+        }
     }
 
     .article-content {
         font-family: georgia, times, serif;
         text-align: justify;
 
-        padding: 80px;
+        padding: 1em 0;
 
         h1, h2, h3 {
             text-align: left;
@@ -313,30 +315,81 @@ header {
         }
 
         h1 {
-            padding-bottom: 20px;
+            padding-bottom: 0.5em;
             border-bottom: 1px dotted #ddd;
-            margin-bottom: 80px;
+            margin-bottom: 1.5em;
         }
 
         p, ul, ol {
-            font-size: 20px;
-            line-height: 1.2em;
-            margin: 30px 0;
+            font-size: 1.75em;
+            line-height: 1.25em;
+            margin: 1.5em 0;
         }
 
         ul, ol {
-            margin-left: 30px;
+            margin-left: 1.25em;
         }
 
         .img-legend {
             font-size: 14px;
             text-align: center;
-            margin: 0 50px;
+            margin: 0 0.1em;
         }
 
         ul li, ol li {
-            line-height: 1.2em;
-            margin: 10px 0;
+            line-height: 1.25em;
+
+            p,
+            ul,
+            ol,
+            ul li p,
+            ul li ul,
+            ul li ol,
+            ul li ul li p,
+            ul li ol li p,
+            ol li p,
+            ol li ul,
+            ol li ol,
+            ol li ul li p,
+            ol li ol li p {
+                font-size: 100%;
+            }
+
+            p,
+            ol li p,
+            ol li ul li p,
+            ol li ol li p,
+            ul li p,
+            ul li ul li p,
+            ul li ol li p {
+                /*
+                    We use only the margin from <{u,o}l>* and <li>.
+                    Having the <p> one makes the thing too big (ugly)
+                    when the MD renderer embeds <p> inside <li>.
+                */
+                margin: 0;
+            }
+
+            ul li,
+            ol li,
+            ul li ul li,
+            ul li ol li,
+            ol li ul li,
+            ol li ol li {
+                line-height: 1.25em;
+            }
+
+            ul,
+            ol,
+            ul li ul,
+            ul li ol,
+            ol li ul,
+            ol li ol {
+                line-height: 1.25em;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
         }
 
         img {
@@ -359,9 +412,9 @@ header {
     }
 
     .heading {
-        font-size: 18px;
-        max-height: 25px;
-        line-height: 25px;
+        font-size: 1.5em;
+        max-height: 1.4em;
+        line-height: 1.4em;
         cursor: pointer;
     }
 
@@ -381,7 +434,7 @@ header {
             /* reset the font-size from read-item
                which is bigger, for reading. */
             font-size: 120%;
-            margin-top: 40px;
+            margin-top: 2em;
         }
     }
 
