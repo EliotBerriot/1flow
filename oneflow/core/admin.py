@@ -251,10 +251,8 @@ class ArticleAdmin(admin.DocumentAdmin):
     ordering = ('-date_published', '-date_added', )
     #date_hierarchy = ('date_published', )
 
-    # Should really be 'raw_id_fields', but doesn't work on MongoEngine.
-    exclude = ('tags', 'authors', 'publishers',
-               'source', )
-    raw_id_fields = ('duplicate_of', 'feeds', )
+    raw_id_fields = ('tags', 'authors', 'publishers',
+                     'source', 'duplicate_of', 'feeds', )
 
     def tags_display(self, obj):
 
