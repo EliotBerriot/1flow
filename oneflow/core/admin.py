@@ -5,10 +5,10 @@ import dateutil.parser
 from humanize.i18n import django_language
 
 from constance import config
-
+from django.forms import TextInput, CheckboxSelectMultiple
 from django.conf import settings
-
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
@@ -18,6 +18,7 @@ from .models.reldb import HelpContent
 
 from django.contrib import admin as django_admin
 import mongoadmin as admin
+from mongodbforms import DocumentForm
 
 from sparks.django.admin import languages, truncate_field
 
@@ -322,18 +323,32 @@ class ArticleAdmin(admin.DocumentAdmin):
 admin.site.register(Article, ArticleAdmin)
 
 
-# Not yet ready. Will be custom widget for
-# Feed.name (not a textarea but a simple input).
-#
-# class FeedAdminForm():
-#     class Meta:
-#         model = Feed
-#         widgets = {
-#             'name': ApproveStopWidget(),
-#         }
+class HorizontalCheckbox(CheckboxSelectMultiple):
+    def render(self, *args, **kwargs):
+        output = super(HorizontalCheckbox,
+                       self).render(*args, **kwargs)
+
+        return mark_safe(output.replace(
+                         u'<ul>', u'').replace(
+                         u'</ul>', u'').replace(
+                         u'<li>', u'<span style="margin-right:20px">').replace(
+                         u'</li>', u'</span>'))
+
+
+class FeedAdminForm(DocumentForm):
+    class Meta:
+        model = Feed
+        widgets = {
+            'url': TextInput(attrs={'class': 'vURLField'}),
+            'name': TextInput(attrs={'class': 'vLargeTextField'}),
+            'languages': HorizontalCheckbox(),
+            'last_etag': TextInput(attrs={'class': 'vLargeTextField'}),
+            'last_modified': TextInput(attrs={'class': 'vLargeTextField'}),
+        }
+
 
 class FeedAdmin(admin.DocumentAdmin):
-
+    form = FeedAdminForm
     list_display = ('id', 'name', 'url_display',
                     'good_for_use_display', 'restricted_display',
                     'duplicate_of_display', 'errors_display',
