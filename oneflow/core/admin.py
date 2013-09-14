@@ -322,6 +322,16 @@ class ArticleAdmin(admin.DocumentAdmin):
 admin.site.register(Article, ArticleAdmin)
 
 
+# Not yet ready. Will be custom widget for
+# Feed.name (not a textarea but a simple input).
+#
+# class FeedAdminForm():
+#     class Meta:
+#         model = Feed
+#         widgets = {
+#             'name': ApproveStopWidget(),
+#         }
+
 class FeedAdmin(admin.DocumentAdmin):
 
     list_display = ('id', 'name', 'url_display',
@@ -352,6 +362,29 @@ class FeedAdmin(admin.DocumentAdmin):
     #change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
 
+    fieldsets = (
+        ('Main', {
+            'fields': ('name', 'url',
+                       ('good_for_use', 'restricted', ),
+                       'languages', 'notes',
+                       'date_added', ),
+        }),
+        ('Public information', {
+            'classes': ('grp-collapse grp-open', ),
+            'fields' : ('thumbnail_url',
+                        'description_en', 'description_fr', ),
+        }),
+        ('Fetch parameters', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : ('fetch_interval', 'last_fetch',
+                        'last_etag', 'last_modified', ),
+        }),
+        ('Closing procedure', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : (('closed', 'date_closed', ),
+                        'closed_reason', ),
+        }),
+    )
     # def name_display(self, obj):
 
     #     return u'<a href="{0}" target="_blank" {2}>{1}</a>'.format(

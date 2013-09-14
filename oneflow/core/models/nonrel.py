@@ -854,15 +854,27 @@ class Feed(Document, DocumentHelperMixin):
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
                                default=list)
-    languages      = ListField(StringField(), verbose_name=_(u'Languages'),
+    languages      = ListField(StringField(max_length=5,
+                               choices=settings.LANGUAGES),
+                               verbose_name=_(u'Languages'),
                                help_text=_(u'Set this to more than one '
                                            u'language to help article '
                                            u'language detection if none '
                                            u'is set in articles.'))
     date_added     = DateTimeField(default=datetime(2013, 07, 01),
                                    verbose_name=_(u'date added'))
-    restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
-    closed         = BooleanField(default=False, verbose_name=_(u'closed'))
+    restricted     = BooleanField(default=False, verbose_name=_(u'restricted'),
+                                  help_text=_(u'Is this feed available only to '
+                                              u'paid subscribers on its '
+                                              u'publisher\'s web site?'))
+    closed         = BooleanField(default=False, verbose_name=_(u'closed'),
+                                  help_text=_(u'Indicate that the feed is not '
+                                              u'fetched anymore (see '
+                                              u'“closed_reason” for why). '
+                                              u'/!\\ WARNING: do not just '
+                                              u'tick the checkbox; there is '
+                                              u'a programmatic procedure to '
+                                              u'close a feed properly.'))
     date_closed    = DateTimeField(verbose_name=_(u'date closed'))
     closed_reason  = StringField(verbose_name=_(u'closed reason'))
 
@@ -895,12 +907,12 @@ class Feed(Document, DocumentHelperMixin):
 
     good_for_use = BooleanField(verbose_name=_(u'Shown in selector'),
                                 default=False,
-                                help_text=_(u'Set to True to make this feed '
-                                            u'available to subscribers in '
-                                            u'the feeds selector wizard. '
-                                            u'Without this, the user must '
-                                            u'manually enter the feed '
-                                            u'address to subscribe to it.'))
+                                help_text=_(u'Make this feed available to new '
+                                            u'subscribers in the selector '
+                                            u'wizard. Without this, the user '
+                                            u'can still subscribe but he '
+                                            u'must know it and manually enter '
+                                            u'the feed address.'))
     thumbnail_url  = URLField(verbose_name=_(u'Thumbnail URL'))
     description_fr = StringField(verbose_name=_(u'Description (FR)'),
                                  help_text=_(u'Public description of the feed '
@@ -1811,13 +1823,20 @@ class Article(Document, DocumentHelperMixin):
                                 help_text=_(u'Rating used as a base when a '
                                             u'user has not already rated the '
                                             u'content.'))
-    language       = StringField(verbose_name=_(u'Article language'))
-    text_direction = StringField(verbose_name=_(u'Text direction'))
+    language       = StringField(verbose_name=_(u'Article language'),
+                                 max_length=5, choices=settings.LANGUAGES,
+                                 help_text=_(u'2 letters or 5 characters '
+                                             u'language code (eg “en”, '
+                                             u'“fr-FR”…).'))
+    text_direction = StringField(verbose_name=_(u'Text direction'),
+                                 choices=((u'ltr', _(u'Left-to-Right')),
+                                          (u'rtl', _(u'Right-to-Left'))),
+                                 default=u'ltr', max_length=3)
 
     image_url     = StringField(verbose_name=_(u'image URL'))
     abstract      = StringField(verbose_name=_(u'abstract'),
                                 help_text=_(u'Small exerpt of content, '
-                                            u'if applicable'))
+                                            u'if applicable.'))
     content       = StringField(default=CONTENT_NOT_PARSED,
                                 verbose_name=_(u'Content'),
                                 help_text=_(u'Article content'))
@@ -2243,8 +2262,12 @@ class Article(Document, DocumentHelperMixin):
                                         'language', None)
 
                 if language is not None:
-                    self.language = language
-                    self.save()
+                    try:
+                        self.language = language
+                        self.save()
+                    except:
+                        LOGGER.exception(u'Cannot set language %s on '
+                                         u'article %s.', language, self)
 
             if self.orphaned:
                 # We have a chance to get at least *some* content. It will
