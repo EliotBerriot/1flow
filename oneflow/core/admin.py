@@ -379,10 +379,10 @@ class FeedAdmin(admin.DocumentAdmin):
             'fields' : ('fetch_interval', 'last_fetch',
                         'last_etag', 'last_modified', ),
         }),
-        ('Closing procedure', {
+        ('Errors and closing procedure', {
             'classes': ('grp-collapse grp-closed', ),
             'fields' : (('closed', 'date_closed', ),
-                        'closed_reason', ),
+                        'closed_reason', 'errors', ),
         }),
     )
     # def name_display(self, obj):
