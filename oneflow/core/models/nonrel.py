@@ -861,6 +861,7 @@ class Feed(Document, DocumentHelperMixin):
     languages      = ListField(StringField(max_length=5,
                                choices=settings.LANGUAGES),
                                verbose_name=_(u'Languages'),
+                               required=False,
                                help_text=_(u'Set this to more than one '
                                            u'language to help article '
                                            u'language detection if none '
@@ -2291,7 +2292,11 @@ class Article(Document, DocumentHelperMixin):
                     try:
                         self.language = language
                         self.save()
+
                     except:
+                        # This happens if the language code of the
+                        # feedparser data does not correspond to a
+                        # Django setting language we support.
                         LOGGER.exception(u'Cannot set language %s on '
                                          u'article %s.', language, self)
 
