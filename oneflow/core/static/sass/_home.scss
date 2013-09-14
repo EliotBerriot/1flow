@@ -184,6 +184,8 @@ header {
 
 #read {
     .article-number {
+        padding: 0 10px;
+
         h2 small {
             margin-left: 0;
         }
@@ -251,11 +253,16 @@ header {
 .read-list-row {
 
     .article {
-        padding: 5px 0;
-
+        padding: 5px 10px;
         border-bottom: 1px dotted #ddd;
 
-        /* START bring the body color here for the flash_fade() to work. */
+        /*
+            START flash_fade():
+            bring the body color here
+            for the flash_fade() to work.
+
+            Thus, we need to reset the H* colors.
+        */
 
         color: #29323d;
 
