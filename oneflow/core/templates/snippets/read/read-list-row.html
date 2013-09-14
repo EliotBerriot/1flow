@@ -2,7 +2,7 @@
       data-index="{{ tenths_counter|add:forloop.counter }}">
   {% with read.article as article %}
 
-    <div class="article span9 offset2 hover-unmute-children">
+    <div class="article span12 hover-unmute-children">
 
       <div class="row-fluid article-meta">
         <div class="span12">
@@ -108,34 +108,36 @@
         </div><!-- .admin-informations -->
       {% endif %}
 
-      <div class="article-content slide-togglable slide-toggle-notice hide"
+      <div class="article-content slide-togglable slide-toggle-notice row-fluid hide"
           id="content-{{ read.id }}" data-toggle-id="{{ read.id }}"
           data-toggle-function="toggle_content"
           data-toggle-callback="notice_element">
-        {% if article.content_type == 3 %}
-          {% with content=article.content_display %}
-            {% if content %}
-              {{ content|safe }}
-            {% else %}
-              {% include 'snippets/read/no-content.html' %}
 
-            {% endif %}
-          {% endwith %}
+        <div class="span10 offset1">
+          {% if article.content_type == 3 %}
+            {% with content=article.content_display %}
+              {% if content %}
+                {{ content|safe }}
+              {% else %}
+                {% include 'snippets/read/no-content.html' %}
 
-        {% elif article.content_type == 1 %}
-              {% include 'snippets/read/not-safe.html' %}
+              {% endif %}
+            {% endwith %}
 
-        {% else %}
-          {% include 'snippets/read/no-content.html' %}
+          {% elif article.content_type == 1 %}
+                {% include 'snippets/read/not-safe.html' %}
 
-        {% endif %}
+          {% else %}
+            {% include 'snippets/read/no-content.html' %}
 
-        <div class="article-actions">
-          <div class="span12">
+          {% endif %}
 
-          </div>
-        </div><!-- .article-actions -->
+          <div class="article-actions row-fluid">
+            <div class="span12">
 
+            </div>
+          </div><!-- .article-actions -->
+        </div><!-- .span10 -->
       </div><!-- .article-content -->
 
     </div><!-- .article -->
