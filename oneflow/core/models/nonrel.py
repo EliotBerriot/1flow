@@ -853,7 +853,11 @@ class Feed(Document, DocumentHelperMixin):
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
-                               default=list)
+                               default=list, verbose_name=_(u'tags'),
+                               help_text=_(u'This tags are used only when '
+                                           u'articles from this feed have no '
+                                           u'tags already. They are assigned '
+                                           u'to new subscriptions too.'))
     languages      = ListField(StringField(max_length=5,
                                choices=settings.LANGUAGES),
                                verbose_name=_(u'Languages'),
@@ -913,7 +917,10 @@ class Feed(Document, DocumentHelperMixin):
                                             u'can still subscribe but he '
                                             u'must know it and manually enter '
                                             u'the feed address.'))
-    thumbnail_url  = URLField(verbose_name=_(u'Thumbnail URL'))
+    thumbnail_url  = URLField(verbose_name=_(u'Thumbnail URL'),
+                              help_text=_(u'Full URL of the thumbnail '
+                                          u'displayed in the feed selector. '
+                                          u'Can be hosted outside of 1flow.'))
     description_fr = StringField(verbose_name=_(u'Description (FR)'),
                                  help_text=_(u'Public description of the feed '
                                              u'in French language. '
