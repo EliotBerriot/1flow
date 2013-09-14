@@ -853,7 +853,11 @@ class Feed(Document, DocumentHelperMixin):
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
-                               default=list)
+                               default=list, verbose_name=_(u'tags'),
+                               help_text=_(u'This tags are used only when '
+                                           u'articles from this feed have no '
+                                           u'tags already. They are assigned '
+                                           u'to new subscriptions too.'))
     languages      = ListField(StringField(max_length=5,
                                choices=settings.LANGUAGES),
                                verbose_name=_(u'Languages'),
@@ -913,7 +917,10 @@ class Feed(Document, DocumentHelperMixin):
                                             u'can still subscribe but he '
                                             u'must know it and manually enter '
                                             u'the feed address.'))
-    thumbnail_url  = URLField(verbose_name=_(u'Thumbnail URL'))
+    thumbnail_url  = URLField(verbose_name=_(u'Thumbnail URL'),
+                              help_text=_(u'Full URL of the thumbnail '
+                                          u'displayed in the feed selector. '
+                                          u'Can be hosted outside of 1flow.'))
     description_fr = StringField(verbose_name=_(u'Description (FR)'),
                                  help_text=_(u'Public description of the feed '
                                              u'in French language. '
@@ -1116,7 +1123,10 @@ class Feed(Document, DocumentHelperMixin):
 
         except ValidationError as e:
 
-            if e.errors.pop('site_url', None) is not None:
+            # We pop() because any error will close the feed, whatever it is.
+            site_url_error = e.errors.pop('site_url', None)
+
+            if site_url_error is not None:
                 # Bad site URL, the feed is most probably totally unparsable.
                 # Close it. Admins will be warned about it via mail from a
                 # scheduled core task.
@@ -1125,13 +1135,22 @@ class Feed(Document, DocumentHelperMixin):
                 #           self.mail_warned.append('bad_site_url')
 
                 self.site_url = None
-                self.close()
+                self.close('Bad site url: %s' % str(site_url_error))
 
+            # We pop() because any error will close the feed, whatever it is.
             url_error = e.errors.pop('url', None)
 
             if url_error is not None:
                 if not self.closed:
                     self.close(str(url_error))
+
+            thumbnail_url_error = e.errors.get('thumbnail_url', None)
+
+            if thumbnail_url_error is not None:
+                if self.thumbnail_url == u'':
+                    # Just make this field not required. `required=False`
+                    # in the Document definition is not sufficient.
+                    e.errors.pop('thumbnail_url')
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)

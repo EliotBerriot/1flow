@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-30 18:41+0200\n"
+"POT-Creation-Date: 2013-09-14 11:18+0200\n"
 "PO-Revision-Date: 2013-06-27 21:38+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,16 +19,16 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: admin.py:134
+#: admin.py:141
 #, python-format
 msgid "Export selected %(verbose_name_plural)s to CSV"
 msgstr "Exporter les %(verbose_name_plural)s sélectionnés en CSV"
 
-#: admin.py:164
+#: admin.py:171
 msgid "Groups"
 msgstr "Groupes"
 
-#: admin.py:169
+#: admin.py:176
 msgid "Full name"
 msgstr "Nom complet"
 
@@ -260,67 +260,67 @@ msgstr ""
 "\n"
 "  [home]: /\n"
 
-#: templatetags/base_utils.py:105 templatetags/base_utils.py:119
+#: templatetags/base_utils.py:144 templatetags/base_utils.py:158
 msgid "day"
 msgstr "jour"
 
-#: templatetags/base_utils.py:106 templatetags/base_utils.py:120
+#: templatetags/base_utils.py:145 templatetags/base_utils.py:159
 msgid "days"
 msgstr "jours"
 
-#: templatetags/base_utils.py:107 templatetags/base_utils.py:121
+#: templatetags/base_utils.py:146 templatetags/base_utils.py:160
 msgid "hour"
 msgstr "heure"
 
-#: templatetags/base_utils.py:108 templatetags/base_utils.py:122
+#: templatetags/base_utils.py:147 templatetags/base_utils.py:161
 msgid "hours"
 msgstr "heures"
 
-#: templatetags/base_utils.py:109
+#: templatetags/base_utils.py:148
 msgid "minute"
 msgstr "minute"
 
-#: templatetags/base_utils.py:110
+#: templatetags/base_utils.py:149
 msgid "minutes"
 msgstr "minutes"
 
-#: templatetags/base_utils.py:111
+#: templatetags/base_utils.py:150
 msgid "second"
 msgstr "seconde"
 
-#: templatetags/base_utils.py:112
+#: templatetags/base_utils.py:151
 msgid "seconds"
 msgstr "seconde"
 
-#: templatetags/base_utils.py:123
+#: templatetags/base_utils.py:162
 msgid "min"
 msgstr "min"
 
-#: templatetags/base_utils.py:124
+#: templatetags/base_utils.py:163
 msgid "mins"
 msgstr "mins"
 
-#: templatetags/base_utils.py:125
+#: templatetags/base_utils.py:164
 msgid "sec"
 msgstr "sec"
 
-#: templatetags/base_utils.py:126
+#: templatetags/base_utils.py:165
 msgid "secs"
 msgstr "secs"
 
-#: templatetags/base_utils.py:132 templatetags/base_utils.py:133
+#: templatetags/base_utils.py:171 templatetags/base_utils.py:172
 msgid "d"
 msgstr "j"
 
-#: templatetags/base_utils.py:134 templatetags/base_utils.py:135
+#: templatetags/base_utils.py:173 templatetags/base_utils.py:174
 msgid "h"
 msgstr "h"
 
-#: templatetags/base_utils.py:136 templatetags/base_utils.py:137
+#: templatetags/base_utils.py:175 templatetags/base_utils.py:176
 msgid "m"
 msgstr "m"
 
-#: templatetags/base_utils.py:138 templatetags/base_utils.py:139
+#: templatetags/base_utils.py:177 templatetags/base_utils.py:178
 msgid "s"
 msgstr "s"
 
