@@ -251,9 +251,8 @@ class ArticleAdmin(admin.DocumentAdmin):
     ordering = ('-date_published', '-date_added', )
     #date_hierarchy = ('date_published', )
 
-    # Should really be 'raw_id_fields', but doesn't work on MongoEngine.
-    exclude = ('tags', 'authors', 'publishers',
-               'source', 'duplicate_of', 'feeds', )
+    raw_id_fields = ('tags', 'authors', 'publishers',
+                     'source', 'duplicate_of', 'feeds', )
 
     def tags_display(self, obj):
 
@@ -277,6 +276,7 @@ class ArticleAdmin(admin.DocumentAdmin):
                     u'target="_blank">∃</a>').format(obj.duplicate_of.id)
 
         return u''
+
     duplicate_of_display.allow_tags        = True
     duplicate_of_display.short_description = _(u'Duplicate of')
     duplicate_of_display.admin_order_field = 'duplicate_of'
@@ -322,10 +322,21 @@ class ArticleAdmin(admin.DocumentAdmin):
 admin.site.register(Article, ArticleAdmin)
 
 
+# Not yet ready. Will be custom widget for
+# Feed.name (not a textarea but a simple input).
+#
+# class FeedAdminForm():
+#     class Meta:
+#         model = Feed
+#         widgets = {
+#             'name': ApproveStopWidget(),
+#         }
+
 class FeedAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name', 'errors_display', 'url_display',
-                    'restricted_display',
+    list_display = ('id', 'name', 'url_display',
+                    'good_for_use_display', 'restricted_display',
+                    'duplicate_of_display', 'errors_display',
                     'closed_display', 'fetch_interval_display',
                     'last_fetch_display',
                     'date_added_display', 'latest_article_display',
@@ -333,11 +344,14 @@ class FeedAdmin(admin.DocumentAdmin):
                     'all_articles_count_display',
                     'subscriptions_count_display', )
 
+    # Doesn't work with mongoadmin yet
+    #list_editable      = ('good_for_use', )
+
     list_display_links = ('id', 'name', )
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
     search_fields = ('name', 'url', 'site_url', 'closed', )
     exclude = ('tags', )
-
+    raw_id_fields = ('duplicate_of', )
     # Setting this makes the whole thing unsortable…
     #ordering = ('-last_fetch', )
 
@@ -348,6 +362,29 @@ class FeedAdmin(admin.DocumentAdmin):
     #change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
 
+    fieldsets = (
+        ('Main', {
+            'fields': ('name', 'url',
+                       ('good_for_use', 'restricted', ),
+                       'languages', 'notes',
+                       'date_added', ),
+        }),
+        ('Public information', {
+            'classes': ('grp-collapse grp-open', ),
+            'fields' : ('thumbnail_url',
+                        'description_en', 'description_fr', ),
+        }),
+        ('Fetch parameters', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : ('fetch_interval', 'last_fetch',
+                        'last_etag', 'last_modified', ),
+        }),
+        ('Closing procedure', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : (('closed', 'date_closed', ),
+                        'closed_reason', ),
+        }),
+    )
     # def name_display(self, obj):
 
     #     return u'<a href="{0}" target="_blank" {2}>{1}</a>'.format(
@@ -369,6 +406,19 @@ class FeedAdmin(admin.DocumentAdmin):
     url_display.short_description = _(u'URLs')
     url_display.allow_tags = True
     url_display.admin_order_field = 'url'
+
+    def duplicate_of_display(self, obj):
+
+        if obj.duplicate_of:
+            return (u'<a href="/admin/models/feed/{0}" '
+                    u'style="cursor: pointer; font-size: 300%;" '
+                    u'target="_blank">∃</a>').format(obj.duplicate_of.id)
+
+        return u''
+
+    duplicate_of_display.allow_tags        = True
+    duplicate_of_display.short_description = _(u'Duplicate of')
+    duplicate_of_display.admin_order_field = 'duplicate_of'
 
     def errors_display(self, obj):
 
@@ -399,6 +449,14 @@ class FeedAdmin(admin.DocumentAdmin):
     restricted_display.short_description = _(u'Private?')
     restricted_display.admin_order_field = 'restricted'
     restricted_display.boolean = True
+
+    def good_for_use_display(self, obj):
+
+        return obj.good_for_use
+
+    good_for_use_display.short_description = _(u'Shown?')
+    good_for_use_display.admin_order_field = 'good_for_use'
+    good_for_use_display.boolean = True
 
     def recent_articles_count_display(self, obj):
 

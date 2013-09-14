@@ -82,10 +82,14 @@ CELERYBEAT_SCHEDULE = {
         'task': 'oneflow.core.tasks.global_feeds_checker',
         'schedule': crontab(hour='1', minute='1'),
     },
-    'archive-documents': {
-        'task': 'oneflow.core.tasks.archive_documents',
-        'schedule': crontab(hour='*', minute='44'),
-    },
+
+    # De-activated as it's much to slow since Tags are ReferenceField()
+    # instead of GenericReferenceField() in articles.
+    #
+    #'archive-documents': {
+    #    'task': 'oneflow.core.tasks.archive_documents',
+    #    'schedule': crontab(hour='*', minute='44'),
+    #},
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Cleaning tasks
 
