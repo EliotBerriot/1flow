@@ -1116,7 +1116,10 @@ class Feed(Document, DocumentHelperMixin):
 
         except ValidationError as e:
 
-            if e.errors.pop('site_url', None) is not None:
+            # We pop() because any error will close the feed, whatever it is.
+            site_url_error = e.errors.pop('site_url', None)
+
+            if site_url_error is not None:
                 # Bad site URL, the feed is most probably totally unparsable.
                 # Close it. Admins will be warned about it via mail from a
                 # scheduled core task.
@@ -1125,13 +1128,22 @@ class Feed(Document, DocumentHelperMixin):
                 #           self.mail_warned.append('bad_site_url')
 
                 self.site_url = None
-                self.close()
+                self.close('Bad site url: %s' % str(site_url_error))
 
+            # We pop() because any error will close the feed, whatever it is.
             url_error = e.errors.pop('url', None)
 
             if url_error is not None:
                 if not self.closed:
                     self.close(str(url_error))
+
+            thumbnail_url_error = e.errors.get('thumbnail_url', None)
+
+            if thumbnail_url_error is not None:
+                if self.thumbnail_url == u'':
+                    # Just make this field not required. `required=False`
+                    # in the Document definition is not sufficient.
+                    e.errors.pop('thumbnail_url')
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
