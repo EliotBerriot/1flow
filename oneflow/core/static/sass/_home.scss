@@ -237,6 +237,10 @@ header {
             &:visited, &:active {
                 border: none;
             }
+
+            &:first-child {
+                margin-left: 0;
+            }
         }
     }
 
