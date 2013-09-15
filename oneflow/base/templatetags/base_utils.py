@@ -37,7 +37,8 @@ def reverse_active(context, url, return_value=None):
 
 @register.simple_tag(takes_context=True)
 def active(context, pattern, return_value=None):
-    """ Same as reverse active, but for URLs without any views.
+    """ Same as reverse active, but for URLs without any
+        view. :param:`pattern` must be a valid regular expression.
 
         class="{% active request "/help/" "top-menu-element-active" %}"
 
