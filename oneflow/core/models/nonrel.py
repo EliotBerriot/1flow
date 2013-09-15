@@ -447,7 +447,61 @@ class Group(Document, DocumentHelperMixin):
                        reverse_delete_rule=PULL))
 
 
+# ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Imports
+
+IMPORT_STATUS_CHOICES = (
+    (u'P', _(u'Pending')),
+    (u'R', _(u'Running')),
+    (u'F', _(u'Finished')),
+    (u'E', _(u'Error')),
+)
+
+
+@task(name='Import.run', queue='low')
+def import_run(import_id):
+
+    import_ = Import.objects.get(id=import_id)
+    return import_.run()
+
+
+class Import(Document, DocumentHelperMixin):
+    user         = ReferenceField('User', reverse_delete_rule=CASCADE)
+    date_created = DateTimeField(default=now)
+    date_started = DateTimeField()
+    duration     = IntField()
+    status       = StringField(max_length=1, choices=IMPORT_STATUS_CHOICES,
+                               default=u'P')
+    import_type  = StringField(default=u'OPML')
+    content      = StringField(default=u'')
+    error        = StringField(default=u'')
+    obj_created  = ListField(GenericReferenceField())
+    task_id      = StringField()
+
+    meta = {
+        'db_alias': 'archive',
+    }
+
+    def start(self):
+        res = import_run.apply_async((self.id, ), countdown=5)
+        self.update(set__task_id=res.id)
+
+    def run(self):
+
+        # parse OPML
+        # create feeds if not already
+        #   remember already existing for later
+        # create subscriptions
+        #   use custom feed names in subscriptions if any
+        # for each already existing feed
+        #   create all reads;                       |
+        #       today unread                        | in a new method
+        #       all other past read + auto_read     |
+
+        pass
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
+
 
 @task(name='WebSite.post_create', queue='high')
 def website_post_create_task(website_id):

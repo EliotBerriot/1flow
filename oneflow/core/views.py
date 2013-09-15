@@ -27,14 +27,13 @@ from django.utils.translation import ugettext_lazy as _
 
 from oneflow.core.forms import UserProfileEditForm
 
-#from infinite_pagination.paginator import InfinitePaginator
 from endless_pagination.utils import get_page_number_from_request
 
 from sparks.django.utils import HttpResponseTemporaryServerError
 
-from .forms import FullUserCreationForm
+from .forms import FullUserCreationForm, OpmlImportForm
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed, Read
+from .models.nonrel import Feed, Read, Import
 from .models.reldb import HelpContent
 
 from .gr_import import GoogleReaderImport
@@ -171,6 +170,60 @@ def profile(request):
         form = UserProfileEditForm(instance=request.user)
 
     return render(request, 'profile.html', {'form': form})
+
+
+def find_import(request):
+    """ Just a helper, not a view. """
+
+    try:
+        return Import.objects(user=request.user.mongo
+                              ).order_by('-date_created')[0]
+
+    except (Import.DoesNotExist, KeyError, IndexError):
+        return None
+
+
+def import_status(request):
+
+    import_ = find_import(request)
+
+    template = 'snippets/import/status.html' \
+        if request.is_ajax() else 'import.html'
+
+    return render(request, template, {'import': import_, 'status': True})
+
+
+def import_(request):
+    """ OPML import """
+
+    if find_import(request):
+        return HttpResponseRedirect(reverse('import_status'))
+
+    fallback_url = reverse('home')
+
+    if request.method == 'POST':
+        form = OpmlImportForm(request.POST, request.FILES)
+
+        if form.is_valid():
+
+            opml_file = request.FILES['opml_file']
+
+            Import(user=request.user.mongo,
+                   content=opml_file.read()).save().start()
+
+            if request.is_ajax():
+                return HttpResponse(u'DONE.')
+
+            return HttpResponseRedirect(request.META.get('HTTP_REFERER',
+                                        fallback_url))
+
+    else:
+        form = OpmlImportForm()
+
+    template = 'snippets/import/import.html' \
+        if request.is_ajax() else 'import.html'
+
+    return render(request, template, {'form': form})
 
 
 def help(request):

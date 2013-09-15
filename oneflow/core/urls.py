@@ -8,7 +8,7 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
 from .views import (home, read_with_endless_pagination,
-                    help, toggle,
+                    help, toggle, import_,
                     register, profile,
                     set_preference,
                     feed_closed_toggle,
@@ -31,6 +31,9 @@ urlpatterns = patterns(
 
     url(_(r'^(?P<klass>\w+)/(?P<id>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
         login_required(never_cache(toggle)), name='toggle'),
+
+    url(_(r'^import/$'), login_required(never_cache(
+        import_)), name='import'),
 
     url(_(r'^help/$'), login_required(help), name='help'),
 
