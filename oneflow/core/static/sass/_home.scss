@@ -244,6 +244,12 @@ header {
         }
     }
 
+    .end-actions {
+        margin-top: 4em;
+        border-top: 2px solid #90949a;
+        padding-top: 10px;
+    }
+
     .hover-muted {
         opacity: 0;
     }
@@ -540,6 +546,21 @@ header {
         #reads-number {
             /* cancel the 10px padding of big screens to gain space */
             padding: 0;
+        }
+    }
+
+    .read-list-item {
+        .actions {
+            a {
+                margin-left: 30px;
+                font-size: 26px;
+            }
+        }
+
+        .end-actions {
+            margin-top: 1em;
+            border-top: 1px solid #90949a;
+            margin-bottom: 1em;
         }
     }
 
