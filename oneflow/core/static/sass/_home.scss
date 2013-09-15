@@ -502,6 +502,29 @@ header {
 
 /* --------------------------------------------------------------- Responsive */
 
+@media (max-width: 1023px) {
+    /* A special style for the iPad in portrait mode. */
+
+    body {
+        padding-top: 0;
+    }
+
+    .navbar-fixed-top,
+    .navbar-fixed-bottom {
+        /* Override bootstrap to get our navbar fixed again. */
+        position: fixed;
+    }
+
+    #read {
+        /*  completely reset both .span8.offset2 containers
+            for them to take all space in iPad portrait. */
+        #reads-number,
+        #reads-container {
+            width: 100%;
+            margin: 0;
+        }
+    }
+}
 
 @media (max-width: 767px) {
 
