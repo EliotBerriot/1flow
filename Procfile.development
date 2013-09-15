@@ -8,11 +8,12 @@ web: python manage.py runserver
 #web: python manage.py run_gunicorn -b 0.0.0.0:8000 -w 6
 #web: uwsgi --http :8000 -H ${WORKON_HOME}/1flow --chdir ${HOME}/sources/1flow --wsgi-file oneflow/wsgi.py --master --processes 6
 shell: python manage.py shell_ipynb
-flower: python manage.py celery flower --logging=warning --broker_api=redis://${MAIN_SERVER}:6379/${REDIS_CELERY_DB}
+flower: python manage.py celery flower --logging=warning --broker_api=redis://${MAIN_SERVER}:6379/${REDIS_CELERY_DB} --broker=redis://${MAIN_SERVER}:6379/${REDIS_CELERY_DB}
 celery_beat: python manage.py celery beat        --loglevel=info
-worker_high: python manage.py celery worker -E   --loglevel=info --queues high   --hostname high.${HOSTNAME} -c 8
-worker_medium: python manage.py celery worker -E --loglevel=info --queues medium --hostname medium.${HOSTNAME} -c 4
+worker_high: python manage.py celery worker -E   --loglevel=info --queues high   --hostname high.${HOSTNAME} -c 6
+worker_medium: python manage.py celery worker -E --loglevel=info --queues medium --hostname medium.${HOSTNAME} -c 3
 worker_low: python manage.py celery worker -E    --loglevel=info --queues low,background    --hostname low.${HOSTNAME} -c 2
-worker_fetch: python manage.py celery worker -E  --loglevel=info --queues fetch,background  --hostname fetch.${HOSTNAME} -c 6
-worker_swarm: python manage.py celery worker -E  --loglevel=info --queues swarm,background  --hostname swarm.${HOSTNAME} -c 12
+worker_background: python manage.py celery worker -E --loglevel=info --queues background    --hostname background.${HOSTNAME} -c 1
+worker_fetch: python manage.py celery worker -E  --loglevel=info --queues fetch,background  --hostname fetch.${HOSTNAME} -c 3
+worker_swarm: python manage.py celery worker -E  --loglevel=info --queues swarm  --hostname swarm.${HOSTNAME} -c 8
 
