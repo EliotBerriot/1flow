@@ -45,18 +45,52 @@ class ThrottleIntervalTest(TestCase):
 
         some_news = 10
         no_dupe   = 0
+        no_mutual = 0
 
-        self.assertEquals(t(1000, some_news, no_dupe, 'etag', 'last_modified'),
-                          666.6666666666666)
-        self.assertEquals(t(1000, some_news, no_dupe, '', 'last_modified'),
-                          666.6666666666666)
-        self.assertEquals(t(1000, some_news, no_dupe, None, 'last_modified'),
-                          666.6666666666666)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe,
+                          'etag', 'last_modified'), 540.0)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe,
+                          '', 'last_modified'),  540.0)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe,
+                          None, 'last_modified'), 540.0)
 
-        self.assertEquals(t(1000, some_news, no_dupe, 'etag', ''),
-                          666.6666666666666)
-        self.assertEquals(t(1000, some_news, no_dupe, 'etag', None),
-                          666.6666666666666)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe, 'etag', ''),
+                          540.0)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe, 'etag', None),
+                          540.0)
+
+    def test_lower_interval_with_etag_or_modified_and_mutualized(self):
+
+        t = Feed.throttle_fetch_interval
+
+        no_news   = 0
+        no_dupe   = 0
+        a_dupe    = 1
+        a_mutual  = 1
+
+        self.assertEquals(t(1000, no_news, a_mutual, no_dupe,
+                          'etag', 'last_modified'), 800.0)
+        self.assertEquals(t(1000, no_news, a_mutual, no_dupe,
+                          '', 'last_modified'),  800.0)
+        self.assertEquals(t(1000, no_news, a_mutual, no_dupe,
+                          None, 'last_modified'), 800.0)
+
+        self.assertEquals(t(1000, no_news, a_mutual, no_dupe, 'etag', ''),
+                          800.0)
+        self.assertEquals(t(1000, no_news, a_mutual, no_dupe, 'etag', None),
+                          800.0)
+
+        self.assertEquals(t(1000, no_news, a_mutual, a_dupe,
+                          'etag', 'last_modified'), 900.0)
+        self.assertEquals(t(1000, no_news, a_mutual, a_dupe,
+                          '', 'last_modified'),  900.0)
+        self.assertEquals(t(1000, no_news, a_mutual, a_dupe,
+                          None, 'last_modified'), 900.0)
+
+        self.assertEquals(t(1000, no_news, a_mutual, a_dupe, 'etag', ''),
+                          900.0)
+        self.assertEquals(t(1000, no_news, a_mutual, a_dupe, 'etag', None),
+                          900.0)
 
     def test_raise_interval_with_etag_or_modified(self):
 
@@ -65,30 +99,35 @@ class ThrottleIntervalTest(TestCase):
         some_news = 10
         no_news   = 0
         a_dupe    = 1
+        no_mutual = 0
 
         # news, but a dupe > raise-
 
-        self.assertEquals(t(1000, some_news, a_dupe, 'etag', 'last_modified'),
-                          1125)
-        self.assertEquals(t(1000, some_news, a_dupe, '', 'last_modified'),
-                          1125)
-        self.assertEquals(t(1000, some_news, a_dupe, None, 'last_modified'),
-                          1125)
+        self.assertEquals(t(1000, some_news, no_mutual, a_dupe,
+                          'etag', 'last_modified'), 810.0)
+        self.assertEquals(t(1000, some_news, no_mutual, a_dupe,
+                          '', 'last_modified'), 810.0)
+        self.assertEquals(t(1000, some_news, no_mutual, a_dupe,
+                          None, 'last_modified'), 810.0)
 
-        self.assertEquals(t(1000, some_news, a_dupe, 'etag', ''),   1125)
-        self.assertEquals(t(1000, some_news, a_dupe, 'etag', None), 1125)
+        self.assertEquals(t(1000, some_news, no_mutual, a_dupe,
+                          'etag', ''),   810.0)
+        self.assertEquals(t(1000, some_news, no_mutual, a_dupe,
+                          'etag', None), 810.0)
 
         # no news, a dupe > raise+
 
-        self.assertEquals(t(1000, no_news, a_dupe, 'etag', 'last_modified'),
-                          1250)
-        self.assertEquals(t(1000, no_news, a_dupe, '', 'last_modified'),
-                          1250)
-        self.assertEquals(t(1000, no_news, a_dupe, None, 'last_modified'),
-                          1250)
+        self.assertEquals(t(1000, no_news, no_mutual, a_dupe,
+                          'etag', 'last_modified'), 1250)
+        self.assertEquals(t(1000, no_news, no_mutual, a_dupe,
+                          '', 'last_modified'), 1250)
+        self.assertEquals(t(1000, no_news, no_mutual, a_dupe,
+                          None, 'last_modified'), 1250)
 
-        self.assertEquals(t(1000, no_news, a_dupe, 'etag', ''),   1250)
-        self.assertEquals(t(1000, no_news, a_dupe, 'etag', None), 1250)
+        self.assertEquals(t(1000, no_news, no_mutual, a_dupe,
+                          'etag', ''),   1250)
+        self.assertEquals(t(1000, no_news, no_mutual, a_dupe,
+                          'etag', None), 1250)
 
     def test_lowering_interval_without_etag_nor_modified(self):
 
@@ -96,13 +135,20 @@ class ThrottleIntervalTest(TestCase):
 
         some_news = 10
         no_dupe   = 0
+        no_mutual = 0
+        a_mutual  = 1
 
         # news, no dupes > raise+ (etag don't count)
 
-        self.assertEquals(t(1000, some_news, no_dupe, '', ''),
-                          666.6666666666666)
-        self.assertEquals(t(1000, some_news, no_dupe, None, None),
-                          666.6666666666666)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe, '', ''),
+                          540.0)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe, None, None),
+                          540.0)
+
+        self.assertEquals(t(1000, some_news, a_mutual, no_dupe, '', ''),
+                          630.0)
+        self.assertEquals(t(1000, some_news, a_mutual, no_dupe, None, None),
+                          630.0)
 
     def test_raising_interval_without_etag_nor_modified(self):
 
@@ -111,12 +157,45 @@ class ThrottleIntervalTest(TestCase):
         some_news = 10
         no_news   = 0
         a_dupe    = 1
+        no_dupe   = 0
+        no_mutual = 0
+        a_mutual  = 1
 
-        self.assertEquals(t(1000, some_news, a_dupe, '', ''), 1250)
-        self.assertEquals(t(1000, some_news, a_dupe, None, None), 1250)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe, '', ''),
+                          540.0)
+        self.assertEquals(t(1000, some_news, no_mutual, no_dupe,
+                          None, None), 540.0)
 
-        self.assertEquals(t(1000, no_news, a_dupe, '', ''), 1500)
-        self.assertEquals(t(1000, no_news, a_dupe, None, None), 1500)
+        self.assertEquals(t(1000, some_news, a_mutual, no_dupe, '', ''),
+                          630.0)
+        self.assertEquals(t(1000, some_news, a_mutual, no_dupe,
+                          None, None), 630.0)
+
+        self.assertEquals(t(1000, some_news, no_mutual, a_dupe, '', ''),
+                          810.0)
+        self.assertEquals(t(1000, some_news, no_mutual, a_dupe,
+                          None, None), 810.0)
+
+        self.assertEquals(t(1000, some_news, a_mutual, a_dupe, '', ''),
+                          720.0000000000001)
+        self.assertEquals(t(1000, some_news, a_mutual, a_dupe,
+                          None, None), 720.0000000000001)
+
+        self.assertEquals(t(1000, no_news, no_mutual, no_dupe,
+                          '', ''), 1000.0)
+        self.assertEquals(t(1000, no_news, no_mutual, no_dupe,
+                          None, None), 1000.0)
+
+        self.assertEquals(t(1000, no_news, a_mutual, no_dupe,
+                          '', ''), 800.0)
+        self.assertEquals(t(1000, no_news, a_mutual, no_dupe,
+                          None, None), 800.0)
+
+        self.assertEquals(t(1000, no_news, a_mutual, a_dupe, '', ''), 900.0)
+        self.assertEquals(t(1000, no_news, a_mutual, a_dupe, None, None), 900.0)
+
+        self.assertEquals(t(1000, no_news, no_mutual, a_dupe, '', ''), 1125)
+        self.assertEquals(t(1000, no_news, no_mutual, a_dupe, None, None), 1125)
 
     def test_less_news(self):
 
@@ -128,15 +207,21 @@ class ThrottleIntervalTest(TestCase):
 
         a_dupe  = 1
         no_dupe = 0
+        no_mutual = 0
 
-        self.assertEquals(t(1000, just_one, a_dupe, 'etag', ''),   1125)
-        self.assertEquals(t(1000, less_news, a_dupe, 'etag', None), 1125)
-        self.assertEquals(t(1000, more_news, a_dupe, 'etag', None), 1125)
+        self.assertEquals(t(1000, just_one, no_mutual, a_dupe,
+                          'etag', ''), 900.0)
+        self.assertEquals(t(1000, less_news, no_mutual, a_dupe,
+                          'etag', None), 900.0)
+        self.assertEquals(t(1000, more_news, no_mutual, a_dupe,
+                          'etag', None), 810.0)
 
-        self.assertEquals(t(1000, just_one, no_dupe, 'etag', ''),   800)
-        self.assertEquals(t(1000, less_news, no_dupe, 'etag', None), 800)
-        self.assertEquals(t(1000, more_news, no_dupe, 'etag', None),
-                          666.6666666666666)
+        self.assertEquals(t(1000, just_one, no_mutual, no_dupe,
+                          'etag', ''), 600.0)
+        self.assertEquals(t(1000, less_news, no_mutual, no_dupe,
+                          'etag', None), 600.0)
+        self.assertEquals(t(1000, more_news, no_mutual, no_dupe,
+                          'etag', None), 540.0)
 
     def test_limits(self):
 
@@ -146,22 +231,29 @@ class ThrottleIntervalTest(TestCase):
         no_news   = 0
         a_dupe    = 1
         no_dupe   = 0
+        no_mutual = 0
 
         # new articles already at max stay at max.
-        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news, a_dupe,
-                          '', ''), config.FEED_FETCH_MAX_INTERVAL)
-        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news, a_dupe,
-                          'etag', ''), config.FEED_FETCH_MAX_INTERVAL)
-        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news, a_dupe,
-                          None, 'last_mod'), config.FEED_FETCH_MAX_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news,
+                          no_mutual, a_dupe, '', ''),
+                          config.FEED_FETCH_MAX_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news,
+                          no_mutual, a_dupe, 'etag', ''),
+                          config.FEED_FETCH_MAX_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MAX_INTERVAL, no_news,
+                          no_mutual, a_dupe, None, 'last_mod'),
+                          config.FEED_FETCH_MAX_INTERVAL)
 
         # dupes at min stays at min
-        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news, no_dupe,
-                          '', ''), config.FEED_FETCH_MIN_INTERVAL)
-        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news, no_dupe,
-                          'etag', None), config.FEED_FETCH_MIN_INTERVAL)
-        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news, no_dupe,
-                          '', 'last_mod'), config.FEED_FETCH_MIN_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news,
+                          no_mutual, no_dupe, '', ''),
+                          config.FEED_FETCH_MIN_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news,
+                          no_mutual, no_dupe, 'etag', None),
+                          config.FEED_FETCH_MIN_INTERVAL)
+        self.assertEquals(t(config.FEED_FETCH_MIN_INTERVAL, some_news,
+                          no_mutual, no_dupe, '', 'last_mod'),
+                          config.FEED_FETCH_MIN_INTERVAL)
 
 
 @override_settings(STATICFILES_STORAGE=
