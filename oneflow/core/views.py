@@ -78,12 +78,6 @@ def read_with_endless_pagination(request, **kwargs):
     reads   = Read.objects(user=request.user.mongo,
                            is_read=is_read).order_by('-id').no_cache()
 
-    read_item_templates = {
-        u'RL': 'snippets/read/read-list-row.html',
-        u'TL': 'snippets/read/read-tiles-tile.html',
-        u'T1': 'snippets/read/read-tiles-experimental-tile.html',
-    }
-
     context = {
         u'reads': reads,
         u'tenths_counter': tenths_counter,
@@ -93,16 +87,16 @@ def read_with_endless_pagination(request, **kwargs):
         u'initial': False,
     }
 
+    preferences = request.user.mongo.preferences
+
     if request.is_ajax():
-        context[u'read_item_template'] = read_item_templates.get(
-            request.user.mongo.preferences.home.style,
-            'snippets/read/read-tiles-tile.html',)
         template = u'snippets/read/read-endless-page.html'
 
     else:
         template = u'read.html'
-        context[u'reads_count'] = reads.count()
-        context[u'initial']     = True
+        context['initial']     = True
+        context['reads_count'] = reads.count()
+
 
     return render(request, template, context)
 
@@ -228,7 +222,7 @@ def import_(request):
 
 def help(request):
 
-    help_sections = HelpContent.objects.all()
+    help_sections = HelpContent.objects.filter(active=True)
 
     return render(request, u'help.html', {'help_sections': help_sections})
 

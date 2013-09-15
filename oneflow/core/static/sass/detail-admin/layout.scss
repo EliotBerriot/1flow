@@ -4,7 +4,15 @@ body {
 	position: relative;
 	margin: 0px;
 	font-size: 12px;
-	padding: 0px;
+
+	/*
+		olive 20130915: disable, to use full bootstrap way of doing things.
+		This thing is what makes responsive on mobile look stuck to screen
+		borders, and crops navbar on left and right.
+
+		padding: 0px;
+	*/
+
 	/*-webkit-font-smoothing: antialiased;*/
 }
 h1,h2,h3,h4,h5 {
@@ -538,7 +546,11 @@ input.search{
 	}
 }
 @media (max-width: 822px) {
-	.navbar-inverse input.search {display: none;}
+	/*
+		olive 20130915: disable.
+		Why the hell hiding the search form, at all???
+		.navbar-inverse input.search {display: none;}
+	*/
 }
 @media (max-width: 767px) {
 	#pad-wrapper {

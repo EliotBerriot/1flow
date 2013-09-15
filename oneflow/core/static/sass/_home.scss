@@ -1,14 +1,19 @@
 
-@import url('http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800');
-
-/*
-@import url('http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic');
-*/
-
 /* --------------------------------------------------------------- Overrides */
+
+body {
+    /*
+        olive 20130915: replicate Bootstrap's
+        docs.css to have something working and beautiful.
+    */
+    position: relative;
+
+    padding-top: 40px;
+}
 
 .navbar {
     .brand {
+        /* Avoid ALLCAPS text, this is sooooo ugly on 1flow name. */
         text-transform: none;
     }
 
@@ -23,15 +28,34 @@
             -moz-border-radius: 30px;
         }
     }
+
+    .nav {
+
+        font-size: 120%;
+
+        li a {
+            border-left: 0;
+            color: #aaa;
+        }
+
+        .dropdown-menu {
+            li a {
+                color: inherit;
+            }
+        }
+
+        .active {
+            color: #fff;
+            text-shadow: 0 0 10px #fff;
+        }
+    }
 }
+
 
 
 /* ------------------------------------------------------------- Home / index */
 
-#home {
-    /* Space for the fixed navbar. */
-    padding-top: 40px;
-}
+section {}
 
 #home-styles-chooser {
 
@@ -45,6 +69,7 @@
         /* Cancel the bootstrap "alert" padding-right. */
         padding-right: 14px;
     }
+
     .home-style-secondary {
         margin-top: 40px;
     }
@@ -55,9 +80,11 @@
 }
 
 header {
+
     h1 {
         padding-top: 50px;
     }
+
     h2 {
         padding-bottom: 15px;
     }
@@ -110,9 +137,11 @@ header {
 }
 
 #help {
+
     h1 {
         margin-top: 50px;
     }
+
     h2 {
         margin-bottom: 15px;
     }
@@ -165,23 +194,60 @@ header {
 
 /* --------------------------------------------------------------------- Read */
 
-.read-list-item {
-    padding: 5px;
-    transition: background 0.5s;
+#read {
+    #reads-number {
+        padding: 0 10px;
 
-    /* cancel Twitter's media margin. */
+        h2 small {
+            margin-left: 0;
+        }
+    }
+}
+
+.read-list-item {
+
+    /* cancel Bootstrap's media margin. */
     margin-top: 0;
 
-    &:hover {
-        background: #eee;
-        border-radius: 5px;
-        transition: background 0.2s;
+    font-weight: 300;
+
+    .is_unread {
+        font-weight: 400;
     }
 
-    .media-body {
-        p {
-            margin-bottom: 0;
+    .actions {
+        position: relative;
+        top: 0;
+        right: 0;
+        z-index: 20;
+
+        font-size: 20px;
+        line-height: 100%;
+
+        a {
+            margin-left: 10px;
+            color: #29313c;
+            opacity: 0.5;
+            text-decoration: none;
+
+            &:hover, &:active {
+                opacity: 1;
+            }
+
+            &:visited, &:active {
+                border: none;
+            }
+
+            &:first-child {
+                margin-left: 0;
+            }
         }
+    }
+
+    .end-actions {
+        margin-top: 4em;
+        border-top: 2px solid #90949a;
+        padding-top: 10px;
     }
 
     .hover-muted {
@@ -207,9 +273,196 @@ header {
 }
 
 .read-list-row {
+
+    .article {
+        padding: 5px 10px;
+        border-bottom: 1px dotted #ddd;
+
+        /*
+            START flash_fade():
+            bring the body color here
+            for the flash_fade() to work.
+
+            Thus, we need to reset the H* colors.
+        */
+
+        color: #29323d;
+
+        h1, h2, h3 {
+            color: inherit;
+        }
+
+        /* END flash_fade() */
+    }
+
+    .article-meta {
+
+        .article-title {
+            position: relative;
+            top: 0;
+            left: 0;
+            z-index: 10;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+            vertical-align: top;
+            width: auto;
+        }
+
+        .meta {
+            max-height: 2em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            .meta {
+                margin-left: 1em;
+
+                /* doesn't work
+                max-height: 1em;
+                overflow: hidden;
+                */
+            }
+        }
+    }
+
+    .article-content {
+        font-family: georgia, times, serif;
+        text-align: justify;
+
+        padding: 5em;
+
+        h1, h2, h3 {
+            text-align: left;
+            line-height: 1.1em;
+        }
+
+        h1 {
+            padding-bottom: 0.5em;
+            border-bottom: 1px dotted #ddd;
+            margin-bottom: 1.5em;
+        }
+
+        p, ul, ol {
+            font-size: 1.75em;
+            line-height: 1.25em;
+            margin: 1.5em 0;
+        }
+
+        ul, ol {
+            margin-left: 1.25em;
+        }
+
+        .img-legend {
+            font-size: 14px;
+            text-align: center;
+            margin: 0 0.1em;
+        }
+
+        ul li, ol li {
+            line-height: 1.25em;
+
+            p,
+            ul,
+            ol,
+            ul li p,
+            ul li ul,
+            ul li ol,
+            ul li ul li p,
+            ul li ol li p,
+            ol li p,
+            ol li ul,
+            ol li ol,
+            ol li ul li p,
+            ol li ol li p {
+                font-size: 100%;
+            }
+
+            p,
+            ol li p,
+            ol li ul li p,
+            ol li ol li p,
+            ul li p,
+            ul li ul li p,
+            ul li ol li p {
+                /*
+                    We use only the margin from <{u,o}l>* and <li>.
+                    Having the <p> one makes the thing too big (ugly)
+                    when the MD renderer embeds <p> inside <li>.
+                */
+                margin: 0;
+            }
+
+            ul li,
+            ol li,
+            ul li ul li,
+            ul li ol li,
+            ol li ul li,
+            ol li ol li {
+                line-height: 1.25em;
+            }
+
+            ul,
+            ol,
+            ul li ul,
+            ul li ol,
+            ol li ul,
+            ol li ol {
+                line-height: 1.25em;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+
+        }
+
+        img {
+            display: block;
+            max-width: 100%;
+            margin: 0 auto;
+        }
+    }
+
+    p {
+        /* cancel Bootstrap's media margin. */
+        margin-bottom: 0;
+    }
+
     .list-item-number {
-        min-width: 100px;
+        font-size: 500%;
+        line-height: 100%;
+        vertical-align: center;
         text-align: right;
+    }
+
+    .heading {
+        font-size: 1.5em;
+        max-height: 1.4em;
+        line-height: 1.4em;
+        cursor: pointer;
+    }
+
+    /* NOTE: .no-content must come AFTER .article-content
+            for proper CSS overriding. */
+    .no-content {
+        text-align: left;
+
+        /* Oh my bad… the image has transparent content at the bottom.
+            As I didn't find a way to crop it (animated GIFs…), I
+            fix this directly in the hero-unit… Which is not a good
+            idea if teh image changes. Thus noticed in the template. */
+        padding-bottom: 30px;
+
+
+        p {
+            /* reset the font-size from read-item
+               which is bigger, for reading. */
+            font-size: 120%;
+            margin-top: 2em;
+        }
+    }
+
+    .admin-informations {
+        /* don't know why, we've got a blank space after the slideToggle(). */
+        margin-bottom: -20px;
     }
 }
 
@@ -226,6 +479,7 @@ header {
 
     .article-title {
         font-size: 14px;
+        cursor: pointer;
     }
 
     .muted {
@@ -256,6 +510,77 @@ header {
     }
 }
 
+/* --------------------------------------------------------------- Responsive */
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* A special style for the iPad in portrait mode. */
+
+    .navbar-fixed-top,
+    .navbar-fixed-bottom {
+        /* Override bootstrap to get our navbar fixed again. */
+        position: fixed;
+    }
+
+    #read {
+        /*  completely reset both .span8.offset2 containers
+            for them to take all space in iPad portrait. */
+        #reads-number,
+        #reads-container {
+            width: 100%;
+            margin: 0;
+        }
+    }
+}
+
+@media (max-width: 767px) {
+
+    body {
+        padding-top: 0;
+    }
+
+    #read {
+        #reads-number {
+            /* cancel the 10px padding of big screens to gain space */
+            padding: 0;
+        }
+    }
+
+    .read-list-item {
+        .end-actions {
+            a {
+                margin-left: 30px;
+                font-size: 26px;
+            }
+        }
+
+        .end-actions {
+            margin-top: 1em;
+            border-top: 1px solid #90949a;
+            margin-bottom: 1em;
+        }
+    }
+
+    .read-list-row {
+
+        .article {
+            /* cancel the 10px padding of big screens to gain space */
+            padding: 5px 0;
+        }
+
+        .article-content {
+            text-align: left;
+            padding: 0;
+
+            h1 {
+                /*  Lower a little the size and
+                    avoid wasting space on phones. */
+                font-size: 300%;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+    }
+}
 
 
 /* -------------------------------------------------------------------- Other */

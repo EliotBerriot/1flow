@@ -64,31 +64,21 @@ class CSVAdminMixin(django_admin.ModelAdmin):
     extra_csv_fields = ()
 
     def get_actions(self, request):
+
+        try:
+            self.actions.append('csv_export')
+
+        except AttributeError:
+            self.actions = ('csv_export', )
+
         actions = super(CSVAdminMixin, self).get_actions(request)
 
-        if not actions:
-            actions = SortedDict()
-
-        if hasattr(self, 'actions'):
-
-            if self.actions:
-                # sometimes, for a unknown reason, self.actions is []
-                actions.update(self.actions)
-
-        if request.user.is_superuser:
-            actions['csv_export'] = (self.csv_export, 'csv_export',
-                                     self.csv_export.short_description)
-
-        return actions
+        return actions or SortedDict()
 
     def get_extra_csv_fields(self, request):
         return self.extra_csv_fields
 
-    # NOTE: admin actions are assumed to be normal functions by Django,
-    # not methods. They receive the ModelAdmin instance as first argument.
-    # Thus, we have 2 self arguments… Awkward. I tried to use @staticmethod
-    # without success: the `short_description` cannot be attached to it.
-    def csv_export(self, self_again, request, queryset, *args, **kwargs):
+    def csv_export(self, request, queryset, *args, **kwargs):
         response = HttpResponse(mimetype='text/csv')
 
         response['Content-Disposition'] = "attachment; filename={}.csv".format(

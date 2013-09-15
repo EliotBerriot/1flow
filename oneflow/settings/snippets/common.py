@@ -110,9 +110,9 @@ STATICFILES_FINDERS = (
 
 STATICFILES_STORAGE = 'pipeline.storage.PipelineCachedStorage'
 
-# FOR NOW, pipeline is disabled because
-# compression messes the JS ember tastypie adapter.
-PIPELINE_ENABLED = False
+#PIPELINE_ENABLED = False
+
+# Until our own modules are ready to be wrapped, don't use this.
 PIPELINE_DISABLE_WRAPPER = True
 
 PIPELINE_COMPILERS = (
@@ -468,6 +468,15 @@ MAINTENANCE_IGNORE_URLS = (
 MARKDOWN_DEUX_STYLES = {
     'default': {
         'extras': {
+            # html2text uses _ by default for EM…
+            #'code-friendly': None,
+            'cuddled-lists': None,
+
+        },
+        'safe_mode': 'escape',
+    },
+    'code': {
+        'extras': {
             'code-friendly': None,
             'cuddled-lists': None,
 
@@ -475,6 +484,15 @@ MARKDOWN_DEUX_STYLES = {
         'safe_mode': 'escape',
     },
     'raw': {
+        'extras': {
+            # html2text uses _ by default for EM…
+            #'code-friendly': None,
+            'cuddled-lists': None,
+
+        },
+        'safe_mode': False,
+    },
+    'code-raw': {
         'extras': {
             'code-friendly': None,
             'cuddled-lists': None,

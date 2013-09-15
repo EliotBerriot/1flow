@@ -1,54 +1,91 @@
 <!-- navbar-static-top -->
-<div class="navbar navbar-fixed-top navbar-inverse">
+<div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
-    <div class="container-fluid">
+    <div class="container">
+
+      <a class="brand visible-desktop visible-tablet"
+              href="{% url 'home' %}">1flow <span
+              class="badge badge-warning badge-beta">BETA</span></a>
+
+      <a class="brand visible-phone" href="{% url 'home' %}">1flow <span
+              class="badge badge-warning badge-beta">β</span></a>
+
       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </a>
 
-      <a class="brand" href="{% url 'home' %}">1flow <span
-              class="badge badge-warning badge-beta">BETA</span></a>
-
       {% if user.is_authenticated %}
         <ul class="nav pull-right">
-
-          <li>
-              <form>
-                <input class="search"
-                    placeholder="{% trans 'Search…' %}">
-              </form>
-          </li>
 
           {% if user.is_staff or user.is_superuser %}
             {% if MAINTENANCE_MODE %}
               <li>
                 <a href="#" disabled="disabled">
-                  {% trans "Maintenance" %}
+                  <span class="badge badge-warning badge-beta"><i
+                      class="icon-cogs"></i> {% trans "Maintenance" %}</span>
                 </a>
               </li>
 
             {% endif %}
 
-            <li><a href="#">v{{ VERSION }}</a></li>
+            <li class="visible-desktop"><a id="system-informations" href="#"
+              data-toggle="popover" data-placement="bottom"
+              data-original-title="System Informations" data-html="true"
+              data-content="
+            <table class='table table-hover table-stripped table-condensed'>
+              <!--<thead>
+                <tr>
+                  <th>Setting</th>
+                  <th>Value</th>
+                </tr>
+              </thead>-->
+              <tbody>
+                <tr>
+                  <td>PostgreSQL</td>
+                  <td>{{settings.DATABASES.default.HOST}}
+                    <strong>{{settings.DATABASES.default.NAME}}</strong></td>
+                </tr>
+                <tr>
+                  <td>MongoDB</td>
+                  <td>{{settings.MONGODB_HOST}}
+                    <strong>{{settings.MONGODB_NAME}}</strong></td>
+                </tr>
+                <tr>
+                  <td>Mongo Archive</td>
+                  <td>{{settings.MONGODB_HOST_ARCHIVE}}
+                    <strong>{{settings.MONGODB_NAME_ARCHIVE}}</strong></td>
+                </tr>
+                <tr>
+                  <td></td>
+                  <td></td>
+                </tr>
+              </tbody>
+            </table>"
+              >v{{ VERSION }}</a></li>
+
+              <script type="text/javascript">
+              $(document).ready(function(){
+                $("#system-informations").popover();
+              });
+              </script>
 
           {% endif %}
 
-          <li>
-              <a href="{% url 'help' %}">{% trans 'Help' %}</a>
-          </li>
-
-
           <li class="dropdown" >
-            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+            <a class="dropdown-toggle {% reverse_active 'profile' %}"
+            data-toggle="dropdown" href="#">
+
               {% if mongodb_user.avatar_url %}
                 <span class="avatar-frame">
                   <img src="{{ mongodb_user.avatar_url }}" />
                 </span>
               {% else %}
+
                 <i class="icon-user"></i>
               {% endif %}
+
               {{ user.username }}
               <b class="caret"></b>
             </a>
@@ -56,8 +93,11 @@
               <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
 
             {% if user.is_superuser %}
-              <li><a href="/translate/" target="_blank">{% trans 'Translations' %}</a></li>
-              <li><a href="/admin/" target="_blank">{% trans 'Django Admin.' %}</a></li>
+              <li class="divider"></li>
+              <li><a href="/admin/constance/config/"
+                    target="_blank">{% trans 'Constance config.' %}</a></li>
+              <li><a href="/admin/" target="_blank">{% trans 'Django admin.' %}</a></li>
+              <li><a href="/translate/" target="_blank">{% trans '1flow translations' %}</a></li>
             {% endif %}
 
               <li class="divider"></li>
@@ -77,7 +117,8 @@
         <ul class="nav">
           {% if user.is_authenticated %}
 
-            <li><a href="{% url 'read' %}">{% trans 'Read' %}</a></li>
+            <li><a href="{% url 'read' %}"
+              class={% reverse_active 'read' %}>{% trans 'Read' %}</a></li>
 
             {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
 
@@ -85,6 +126,14 @@
               <li><a href="{% url 'subscriptions' %}">{% trans 'Subscriptions' %}</a></li>
               <li><a href="{% url 'discovery' %}">{% trans 'Discovery' %}</a></li>
             {% endif %}
+
+            <li>
+                <form>
+                  <input class="search"
+                      placeholder="{% trans 'Search…' %}">
+                </form>
+            </li>
+
           {% else %}
             <!--
               <li><a href="#">{% trans 'About' %}</a></li>
@@ -93,7 +142,15 @@
 
           {% endif %}
         </ul>
+
+        <ul class="nav pull-right">
+          <li>
+              <a href="{% url 'help' %}"
+              class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
+          </li>
+        </ul>
+
       </div><!--/.nav-collapse -->
-    </div><!--/.container-fluid -->
+    </div><!-- .container -->
   </div><!--/.navbar-inner -->
 </div><!--/.navbar -->

@@ -1,0 +1,16 @@
+<div class="hero-unit no-content">
+  <h2>{% trans "Unsafe content" %}</h2>
+  <p>{% with article_url=article.url %}{% blocktrans %}
+We detected that this article contains unsafe content (for your web browser, not your eyes). To protect your beloved computer, we will not
+render it here.<br />
+Alternatively, you can <a href="{{ article_url }}" target="_blank">read the article on its original website</a>. Sorry for the inconvenience.
+{% endblocktrans %}{% endwith %}</p>
+
+  {% if user.is_superuser %}
+  <p>Admin stuff: {# {{ article.content|safe }} #}<br /><br />
+  —— HTML content: {{ article.content|length }} characters long ——
+  </p>
+  {% endif %}
+</div>
+
+

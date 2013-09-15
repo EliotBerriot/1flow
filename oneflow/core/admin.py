@@ -5,19 +5,20 @@ import dateutil.parser
 from humanize.i18n import django_language
 
 from constance import config
-
+from django.forms import TextInput, CheckboxSelectMultiple
 from django.conf import settings
-
 from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
-from .models.nonrel import Tag, Feed
+from .models.nonrel import Tag, Feed, Article, CONTENT_TYPE_MARKDOWN
 from .models.reldb import HelpContent
 
 from django.contrib import admin as django_admin
 import mongoadmin as admin
+from mongodbforms import DocumentForm
 
 from sparks.django.admin import languages, truncate_field
 
@@ -195,12 +196,13 @@ class TagAdmin(admin.DocumentAdmin):
     list_display = ('id', 'name', 'language', 'duplicate_of',
                     'parents_display', 'children_display')
     list_display_links = ('id', 'name', )
+    #list_editable = ('language', )
     search_fields = ('name', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
     filter_horizontal = ('parents', 'children', )
 
     def change_view(self, request, object_id, extra_context=None):
-        self.exclude = ('origin',)  # 'parents', 'children', )
+        self.exclude = ('origin', )  # 'parents', 'children', )
 
         return super(TagAdmin, self).change_view(request, object_id,
                                                  extra_context=None)
@@ -208,10 +210,10 @@ class TagAdmin(admin.DocumentAdmin):
     def parents_display(self, obj):
 
         if obj.parents:
-            return ', '.join(u'<a href="/admin/models/tag/{0}" '
-                             u'target="_blank">{1}</a>'.format(
-                                 parent.id, parent.name)
-                             for parent in obj.parents)
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  parent.id, parent.name)
+                              for parent in obj.parents)
 
         return u'—'
 
@@ -221,10 +223,10 @@ class TagAdmin(admin.DocumentAdmin):
     def children_display(self, obj):
 
         if obj.children:
-            return ', '.join(u'<a href="/admin/models/tag/{0}" '
-                             u'target="_blank">{1}</a>'.format(
-                                 child.id, child.name)
-                             for child in obj.children)
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  child.id, child.name)
+                              for child in obj.children)
 
         return u'—'
 
@@ -235,10 +237,121 @@ class TagAdmin(admin.DocumentAdmin):
 admin.site.register(Tag, TagAdmin)
 
 
-class FeedAdmin(admin.DocumentAdmin):
+class ArticleAdmin(admin.DocumentAdmin):
 
-    list_display = ('id', 'name', 'errors_display', 'url_display',
-                    'restricted_display',
+    list_display = ('id', 'title', 'language', 'url_absolute',
+                    'date_published', 'tags_display',
+                    'orphaned', 'duplicate_of_display',
+                    'content_type_display',
+                    'content_error_display',
+                    'url_error_display', )
+    #list_editable = ('language', )
+    list_display_links = ('id', 'title', )
+    search_fields = ('title', 'slug', )
+    change_list_filter_template = "admin/filter_listing.html"
+    ordering = ('-date_published', '-date_added', )
+    #date_hierarchy = ('date_published', )
+
+    raw_id_fields = ('tags', 'authors', 'publishers',
+                     'source', 'duplicate_of', 'feeds', )
+
+    def tags_display(self, obj):
+
+        try:
+            return u', '.join(u'<a href="/admin/models/tag/{0}" '
+                              u'target="_blank">{1}</a>'.format(
+                                  tag.id, tag.name)
+                              for tag in obj.tags)
+        except Exception, e:
+            return unicode(e)
+
+    tags_display.allow_tags        = True
+    tags_display.short_description = _(u'Tags')
+    tags_display.admin_order_field = 'tags'
+
+    def duplicate_of_display(self, obj):
+
+        if obj.duplicate_of:
+            return (u'<a href="/admin/models/article/{0}" '
+                    u'style="cursor: pointer; font-size: 300%;" '
+                    u'target="_blank">∃</a>').format(obj.duplicate_of.id)
+
+        return u''
+
+    duplicate_of_display.allow_tags        = True
+    duplicate_of_display.short_description = _(u'Duplicate of')
+    duplicate_of_display.admin_order_field = 'duplicate_of'
+
+    def content_type_display(self, obj):
+
+        if obj.content_type:
+            return u'MD' if obj.content_type == CONTENT_TYPE_MARKDOWN else u'…'
+
+        return u''
+
+    content_type_display.allow_tags        = True
+    content_type_display.short_description = _(u'Content')
+    content_type_display.admin_order_field = 'content_type'
+
+    def content_error_display(self, obj):
+
+        if obj.content_error:
+            return _(u'<span title="{0}" '
+                     u'style="cursor: pointer; font-size: 300%">'
+                     u'•••</span>').format(obj.content_error)
+
+        return u''
+
+    content_error_display.allow_tags        = True
+    content_error_display.short_description = _(u'Fetch err.')
+    content_error_display.admin_order_field = 'content_error'
+
+    def url_error_display(self, obj):
+
+        if obj.url_error:
+            return _(u'<span title="{0}" '
+                     u'style="cursor: pointer; font-size: 300%;">'
+                     u'•••</span>').format(obj.url_error)
+
+        return u''
+
+    url_error_display.allow_tags        = True
+    url_error_display.short_description = _(u'URL err.')
+    url_error_display.admin_order_field = 'url_error'
+
+
+admin.site.register(Article, ArticleAdmin)
+
+
+class HorizontalCheckbox(CheckboxSelectMultiple):
+    def render(self, *args, **kwargs):
+        output = super(HorizontalCheckbox,
+                       self).render(*args, **kwargs)
+
+        return mark_safe(output.replace(
+                         u'<ul>', u'').replace(
+                         u'</ul>', u'').replace(
+                         u'<li>', u'<span style="margin-right:20px">').replace(
+                         u'</li>', u'</span>'))
+
+
+class FeedAdminForm(DocumentForm):
+    class Meta:
+        model = Feed
+        widgets = {
+            'url': TextInput(attrs={'class': 'vURLField'}),
+            'name': TextInput(attrs={'class': 'vLargeTextField'}),
+            'languages': HorizontalCheckbox(),
+            'last_etag': TextInput(attrs={'class': 'vLargeTextField'}),
+            'last_modified': TextInput(attrs={'class': 'vLargeTextField'}),
+        }
+
+
+class FeedAdmin(admin.DocumentAdmin):
+    form = FeedAdminForm
+    list_display = ('id', 'name', 'url_display',
+                    'good_for_use_display', 'restricted_display',
+                    'duplicate_of_display', 'errors_display',
                     'closed_display', 'fetch_interval_display',
                     'last_fetch_display',
                     'date_added_display', 'latest_article_display',
@@ -246,10 +359,14 @@ class FeedAdmin(admin.DocumentAdmin):
                     'all_articles_count_display',
                     'subscriptions_count_display', )
 
+    # Doesn't work with mongoadmin yet
+    #list_editable      = ('good_for_use', )
+
     list_display_links = ('id', 'name', )
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
     search_fields = ('name', 'url', 'site_url', 'closed', )
-
+    exclude = ('tags', )
+    raw_id_fields = ('duplicate_of', )
     # Setting this makes the whole thing unsortable…
     #ordering = ('-last_fetch', )
 
@@ -260,6 +377,29 @@ class FeedAdmin(admin.DocumentAdmin):
     #change_list_template = "admin/change_list_filter_sidebar.html"
     change_list_filter_template = "admin/filter_listing.html"
 
+    fieldsets = (
+        ('Main', {
+            'fields': ('name', 'url',
+                       ('good_for_use', 'restricted', ),
+                       'languages', 'notes',
+                       'date_added', ),
+        }),
+        ('Public information', {
+            'classes': ('grp-collapse grp-open', ),
+            'fields' : ('thumbnail_url',
+                        'description_en', 'description_fr', ),
+        }),
+        ('Fetch parameters', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : ('fetch_interval', 'last_fetch',
+                        'last_etag', 'last_modified', ),
+        }),
+        ('Errors and closing procedure', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : (('closed', 'date_closed', ),
+                        'closed_reason', 'errors', ),
+        }),
+    )
     # def name_display(self, obj):
 
     #     return u'<a href="{0}" target="_blank" {2}>{1}</a>'.format(
@@ -281,6 +421,19 @@ class FeedAdmin(admin.DocumentAdmin):
     url_display.short_description = _(u'URLs')
     url_display.allow_tags = True
     url_display.admin_order_field = 'url'
+
+    def duplicate_of_display(self, obj):
+
+        if obj.duplicate_of:
+            return (u'<a href="/admin/models/feed/{0}" '
+                    u'style="cursor: pointer; font-size: 300%;" '
+                    u'target="_blank">∃</a>').format(obj.duplicate_of.id)
+
+        return u''
+
+    duplicate_of_display.allow_tags        = True
+    duplicate_of_display.short_description = _(u'Duplicate of')
+    duplicate_of_display.admin_order_field = 'duplicate_of'
 
     def errors_display(self, obj):
 
@@ -311,6 +464,14 @@ class FeedAdmin(admin.DocumentAdmin):
     restricted_display.short_description = _(u'Private?')
     restricted_display.admin_order_field = 'restricted'
     restricted_display.boolean = True
+
+    def good_for_use_display(self, obj):
+
+        return obj.good_for_use
+
+    good_for_use_display.short_description = _(u'Shown?')
+    good_for_use_display.admin_order_field = 'good_for_use'
+    good_for_use_display.boolean = True
 
     def recent_articles_count_display(self, obj):
 
@@ -402,8 +563,10 @@ if settings.FULL_ADMIN:
                                     for field in content_fields_names)
 
     class HelpContentAdmin(django_admin.ModelAdmin):
-        list_display_links = ('ordering', 'name', )
-        list_display       = ('ordering', 'name', ) + content_fields_displays
+        list_display_links = ('name', )
+        list_display       = ('name', 'ordering', 'active', ) \
+            + content_fields_displays
+        list_editable      = ('ordering', 'active', )
         search_fields      = ('name', ) + content_fields_names
         ordering           = ('ordering', 'name', )
         save_as            = True

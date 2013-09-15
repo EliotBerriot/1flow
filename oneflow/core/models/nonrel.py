@@ -47,6 +47,7 @@ import feedparser
 from statsd import statsd
 from random import randint, randrange
 from constance import config
+from markdown_deux import markdown
 
 from bs4 import BeautifulSoup
 #from xml.sax import SAXParseException
@@ -74,13 +75,13 @@ from django.contrib.auth import get_user_model
 
 from ...base.utils import (connect_mongoengine_signals,
                            detect_encoding_from_requests_response,
-                           RedisExpiringLock, AlreadyLockedException,
-                           RedisSemaphore, NoResourceAvailableException,
+                           RedisExpiringLock,  # AlreadyLockedException,
+                           RedisSemaphore,  # NoResourceAvailableException,
                            HttpResponseLogProcessor, StopProcessingException)
 
 from ...base.utils.http import clean_url
 from ...base.utils.dateutils import (now, timedelta, today, datetime,
-                                     naturaldelta)
+                                     time, dt_combine)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 
 from .keyval import FeedbackDocument
@@ -296,7 +297,16 @@ class HomePreferences(EmbeddedDocument):
 
     style = StringField(verbose_name=_(u'How the user wants his 1flow '
                         u'home to appear'), max_length=2,
-                        choices=HOME_STYLE_CHOICES)
+                        choices=HOME_STYLE_CHOICES, default=u'RL')
+
+    def get_template(self):
+        return {
+            u'RL': 'snippets/read/read-list-row.html',
+            u'TL': 'snippets/read/read-tiles-tile.html',
+            u'T1': 'snippets/read/read-tiles-experimental-tile.html',
+        }.get(self.style)
+
+
 
 
 class HelpWizards(EmbeddedDocument):
@@ -897,17 +907,33 @@ class Feed(Document, DocumentHelperMixin):
     site_url       = URLField(verbose_name=_(u'web site'))
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
-                               default=list)
-    default_image_url  = StringField(verbose_name=_(u'default image url'))
-    languages      = ListField(StringField(), verbose_name=_(u'Languages'),
+                               default=list, verbose_name=_(u'tags'),
+                               help_text=_(u'This tags are used only when '
+                                           u'articles from this feed have no '
+                                           u'tags already. They are assigned '
+                                           u'to new subscriptions too.'))
+    languages      = ListField(StringField(max_length=5,
+                               choices=settings.LANGUAGES),
+                               verbose_name=_(u'Languages'),
+                               required=False,
                                help_text=_(u'Set this to more than one '
                                            u'language to help article '
                                            u'language detection if none '
                                            u'is set in articles.'))
     date_added     = DateTimeField(default=datetime(2013, 07, 01),
                                    verbose_name=_(u'date added'))
-    restricted     = BooleanField(default=False, verbose_name=_(u'restricted'))
-    closed         = BooleanField(default=False, verbose_name=_(u'closed'))
+    restricted     = BooleanField(default=False, verbose_name=_(u'restricted'),
+                                  help_text=_(u'Is this feed available only to '
+                                              u'paid subscribers on its '
+                                              u'publisher\'s web site?'))
+    closed         = BooleanField(default=False, verbose_name=_(u'closed'),
+                                  help_text=_(u'Indicate that the feed is not '
+                                              u'fetched anymore (see '
+                                              u'“closed_reason” for why). '
+                                              u'/!\\ WARNING: do not just '
+                                              u'tick the checkbox; there is '
+                                              u'a programmatic procedure to '
+                                              u'close a feed properly.'))
     date_closed    = DateTimeField(verbose_name=_(u'date closed'))
     closed_reason  = StringField(verbose_name=_(u'closed reason'))
 
@@ -933,6 +959,31 @@ class Feed(Document, DocumentHelperMixin):
     mail_warned    = ListField(StringField())
     errors         = ListField(StringField())
     options        = ListField(IntField())
+    duplicate_of   = ReferenceField(u'Feed', reverse_delete_rule=NULLIFY)
+    notes          = StringField(verbose_name=_(u'Notes'),
+                                 help_text=_(u'Internal notes for 1flow '
+                                             u'staff related to this feed.'))
+
+    good_for_use = BooleanField(verbose_name=_(u'Shown in selector'),
+                                default=False,
+                                help_text=_(u'Make this feed available to new '
+                                            u'subscribers in the selector '
+                                            u'wizard. Without this, the user '
+                                            u'can still subscribe but he '
+                                            u'must know it and manually enter '
+                                            u'the feed address.'))
+    thumbnail_url  = URLField(verbose_name=_(u'Thumbnail URL'),
+                              help_text=_(u'Full URL of the thumbnail '
+                                          u'displayed in the feed selector. '
+                                          u'Can be hosted outside of 1flow.'))
+    description_fr = StringField(verbose_name=_(u'Description (FR)'),
+                                 help_text=_(u'Public description of the feed '
+                                             u'in French language. '
+                                             u'As Markdown.'))
+    description_en = StringField(verbose_name=_(u'Description (EN)'),
+                                 help_text=_(u'Public description of the feed '
+                                             u'in English language. '
+                                             u'As Markdown.'))
 
     # ••••••••••••••••••••••••••••••• properties, cached descriptors & updaters
 
@@ -1017,7 +1068,7 @@ class Feed(Document, DocumentHelperMixin):
 
     @property
     def all_articles(self):
-        return Article.objects.filter(feeds_contains=self)
+        return Article.objects.filter(feeds__contains=self)
 
     def update_all_articles_count(self):
 
@@ -1053,6 +1104,10 @@ class Feed(Document, DocumentHelperMixin):
 
     @property
     def fetch_limit(self):
+        """ XXX: not used until correctly implemented.
+            I removed the code calling this method on 20130910.
+        """
+
         try:
             return self.__limit_semaphore
 
@@ -1061,6 +1116,9 @@ class Feed(Document, DocumentHelperMixin):
             return self.__limit_semaphore
 
     def set_fetch_limit(self):
+        """ XXX: not used until correctly implemented.
+            I removed the code calling this method on 20130910.
+        """
 
         new_limit = self.fetch_limit.set_limit()
         cur_limit = self.fetch_limit_nr
@@ -1097,20 +1155,13 @@ class Feed(Document, DocumentHelperMixin):
         LOGGER.info(u'Feed %s has just beed re-opened.', self)
 
     def close(self, reason=None, commit=True):
-        self.update(set__closed=True, set__date_closed=now())
-
-        self.closed_reason = reason or u'NO REASON GIVEN'
+        self.update(set__closed=True, set__date_closed=now(),
+                    set__closed_reason=reason or u'NO REASON GIVEN')
 
         LOGGER.info(u'Feed %s closed with reason "%s"!',
                     self, self.closed_reason)
 
-        if commit:
-            self.safe_reload()
-
-        else:
-            # Just make sure the current instance
-            # has the same value as the database.
-            self.closed = True
+        self.safe_reload()
 
     def get_articles(self, limit=None):
 
@@ -1127,7 +1178,10 @@ class Feed(Document, DocumentHelperMixin):
 
         except ValidationError as e:
 
-            if e.errors.pop('site_url', None) is not None:
+            # We pop() because any error will close the feed, whatever it is.
+            site_url_error = e.errors.pop('site_url', None)
+
+            if site_url_error is not None:
                 # Bad site URL, the feed is most probably totally unparsable.
                 # Close it. Admins will be warned about it via mail from a
                 # scheduled core task.
@@ -1136,13 +1190,22 @@ class Feed(Document, DocumentHelperMixin):
                 #           self.mail_warned.append('bad_site_url')
 
                 self.site_url = None
-                self.close()
+                self.close('Bad site url: %s' % str(site_url_error))
 
+            # We pop() because any error will close the feed, whatever it is.
             url_error = e.errors.pop('url', None)
 
             if url_error is not None:
                 if not self.closed:
                     self.close(str(url_error))
+
+            thumbnail_url_error = e.errors.get('thumbnail_url', None)
+
+            if thumbnail_url_error is not None:
+                if self.thumbnail_url == u'':
+                    # Just make this field not required. `required=False`
+                    # in the Document definition is not sufficient.
+                    e.errors.pop('thumbnail_url')
 
             if e.errors:
                 raise ValidationError('ValidationError', errors=e.errors)
@@ -1834,13 +1897,20 @@ class Article(Document, DocumentHelperMixin):
                                 help_text=_(u'Rating used as a base when a '
                                             u'user has not already rated the '
                                             u'content.'))
-    language       = StringField(verbose_name=_(u'Article language'))
-    text_direction = StringField(verbose_name=_(u'Text direction'))
+    language       = StringField(verbose_name=_(u'Article language'),
+                                 max_length=5, choices=settings.LANGUAGES,
+                                 help_text=_(u'2 letters or 5 characters '
+                                             u'language code (eg “en”, '
+                                             u'“fr-FR”…).'))
+    text_direction = StringField(verbose_name=_(u'Text direction'),
+                                 choices=((u'ltr', _(u'Left-to-Right')),
+                                          (u'rtl', _(u'Right-to-Left'))),
+                                 default=u'ltr', max_length=3)
 
     image_url     = StringField(verbose_name=_(u'image URL'))
     abstract      = StringField(verbose_name=_(u'abstract'),
                                 help_text=_(u'Small exerpt of content, '
-                                            u'if applicable'))
+                                            u'if applicable.'))
     content       = StringField(default=CONTENT_NOT_PARSED,
                                 verbose_name=_(u'Content'),
                                 help_text=_(u'Article content'))
@@ -1893,7 +1963,12 @@ class Article(Document, DocumentHelperMixin):
                                   reverse_delete_rule=NULLIFY)
 
     meta = {
-        'indexes': ['content_type', 'content_error', 'url_error', ]
+        'indexes': [
+            'content_type',
+            'content_error',
+            'url_error',
+            'date_published',
+        ]
     }
 
     def __unicode__(self):
@@ -1927,6 +2002,20 @@ class Article(Document, DocumentHelperMixin):
                 self.tags = [t for t in self.tags if t is not None]
                 e.errors.pop('tags')
 
+            comments_error = e.errors.get('comments_feed', None)
+
+            if comments_error and self.comments_feed == '':
+                # Oh please, don't bother me.
+                self.comments_feed = None
+                e.errors.pop('comments_feed')
+
+            language_error = e.errors.get('language', None)
+
+            if language_error and self.language in (u'', None):
+                # Oh please, don't bother me.
+                # Again, required=False doesn't work at all.
+                e.errors.pop('language')
+
             if e.errors:
                 raise e
 
@@ -1936,6 +2025,43 @@ class Article(Document, DocumentHelperMixin):
     @property
     def reads(self):
         return Read.objects.filter(article=self)
+
+    @property
+    def get_source(self):
+
+        if self.source:
+            return self.source
+
+        if self.feeds:
+            return self.feeds
+
+        return _('Unknown source')
+
+    @property
+    def get_source_unicode(self):
+
+        source = self.get_source
+
+        if source.__class__ in (unicode, str):
+            return source
+
+        sources_count = len(source)
+
+        if sources_count > 2:
+            return _(u'Multiple sources ({0} feeds)').format(sources_count)
+
+        return u' / '.join(x.name for x in source)
+
+    @property
+    def content_display(self):
+
+        if len(self.content) > config.READ_ARTICLE_MIN_LENGTH:
+            try:
+                return markdown(self.content)
+
+            except Exception:
+                LOGGER.exception(u'Live Markdown to HTML conversion '
+                                 u'failed for article %s', self)
 
     @property
     def original_data(self):
@@ -2058,11 +2184,6 @@ class Article(Document, DocumentHelperMixin):
                                                  headers=REQUEST_BASE_HEADERS)
 
             except requests.ConnectionError, e:
-
-                if 'Errno 104' in str(e):
-                    # Special case, we probably hit a remote parallel limit.
-                    self.feed.set_fetch_limit()
-
                 statsd.gauge('articles.counts.url_errors', 1, delta=True)
                 self.url_error = str(e)
                 self.save()
@@ -2222,8 +2343,16 @@ class Article(Document, DocumentHelperMixin):
                                         'language', None)
 
                 if language is not None:
-                    self.language = language
-                    self.save()
+                    try:
+                        self.language = language
+                        self.save()
+
+                    except:
+                        # This happens if the language code of the
+                        # feedparser data does not correspond to a
+                        # Django setting language we support.
+                        LOGGER.exception(u'Cannot set language %s on '
+                                         u'article %s.', language, self)
 
             if self.orphaned:
                 # We have a chance to get at least *some* content. It will
@@ -2502,23 +2631,7 @@ class Article(Document, DocumentHelperMixin):
         #
 
         try:
-            # TODO/FIXME: this *_limit() thing should bo into WebSite.
-            if self.feed:
-                with self.feed.fetch_limit:
-                    self.fetch_content_text(force=force, commit=commit)
-            else:
-                self.fetch_content_text(force=force, commit=commit)
-
-        except (NoResourceAvailableException, AlreadyLockedException):
-            countdown = randrange(60)
-
-            LOGGER.warning(u'Feed %s has already the maximum '
-                           u'number of fetchers, re-planning '
-                           u'fetch of article %s in %s.', self.feed,
-                           self, naturaldelta(countdown))
-
-            raise article_fetch_content.retry((self.id, force, commit),
-                                              countdown=countdown)
+            self.fetch_content_text(force=force, commit=commit)
 
         except StopProcessingException, e:
             LOGGER.info(u'Stopping processing of article %s on behalf of '
@@ -2526,19 +2639,6 @@ class Article(Document, DocumentHelperMixin):
             return
 
         except requests.ConnectionError, e:
-
-            if 'Errno 104' in str(e):
-                # TODO/FIXME: this *_limit() thing should bo into WebSite.
-
-                if self.feed:
-                    # Special case, we probably hit a remote parallel limit.
-                    self.feed.set_fetch_limit()
-
-                countdown = randrange(60)
-
-                raise article_fetch_content.retry((self.id, force, commit),
-                                                  countdown=countdown)
-
             statsd.gauge('articles.counts.content_errors', 1, delta=True)
             self.content_error = str(e)
             self.save()
@@ -2570,15 +2670,14 @@ class Article(Document, DocumentHelperMixin):
             return True
 
         if not self.content_type in (CONTENT_TYPE_MARKDOWN, ):
-            LOGGER.warning(u'Article %s has no content, cannot find image.',
-                           self)
+            LOGGER.warning(u'Article %s is not in Markdown format, '
+                           u'aborting image lookup.', self)
             return True
 
     def find_image(self, force=False, commit=True):
 
-        # In tasks, doing this is often useful, if
-        # the task waited a long time before running.
-        self.safe_reload()
+        LOGGER.warning(u'Article.find_image() needs love, disabled for now.')
+        return
 
         if self.find_image_must_abort(force=force, commit=commit):
             return

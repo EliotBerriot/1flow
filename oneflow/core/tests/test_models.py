@@ -5,11 +5,15 @@ import logging
 
 from constance import config
 
+from django.core import mail
 from django.test import TestCase  # TransactionTestCase
 from django.test.utils import override_settings
 from django.contrib.auth import get_user_model
 
-from oneflow.core.models import Feed, Article, Read, User, Tag, WebSite, Author
+from oneflow.core.models import (Feed, Subscription,
+                                 Article, Read,
+                                 User, Tag, WebSite, Author)
+from oneflow.core.tasks import global_feeds_checker
 from oneflow.base.utils import RedisStatsCounter
 from oneflow.base.tests import (connect_mongodb_testsuite, TEST_REDIS)
 
@@ -165,6 +169,76 @@ class ThrottleIntervalTest(TestCase):
                    CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
                    CELERY_ALWAYS_EAGER=True,
                    BROKER_BACKEND='memory',)
+class FeedsTest(TestCase):
+
+    def setUp(self):
+
+        # NOTE: we need real web pages, else the absolutization won't work or
+        # will find duplicates and tests will fail for a real-life reason.
+        self.article1 = Article(title='test1',
+                                url='http://blog.1flow.io/post/'
+                                '59410536612/1flow-blog-has-moved').save()
+
+        self.feed = Feed(name='1flow test feed',
+                         url='http://blog.1flow.io/rss').save()
+
+        self.article1.update(add_to_set__feeds=self.feed)
+        self.article1.reload()
+
+        # User & Reads creation
+        for index in xrange(1, 2):
+            username = 'test_user_%s' % index
+            du = DjangoUser.objects.create(username=username,
+                                           email='%s@test.1flow.io' % username)
+            u = User(django_user=du.id, username=username).save()
+            Read(user=u, article=self.article1).save()
+            Subscription(user=u, feed=self.feed).save()
+
+        for index in xrange(2, 5):
+            username = 'test_user_%s' % index
+            du = DjangoUser.objects.create(username=username,
+                                           email='%s@test.1flow.io' % username)
+            u = User(django_user=du.id, username=username).save()
+
+    def tearDown(self):
+        Subscription.drop_collection()
+        Feed.drop_collection()
+        Read.drop_collection()
+        Article.drop_collection()
+        User.drop_collection()
+
+    def test_close(self):
+
+        closed_reason = u'closed for tests'
+
+        self.feed.close(closed_reason)
+
+        self.assertTrue(self.feed.closed)
+        self.assertEquals(self.feed.closed_reason, closed_reason)
+        self.assertFalse(self.feed.date_closed is None)
+
+        global_feeds_checker()
+
+        #for email in mail.outbox:
+        #    LOGGER.warning(email.subject)
+
+        # In normal conditions, we can have another mail, titled
+        # [1flow DEV] ERROR: Exception while determining subclass
+        #   of oneflow.base.api.common_authentication.
+        self.assertEquals(len(mail.outbox), 2)
+        self.assertTrue(u'Reminder: 1 feed(s) closed in last'
+                        in mail.outbox[1].subject)
+        self.assertTrue(unicode(self.feed) in mail.outbox[1].body)
+
+        #self.assertEqual( mail.outbox[0].to, [ "test@foo.bar" ] )
+        #self.assertTrue( "test@foo.bar" in mail.outbox[0].to )
+
+
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
 class ArticleDuplicateTest(TestCase):
 
     def setUp(self):
@@ -172,7 +246,8 @@ class ArticleDuplicateTest(TestCase):
         # NOTE: we need real web pages, else the absolutization won't work or
         # will find duplicates and tests will fail for a real-life reason.
         self.article1 = Article(title='test1',
-                                url='http://blog.1flow.io/post/59410536612/1flow-blog-has-moved').save() # NOQA
+                                url='http://blog.1flow.io/post/'
+                                '59410536612/1flow-blog-has-moved').save()
         self.article2 = Article(title='test2',
                                 url='http://obi.1flow.io/fr/').save()
         self.article3 = Article(title='test3',

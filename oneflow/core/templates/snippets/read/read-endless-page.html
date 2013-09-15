@@ -3,7 +3,9 @@
 {% if initial %}
 
     {% for read in reads %}
-        {% include read_item_template %}
+        {% if read.article.url_absolute and not read.article.duplicate_of %}
+            {% include preferences.home.get_template %}
+        {% endif %}
     {% endfor %}
 
 {% else %}
@@ -13,8 +15,16 @@
         {% lazy_paginate items_per_fetch reads %}
 
         {% for read in reads %}
-            {% include read_item_template %}
+            {% if read.article.url_absolute and not read.article.duplicate_of %}
+                {% include preferences.home.get_template %}
+            {% endif %}
         {% endfor %}
+
+        {% comment %}
+            The 'show_more' button is hidden via CSS, don't try to find
+            it in the page. But it must be present because it holds the
+            necessary data to load the next page.
+        {% endcomment %}
 
         {% show_more _('Load more entries') _('Loading…') %}
 

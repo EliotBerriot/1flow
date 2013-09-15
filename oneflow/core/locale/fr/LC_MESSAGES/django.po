@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-30 18:41+0200\n"
-"PO-Revision-Date: 2013-08-30 18:57+0009\n"
+"POT-Creation-Date: 2013-09-14 11:18+0200\n"
+"PO-Revision-Date: 2013-09-14 11:54+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,147 +19,181 @@ msgstr ""
 "X-Generator: Poedit 1.5.5\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: admin.py:35
+#: admin.py:42
 msgid "Google Reader import"
 msgstr "Import Google Reader"
 
-#: admin.py:36
+#: admin.py:43
 msgid "Google Reader imports"
 msgstr "Imports Google Reader"
 
-#: admin.py:63
+#: admin.py:70
 msgid "articles"
 msgstr "articles"
 
-#: admin.py:76
+#: admin.py:83
 msgid "feeds"
 msgstr "flux"
 
-#: admin.py:89
+#: admin.py:96
 msgid "reads"
 msgstr "lus"
 
-#: admin.py:102
+#: admin.py:109
 msgid "starred"
 msgstr "favoris"
 
-#: admin.py:115
+#: admin.py:122
 msgid "executed"
 msgstr "exécuté"
 
-#: admin.py:131
+#: admin.py:138
 msgid "duration"
 msgstr "durée"
 
-#: admin.py:145
+#: admin.py:152
 msgid "ETA"
 msgstr "fin"
 
-#: admin.py:157
+#: admin.py:164
 msgid "stop"
 msgstr "arrêter"
 
-#: admin.py:163
+#: admin.py:170
 msgid "start"
 msgstr "démarrer"
 
-#: admin.py:164
+#: admin.py:171
 msgid "restart"
 msgstr "relancer"
 
-#: admin.py:168
+#: admin.py:175
 msgid "import"
 msgstr "import"
 
-#: admin.py:177
+#: admin.py:184
 msgid "deny"
 msgstr "bloquer"
 
-#: admin.py:178
+#: admin.py:185
 msgid "allow"
 msgstr "autoriser"
 
-#: admin.py:180
+#: admin.py:187
 msgid "Permission"
 msgstr "Permission"
 
-#: admin.py:212
+#: admin.py:220
 msgid "Parents"
 msgstr "Parents"
 
-#: admin.py:225
+#: admin.py:233
 msgid "Children"
 msgstr "Enfants"
 
-#: admin.py:274
+#: admin.py:269 models/nonrel.py:1870 models/nonrel.py:3143
+msgid "Tags"
+msgstr "Tags"
+
+#: admin.py:282 admin.py:435 models/nonrel.py:663 models/nonrel.py:1932
+msgid "Duplicate of"
+msgstr "Duplicata de"
+
+#: admin.py:293 models/nonrel.py:1892
+msgid "Content"
+msgstr "Contenu"
+
+#: admin.py:299
+#, python-brace-format
+msgid "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%\">•••</span>"
+msgstr ""
+
+#: admin.py:306
+msgid "Fetch err."
+msgstr "Err. récup."
+
+#: admin.py:312
+#, python-brace-format
+msgid "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%;\">•••</span>"
+msgstr ""
+
+#: admin.py:319
+msgid "URL err."
+msgstr "Erreur d'URL"
+
+#: admin.py:421
 msgid "URLs"
 msgstr "URLs"
 
-#: admin.py:287
+#: admin.py:447
 #, python-brace-format
 msgid ""
 "<span title=\"Last 3 errors:\n"
 "{0}\" style=\"cursor: pointer\">{1} error(s)</span>"
 msgstr ""
 
-#: admin.py:290
+#: admin.py:450
 #, python-format
 msgid "%s: %s"
 msgstr "%s : %s"
 
-#: admin.py:296
+#: admin.py:456
 msgid "Errors"
 msgstr "Erreurs"
 
-#: admin.py:304
+#: admin.py:464
 msgid "Private?"
 msgstr "Privé(e) ?"
 
-#: admin.py:312
+#: admin.py:472
+msgid "Shown?"
+msgstr "Affiché ?"
+
+#: admin.py:480
 msgid "Recent"
 msgstr "Récents"
 
-#: admin.py:319
+#: admin.py:487
 msgid "Total"
 msgstr "Total"
 
-#: admin.py:330
+#: admin.py:498
 msgid "Latest"
 msgstr "Derniers"
 
-#: admin.py:338
+#: admin.py:506
 msgid "Added"
 msgstr "Ajouté(e)"
 
-#: admin.py:349
+#: admin.py:517
 msgid "Interval"
 msgstr "Intervalle"
 
-#: admin.py:358
+#: admin.py:526
 msgid "never"
 msgstr "jamais"
 
-#: admin.py:363
+#: admin.py:531
 msgid "Refreshed"
 msgstr "Rafraîchi(e)"
 
-#: admin.py:370
+#: admin.py:538
 msgid "Subs."
 msgstr "Sous…"
 
-#: admin.py:377
+#: admin.py:545
 msgid "reopen"
 msgstr "ré-ouvrir"
 
-#: admin.py:378
+#: admin.py:546
 msgid "close"
 msgstr "fermer"
 
-#: admin.py:381
+#: admin.py:550
 msgid "The feed is open"
 msgstr "Le flux est ouvert"
 
-#: admin.py:383
+#: admin.py:552
 msgid "Closed?"
 msgstr "Fermé(e) ?"
 
@@ -179,12 +213,12 @@ msgstr "Confirmation"
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: tasks.py:670
+#: tasks.py:701
 #, python-brace-format
 msgid "Reminder: {0} feed(s) closed in last {1} day(s)"
 msgstr "Rappel : {0} flux fermé(s) ce(s) {1} dernier(s) jour(s)"
 
-#: tasks.py:672
+#: tasks.py:703
 #, python-brace-format
 msgid ""
 "\n"
@@ -197,223 +231,279 @@ msgid ""
 "\n"
 msgstr ""
 
-#: urls.py:20
+#: urls.py:22
 msgid "^home/$"
 msgstr "^accueil/$"
 
-#: urls.py:21
+#: urls.py:24
 msgid "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 msgstr "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 
-#: urls.py:23
-#, fuzzy
+#: urls.py:27
 msgid "^profile/$"
-msgstr "Profil"
+msgstr "^profil/$"
 
-#: urls.py:24
-#, fuzzy
+#: urls.py:29
 msgid "^read/$"
-msgstr "lus"
+msgstr "^lire/$"
 
-#: urls.py:26
+#: urls.py:32
 msgid "^(?P<klass>\\w+)/(?P<id>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<id>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:29
+#: urls.py:35
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:31
+#: urls.py:37
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:32
+#: urls.py:38
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:34
+#: urls.py:44
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:37
+#: urls.py:47
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:40
+#: urls.py:50
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:43
+#: urls.py:53
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:45
+#: urls.py:58
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:52
+#: urls.py:66
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:54
+#: urls.py:68
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:224
+#: views.py:229
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:228
+#: views.py:233
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:232
+#: views.py:237
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:239
+#: views.py:244
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:243
+#: views.py:248
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:249
+#: views.py:254
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:252
+#: views.py:257
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
-#: models/nonrel.py:275
+#: models/nonrel.py:276
 msgid "Select whole paragraph on click"
 msgstr "Sélectionner le paragraphe entier lors du clic"
 
-#: models/nonrel.py:277
+#: models/nonrel.py:278
 msgid "Grows public by default"
 msgstr "Les pousses sont publiques par défaut"
 
-#: models/nonrel.py:287
-msgid "Reading list"
-msgstr ""
-
 #: models/nonrel.py:288
+msgid "Reading list"
+msgstr "Liste de lecture"
+
+#: models/nonrel.py:289
 msgid "Tiled News"
 msgstr ""
 
-#: models/nonrel.py:289
+#: models/nonrel.py:290
+msgid "Tiled experiment #1"
+msgstr ""
+
+#: models/nonrel.py:291
 msgid "Dashboard"
 msgstr ""
 
+#: models/nonrel.py:295
+msgid "Fancy"
+msgstr ""
+
 #: models/nonrel.py:296
+msgid "Strict"
+msgstr "Strict"
+
+#: models/nonrel.py:303
 msgid "How the user wants his 1flow home to appear"
 msgstr ""
 
-#: models/nonrel.py:459 models/nonrel.py:597 models/nonrel.py:838
+#: models/nonrel.py:318
+msgid "The kind of separator to use in reading list / tiles."
+msgstr ""
+
+#: models/nonrel.py:328
+msgid "Today"
+msgstr "Aujourd'hui"
+
+#: models/nonrel.py:329
+msgid "Yesterday"
+msgstr "Hier"
+
+#: models/nonrel.py:330
+msgid "Last seven days"
+msgstr "Les 7 derniers jours"
+
+#: models/nonrel.py:331
+msgid "Last 30 days"
+msgstr "Les 30 derniers jours"
+
+#: models/nonrel.py:332
+msgid "Long ago"
+msgstr "Bien avant"
+
+#: models/nonrel.py:511 models/nonrel.py:650 models/nonrel.py:886
 msgid "slug"
 msgstr ""
 
-#: models/nonrel.py:466
+#: models/nonrel.py:518
 #, python-format
 msgid "(dupe of #%s)"
 msgstr "(duplicata de #%s)"
 
-#: models/nonrel.py:596 models/nonrel.py:835
+#: models/nonrel.py:649 models/nonrel.py:883
 msgid "name"
 msgstr "nom"
 
-#: models/nonrel.py:598
+#: models/nonrel.py:651
 msgid "language"
 msgstr "langue"
 
-#: models/nonrel.py:604
+#: models/nonrel.py:657
 msgid "Origin"
 msgstr "Origine"
 
-#: models/nonrel.py:605
+#: models/nonrel.py:658
 msgid ""
 "Initial origin from where the tag was created from, to eventually help "
 "defining other attributes."
 msgstr ""
 
-#: models/nonrel.py:610 models/nonrel.py:1824
-msgid "Duplicate of"
-msgstr "Duplicata de"
-
-#: models/nonrel.py:611
+#: models/nonrel.py:664
 msgid ""
 "Put a \"master\" tag here to help avoiding too much different tags (eg. "
 "singular and plurals) with the same meaning and loss of information."
 msgstr ""
 
-#: models/nonrel.py:629
+#: models/nonrel.py:682
 #, python-format
 msgid "%s ⚐%s (#%s)"
 msgstr "%s ⚐%s (#%s)"
 
-#: models/nonrel.py:836
+#: models/nonrel.py:884
 msgid "url"
 msgstr "url"
 
-#: models/nonrel.py:837
+#: models/nonrel.py:885
 msgid "web site"
 msgstr "site web"
 
-#: models/nonrel.py:841
-msgid "default image url"
-msgstr "URL d'image par défaut"
+#: models/nonrel.py:888 models/nonrel.py:1596
+msgid "tags"
+msgstr "tags"
 
-#: models/nonrel.py:842
+#: models/nonrel.py:889
+msgid ""
+"This tags are used only when articles from this feed have no tags already. "
+"They are assigned to new subscriptions too."
+msgstr ""
+"Ces tags sont assignés aux nouveaux articles quand ils n'en ont pas eux-"
+"mêmes. Aux nouveaux abonnements aussi."
+
+#: models/nonrel.py:895
 msgid "Languages"
 msgstr "Langues"
 
-#: models/nonrel.py:843
+#: models/nonrel.py:896
 msgid ""
 "Set this to more than one language to help article language detection if "
 "none is set in articles."
 msgstr ""
+"Activez une ou plusieurs langues qui aideront à détecter la langue des "
+"articles s'ils n'en ont pas."
 
-#: models/nonrel.py:848
+#: models/nonrel.py:901
 msgid "date added"
 msgstr "date d'ajout"
 
-#: models/nonrel.py:849
-#, fuzzy
+#: models/nonrel.py:902
 msgid "restricted"
-msgstr "relancer"
+msgstr "restreint"
 
-#: models/nonrel.py:850
+#: models/nonrel.py:903
+msgid ""
+"Is this feed available only to paid subscribers on its publisher's web site?"
+msgstr ""
+"Le flux est-il accessible seulement aux abonnés payants sur le site "
+"d'origine qui le propose ?"
+
+#: models/nonrel.py:906
 msgid "closed"
 msgstr "fermé"
 
-#: models/nonrel.py:851
+#: models/nonrel.py:907
+msgid ""
+"Indicate that the feed is not fetched anymore (see “closed_reason” for why)."
+" /!\\ WARNING: do not just tick the checkbox; there is a programmatic "
+"procedure to close a feed properly."
+msgstr ""
+"Indique le flux n'est plus rafraîchi (le champ « raison » indique pourquoi)."
+" /!\\ ATTENTION : ne cochez pas simplement la case, il y a une procédure "
+"programmée pour fermer proprement un flux."
+
+#: models/nonrel.py:914
 msgid "date closed"
 msgstr "date de fermeture"
 
-#: models/nonrel.py:852
+#: models/nonrel.py:915
 msgid "closed reason"
 msgstr "raison de la fermeture"
 
-#: models/nonrel.py:855
+#: models/nonrel.py:918
 msgid "fetch interval"
 msgstr "intervalle de récupération"
 
-#: models/nonrel.py:856
+#: models/nonrel.py:919
 msgid "last fetch"
 msgstr "dernière récupération"
 
-#: models/nonrel.py:861
+#: models/nonrel.py:924
 msgid "fetch limit"
 msgstr "limite de récupération"
 
-#: models/nonrel.py:862
+#: models/nonrel.py:925
 #, python-format
 msgid ""
 "The maximum number of articles that can be fetched from the feed in "
@@ -421,338 +511,426 @@ msgid ""
 "from real-life results."
 msgstr ""
 
-#: models/nonrel.py:870
+#: models/nonrel.py:933
 msgid "last etag"
 msgstr "dernier Etag"
 
-#: models/nonrel.py:871
+#: models/nonrel.py:934
 msgid "modified"
 msgstr "modifié"
 
-#: models/nonrel.py:983
+#: models/nonrel.py:940
+msgid "Notes"
+msgstr "Notes"
+
+#: models/nonrel.py:941
+msgid "Internal notes for 1flow staff related to this feed."
+msgstr "Notes internes au personnel de 1flow, à propos de ce flux."
+
+#: models/nonrel.py:944
+msgid "Shown in selector"
+msgstr "Affiché dans le sélecteur"
+
+#: models/nonrel.py:946
+msgid ""
+"Make this feed available to new subscribers in the selector wizard. Without "
+"this, the user can still subscribe but he must know it and manually enter "
+"the feed address."
+msgstr ""
+"Rendre ce flux disponible dans le sélecteur de nouveaux abonnements / "
+"recherche. Sans celà, les utilisateurs peuvent toujours s'abonner, mais il "
+"leur faut connaître et saisir l'adresse exacte du flux. "
+
+#: models/nonrel.py:952
+msgid "Thumbnail URL"
+msgstr "URL de vignette"
+
+#: models/nonrel.py:953
+msgid ""
+"Full URL of the thumbnail displayed in the feed selector. Can be hosted "
+"outside of 1flow."
+msgstr ""
+"URL complète de la vignette affichée dans le sélecteur. Peut être hébergée "
+"en dehors de 1flow."
+
+#: models/nonrel.py:956
+msgid "Description (FR)"
+msgstr "Description (FR)"
+
+#: models/nonrel.py:957
+msgid "Public description of the feed in French language. As Markdown."
+msgstr ""
+"Description publique du flux en langue française. Apparaîtra dans le "
+"sélecteur. En Markdown."
+
+#: models/nonrel.py:960
+msgid "Description (EN)"
+msgstr "Description (EN)"
+
+#: models/nonrel.py:961
+msgid "Public description of the feed in English language. As Markdown."
+msgstr ""
+
+#: models/nonrel.py:1071
 #, python-format
 msgid "%s (#%s)"
 msgstr "%s (#%s)"
 
-#: models/nonrel.py:1496
-msgid "tags"
-msgstr "tags"
-
-#: models/nonrel.py:1497
+#: models/nonrel.py:1597
 msgid ""
 "Subscription tags, which can also be seen as folders from the user point of "
 "view."
 msgstr ""
 
-#: models/nonrel.py:1516
+#: models/nonrel.py:1616
 msgid ""
 "When trying to guess authors, we have only a \"fullname\" equivalent. We "
 "need to store it for future comparisons in case firstname and lastname get "
 "manually modified after author creation."
 msgstr ""
 
-#: models/nonrel.py:1522
+#: models/nonrel.py:1622
 msgid ""
 "Set to True when the author has been found from its origin_name and not via "
 "email; because origin_name can be duplicated, but not emails."
 msgstr ""
 
-#: models/nonrel.py:1528
+#: models/nonrel.py:1628
 msgid "Link an internet author to a 1flow user."
 msgstr "Lier un auteur internet à un utilisateur 1flow."
 
-#: models/nonrel.py:1536
-msgid "(unsure)"
+#: models/nonrel.py:1636
+msgid " (unsure)"
 msgstr "(non confirmé)"
 
-#: models/nonrel.py:1733
+#: models/nonrel.py:1834
 msgid "Title"
 msgstr "Titre"
 
-#: models/nonrel.py:1735
+#: models/nonrel.py:1836
 msgid "Public URL"
 msgstr "URL publique"
 
-#: models/nonrel.py:1736
+#: models/nonrel.py:1837
 msgid "Absolute URL"
 msgstr "URL absolue"
 
-#: models/nonrel.py:1737
+#: models/nonrel.py:1838
 msgid ""
 "The article URL has been successfully absolutized to its unique and final "
 "location."
 msgstr ""
 
-#: models/nonrel.py:1741
+#: models/nonrel.py:1842
 msgid "URL fetch error"
 msgstr "Erreur de récupération de l'URL"
 
-#: models/nonrel.py:1742
+#: models/nonrel.py:1843
 msgid "Error when absolutizing the URL"
 msgstr "Erreur pendant l'absolutisation de l'URL"
 
-#: models/nonrel.py:1743
+#: models/nonrel.py:1844
 msgid "Next pages URLs"
 msgstr "URLs des pages suivantes"
 
-#: models/nonrel.py:1744
+#: models/nonrel.py:1845
 msgid "In case of a multi-pages article, other pages URLs will be here."
 msgstr ""
 
-#: models/nonrel.py:1749
+#: models/nonrel.py:1850
 msgid "Orphaned"
 msgstr "Orphelin"
 
-#: models/nonrel.py:1750
+#: models/nonrel.py:1851
 msgid ""
 "This article has no public URL anymore, or is unfetchable for some reason."
 msgstr ""
 "Cet article n'a plus d'URL publique, ou son contenu n'est plus récupérable "
 "pour un autre raison."
 
-#: models/nonrel.py:1754
+#: models/nonrel.py:1855
 msgid "Word count"
 msgstr "Nombre de mots"
 
-#: models/nonrel.py:1759
+#: models/nonrel.py:1860
 msgid "date published"
 msgstr "date de publication"
 
-#: models/nonrel.py:1760
+#: models/nonrel.py:1861
 msgid "When the article first appeared on the publisher's website."
 msgstr "Quand l'article est apparu la première fois sur le site de l'éditeur."
 
-#: models/nonrel.py:1764
+#: models/nonrel.py:1865
 msgid "Date added"
 msgstr "Date d'ajout"
 
-#: models/nonrel.py:1765
+#: models/nonrel.py:1866
 msgid "When the article was added to the 1flow database."
-msgstr ""
+msgstr "Date à laquelle le flux a été ajouté dans la base 1flow."
 
-#: models/nonrel.py:1769 models/nonrel.py:3022
-msgid "Tags"
-msgstr "Tags"
-
-#: models/nonrel.py:1770
+#: models/nonrel.py:1871
 msgid "Default tags that will be applied to new reads of this article."
 msgstr ""
+"Tags qui seront appliqués automatiquement à toute nouvelle lecture liée à "
+"cet article."
 
-#: models/nonrel.py:1772
-#, fuzzy
+#: models/nonrel.py:1873
 msgid "default rating"
-msgstr "durée"
+msgstr "score de référence"
 
-#: models/nonrel.py:1773
+#: models/nonrel.py:1874
 msgid "Rating used as a base when a user has not already rated the content."
 msgstr ""
+"Score qui sera utilisé comme base tant que l'utilisateur n'a pas encore "
+"noté/starré/reblogué le contenu."
 
-#: models/nonrel.py:1776
+#: models/nonrel.py:1877
 msgid "Article language"
 msgstr "Langue de l'article"
 
-#: models/nonrel.py:1777
+#: models/nonrel.py:1879
+msgid "2 letters or 5 characters language code (eg “en”, “fr-FR”…)."
+msgstr "Code de langue sur 2 ou 5 caractères."
+
+#: models/nonrel.py:1882
 msgid "Text direction"
 msgstr "Direction du texte"
 
-#: models/nonrel.py:1779
+#: models/nonrel.py:1883
+msgid "Left-to-Right"
+msgstr "gauche-à-droite"
+
+#: models/nonrel.py:1884
+msgid "Right-to-Left"
+msgstr "droite-à-gauche"
+
+#: models/nonrel.py:1887
 msgid "image URL"
 msgstr "URL de l'image"
 
-#: models/nonrel.py:1780
+#: models/nonrel.py:1888
 msgid "abstract"
 msgstr "extrait"
 
-#: models/nonrel.py:1781
-msgid "Small exerpt of content, if applicable"
-msgstr ""
+#: models/nonrel.py:1889
+msgid "Small exerpt of content, if applicable."
+msgstr "Court résumé de l'article, s'il existe."
 
-#: models/nonrel.py:1784
-msgid "Content"
-msgstr "Contenu"
-
-#: models/nonrel.py:1785
+#: models/nonrel.py:1893
 msgid "Article content"
 msgstr "Contenu de l'article"
 
-#: models/nonrel.py:1787
+#: models/nonrel.py:1895
 msgid "Content type"
 msgstr "Type de contenu"
 
-#: models/nonrel.py:1788
+#: models/nonrel.py:1896
 msgid "Type of article content (text, image…)"
-msgstr ""
+msgstr "Type de contenu d'article (texte, image…)"
 
-#: models/nonrel.py:1790
+#: models/nonrel.py:1898
 msgid "Error"
 msgstr "Erreur"
 
-#: models/nonrel.py:1791
+#: models/nonrel.py:1899
 msgid "Error when fetching content"
-msgstr ""
+msgstr "Erreur pendant la récupération du contenu"
 
-#: models/nonrel.py:1798
+#: models/nonrel.py:1906
 msgid "Origin type"
 msgstr "Type d'origine"
 
-#: models/nonrel.py:1799
+#: models/nonrel.py:1907
 msgid ""
 "Origin of article (feedparser, twitter, websnap…). Can be 0 (none/unknown)."
 msgstr ""
 
-#: models/nonrel.py:1825
+#: models/nonrel.py:1933
 msgid ""
 "This article is a duplicate of another, which is referenced here. Even if "
 "they have different URLs (eg. one can be shortened, the other not), they "
 "lead to the same final destination on the web."
 msgstr ""
 
-#: models/nonrel.py:1839
+#: models/nonrel.py:1952
 #, python-format
 msgid "%s (#%s) from %s"
 msgstr "%s (#%s) de %s"
 
-#: models/nonrel.py:3023
+#: models/nonrel.py:2008
+msgid "Unknown source"
+msgstr "Source inconnue"
+
+#: models/nonrel.py:2021
+#, python-brace-format
+msgid "Multiple sources ({0} feeds)"
+msgstr "Sources multiples ({0} flux)"
+
+#: models/nonrel.py:3144
 msgid "User set of tags for this read."
 msgstr "Ensemble des tags de l'utilisateur pour cette lecture."
 
-#: models/nonrel.py:3048
+#: models/nonrel.py:3169
 #, python-format
 msgid "%s∞%s (#%s) %s %s"
 msgstr "%s∞%s (#%s) %s %s"
 
-#: models/nonrel.py:3050
-#, fuzzy
+#: models/nonrel.py:3171
 msgid "read"
-msgstr "lus"
+msgstr "lu"
 
-#: models/nonrel.py:3050
-#, fuzzy
+#: models/nonrel.py:3171
 msgid "unread"
-msgstr "lus"
+msgstr "non-lu"
 
-#: models/oldrel.py:58 models/reldb.py:211
+#: models/oldrel.py:58 models/reldb.py:214
 msgid "Categories"
 msgstr "Catégories"
 
-#: templates/help.html:3 templates/snippets/navbar.html:30
+#: models/reldb.py:266
+msgid "Help section name"
+msgstr "Nom de section d'aide"
+
+#: models/reldb.py:268
+msgid "Any text. Will be the title of the help section."
+msgstr "Le titre de la section. Du texte, quoi."
+
+#: models/reldb.py:270
+msgid "Ordering"
+msgstr "Ordre d'apparition"
+
+#: models/reldb.py:270
+msgid "An integer that will be used to order help sections on the help page."
+msgstr ""
+"Un nombre entier positif qui sera utilisé pour ordonner les sections dans la"
+" page d'aide."
+
+#: models/reldb.py:273
+msgid "is this help section currently displayed on the website?"
+msgstr ""
+"Cette section est-elle affichée ? (décocher pour rédiger une section "
+"tranquillement avant de la mettre en ligne)"
+
+#: models/reldb.py:276
+msgid "Help section content"
+msgstr "Contenu de la section d'aide"
+
+#: models/reldb.py:277
+msgid "Any text. Entered as Markdown."
+msgstr ""
+"Du texte, en markdown. Je crois qu'il y a une limite à 4096 caractères, mais"
+" je ne suis pas sûr…"
+
+#: models/reldb.py:280
+#, python-brace-format
+msgid "{field_name}: {truncated_field_value}"
+msgstr "{field_name} : {truncated_field_value}"
+
+#: models/reldb.py:292
+msgid "Help section"
+msgstr "Section d'aide"
+
+#: models/reldb.py:293
+msgid "Help contents"
+msgstr "Contenu de l'aide"
+
+#: templates/help.html:3 templates/snippets/navbar.html:79
 msgid "Help"
 msgstr "Aide"
 
-#: templates/help.html:10
-msgid "1flow minimal help"
-msgstr "Aide minimale 1flow"
+#: templates/help.html:12
+msgid "1flow help"
+msgstr "Aide 1flow"
 
 #: templates/help.html:13
-msgid ""
-"\n"
-"## Google Reader import\n"
-"\n"
-"The Google Reader import takes places in the background. You can safely\n"
-"logout of **1flow** or close your browser window without disrupting it.\n"
-"\n"
-"Importing data will take longer if many users are importing at once as we\n"
-"have finite computing resources. Your import status is updated every 5 seconds.\n"
-"\n"
-"Upon completion, the number of imported articles may be less than the number\n"
-"of processed articles due to duplicate content in Google data.\n"
-"\n"
-"About the approximate ETA… Well… Given the nature of the data we fetch\n"
-"from Google, it's **very** approximate. Don't rely on it; we don't do.\n"
-"The import will probably end before the ETA. It pleased our developer\n"
-"to display it.\n"
-msgstr ""
-"\n"
-"## Import Google Reader\n"
-"\n"
-"Cet import est réalisé en arrière-plan. Vous pouvez vous déconnecter de **1flow** ou fermer votre navigateur sans qu'il soit perturbé.\n"
-"\n"
-"L'import de vos données sera ralenti lorsque d'autres utilisateurs lanceront la même procédure, car nous avons des ressources informatiques limitées.\n"
-"\n"
-"L'état d'import de vos données est mis à jour toutes les 5 secondes.\n"
-"\n"
-"Le nombre réel d'articles importés pourra être inférieur à celui des \n"
-"articles traités, à cause de certaines données dupliquées chez Google.\n"
-"\n"
-"À propos de la « fin approximative »… Hé bien… Vu la nature des données que nous récupérons de Google, elle est vraiment **très** approximative ! Ne vous y fiez pas ; nous ne nous y fions pas. L'import se terminera très probablement avant cette estimation. Ça faisait plaisir à notre développeur de la mettre.\n"
+msgid "and frequently asked questions"
+msgstr "et questions fréquemment posées"
 
-#: templates/help.html:32
+#: templates/help.html:14
 msgid ""
 "\n"
-"## Reaching us\n"
-"\n"
-"If you need to reach real people, you can use:\n"
-"\n"
-"- the **feedback form** (on the right), which links to our help forums,\n"
-"- the **chat** widget, to which we are connected in real time (it's not a robot!).\n"
-"\n"
-"Note: If you use twitter to contact us, please be patient: we use it primarily\n"
-"for publishing informations and don't read it very regularly.\n"
+"Welcome to 1flow help center. If you don't find the answer you need here, please [contact us](#reaching-us) before calling the fire brigade.\n"
+"          "
 msgstr ""
 "\n"
-"## Nous joindre\n"
-"\n"
-"Si vous souhaitez joindre des humains, vous avez à votre disposition :\n"
-"\n"
-"- le **formulaire de feedback** (sur la droite), qui pointe vers nos forums d'aide,\n"
-"- la fenêtre de **tchat**, à la quelle nous sommes connectés en temps réel (ce n'est pas un robot!).\n"
-"\n"
-"Note : ne comptez pas trop sur Twitter dans un premier temps: nous l'utilisons principalement pour y publier des informations et ne le lisons que rarement actuellement.\n"
+"Bienvenue dans le centre d'aide de 1flow. Si vous ne trouvez pas ce que vous êtes venu(e) chercher, merci de [nous contacter](#nous-contacter) avant d'appeler les pompiers."
+
+#: templates/help.html:30
+msgid "Help sections"
+msgstr "Sections d'aide"
 
 #: templates/home.html:5
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/profile.html:5 templates/snippets/navbar.html:39
+#: templates/profile.html:6 templates/snippets/navbar.html:100
 msgid "Profile"
 msgstr "Profil"
 
-#: templates/profile.html:16
+#: templates/profile.html:20
 msgid "Your profile"
 msgstr "Profil"
 
-#: templates/profile.html:22
+#: templates/profile.html:27
 msgid "username"
 msgstr "identifiant"
 
-#: templates/profile.html:27
+#: templates/profile.html:31
 msgid "First name"
 msgstr "Prénom"
 
-#: templates/profile.html:31
+#: templates/profile.html:35
 msgid "Last name"
 msgstr "Nom"
 
-#: templates/profile.html:35
+#: templates/profile.html:39
 msgid "e-mail"
 msgstr "courriel"
 
-#: templates/profile.html:39
+#: templates/profile.html:43
 msgid "Last login: "
 msgstr "Dernière connexion :"
 
-#: templates/profile.html:43
-#, fuzzy
+#: templates/profile.html:47
 msgid "Registered:"
-msgstr "Enregistrement"
+msgstr "Enregistré(e) :"
 
-#: templates/profile.html:51
+#: templates/profile.html:53
+msgid ""
+"These data are not stored durably in 1flow. They are offered courtesy of "
+"your social account provider (eg. Google, Twitter…). Change any parameter "
+"directly there, it will be reflected here next time you sign in."
+msgstr ""
+"Ces données ne sont pas stockées durablement dans 1flow, car elles sont "
+"courtoisement offertes par votre fournisseur de compte de réseau social "
+"(Google, Twitter…). Modifiez-les directement là-bas, et les changements "
+"apparaîtrons dans 1flow à votre prochaine identification."
+
+#: templates/profile.html:56
+msgid "Super-user access"
+msgstr "Accès super-utilisateur"
+
+#: templates/profile.html:59
+msgid "PostgreSQL"
+msgstr "PostgreSQL"
+
+#: templates/profile.html:63
+msgid "MongoDB"
+msgstr "MongoDB"
+
+#: templates/profile.html:79
 msgid "Save"
 msgstr "Enregistrer"
 
-#: templates/profile.html:64
-msgid "Profile data it not yet editable."
-msgstr "Les données de profil ne sont pas encore modifiables."
-
-#: templates/profile.html:68
+#: templates/profile.html:86
 msgid "Social accounts"
 msgstr "Comptes de réseaux sociaux"
 
-#: templates/profile.html:72
+#: templates/profile.html:90
 msgid "Currently associated"
 msgstr "Actuellement associés"
 
-#: templates/profile.html:76
+#: templates/profile.html:94
 msgid ""
 "\n"
 "Click to disassociate any of your accounts, but beware:\n"
@@ -762,7 +940,7 @@ msgstr ""
 "\n"
 "Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**.\n"
 
-#: templates/profile.html:82
+#: templates/profile.html:100
 msgid ""
 "\n"
 "As you have currently only one social account, you cannot de-associate it\n"
@@ -772,27 +950,61 @@ msgstr ""
 "\n"
 "Vous n'avez actuellement qu'un seul compte social ; vous ne pouvez pas le déconnecter de **1flow** : cela vous perdrait dans le cyber-espace sans aucun moyen de revenir au spacio-port. \n"
 
-#: templates/profile.html:105
+#: templates/profile.html:123
 #, python-format
 msgid "Cannot disconnect from %(backend_name)s"
 msgstr "Impossible de déconnecter %(backend_name)s"
 
-#: templates/profile.html:111
+#: templates/profile.html:129
 #, python-format
 msgid "Disconnect from %(backend_name)s"
 msgstr "Se déconnecter de %(backend_name)s"
 
-#: templates/profile.html:121
+#: templates/profile.html:139
 msgid "Associate more accounts"
 msgstr "Associer d'autres comptes"
 
-#: templates/profile.html:123
+#: templates/profile.html:141
 msgid "Associate accounts"
 msgstr "Associer des comptes"
 
-#: templates/read.html:3 templates/snippets/navbar.html:60
+#: templates/read.html:4 templates/read.html.py:13
+#: templates/snippets/navbar.html:128
 msgid "Read"
 msgstr "Lecture"
+
+#: templates/read.html:16
+#, python-format
+msgid ""
+"\n"
+"                            <span id=\"reads_count\">%(reads)s</span> article\n"
+"                        "
+msgid_plural ""
+"\n"
+"                            <span id=\"reads_count\">%(reads)s</span> articles\n"
+"                        "
+msgstr[0] ""
+"\n"
+" <span id=\"reads_count\">%(reads)s</span> articles"
+msgstr[1] ""
+"\n"
+" <span id=\"reads_count\">%(reads)s</span> articles"
+
+#: templates/read.html:40
+msgid "Experimental tiles #1"
+msgstr ""
+
+#: templates/read.html:80 templates/snippets/read/read-endless-page.html:30
+msgid "Load more entries"
+msgstr "Charger plus d'articles"
+
+#: templates/read.html:80 templates/snippets/read/read-endless-page.html:30
+msgid "Loading…"
+msgstr "Chargement…"
+
+#: templates/read.html:86
+msgid "Nothing to read yet. Buy a book?"
+msgstr "Rien à lire. Achetez-vous un livre ;-)"
 
 #: templates/register.html:3
 msgid "Register"
@@ -828,7 +1040,7 @@ msgstr ""
 "\n"
 "Vous pouvez utiliser un compte de réseau social pour vous enregistrer en un clic sur <strong>1flow</strong>. Ceci importera automatiquement vos données dans  <strong>1flow</strong>. D'une pierre deux coups !"
 
-#: templates/signin.html:3 templates/snippets/navbar.html:52
+#: templates/signin.html:3 templates/snippets/navbar.html:118
 msgid "Sign in…"
 msgstr "Connexion…"
 
@@ -1018,45 +1230,51 @@ msgstr ""
 "\n"
 "Pour importer vos données Google Reader, merci de <a href=\"%(gg_url)s\">vous connecter via Google</a> d'abord."
 
-#: templates/snippets/navbar.html:19
+#: templates/snippets/navbar.html:20
+msgid "Search…"
+msgstr "Rechercher…"
+
+#: templates/snippets/navbar.html:28
 msgid "Maintenance"
 msgstr "Maintenance"
 
-#: templates/snippets/navbar.html:42
-msgid "Django Admin."
+#: templates/snippets/navbar.html:105
+msgid "Constance config."
+msgstr "Config. constance"
+
+#: templates/snippets/navbar.html:106
+msgid "Django admin."
 msgstr "Admin. Django"
 
-#: templates/snippets/navbar.html:46
+#: templates/snippets/navbar.html:107
+msgid "1flow translations"
+msgstr "Traductions 1flow"
+
+#: templates/snippets/navbar.html:111
 msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: templates/snippets/navbar.html:64
+#: templates/snippets/navbar.html:132
 #, fuzzy
 msgid "Teams"
 msgstr "équipes"
 
-#: templates/snippets/navbar.html:65
+#: templates/snippets/navbar.html:133
 msgid "Subscriptions"
 msgstr "Abonnements"
 
-#: templates/snippets/navbar.html:66
+#: templates/snippets/navbar.html:134
 #, fuzzy
 msgid "Discovery"
 msgstr "découverte"
 
-#: templates/snippets/navbar.html:70
-msgid "Search…"
-msgstr "Rechercher…"
-
-#: templates/snippets/navbar.html:76
-#, fuzzy
+#: templates/snippets/navbar.html:138
 msgid "About"
-msgstr "à propos"
+msgstr "À propos"
 
-#: templates/snippets/navbar.html:77
-#, fuzzy
+#: templates/snippets/navbar.html:139
 msgid "Contact"
-msgstr "contact"
+msgstr "Contact"
 
 #: templates/snippets/home/choose-home-style.html:7
 msgid "Welcome!"
@@ -1107,52 +1325,237 @@ msgstr ""
 msgid "Embrace your world in a sight. For experts."
 msgstr ""
 
-#: templates/snippets/read/read-list-page.html:24
-#: templates/snippets/read/read-tiles-page.html:20
-msgid "Nothing to read yet. Buy a book?"
-msgstr "Rien à lire. Achetez-vous un livre ;-)"
+#: templates/snippets/read/no-content.html:9
+msgid "This article seems empty."
+msgstr "Cet article semble vide."
 
-#: templates/snippets/read/read-list-row.html:16
+#: templates/snippets/read/no-content.html:10
+msgid "You should ask us for a <span class=\"nowrap\">refund ;-)</span>"
+msgstr "Vous devriez vous faire <span class=\"nowrap\">rembourser ;-)</span>"
+
+#: templates/snippets/read/no-content.html:14
+#, python-format
+msgid ""
+"\n"
+"<p>Just kidding. It should be automatically fetched soon.\n"
+"Sorry for the inconvenience.</p>\n"
+"<p>\n"
+"<a href=\"%(article_url)s\" target=\"_blank\">Read it on the original <span class=\"nowrap\">website&nbsp;≫</span></a></p>\n"
+msgstr ""
+"\n"
+"<p>Je blague. Il devrait être récupéré automatiquement très bientôt.\n"
+"Désolé du désagrément.</p>\n"
+"<p>\n"
+"<a href=\"%(article_url)s\" target=\"_blank\">Lire l'article sur le site <span class=\"nowrap\">d’origine&nbsp;≫</span></a></p>\n"
+
+#: templates/snippets/read/not-safe.html:2
+msgid "Unsafe content"
+msgstr "Contenu non-sûr"
+
+#: templates/snippets/read/not-safe.html:3
+#, python-format
+msgid ""
+"\n"
+"We detected that this article contains unsafe content (for your web browser, not your eyes). To protect your beloved computer, we will not\n"
+"render it here.<br />\n"
+"Alternatively, you can <a href=\"%(article_url)s\" target=\"_blank\">read the article on its original website</a>. Sorry for the inconvenience.\n"
+msgstr ""
+"\n"
+"Nous avons détecté que le contenu de cet article est potentiellement dangereux (pour votre navigateur, pas pour vos yeux…). Pour protéger votre ordinateur bien-aimé, nous ne l'affichons pas.<br />\n"
+"Alternativement, vous pouvez <a href=\"%(article_url)s\" target=\"_blank\">le lire sur le site d'origine</a>. Désolé du désagrément.\n"
+
 #: templates/snippets/read/read-list-row.html:17
-#: templates/snippets/read/read-tiles-tile.html:23
-#: templates/snippets/read/read-tiles-tile.html:24
-msgid "mark as unread"
-msgstr "marquer non-lu"
-
-#: templates/snippets/read/read-list-row.html:20
 #: templates/snippets/read/read-list-row.html:21
-#: templates/snippets/read/read-tiles-tile.html:27
-#: templates/snippets/read/read-tiles-tile.html:28
-msgid "mark as read"
-msgstr "marquer lu"
+#: templates/snippets/read/read-list-row.html:25
+msgid "Action not yet available"
+msgstr "Action non disponible pour l'instant"
 
-#: templates/snippets/read/read-list-row.html:26
-#: templates/snippets/read/read-tiles-tile.html:33
+#: templates/snippets/read/read-list-row.html:29
+#: templates/snippets/read/read-tiles-experimental-tile.html:34
+#: templates/snippets/read/read-tiles-tile.html:34
 msgid "Open this article on the original website"
 msgstr "Ouvrir cet article sur le site web d'origine"
 
-#: templates/snippets/read/read-list-row.html:32
-#: templates/snippets/read/read-tiles-tile.html:40
+#: templates/snippets/read/read-list-row.html:34
+#: templates/snippets/read/read-list-row.html:35
+msgid "mark as unread"
+msgstr "marquer non-lu"
+
+#: templates/snippets/read/read-list-row.html:39
+#: templates/snippets/read/read-list-row.html:40
+msgid "mark as read"
+msgstr "marquer lu"
+
+#: templates/snippets/read/read-list-row.html:63
+msgid "by"
+msgstr "par"
+
+#: templates/snippets/read/read-list-row.html:69
+#: templates/snippets/read/read-tiles-experimental-tile.html:41
+#: templates/snippets/read/read-tiles-tile.html:41
 msgid "in"
 msgstr "dans"
 
-#: templates/snippets/read/read-list-row.html:33
+#: templates/snippets/read/read-list-row.html:70
+#: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid ", rated "
 msgstr ", noté"
 
-#: templates/snippets/read/read-list-row.html:37
-#: templates/snippets/read/read-tiles-tile.html:46
-msgid "by"
-msgstr "par"
+#: templates/snippets/read/read-list-row.html:81
+msgid "Admin stuff"
+msgstr "Trucs d'admins"
 
-#: templates/snippets/read/read-tiles-page.html:16
-msgid "Load more entries"
-msgstr "Charger plus d'articles"
+#: templates/snippets/read/read-list-row.html:82
+msgid "Read: "
+msgstr "Lecture :"
 
-#: templates/snippets/read/read-tiles-page.html:16
-msgid "Loading…"
-msgstr "Chargement…"
+#: templates/snippets/read/read-list-row.html:83
+msgid "Article: "
+msgstr "Article :"
+
+#: templates/snippets/read/read-list-row.html:87
+msgid "Feeds: "
+msgstr "Flux :"
+
+#: templates/snippets/read/read-list-row.html:95
+msgid "no feeds"
+msgstr "pas de flux"
+
+#: templates/snippets/read/read-tiles-experimental-tile.html:3
+#: templates/snippets/read/read-tiles-tile.html:3
+msgid "Article main image"
+msgstr "Image principale de l'article"
+
+#: templates/snippets/read/read-tiles-experimental-tile.html:5
+#: templates/snippets/read/read-tiles-tile.html:5
+msgid "Placeholder-"
+msgstr ""
+
+#: templates/snippets/read/read-tiles-experimental-tile.html:6
+#: templates/snippets/read/read-tiles-tile.html:6
+msgid "No Image for this Article, this is a default one"
+msgstr "Pas d'image pour cette article, c'est une image par défaut"
+
+#: templates/snippets/read/read-tiles-experimental-tile.html:44
+#: templates/snippets/read/read-tiles-tile.html:44
+msgid "By"
+msgstr "Par "
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:8
+#, python-format
+msgid ""
+"\n"
+"\n"
+"# Welcome to 1flow,\n"
+"\n"
+"## your new home to read and write digital content.\n"
+"\n"
+"![VIDEO TUTORIAL HERE](http://lorempixel.com/360/240/abstract/video-tutorial-here/ \"VIDEO TUTORIAL HERE\")\n"
+"\n"
+"We hope to bring the best possible experience in these domains. Please take time to discover the interface, and watch the following screencast if you need guidance.\n"
+"\n"
+"While you're here, keep in mind that we are a small team and a young project. As such, some things will probably feel unpolished to you. In the meantime, we fix problems very quickly. 1flow gets better everyday. Sometimes even faster, when our developer went kitesurfing the day before.\n"
+"\n"
+"When you need help, there is the [help button](%(help_url)s \"Go to help\") (you already guessed it, didn't you?). You can reach us via the [feedback chat](%(chat_fake_url)s) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.\n"
+"\n"
+"We hope you'll enjoy 1flow as much as we enjoy building it.\n"
+"\n"
+"Cheers,\n"
+"\n"
+"--\n"
+"[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),\n"
+"1flow founders\n"
+"\n"
+msgstr ""
+"\n"
+"# Bienvenue sur 1flow,\n"
+"\n"
+"## votre nouvelle maison pour la lecture et l'écriture de contenus numériques.\n"
+"\n"
+"![Tutoriel vidéo ici](http://lorempixel.com/360/240/abstract/tutoriel-video-ici/ \"Tutoriel vidéo ici\")\n"
+"\n"
+"Nous espérons vous apporter la meilleure expérience possible dans ces domaines. Prenez le temps de découvrir l'interface, et regardez l'introduction ci-contre si vous voulez être accompagné(e).\n"
+"\n"
+"Pendant que vous êtes là, gardez en tête que nous sommes une petite équipe et un jeune projet. En tant que tel, certaines fonctionnalités vous paraîtront sans doute un peu frustes. D'un autre côté, nous sommes super réactifs pour résoudre tous les problèmes. 1flow s'améliore tous les jours. Et même plusieurs fois par jour, quand notre développeur a pu faire du kitesurf la veille.\n"
+"\n"
+"Si vous avez besoin d'aide, il y a le [bouton d'aide]((%(help_url)s \"Afficher l'aide\"), mais vous l'aviez déjà vu, pas vrai ? Vous pouvez nous joindre via le [chat](%(chat_fake_url)s), ou nous laisser une demande de fonctionnalité sur notre [forum de support](http://1flow.userecho.com/). Nous serons *enchantés* d'avoir quelques mots de votre part.\n"
+"\n"
+"Nous espérons que vous profiterez autant de 1flow que nous prenons plaisir à le construire.\n"
+"\n"
+"À très bientôt,\n"
+"\n"
+"--\n"
+"[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),\n"
+"Fondateurs de 1flow\n"
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:41
+msgid "Bring me to my news<br />and don't show this again!"
+msgstr "Emmène-moi à mes articles<br />et n'affiche plus cette introduction !"
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:55
+msgid "Start adding some sources"
+msgstr "Ajoutons des sources d'information"
+
+#~ msgid "default image url"
+#~ msgstr "URL d'image par défaut"
+
+#~ msgid ""
+#~ "\n"
+#~ "## Google Reader import\n"
+#~ "\n"
+#~ "The Google Reader import takes places in the background. You can safely\n"
+#~ "logout of **1flow** or close your browser window without disrupting it.\n"
+#~ "\n"
+#~ "Importing data will take longer if many users are importing at once as we\n"
+#~ "have finite computing resources. Your import status is updated every 5 seconds.\n"
+#~ "\n"
+#~ "Upon completion, the number of imported articles may be less than the number\n"
+#~ "of processed articles due to duplicate content in Google data.\n"
+#~ "\n"
+#~ "About the approximate ETA… Well… Given the nature of the data we fetch\n"
+#~ "from Google, it's **very** approximate. Don't rely on it; we don't do.\n"
+#~ "The import will probably end before the ETA. It pleased our developer\n"
+#~ "to display it.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "## Import Google Reader\n"
+#~ "\n"
+#~ "Cet import est réalisé en arrière-plan. Vous pouvez vous déconnecter de **1flow** ou fermer votre navigateur sans qu'il soit perturbé.\n"
+#~ "\n"
+#~ "L'import de vos données sera ralenti lorsque d'autres utilisateurs lanceront la même procédure, car nous avons des ressources informatiques limitées.\n"
+#~ "\n"
+#~ "L'état d'import de vos données est mis à jour toutes les 5 secondes.\n"
+#~ "\n"
+#~ "Le nombre réel d'articles importés pourra être inférieur à celui des \n"
+#~ "articles traités, à cause de certaines données dupliquées chez Google.\n"
+#~ "\n"
+#~ "À propos de la « fin approximative »… Hé bien… Vu la nature des données que nous récupérons de Google, elle est vraiment **très** approximative ! Ne vous y fiez pas ; nous ne nous y fions pas. L'import se terminera très probablement avant cette estimation. Ça faisait plaisir à notre développeur de la mettre.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "## Reaching us\n"
+#~ "\n"
+#~ "If you need to reach real people, you can use:\n"
+#~ "\n"
+#~ "- the **feedback form** (on the right), which links to our help forums,\n"
+#~ "- the **chat** widget, to which we are connected in real time (it's not a robot!).\n"
+#~ "\n"
+#~ "Note: If you use twitter to contact us, please be patient: we use it primarily\n"
+#~ "for publishing informations and don't read it very regularly.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "## Nous joindre\n"
+#~ "\n"
+#~ "Si vous souhaitez joindre des humains, vous avez à votre disposition :\n"
+#~ "\n"
+#~ "- le **formulaire de feedback** (sur la droite), qui pointe vers nos forums d'aide,\n"
+#~ "- la fenêtre de **tchat**, à la quelle nous sommes connectés en temps réel (ce n'est pas un robot!).\n"
+#~ "\n"
+#~ "Note : ne comptez pas trop sur Twitter dans un premier temps: nous l'utilisons principalement pour y publier des informations et ne le lisons que rarement actuellement.\n"
+
+#~ msgid "Profile data it not yet editable."
+#~ msgstr "Les données de profil ne sont pas encore modifiables."
 
 #~ msgid "finished"
 #~ msgstr "terminé"

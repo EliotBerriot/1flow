@@ -1,0 +1,23 @@
+<div class="hero-unit no-content">
+    <div class="row-fluid">
+        <div class="span3">
+            {# IF YOU CHANGE THIS IMAGE, UPDATE/REMOVE PADDING-BOTTOM IN THE CSS #}
+            <img src="{{ STATIC_URL }}img/read/fa9b289a93424eb5b7a28e910d097f81.gif">
+        </div>
+        <div class="span8 offset1">
+          <h3>
+            {% trans "This article seems empty." %}<br />
+            {% trans 'You should ask us for a <span class="nowrap">refund ;-)</span>' %}
+          </h3>
+
+{% with article_url=article.url %}
+{% blocktrans %}
+<p>Just kidding. It should be automatically fetched soon.
+Sorry for the inconvenience.</p>
+<p>
+<a href="{{ article_url }}" target="_blank">Read it on the original <span class="nowrap">website&nbsp;≫</span></a></p>
+{% endblocktrans %}
+{% endwith %}
+        </div>
+    </div>
+</div>

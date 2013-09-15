@@ -1,3 +1,6 @@
+// warning: don't "use strict"; here, it will break things.
+// I need to learn to write good JS first. Sorry for that.
+
 var page_cleaner_interval;
 
 function find_start(parent, klass){
@@ -12,8 +15,8 @@ function find_start(parent, klass){
         start = parent.find('.' + klass);
     }
 
-    console.debug('start for ' + klass + ' in ' + parent + ':');
-    console.debug(start);
+    //console.debug('start for ' + klass + ' in ' + parent + ':');
+    //console.debug(start);
 
     return start;
 }
@@ -162,7 +165,7 @@ function page_cleaner() {
 
     } catch (err) {
         try {
-            console.log('page_cleaner: ' + err);
+            //console.debug('page_cleaner: ' + err);
 
         } catch (err) {
             // nothing. Silently ignored.
@@ -205,19 +208,41 @@ function setup_popovers(parent){
             placement: popover_placement }).click(function(e) {
         $(this).popover('toggle');
     });
+
+    // Bootstrap 2.3+
+    parent.find('[data-toggle=popover]').popover();
+
 }
 function setup_hover_muters(parent){
 
     find_start(parent, 'hover-unmute-children')
-        .hover(function() {
-            $(this).find('.hover-muted').animate({
-                opacity: 1
-            });
-        }, function() {
-            $(this).find('.hover-muted').stop(true, true).animate({
-                opacity: 0
-            });
-    });
+        .hover(
+            function() {
+                objekt = $(this).find('.hover-muted');
+
+                if(objekt.hasClass('hide')){
+                    objekt.show(function(){
+                        $(this).animate({
+                            opacity: 1
+                        }, 250);
+                    });
+
+                } else {
+                    objekt.animate({
+                            opacity: 1
+                    }, 250);
+                }
+            },
+            function() {
+                $(this).find('.hover-muted').stop(true, true).animate({
+                    opacity: 0
+                }, 250, function(){
+                    if($(this).hasClass('hide')){
+                       $(this).hide();
+                    }
+                });
+            }
+        );
 }
 function setup_tooltips(parent){
 
@@ -287,20 +312,42 @@ function setup_delayed_loaders(parent) {
         });
     });
 }
+
+function flash_fade(objekt, bg_color, fg_color){
+
+    var curfore = objekt.css('color');
+    var curback = objekt.css('backgroundColor');
+
+    if (typeof bg_color == 'undefined') {
+        bg_color = "#ffff99";
+    }
+
+    if (typeof fg_color == 'undefined') {
+        // by default we don't animate the foreground color.
+        fg_color = curfore;
+    }
+
+    objekt.animate({ backgroundColor: bg_color,
+                     color: fg_color }, 50,
+       function() {
+            //.delay(2500) in MyLicorn® (time to notice if we have a lot)
+            //.delay(100) still seems too slow.
+            objekt.animate({ backgroundColor: curback,
+                             color: curfore }, 1000, 'easeOutCubic');
+
+            // Fade is done, object is not "new" anymore.
+            try {
+                objekt.removeClass('new-fade');
+            } catch (err) {
+                // don't crash if the object doesn't have the class.
+                // sometimes we call the function directly.
+            }
+        }
+    );
+}
 function launch_faders(parent) {
     if (typeof parent == 'undefined') {
         parent = $('body');
-    }
-
-    function flash_fade(objekt){
-        curback = objekt.css('backgroundColor');
-
-        objekt.animate({ backgroundColor: "#ffff99" }, 250, function() {
-            objekt.delay(2500).animate({ backgroundColor: curback }, 1000);
-
-            // Fade is done, object is not "new" anymore.
-            objekt.removeClass('new-fade');
-        });
     }
 
     if (parent.hasClass('new-fade')) {
@@ -316,16 +363,20 @@ function setup_everything(parent) {
     setup_popovers(parent);
     setup_clickovers(parent);
     setup_delayed_loaders(parent);
+    launch_faders(parent);
 
     try {
-        setup_preferences_actions(parent);
+        // if we are in body#home, try to run home_setup(), and so on.
+        // Don't use eval. Thanks
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
-    } catch (err) {
-        // nothing. the preferences thing exists only
-        //when user is authenticated, else it will fail.
+        window[$('body').attr('id') + '_setup'](parent);
+
+    } catch(err) {
+        console.debug(err);
     }
 
-    launch_faders(parent);
+
 }
 function setup_auto_cleaner() {
     // every 10 minutes, the page is cleaned from old and orphaned elements.
@@ -355,6 +406,17 @@ function setup_keyboard() {
 function common_init() {
 
     setup_everything();
+
+    try {
+        // if we are in body#home, try to run home_init(), and so on.
+        // Don't use eval. Thanks
+        // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
+
+        window[$('body').attr('id') + '_init']();
+
+    } catch(err) {
+        console.debug(err);
+    }
 
     //setup_table_sorter();
     setup_auto_cleaner();

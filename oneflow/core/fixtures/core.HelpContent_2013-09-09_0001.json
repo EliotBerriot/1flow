@@ -1,0 +1,50 @@
+[
+{
+    "pk": 1, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "", 
+        "name": "Google Reader Import", 
+        "ordering": 999, 
+        "active": true, 
+        "content_nt": "", 
+        "content_en": "*NOTE*: **the Google Import has been discontinued on 2013-07-01, when Google closed the service.**\r\n\r\nThe Google Reader import takes places in the background. You can safely\r\nlogout of **1flow** or close your browser window without disrupting it.\r\n\r\nImporting data will take longer if many users are importing at once as we\r\nhave finite computing resources. Your import status is updated every 5 seconds.\r\n\r\nUpon completion, the number of imported articles may be less than the number\r\nof processed articles due to duplicate content in Google data.\r\n\r\nAbout the approximate ETA\u2026 Well\u2026 Given the nature of the data we fetch\r\nfrom Google, it's **very** approximate. Don't rely on it; we don't do.\r\nThe import will probably end before the ETA. It pleased our developer\r\nto display it."
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "", 
+        "name": "Reaching us", 
+        "ordering": 900, 
+        "active": true, 
+        "content_nt": "", 
+        "content_en": "If you need to reach real people, you can use:\r\n\r\n- the **[feedback form](#chat-fake-url)**, which links to our help forums,\r\n- the **[chat widget](#chat-fake-url)**, to which we are connected in real time (it's not a robot!).\r\n\r\nNote: If you use twitter to contact us, please be patient: we use it primarily\r\nfor publishing informations and don't read it very regularly."
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "", 
+        "name": "Reading in 1flow", 
+        "ordering": 0, 
+        "active": false, 
+        "content_nt": "", 
+        "content_en": "### Reading in list mode\r\n\r\n\u2026\r\n\r\n\r\n### Reading with tiled news\r\n\r\n\u2026"
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "", 
+        "name": "Adding news sources", 
+        "ordering": 0, 
+        "active": true, 
+        "content_nt": "", 
+        "content_en": "### Standard news feeds\r\n\r\nStandard news feeds (what geeks call [RSS][] or [Atom][] feeds) are one of the native 1flow formats, as in the majority of other news readers. You can search in our already known sources, or add a new feed by copy and pasting any website URL (1flow will hunt for the real feed URL), or a direct feed URL (eg. `http://website.com/rss.xml`). \r\n\r\n### Twitter / facebook / etc\r\n\r\nTwitter, Tumblr, facebook and other common news streams are beiing added to 1flow, or are planned to be.\r\n\r\n  [RSS]: http://en.wikipedia.org/wiki/RSS\r\n  [Atom]: http://en.wikipedia.org/wiki/Atom_%28standard%29"
+    }
+}
+]
