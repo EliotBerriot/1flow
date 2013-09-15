@@ -195,7 +195,7 @@ header {
 /* --------------------------------------------------------------------- Read */
 
 #read {
-    .article-number {
+    #reads-number {
         padding: 0 10px;
 
         h2 small {
@@ -505,12 +505,13 @@ header {
 
 
 @media (max-width: 767px) {
+
     body {
         padding-top: 0;
     }
 
     #read {
-        .article-number {
+        #reads-number {
             /* cancel the 10px padding of big screens to gain space */
             padding: 0;
         }
