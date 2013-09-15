@@ -319,7 +319,7 @@ header {
         font-family: georgia, times, serif;
         text-align: justify;
 
-        padding: 1em 0;
+        padding: 5em;
 
         h1, h2, h3 {
             text-align: left;
@@ -329,7 +329,6 @@ header {
         h1 {
             padding-bottom: 0.5em;
             border-bottom: 1px dotted #ddd;
-            margin-top: 1.5em;
             margin-bottom: 1.5em;
         }
 
@@ -526,6 +525,7 @@ header {
 
         .article-content {
             text-align: left;
+            padding: 0;
 
             h1 {
                 /*  Lower a little the size and
