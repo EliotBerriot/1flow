@@ -32,8 +32,8 @@
     {% block extrajs_footer %}{% endblock extrajs_footer %}
 
     {# HOW UGLY IS THIS… When calling a function would be so simple… #}
-    {% captureas home_or_profile %}{% reverse_active 'home' %}{% reverse_active 'profile' %}{% endcaptureas %}
-    {% if not debug and home_or_profile %}
+    {% captureas user_echo_page %}{% reverse_active 'home' %}{% reverse_active 'profile' %}{% reverse_active 'help' %}{% endcaptureas %}
+    {% if not debug and user_echo_page %}
       {% include 'snippets/userecho.html' %}
       {% if user.is_anonymous or not user.is_staff and not user.is_superuser %}
         {% include 'snippets/google-analytics.html' %}
