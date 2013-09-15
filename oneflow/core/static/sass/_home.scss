@@ -515,10 +515,6 @@ header {
 @media (min-width: 768px) and (max-width: 1023px) {
     /* A special style for the iPad in portrait mode. */
 
-    body {
-        padding-top: 0;
-    }
-
     .navbar-fixed-top,
     .navbar-fixed-bottom {
         /* Override bootstrap to get our navbar fixed again. */
