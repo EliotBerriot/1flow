@@ -195,7 +195,7 @@ header {
 /* --------------------------------------------------------------------- Read */
 
 #read {
-    .article-number {
+    #reads-number {
         padding: 0 10px;
 
         h2 small {
@@ -237,7 +237,17 @@ header {
             &:visited, &:active {
                 border: none;
             }
+
+            &:first-child {
+                margin-left: 0;
+            }
         }
+    }
+
+    .end-actions {
+        margin-top: 4em;
+        border-top: 2px solid #90949a;
+        padding-top: 10px;
     }
 
     .hover-muted {
@@ -319,7 +329,7 @@ header {
         font-family: georgia, times, serif;
         text-align: justify;
 
-        padding: 1em 0;
+        padding: 5em;
 
         h1, h2, h3 {
             text-align: left;
@@ -329,7 +339,6 @@ header {
         h1 {
             padding-bottom: 0.5em;
             border-bottom: 1px dotted #ddd;
-            margin-top: 1.5em;
             margin-bottom: 1.5em;
         }
 
@@ -503,16 +512,55 @@ header {
 
 /* --------------------------------------------------------------- Responsive */
 
+@media (min-width: 768px) and (max-width: 1023px) {
+    /* A special style for the iPad in portrait mode. */
+
+    body {
+        padding-top: 0;
+    }
+
+    .navbar-fixed-top,
+    .navbar-fixed-bottom {
+        /* Override bootstrap to get our navbar fixed again. */
+        position: fixed;
+    }
+
+    #read {
+        /*  completely reset both .span8.offset2 containers
+            for them to take all space in iPad portrait. */
+        #reads-number,
+        #reads-container {
+            width: 100%;
+            margin: 0;
+        }
+    }
+}
 
 @media (max-width: 767px) {
+
     body {
         padding-top: 0;
     }
 
     #read {
-        .article-number {
+        #reads-number {
             /* cancel the 10px padding of big screens to gain space */
             padding: 0;
+        }
+    }
+
+    .read-list-item {
+        .end-actions {
+            a {
+                margin-left: 30px;
+                font-size: 26px;
+            }
+        }
+
+        .end-actions {
+            margin-top: 1em;
+            border-top: 1px solid #90949a;
+            margin-bottom: 1em;
         }
     }
 
@@ -525,6 +573,7 @@ header {
 
         .article-content {
             text-align: left;
+            padding: 0;
 
             h1 {
                 /*  Lower a little the size and

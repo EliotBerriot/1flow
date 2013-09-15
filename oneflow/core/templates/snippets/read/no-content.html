@@ -7,7 +7,7 @@
         <div class="span8 offset1">
           <h3>
             {% trans "This article seems empty." %}<br />
-            {% trans "You should ask us for a refund ;-)" %}
+            {% trans 'You should ask us for a <span class="nowrap">refund ;-)</span>' %}
           </h3>
 
 {% with article_url=article.url %}
@@ -15,7 +15,7 @@
 <p>Just kidding. It should be automatically fetched soon.
 Sorry for the inconvenience.</p>
 <p>
-<a href="{{ article_url }}" target="_blank">Read it on the original website  <i class="icon-double-angle-right"></i></a></p>
+<a href="{{ article_url }}" target="_blank">Read it on the original <span class="nowrap">website&nbsp;≫</span></a></p>
 {% endblocktrans %}
 {% endwith %}
         </div>

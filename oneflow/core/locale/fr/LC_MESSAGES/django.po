@@ -1330,8 +1330,8 @@ msgid "This article seems empty."
 msgstr "Cet article semble vide."
 
 #: templates/snippets/read/no-content.html:10
-msgid "You should ask us for a refund ;-)"
-msgstr "Vous devriez vous faire rembourser ;-)"
+msgid "You should ask us for a <span class=\"nowrap\">refund ;-)</span>"
+msgstr "Vous devriez vous faire <span class=\"nowrap\">rembourser ;-)</span>"
 
 #: templates/snippets/read/no-content.html:14
 #, python-format
@@ -1340,13 +1340,13 @@ msgid ""
 "<p>Just kidding. It should be automatically fetched soon.\n"
 "Sorry for the inconvenience.</p>\n"
 "<p>\n"
-"<a href=\"%(article_url)s\" target=\"_blank\">Read it on the original website  <i class=\"icon-double-angle-right\"></i></a></p>\n"
+"<a href=\"%(article_url)s\" target=\"_blank\">Read it on the original <span class=\"nowrap\">website&nbsp;≫</span></a></p>\n"
 msgstr ""
 "\n"
 "<p>Je blague. Il devrait être récupéré automatiquement très bientôt.\n"
 "Désolé du désagrément.</p>\n"
 "<p>\n"
-"<a href=\"%(article_url)s\" target=\"_blank\">Lire l'article sur le site d'origine <i class=\"icon-double-angle-right\"></i></a></p>\n"
+"<a href=\"%(article_url)s\" target=\"_blank\">Lire l'article sur le site <span class=\"nowrap\">d’origine&nbsp;≫</span></a></p>\n"
 
 #: templates/snippets/read/not-safe.html:2
 msgid "Unsafe content"
