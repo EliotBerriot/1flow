@@ -80,8 +80,7 @@ from ...base.utils import (connect_mongoengine_signals,
                            HttpResponseLogProcessor, StopProcessingException)
 
 from ...base.utils.http import clean_url
-from ...base.utils.dateutils import (now, timedelta, today, datetime,
-                                     time, dt_combine)
+from ...base.utils.dateutils import now, timedelta, today, datetime
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 
 from .keyval import FeedbackDocument
@@ -305,8 +304,6 @@ class HomePreferences(EmbeddedDocument):
             u'TL': 'snippets/read/read-tiles-tile.html',
             u'T1': 'snippets/read/read-tiles-experimental-tile.html',
         }.get(self.style)
-
-
 
 
 class HelpWizards(EmbeddedDocument):
