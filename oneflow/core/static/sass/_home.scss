@@ -1,8 +1,19 @@
 
 /* --------------------------------------------------------------- Overrides */
 
+body {
+    /*
+        olive 20130915: replicate Bootstrap's
+        docs.css to have something working and beautiful.
+    */
+    position: relative;
+
+    padding-top: 40px;
+}
+
 .navbar {
     .brand {
+        /* Avoid ALLCAPS text, this is sooooo ugly on 1flow name. */
         text-transform: none;
     }
 
@@ -44,11 +55,7 @@
 
 /* ------------------------------------------------------------- Home / index */
 
-section {
-    /* Space for the fixed navbar. */
-    /*padding-top: 60px;*/
-    margin-top: 40px;
-}
+section {}
 
 #home-styles-chooser {
 
