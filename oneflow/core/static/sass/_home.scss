@@ -1,8 +1,19 @@
 
 /* --------------------------------------------------------------- Overrides */
 
+body {
+    /*
+        olive 20130915: replicate Bootstrap's
+        docs.css to have something working and beautiful.
+    */
+    position: relative;
+
+    padding-top: 40px;
+}
+
 .navbar {
     .brand {
+        /* Avoid ALLCAPS text, this is sooooo ugly on 1flow name. */
         text-transform: none;
     }
 
@@ -44,11 +55,7 @@
 
 /* ------------------------------------------------------------- Home / index */
 
-section {
-    /* Space for the fixed navbar. */
-    /*padding-top: 60px;*/
-    margin-top: 40px;
-}
+section {}
 
 #home-styles-chooser {
 
@@ -62,6 +69,7 @@ section {
         /* Cancel the bootstrap "alert" padding-right. */
         padding-right: 14px;
     }
+
     .home-style-secondary {
         margin-top: 40px;
     }
@@ -72,9 +80,11 @@ section {
 }
 
 header {
+
     h1 {
         padding-top: 50px;
     }
+
     h2 {
         padding-bottom: 15px;
     }
@@ -127,9 +137,11 @@ header {
 }
 
 #help {
+
     h1 {
         margin-top: 50px;
     }
+
     h2 {
         margin-bottom: 15px;
     }
@@ -317,6 +329,7 @@ header {
         h1 {
             padding-bottom: 0.5em;
             border-bottom: 1px dotted #ddd;
+            margin-top: 1.5em;
             margin-bottom: 1.5em;
         }
 
@@ -488,6 +501,41 @@ header {
     }
 }
 
+/* --------------------------------------------------------------- Responsive */
+
+
+@media (max-width: 767px) {
+    body {
+        padding-top: 0;
+    }
+
+    #read {
+        .article-number {
+            /* cancel the 10px padding of big screens to gain space */
+            padding: 0;
+        }
+    }
+
+    .read-list-row {
+
+        .article {
+            /* cancel the 10px padding of big screens to gain space */
+            padding: 5px 0;
+        }
+
+        .article-content {
+            text-align: left;
+
+            h1 {
+                /*  Lower a little the size and
+                    avoid wasting space on phones. */
+                font-size: 300%;
+                margin-top: 0;
+                margin-bottom: 0;
+            }
+        }
+    }
+}
 
 
 /* -------------------------------------------------------------------- Other */

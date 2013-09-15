@@ -1,37 +1,36 @@
 <!-- navbar-static-top -->
-<div class="navbar navbar-fixed-top navbar-inverse">
+<div class="navbar navbar-inverse navbar-fixed-top">
   <div class="navbar-inner">
-    <div class="container-fluid">
+    <div class="container">
+
+      <a class="brand visible-desktop visible-tablet"
+              href="{% url 'home' %}">1flow <span
+              class="badge badge-warning badge-beta">BETA</span></a>
+
+      <a class="brand visible-phone" href="{% url 'home' %}">1flow <span
+              class="badge badge-warning badge-beta">β</span></a>
+
       <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
         <span class="icon-bar"></span>
       </a>
 
-      <a class="brand" href="{% url 'home' %}">1flow <span
-              class="badge badge-warning badge-beta">BETA</span></a>
-
       {% if user.is_authenticated %}
         <ul class="nav pull-right">
-
-          <li>
-              <form>
-                <input class="search"
-                    placeholder="{% trans 'Search…' %}">
-              </form>
-          </li>
 
           {% if user.is_staff or user.is_superuser %}
             {% if MAINTENANCE_MODE %}
               <li>
                 <a href="#" disabled="disabled">
-                  {% trans "Maintenance" %}
+                  <span class="badge badge-warning badge-beta"><i
+                      class="icon-cogs"></i> {% trans "Maintenance" %}</span>
                 </a>
               </li>
 
             {% endif %}
 
-            <li><a id="system-informations" href="#"
+            <li class="visible-desktop"><a id="system-informations" href="#"
               data-toggle="popover" data-placement="bottom"
               data-original-title="System Informations" data-html="true"
               data-content="
@@ -73,12 +72,6 @@
               </script>
 
           {% endif %}
-
-          <li>
-              <a href="{% url 'help' %}"
-              class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
-          </li>
-
 
           <li class="dropdown" >
             <a class="dropdown-toggle {% reverse_active 'profile' %}"
@@ -133,6 +126,14 @@
               <li><a href="{% url 'subscriptions' %}">{% trans 'Subscriptions' %}</a></li>
               <li><a href="{% url 'discovery' %}">{% trans 'Discovery' %}</a></li>
             {% endif %}
+
+            <li>
+                <form>
+                  <input class="search"
+                      placeholder="{% trans 'Search…' %}">
+                </form>
+            </li>
+
           {% else %}
             <!--
               <li><a href="#">{% trans 'About' %}</a></li>
@@ -141,7 +142,15 @@
 
           {% endif %}
         </ul>
+
+        <ul class="nav pull-right">
+          <li>
+              <a href="{% url 'help' %}"
+              class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
+          </li>
+        </ul>
+
       </div><!--/.nav-collapse -->
-    </div><!--/.container-fluid -->
+    </div><!-- .container -->
   </div><!--/.navbar-inner -->
 </div><!--/.navbar -->
