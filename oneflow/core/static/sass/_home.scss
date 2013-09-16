@@ -16,6 +16,10 @@ body {
     .brand {
         /* Avoid ALLCAPS text, this is sooooo ugly on 1flow name. */
         text-transform: none;
+
+        span.active {
+            text-shadow: 0 0 10px #fff;
+        }
     }
 
     .avatar-frame {
@@ -34,13 +38,20 @@ body {
 
         font-size: 120%;
 
+        .align-icon-phone {
+            /*  For some reason, <i> only in span is not happily
+                aligned with 1flow logo and user avatar. */
+            padding-top: 2px;
+        }
+
         li a {
             /*  Simplify the visual (no border at all)
                 and make the color a little brighter. */
 
             border-left: 0;
-            color: #bbb;
+            color: #aaa;
         }
+
         .dropdown-menu {
             /*  But then, we've got to get back the original
                 colors for the dropdown from the source theme. */
