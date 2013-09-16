@@ -101,6 +101,23 @@ def read_with_endless_pagination(request, **kwargs):
     return render(request, template, context)
 
 
+def read_one(request, read_id):
+
+    try:
+        read = Read.get_or_404(read_id)
+
+    except:
+        return HttpResponseTemporaryServerError()
+
+    if request.is_ajax():
+        template = u'snippets/read/read-one.html'
+
+    else:
+        template = u'read-one.html'
+
+    return render(request, template, {'read': read})
+
+
 def set_preference(request, base, sub, value):
 
     prefs = request.user.mongo.preferences

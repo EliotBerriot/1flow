@@ -1,0 +1,19 @@
+{% extends 'home.html' %}
+
+{% block title %}{{ read.title }}{% endblock title %}
+{% block body_id %}read{% endblock body_id %}
+
+{% block application_content %}
+<div class="row-fluid">
+    <div id="article-container" class="span8 offset2">
+        {% include 'snippets/read/read-one.html' %}
+    </div>
+</div>
+{% endblock application_content %}
+
+{% block extrajs_footer %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+    </script>
+{% endblock extrajs_footer %}

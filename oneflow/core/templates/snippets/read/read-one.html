@@ -1,0 +1,122 @@
+  <main id="{{ read.id }}" class="read-list-item row-fluid">
+
+  {% with read.article as article %}
+
+    <div class="article span12 hover-unmute-children">
+
+      <div class="row-fluid article-meta">
+        <div class="span12">
+          <div class="pull-right actions hover-muted hide">
+
+          {% if user.is_superuser %}
+            <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;">
+              <i class="icon-cog"></i></a>
+          {% endif %}
+
+            <a href="#" target="_blank"
+                title="{% trans "Action not yet available" %}">
+              <i class="icon-bookmark-empty"></i></a>
+
+            <a href="#" target="_blank"
+                title="{% trans "Action not yet available" %}">
+              <i class="icon-star-empty"></i></a>
+
+            <a href="#" target="_blank"
+                title="{% trans "Action not yet available" %}">
+              <i class="icon-retweet"></i></a>
+
+            <a href="{{ article.url }}" target="_blank"
+                title="{% trans "Open this article on the original website" %}">
+              <i class="icon-circle-arrow-right"></i></a>
+
+            {% if read.is_read %}
+              <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+                  title="{% trans "mark as unread" %}" data-toggle="tooltip">
+                <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
+              </a>
+            {% else %}
+              <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+                  title="{% trans "mark as read" %}" data-toggle="tooltip">
+                <i class="icon-check" alt="{% trans "mark as read" %}"></i>
+              </a>
+
+            {% endif %}
+
+          </div>
+
+          <div class="meta">
+            {% spaceless %}
+
+            <span class="source muted">
+              {{ article.get_source_unicode }}
+            </span>
+
+            <span class="date">
+              {{ article.date_published }}
+            </span>
+
+            {% if article.authors %}
+              <span class="author">
+                  <span class="muted">{% trans "by" %}</span>
+                  {% for author in article.authors %}
+                      {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </span>
+            {% endif %}
+
+              {% if read.tags %}
+                <span class="tags">
+                  <span class="muted">{% trans "in" %}</span>
+                  {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </span>
+              {% endif %}
+
+              {% if read.rating %}
+              <span class="rating">{% trans ", rated " %}{{ read.rating }}
+              </span>{% endif %}
+
+            {% endspaceless %}
+          </div>
+
+          <div class="clearfix"></div>
+
+          <h1 id="title-{{ read.id }}"
+                class="heading article-title {% if not read.is_read %}is_unread{% endif %}">
+            {{ article.title }}
+          </h1>
+
+        </div>
+      </div><!-- .article-meta -->
+
+      {% include 'snippets/read/read-admin-informations.html' %}
+
+      <div class="article-content"
+          id="content-{{ read.id }}" data-toggle-id="{{ read.id }}"
+          data-toggle-function="toggle_content"
+          data-toggle-callback="notice_element">
+
+          {% if article.content_type == 3 %}
+            {% with content=article.content_display %}
+              {% if content %}
+                {{ content|safe }}
+              {% else %}
+                {% include 'snippets/read/no-content.html' %}
+
+              {% endif %}
+            {% endwith %}
+
+          {% elif article.content_type == 1 %}
+                {% include 'snippets/read/not-safe.html' %}
+
+          {% else %}
+            {% include 'snippets/read/no-content.html' %}
+
+          {% endif %}
+
+          {% include 'snippets/read/read-end-actions.html' %}
+
+      </div><!-- .article-content -->
+
+    </div><!-- .article -->
+  {% endwith %}
+</main>
