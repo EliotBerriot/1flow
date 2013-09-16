@@ -101,6 +101,12 @@
               <li><a href="/translate/" target="_blank">{% trans '1flow translations' %}</a></li>
             {% endif %}
 
+              <li class="divider visible-phone"></li>
+              <li class="visible-phone">
+                  <a href="{% url 'help' %}"
+                  class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
+              </li>
+
               <li class="divider"></li>
               <li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>
             </ul>
@@ -119,14 +125,8 @@
           {% if user.is_authenticated %}
 
             <li><a href="{% url 'read' %}"
-              class={% reverse_active 'read' %}>{% trans 'Read' %}</a></li>
-
-            {% if THIS_IS_CURRENTLY_DISABLED_BECAUSE_NOTHING_TO_SHOW %}
-
-              <li><a href="{% url 'teams' %}">{% trans 'Teams' %}</a></li>
-              <li><a href="{% url 'subscriptions' %}">{% trans 'Subscriptions' %}</a></li>
-              <li><a href="{% url 'discovery' %}">{% trans 'Discovery' %}</a></li>
-            {% endif %}
+              class={% reverse_active 'read' %}>{% trans 'Read' %}</a>
+            </li>
 
             <li>
                 <form>
@@ -144,7 +144,7 @@
           {% endif %}
         </ul>
 
-        <ul class="nav pull-right">
+        <ul class="nav pull-right hidden-phone">
           <li>
               <a href="{% url 'help' %}"
               class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
