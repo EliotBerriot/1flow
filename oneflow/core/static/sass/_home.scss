@@ -8,7 +8,8 @@ body {
     */
     position: relative;
 
-    padding-top: 40px;
+    /* Our navbar is 47px + 1px border-bottom. */
+    padding-top: 48px;
 }
 
 .navbar {
@@ -246,7 +247,7 @@ header {
 
     .end-actions {
         margin-top: 4em;
-        border-top: 2px solid #90949a;
+        border-top: 2px solid #949aa1;
         padding-top: 10px;
     }
 
@@ -512,8 +513,24 @@ header {
 
 /* --------------------------------------------------------------- Responsive */
 
+@media (min-width: 1024px) and (max-width: 1279px) {
+    /* A special style for the tablets in landscape mode. */
+
+    .read-list-item {
+        .actions {
+            font-size: 18px;
+            margin-left: 15px;
+        }
+    }
+}
+
 @media (min-width: 768px) and (max-width: 1023px) {
     /* A special style for the iPad in portrait mode. */
+
+    body {
+        /* Navbar is fixed, but bigger. */
+        padding-top: 58px;
+    }
 
     .navbar-fixed-top,
     .navbar-fixed-bottom {
@@ -522,7 +539,7 @@ header {
     }
 
     #read {
-        /*  completely reset both .span8.offset2 containers
+        /*  completely reset the .span8.offset2 containers
             for them to take all space in iPad portrait. */
         #reads-number,
         #reads-container {
@@ -547,21 +564,18 @@ header {
 
     .read-list-item {
         .end-actions {
+            margin-top: 1em;
+            border-top-width: 1px;
+            margin-bottom: 1em;
+
             a {
                 margin-left: 30px;
                 font-size: 26px;
             }
         }
-
-        .end-actions {
-            margin-top: 1em;
-            border-top: 1px solid #90949a;
-            margin-bottom: 1em;
-        }
     }
 
     .read-list-row {
-
         .article {
             /* cancel the 10px padding of big screens to gain space */
             padding: 5px 0;
