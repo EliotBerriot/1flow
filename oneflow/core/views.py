@@ -88,16 +88,15 @@ def read_with_endless_pagination(request, **kwargs):
         u'initial': False,
     }
 
-    preferences = request.user.mongo.preferences
+    #preferences = request.user.mongo.preferences
 
     if request.is_ajax():
         template = u'snippets/read/read-endless-page.html'
 
     else:
-        template = u'read.html'
+        template = u'read-endless.html'
         context['initial']     = True
         context['reads_count'] = reads.count()
-
 
     return render(request, template, context)
 

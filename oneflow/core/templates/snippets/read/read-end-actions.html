@@ -1,0 +1,41 @@
+          <div class="article-actions end-actions actions centered">
+
+            <a href="#" target="_blank" class="nowrap"
+                title="{% trans "Action not yet available" %}">
+              <i class="icon-bookmark-empty"></i><span
+                  class="visible-desktop visible-tablet"> {% trans "Read later" %}</span></a>
+
+            <a href="#" target="_blank" class="nowrap"
+                title="{% trans "Action not yet available" %}">
+              <i class="icon-star-empty"></i><span
+                  class="visible-desktop visible-tablet"> {% trans "Star" %}</span></a>
+
+            <a href="#" target="_blank" class="nowrap"
+                title="{% trans "Action not yet available" %}">
+              <i class="icon-retweet"></i><span
+                  class="visible-desktop visible-tablet"> {% trans "Re-blog" %}</span></a>
+
+            <a href="{{ article.url }}" target="_blank" class="nowrap"
+                title="{% trans "Open this article on the original website" %}">
+              <i class="icon-circle-arrow-right"></i><span
+                  class="visible-desktop visible-tablet"> {% trans "Read original" %}</span></a>
+
+            {% if read.is_read %}
+              <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+                  title="{% trans "mark as unread" %}" data-toggle="tooltip"
+                  class="nowrap">
+                <i class="icon-check-empty"
+                    alt="{% trans "mark as unread" %}"></i><span class="visible-desktop visible-tablet">&nbsp;{% trans "Mark unread" %}</span></a>
+
+            {% else %}
+              <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
+                  title="{% trans "mark as read" %}" data-toggle="tooltip"
+                  class="nowrap">
+                <i class="icon-check"
+                    alt="{% trans "mark as read" %}"></i><span
+                    class="visible-desktop visible-tablet"> {% trans "Mark read" %}</span></a>
+
+            {% endif %}
+
+
+          </div><!-- .article-actions -->
