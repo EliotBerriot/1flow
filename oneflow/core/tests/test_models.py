@@ -311,16 +311,10 @@ class FeedsTest(TestCase):
 
         global_feeds_checker()
 
-        #for email in mail.outbox:
-        #    LOGGER.warning(email.subject)
-
-        # In normal conditions, we can have another mail, titled
-        # [1flow DEV] ERROR: Exception while determining subclass
-        #   of oneflow.base.api.common_authentication.
-        self.assertEquals(len(mail.outbox), 2)
+        self.assertEquals(len(mail.outbox), 1)
         self.assertTrue(u'Reminder: 1 feed(s) closed in last'
-                        in mail.outbox[1].subject)
-        self.assertTrue(unicode(self.feed) in mail.outbox[1].body)
+                        in mail.outbox[0].subject)
+        self.assertTrue(unicode(self.feed) in mail.outbox[0].body)
 
         #self.assertEqual( mail.outbox[0].to, [ "test@foo.bar" ] )
         #self.assertTrue( "test@foo.bar" in mail.outbox[0].to )
@@ -630,4 +624,4 @@ class UsersTest(TestCase):
 
         # We just want to be sure preferences are created when a new
         # user is, and all the embedded documents are created too.
-        self.assertEquals(self.django_user.mongo.preferences.home.style, None)
+        self.assertEquals(self.django_user.mongo.preferences.home.style, u'RL')

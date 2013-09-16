@@ -156,4 +156,4 @@ class HomeAndPreferencesViewTest(TestCase):
 
         self.assertEquals(response.context[u'mongodb_user'], self.mongodb_user)
 
-        self.assertContains(response, u' articles)')
+        self.assertContains(response, u' articles')
