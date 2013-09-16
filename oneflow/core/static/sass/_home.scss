@@ -193,6 +193,179 @@ header {
     }
 }
 
+
+/* ------------------------------------------------------------ Article display
+                                            in reading-list or individual page.
+                                      May be overridden in one or both of them.
+                                                                             */
+
+.article-content {
+    font-family: georgia, times, serif;
+    text-align: justify;
+
+    padding: 5em;
+
+    a {
+        color: inherit;
+        text-decoration: none;
+        border-bottom: 2px dotted #a2b1c3;
+
+        &:hover, &:active {
+            color: #586a7f;
+            /*border-bottom: 2px dotted #a2b1c3;*/
+        }
+
+        &:visited {
+            color: #586a7f;
+        }
+    }
+
+    h1, h2, h3 {
+        text-align: left;
+        line-height: 1.1em;
+    }
+
+    h1 {
+        padding-bottom: 0.5em;
+        border-bottom: 1px dotted #ddd;
+        margin-bottom: 1.5em;
+    }
+
+    h2, h3 {
+        margin-top: 2em;
+        margin-bottom: 1em;
+    }
+
+    p, ul, ol {
+        font-size: 1.75em;
+        line-height: 1.35em;
+        margin: 1.5em 0;
+    }
+
+    ul, ol {
+        margin-left: 1.25em;
+    }
+
+    img {
+        display: block;
+        max-width: 100%;
+        margin: 1.5em    auto;
+    }
+
+    .img-legend {
+        font-size: 14px;
+        text-align: center;
+        margin: 0 0.1em;
+    }
+
+    ul li, ol li {
+        line-height: 1.25em;
+
+        p,
+        ul,
+        ol,
+        ul li p,
+        ul li ul,
+        ul li ol,
+        ul li ul li p,
+        ul li ol li p,
+        ol li p,
+        ol li ul,
+        ol li ol,
+        ol li ul li p,
+        ol li ol li p {
+            font-size: 100%;
+        }
+
+        p,
+        ol li p,
+        ol li ul li p,
+        ol li ol li p,
+        ul li p,
+        ul li ul li p,
+        ul li ol li p {
+            /*
+                We use only the margin from <{u,o}l>* and <li>.
+                Having the <p> one makes the thing too big (ugly)
+                when the MD renderer embeds <p> inside <li>.
+            */
+            margin: 0;
+        }
+
+        ul li,
+        ol li,
+        ul li ul li,
+        ul li ol li,
+        ol li ul li,
+        ol li ol li {
+            line-height: 1.25em;
+        }
+
+        ul,
+        ol,
+        ul li ul,
+        ul li ol,
+        ol li ul,
+        ol li ol {
+            line-height: 1.25em;
+            margin-top: 0;
+            margin-bottom: 0;
+        }
+    }
+}
+
+
+/* NOTE: .no-content must come AFTER .article-content
+        for proper CSS overriding. */
+.no-content {
+    text-align: left;
+
+    /* Oh my bad… the image has transparent content at the bottom.
+        As I didn't find a way to crop it (animated GIFs…), I
+        fix this directly in the hero-unit… Which is not a good
+        idea if teh image changes. Thus noticed in the template. */
+    padding-bottom: 30px;
+
+
+    p {
+        /* reset the font-size from read-item
+           which is bigger, for reading. */
+        font-size: 120%;
+        margin-top: 2em;
+    }
+}
+
+#article-container {
+    margin-top: 8em;
+    font-family: georgia, times, serif;
+
+    .article-meta {
+        .meta {
+            font-family: 'open sans', 'lucida grande', sans-serif;
+            font-size: 130%;
+            margin-bottom: 3em;
+
+            .date,
+            .source {
+                float: left;
+                clear: left;
+            }
+
+            .author {
+                float: right;
+            }
+
+            .tags, .rating {
+                display: none;
+            }
+        }
+    }
+
+    .article-content {
+        padding: 5em 0;
+    }
+}
+
 /* --------------------------------------------------------------------- Read */
 
 #read {
@@ -222,14 +395,20 @@ header {
         right: 0;
         z-index: 20;
 
-        font-size: 20px;
+        font-size: 19px;
         line-height: 100%;
 
         a {
             margin-left: 10px;
             color: #29313c;
             opacity: 0.5;
+
+            /* reset the one from Bootstrap */
             text-decoration: none;
+
+            /* reset the one from .article-content */
+            border-bottom: none;
+
 
             &:hover, &:active {
                 opacity: 1;
@@ -294,131 +473,28 @@ header {
         }
 
         /* END flash_fade() */
-    }
 
-    .article-meta {
-
-        .article-title {
-            position: relative;
-            top: 0;
-            left: 0;
-            z-index: 10;
-
+        .article-meta {
+            max-height: 4em;
             overflow: hidden;
-            text-overflow: ellipsis;
-            vertical-align: top;
-            width: auto;
-        }
 
-        .meta {
-            max-height: 2em;
-            overflow: hidden;
-            text-overflow: ellipsis;
+            .article-title {
+                position: relative;
+                top: 0;
+                left: 0;
+                z-index: 10;
+
+                overflow: hidden;
+                text-overflow: ellipsis;
+                vertical-align: top;
+                width: auto;
+            }
 
             .meta {
-                margin-left: 1em;
-
-                /* doesn't work
-                max-height: 1em;
-                overflow: hidden;
-                */
+                .date_author_tags {
+                    margin-left: 1em;
+                }
             }
-        }
-    }
-
-    .article-content {
-        font-family: georgia, times, serif;
-        text-align: justify;
-
-        padding: 5em;
-
-        h1, h2, h3 {
-            text-align: left;
-            line-height: 1.1em;
-        }
-
-        h1 {
-            padding-bottom: 0.5em;
-            border-bottom: 1px dotted #ddd;
-            margin-bottom: 1.5em;
-        }
-
-        p, ul, ol {
-            font-size: 1.75em;
-            line-height: 1.25em;
-            margin: 1.5em 0;
-        }
-
-        ul, ol {
-            margin-left: 1.25em;
-        }
-
-        .img-legend {
-            font-size: 14px;
-            text-align: center;
-            margin: 0 0.1em;
-        }
-
-        ul li, ol li {
-            line-height: 1.25em;
-
-            p,
-            ul,
-            ol,
-            ul li p,
-            ul li ul,
-            ul li ol,
-            ul li ul li p,
-            ul li ol li p,
-            ol li p,
-            ol li ul,
-            ol li ol,
-            ol li ul li p,
-            ol li ol li p {
-                font-size: 100%;
-            }
-
-            p,
-            ol li p,
-            ol li ul li p,
-            ol li ol li p,
-            ul li p,
-            ul li ul li p,
-            ul li ol li p {
-                /*
-                    We use only the margin from <{u,o}l>* and <li>.
-                    Having the <p> one makes the thing too big (ugly)
-                    when the MD renderer embeds <p> inside <li>.
-                */
-                margin: 0;
-            }
-
-            ul li,
-            ol li,
-            ul li ul li,
-            ul li ol li,
-            ol li ul li,
-            ol li ol li {
-                line-height: 1.25em;
-            }
-
-            ul,
-            ol,
-            ul li ul,
-            ul li ol,
-            ol li ul,
-            ol li ol {
-                line-height: 1.25em;
-                margin-top: 0;
-                margin-bottom: 0;
-            }
-
-        }
-
-        img {
-            display: block;
-            max-width: 100%;
-            margin: 0 auto;
         }
     }
 
@@ -439,26 +515,6 @@ header {
         max-height: 1.4em;
         line-height: 1.4em;
         cursor: pointer;
-    }
-
-    /* NOTE: .no-content must come AFTER .article-content
-            for proper CSS overriding. */
-    .no-content {
-        text-align: left;
-
-        /* Oh my bad… the image has transparent content at the bottom.
-            As I didn't find a way to crop it (animated GIFs…), I
-            fix this directly in the hero-unit… Which is not a good
-            idea if teh image changes. Thus noticed in the template. */
-        padding-bottom: 30px;
-
-
-        p {
-            /* reset the font-size from read-item
-               which is bigger, for reading. */
-            font-size: 120%;
-            margin-top: 2em;
-        }
     }
 
     .admin-informations {
@@ -514,18 +570,17 @@ header {
 /* --------------------------------------------------------------- Responsive */
 
 @media (min-width: 1024px) and (max-width: 1279px) {
-    /* A special style for the tablets in landscape mode. */
+    /* styles for tablets in landscape mode. */
 
     .read-list-item {
         .actions {
             font-size: 18px;
-            margin-left: 15px;
         }
     }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
-    /* A special style for the iPad in portrait mode. */
+    /* A special style for tablets in portrait mode. */
 
     body {
         /* Navbar is fixed, but bigger. */
@@ -547,9 +602,30 @@ header {
             margin: 0;
         }
     }
+
+    #article-container {
+        /* Like the reads, we reset the .span8.offset2 container
+            for it to take all space, but we re-add the padding
+            for the article not to stick to borders too much. This
+            make the spacing equal to the reading-list contents. */
+        width: 100%;
+        margin: 0;
+        padding: 5em 5em 0;
+
+        .article-content {
+            padding-top: 0;
+        }
+    }
+
+    .read-list-item {
+        .actions {
+            font-size: 16px;
+        }
+    }
 }
 
 @media (max-width: 767px) {
+    /* ------------------------------- responsive interface for mobile Phones */
 
     body {
         padding-top: 0;
@@ -569,6 +645,8 @@ header {
             margin-bottom: 1em;
 
             a {
+                /*  We have only icons on small devices.
+                    Make them bigger and spaced. */
                 margin-left: 30px;
                 font-size: 26px;
             }
@@ -582,16 +660,39 @@ header {
         }
 
         .article-content {
-            text-align: left;
             padding: 0;
+        }
+    }
 
-            h1 {
-                /*  Lower a little the size and
-                    avoid wasting space on phones. */
-                font-size: 300%;
-                margin-top: 0;
-                margin-bottom: 0;
+    #article-container {
+        margin-top: 0;
+
+        h1 {
+            font-size: 250%;
+        }
+
+        .article-meta {
+            .meta {
+                .author {
+                    float: left;
+                }
             }
+        }
+
+        .article-content {
+            padding: 0;
+        }
+    }
+
+    .article-content {
+        text-align: left;
+
+        h1 {
+            /*  Lower a little the size and
+                avoid wasting space on phones. */
+            font-size: 250%;
+            margin-top: 0;
+            margin-bottom: 0;
         }
     }
 }
