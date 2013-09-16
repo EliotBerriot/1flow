@@ -1,11 +1,11 @@
-  <li id="{{ read.id }}" class="read-list-row read-list-item row-fluid"
-      data-index="{{ tenths_counter|add:forloop.counter }}">
+  <main id="{{ read.id }}" class="read-list-item row-fluid">
+
   {% with read.article as article %}
 
     <div class="article span12 hover-unmute-children">
 
-      <div class="row-fluid">
-        <div class="span12 article-meta">
+      <div class="row-fluid article-meta">
+        <div class="span12">
           <div class="pull-right actions hover-muted hide">
 
           {% if user.is_superuser %}
@@ -44,38 +44,53 @@
 
           </div>
 
-          <h2 id="title-{{ read.id }}" class="heading article-title {% if not read.is_read %}is_unread{% endif %}"
-              onclick="javascript: return toggle_content('{{ read.id }}');">
-            {{ article.title }}
-          </h2>
+          <div class="meta">
+            {% spaceless %}
 
-          <p class="meta pointer"
-              onclick="javascript: return toggle_content('{{ read.id }}');">
             <span class="source muted">
               {{ article.get_source_unicode }}
             </span>
 
-            <span class="meta hover-muted hide">
+            <span class="date">
+              {{ article.date_published }}
+            </span>
 
-              {{ article.date_published }}{% if read.tags %},
+            {% if article.authors %}
+              <span class="author">
+                  <span class="muted">{% trans "by" %}</span>
+                  {% for author in article.authors %}
+                      {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </span>
+            {% endif %}
 
-              {% if article.authors %}
-                <span class="muted">{% trans "by" %}</span>
-                {% for author in article.authors %}
-                    {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
+              {% if read.tags %}
+                <span class="tags">
+                  <span class="muted">{% trans "in" %}</span>
+                  {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+                </span>
               {% endif %}
 
-              <span class="muted">{% trans "in" %}</span> {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
-              {% if read.rating %}{% trans ", rated " %}{{ read.rating }}.{% endif %}
-            </span>
-          </p>
+              {% if read.rating %}
+              <span class="rating">{% trans ", rated " %}{{ read.rating }}
+              </span>{% endif %}
+
+            {% endspaceless %}
+          </div>
+
+          <div class="clearfix"></div>
+
+          <h1 id="title-{{ read.id }}"
+                class="heading article-title {% if not read.is_read %}is_unread{% endif %}">
+            {{ article.title }}
+          </h1>
+
         </div>
       </div><!-- .article-meta -->
 
       {% include 'snippets/read/read-admin-informations.html' %}
 
-      <div class="article-content slide-togglable slide-toggle-notice hide"
+      <div class="article-content"
           id="content-{{ read.id }}" data-toggle-id="{{ read.id }}"
           data-toggle-function="toggle_content"
           data-toggle-callback="notice_element">
@@ -104,4 +119,4 @@
 
     </div><!-- .article -->
   {% endwith %}
-  </li>
+</main>
