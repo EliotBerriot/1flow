@@ -68,6 +68,7 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
                                 ReferenceField, GenericReferenceField,
                                 EmbeddedDocumentField)
 
+from django.http import Http404
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
@@ -180,6 +181,25 @@ class DocumentHelperMixin(object):
     @property
     def _db_name(self):
         return self._get_db().name
+
+    @classmethod
+    def get_or_404(cls, oid):
+        """ Rough equivalent of Django's get_object_or_404() shortcut.
+            Not as powerful, though.
+
+            .. versionadded:: 0.21.7
+        """
+
+        try:
+            return cls.objects.get(id=oid)
+
+        except cls.DoesNotExist:
+            raise Http404(_(u'{0} #{1} not found').format(cls.__name__, oid))
+
+        except:
+            LOGGER.exception(u'Exception while getting %s #%s',
+                             cls.__name__, oid)
+            raise
 
     def register_duplicate(self, duplicate, force=False):
 
