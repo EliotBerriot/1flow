@@ -22,6 +22,9 @@
                     reset some defaults styles
 **************************************************************/
 body {
+  /* cancel the padding from core's styles. */
+  padding-top: 0;
+
   font-family: lato;
   font-size: 15px;
   font-weight: 300;
@@ -153,6 +156,11 @@ h2.site-subtitle p {
 .user a:hover {
   background: #fff;
   color: rgb(219, 82, 47);
+}
+
+#header h1 {
+  /* reset oneflow.core's bootstrap styles */
+  padding-top: 0;
 }
 
 /* header-description */
