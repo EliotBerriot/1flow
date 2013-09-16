@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-14 11:18+0200\n"
+"POT-Creation-Date: 2013-09-16 17:43+0200\n"
 "PO-Revision-Date: 2013-06-27 21:38+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -260,67 +260,67 @@ msgstr ""
 "\n"
 "  [home]: /\n"
 
-#: templatetags/base_utils.py:144 templatetags/base_utils.py:158
+#: templatetags/base_utils.py:145 templatetags/base_utils.py:159
 msgid "day"
 msgstr "jour"
 
-#: templatetags/base_utils.py:145 templatetags/base_utils.py:159
+#: templatetags/base_utils.py:146 templatetags/base_utils.py:160
 msgid "days"
 msgstr "jours"
 
-#: templatetags/base_utils.py:146 templatetags/base_utils.py:160
+#: templatetags/base_utils.py:147 templatetags/base_utils.py:161
 msgid "hour"
 msgstr "heure"
 
-#: templatetags/base_utils.py:147 templatetags/base_utils.py:161
+#: templatetags/base_utils.py:148 templatetags/base_utils.py:162
 msgid "hours"
 msgstr "heures"
 
-#: templatetags/base_utils.py:148
+#: templatetags/base_utils.py:149
 msgid "minute"
 msgstr "minute"
 
-#: templatetags/base_utils.py:149
+#: templatetags/base_utils.py:150
 msgid "minutes"
 msgstr "minutes"
 
-#: templatetags/base_utils.py:150
+#: templatetags/base_utils.py:151
 msgid "second"
 msgstr "seconde"
 
-#: templatetags/base_utils.py:151
+#: templatetags/base_utils.py:152
 msgid "seconds"
 msgstr "seconde"
 
-#: templatetags/base_utils.py:162
+#: templatetags/base_utils.py:163
 msgid "min"
 msgstr "min"
 
-#: templatetags/base_utils.py:163
+#: templatetags/base_utils.py:164
 msgid "mins"
 msgstr "mins"
 
-#: templatetags/base_utils.py:164
+#: templatetags/base_utils.py:165
 msgid "sec"
 msgstr "sec"
 
-#: templatetags/base_utils.py:165
+#: templatetags/base_utils.py:166
 msgid "secs"
 msgstr "secs"
 
-#: templatetags/base_utils.py:171 templatetags/base_utils.py:172
+#: templatetags/base_utils.py:172 templatetags/base_utils.py:173
 msgid "d"
 msgstr "j"
 
-#: templatetags/base_utils.py:173 templatetags/base_utils.py:174
+#: templatetags/base_utils.py:174 templatetags/base_utils.py:175
 msgid "h"
 msgstr "h"
 
-#: templatetags/base_utils.py:175 templatetags/base_utils.py:176
+#: templatetags/base_utils.py:176 templatetags/base_utils.py:177
 msgid "m"
 msgstr "m"
 
-#: templatetags/base_utils.py:177 templatetags/base_utils.py:178
+#: templatetags/base_utils.py:178 templatetags/base_utils.py:179
 msgid "s"
 msgstr "s"
 
