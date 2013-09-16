@@ -35,13 +35,23 @@ body {
         font-size: 120%;
 
         li a {
-            border-left: 0;
-            color: #aaa;
-        }
+            /*  Simplify the visual (no border at all)
+                and make the color a little brighter. */
 
+            border-left: 0;
+            color: #bbb;
+        }
         .dropdown-menu {
+            /*  But then, we've got to get back the original
+                colors for the dropdown from the source theme. */
+
             li a {
                 color: inherit;
+
+                &:hover {
+                    /* And here, 'inherit' doesn't work. Force it. */
+                    color: #fff;
+                }
             }
         }
 
