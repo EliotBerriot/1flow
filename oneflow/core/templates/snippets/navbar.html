@@ -3,17 +3,12 @@
   <div class="navbar-inner">
     <div class="container">
 
-      <a class="brand visible-desktop visible-tablet"
-              href="{% url 'home' %}">1flow <span
-              class="badge badge-warning badge-beta">BETA</span></a>
-
-      <a class="brand visible-phone" href="{% url 'home' %}">1flow <span
-              class="badge badge-warning badge-beta">β</span></a>
-
-      <a class="btn btn-navbar" data-toggle="collapse" data-target=".nav-collapse">
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
-        <span class="icon-bar"></span>
+      <a class="brand" href="{% url 'home' %}">
+          <span class="nowrap">
+            <span class="{% reverse_active 'home' %}">1flow </span>
+            <span class="badge badge-warning badge-beta hidden-phone">BETA</span>
+            <span class="badge badge-warning badge-beta visible-phone">β</span>
+          </span>
       </a>
 
       {% if user.is_authenticated %}
@@ -24,7 +19,7 @@
               <li>
                 <a href="#" disabled="disabled">
                   <span class="badge badge-warning badge-beta"><i
-                      class="icon-cogs"></i> {% trans "Maintenance" %}</span>
+                      class="icon-cogs icon-2x"></i> {% trans "Maintenance" %}</span>
                 </a>
               </li>
 
@@ -84,7 +79,8 @@
                 </span>
               {% else %}
 
-                <i class="icon-user"></i>
+                {# We use align-icon-phone to align the icon correctly on the baseline. #}
+                <span class="align-icon-phone"><i class="icon-user icon-2x"></i></span>
               {% endif %}
               <span class="hidden-phone">
                 {{ user.username }}
@@ -102,12 +98,6 @@
               <li><a href="/translate/" target="_blank">{% trans '1flow translations' %}</a></li>
             {% endif %}
 
-              <li class="divider visible-phone"></li>
-              <li class="visible-phone">
-                  <a href="{% url 'help' %}"
-                  class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
-              </li>
-
               <li class="divider"></li>
               <li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>
             </ul>
@@ -121,38 +111,52 @@
 
       {% endif %}
 
-      <div class="nav-collapse">
-        <ul class="nav">
-          {% if user.is_authenticated %}
+      <ul class="nav">
+        {% if user.is_authenticated %}
 
-            <li><a href="{% url 'read' %}"
-              class={% reverse_active 'read' %}>{% trans 'Read' %}</a>
-            </li>
-
-            <li>
-                <form>
-                  <input class="search"
-                      placeholder="{% trans 'Search…' %}">
-                </form>
-            </li>
-
-          {% else %}
-            <!--
-              <li><a href="#">{% trans 'About' %}</a></li>
-              <li><a href="#">{% trans 'Contact' %}</a></li>
-            -->
-
-          {% endif %}
-        </ul>
-
-        <ul class="nav pull-right hidden-phone">
-          <li>
-              <a href="{% url 'help' %}"
-              class={% reverse_active 'help' %}>{% trans 'Help' %}</a>
+          <li class="nowrap hidden-phone">
+            <a href="{% url 'read' %}"
+                class="{% reverse_active 'read' %}">
+              {% trans 'Read' %}
+            </a>
           </li>
-        </ul>
 
-      </div><!--/.nav-collapse -->
+          <li class="hidden-phone">
+              <form>
+                <input class="search"
+                    placeholder="{% trans 'Search…' %}">
+              </form>
+          </li>
+
+        {% else %}
+          <!--
+            <li><a href="#">{% trans 'About' %}</a></li>
+            <li><a href="#">{% trans 'Contact' %}</a></li>
+          -->
+
+        {% endif %}
+      </ul>
+
+      <ul class="nav pull-right">
+
+        <li class="nowrap visible-phone">
+          <a href="{% url 'read' %}"
+              class="{% reverse_active 'read' %} align-icon-phone-lower">
+            <i class="icon-rss icon-2x"></i>
+          </a>
+        </li>
+
+        <li class="nowrap">
+          <a href="{% url 'help' %}"
+              class="{% reverse_active 'help' %} align-icon-phone">
+            <span class="visible-phone">
+              <i class="icon-question icon-2x"></i>
+            </span>
+            <span class="hidden-phone">{% trans 'Help' %}</span>
+          </a>
+        </li>
+      </ul>
+
     </div><!-- .container -->
   </div><!--/.navbar-inner -->
 </div><!--/.navbar -->

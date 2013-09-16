@@ -38,10 +38,15 @@ body {
 
         font-size: 120%;
 
+        /*  For some reason, <i> only in span is not happily
+            aligned with 1flow logo and user avatar. */
+
         .align-icon-phone {
-            /*  For some reason, <i> only in span is not happily
-                aligned with 1flow logo and user avatar. */
-            padding-top: 2px;
+            padding-top: 10px;
+        }
+
+        .align-icon-phone-lower {
+            padding-top: 11px;
         }
 
         li a {
