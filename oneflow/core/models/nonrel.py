@@ -3203,6 +3203,21 @@ class Read(Document, DocumentHelperMixin):
             self.user, self.article, self.id,
             _(u'read') if self.is_read else _(u'unread'), self.rating)
 
+    @property
+    def title(self):
+
+        article = self.article
+        feed    = article.feed
+
+        if feed:
+            source = _(u' ({feed})').format(feed=feed.name)
+
+        else:
+            source = u''
+
+        return _(u'{title}{source}').format(title=article.title,
+                                            source=source)
+
     def remove_tags(self, tags=[]):
         """ If the user remove his own tags from a Read, it will get back the
             default tags from the article it comes from. """
