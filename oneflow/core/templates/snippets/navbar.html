@@ -73,7 +73,8 @@
 
           {% endif %}
 
-          <li class="dropdown" >
+          {# nowrap is necessary, else the username gets to next line on Safari+iPad@portrait #}
+          <li class="dropdown nowrap">
             <a class="dropdown-toggle {% reverse_active 'profile' %}"
             data-toggle="dropdown" href="#">
 
@@ -85,7 +86,7 @@
 
                 <i class="icon-user"></i>
               {% endif %}
-              <span class="hidden-phone nowrap">
+              <span class="hidden-phone">
                 {{ user.username }}
                 <b class="caret"></b>
               </span>
