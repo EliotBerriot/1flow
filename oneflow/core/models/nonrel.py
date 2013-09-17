@@ -1893,7 +1893,7 @@ class Article(Document, DocumentHelperMixin):
                                             u'user has not already rated the '
                                             u'content.'))
     language       = StringField(verbose_name=_(u'Article language'),
-                                 max_length=5, choices=settings.LANGUAGES,
+                                 max_length=5,
                                  help_text=_(u'2 letters or 5 characters '
                                              u'language code (eg “en”, '
                                              u'“fr-FR”…).'))
@@ -2339,7 +2339,7 @@ class Article(Document, DocumentHelperMixin):
 
                 if language is not None:
                     try:
-                        self.language = language
+                        self.language = language.lower()
                         self.save()
 
                     except:
