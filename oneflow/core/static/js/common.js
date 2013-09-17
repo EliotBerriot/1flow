@@ -3,6 +3,13 @@
 
 var page_cleaner_interval;
 var scroll_speed = 750;
+var bindable_hovered = null;
+$.pnotify.defaults.delay = 5000;
+
+function notify(params){
+    // did you ever see a that-simple wrapper?
+    $.pnotify(params);
+}
 
 function scrollToElement(target, speed, topoffset) {
 
@@ -425,6 +432,9 @@ function setup_auto_cleaner() {
     page_cleaner_interval = setInterval(page_cleaner, 600000);
 }
 function setup_keyboard() {
+
+    // cf. http://stackoverflow.com/questions/3479849/jquery-how-do-i-get-the-element-underneath-my-cursor
+    //$('.keyboard-bindable').live('mouseenter', function() { bindable_hovered = this; });
 
     $(document).keydown(function(ev) {
 
