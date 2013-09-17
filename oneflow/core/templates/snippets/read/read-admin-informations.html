@@ -1,28 +1,31 @@
 {% if user.is_superuser %}
-  <div class="admin-informations slide-togglable hide" id="admin-{{ read.id }}">
+  <div class="admin-informations hide" id="admin-{{ read.id }}">
     <table class='table table-hover table-stripped table-condensed'>
       <tbody>
         <tr>
-          <td>{% trans "Admin stuff" %}</td>
-          <td>{% trans "Read: " %}<a
+          <td>{% trans "Read: " %} <a
               href="{% url 'read_one' read.id %}"
               target="_blank">{{ read.id }}</td>
-          <td>{% trans "Article: " %}<a
+          <td><div class="right">{% trans "Article: " %} <a
               href="/admin/models/article/{{ article.id }}/"
-              target="_blank">{{ article.id }}</a></td>
-          {% if article.feeds %}
-              <td>{% trans "Feeds: " %}
-                {% for feed in article.feeds %}
-                  <a href="/admin/models/feed/{{feed.id}}/"
-                    target="_blank">{{feed.name}}</a>{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-              </td>
+              target="_blank">{{ article.id }}</a></div></td>
+        </tr>
+        <tr>
+          <td colspan="2">
+            <div class="centered">
+              {% if article.feeds %}
+                  {% trans "Feeds: " %}
+                    {% for feed in article.feeds %}
+                      <a href="/admin/models/feed/{{feed.id}}/"
+                        target="_blank">{{feed.name}}</a>{% if not forloop.last %}, {% endif %}
+                    {% endfor %}
 
-          {% else %}
-            <td>{% trans "no feeds" %}</td>
+              {% else %}
+                {% trans "no feeds" %}
 
-          {% endif %}
-
+              {% endif %}
+            </div>
+          </td>
         </tr>
         <!--
         <tr>
