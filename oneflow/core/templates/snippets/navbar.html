@@ -146,13 +146,16 @@
           </a>
         </li>
 
-        <li class="nowrap">
+        <li class="visible-phone nowrap">
           <a href="{% url 'help' %}"
               class="{% reverse_active 'help' %} align-icon-phone">
-            <span class="visible-phone">
-              <i class="icon-question icon-2x"></i>
-            </span>
-            <span class="hidden-phone">{% trans 'Help' %}</span>
+            <i class="icon-question icon-2x"></i>
+          </a>
+        </li>
+        <li class="hidden-phone nowrap">
+          <a href="{% url 'help' %}"
+              class="{% reverse_active 'help' %}">
+            {% trans 'Help' %}
           </a>
         </li>
       </ul>
