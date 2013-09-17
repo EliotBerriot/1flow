@@ -205,7 +205,7 @@ function page_cleaner() {
 
     } catch (err) {
         try {
-            //console.debug('page_cleaner: ' + err);
+            console.debug('page_cleaner: ' + err);
 
         } catch (err) {
             // nothing. Silently ignored.
@@ -410,13 +410,14 @@ function setup_everything(parent) {
         // Don't use eval. Thanks
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
-        window[$('body').attr('id') + '_setup'](parent);
+        var func_name = $('body').attr('id') + '_setup';
+
+        window[func_name](parent);
 
     } catch(err) {
-        console.debug(err);
+        console.debug('Exception while trying to run '
+                      + func_name + '(): ' + err);
     }
-
-
 }
 function setup_auto_cleaner() {
     // every 10 minutes, the page is cleaned from old and orphaned elements.
@@ -452,10 +453,13 @@ function common_init() {
         // Don't use eval. Thanks
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
-        window[$('body').attr('id') + '_init']();
+        var func_name = $('body').attr('id') + '_init';
+
+        window[func_name]();
 
     } catch(err) {
-        console.debug(err);
+        console.debug('Exception while trying to run '
+                      + func_name + '(): ' + err);
     }
 
     //setup_table_sorter();
