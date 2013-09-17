@@ -30,13 +30,15 @@
               <i class="icon-circle-arrow-right"></i></a>
 
             {% if read.is_read %}
-              <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
-                  title="{% trans "mark as unread" %}" data-toggle="tooltip">
+              <a href="{% url 'toggle' klass='Read' oid=read.id key='is_read' %}"
+                  title="{% trans "mark as unread" %}" data-toggle="tooltip"
+                  id="mark-unread-{{ read.id }}">
                 <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
               </a>
             {% else %}
-              <a href="{% url 'toggle' klass='Read' id=read.id key='is_read' %}"
-                  title="{% trans "mark as read" %}" data-toggle="tooltip">
+              <a href="{% url 'toggle' klass='Read' oid=read.id key='is_read' %}"
+                  title="{% trans "mark as read" %}" data-toggle="tooltip"
+                  id="mark-read-{{ read.id }}">
                 <i class="icon-check" alt="{% trans "mark as read" %}"></i>
               </a>
 
