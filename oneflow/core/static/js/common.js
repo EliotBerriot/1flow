@@ -2,7 +2,47 @@
 // I need to learn to write good JS first. Sorry for that.
 
 var page_cleaner_interval;
+var scroll_speed = 750;
 
+function scrollToElement(target, speed, topoffset) {
+
+    var element = $(target);
+
+    if(typeof speed == 'undefined') {
+        var speed = scroll_speed;
+    }
+
+    //
+    // NOTE: 10px is the "comfort margin" to avoid cropping the article
+    //       title or rewinding while sliding up an upper element.
+    //
+
+    if(typeof topoffset == 'undefined') {
+        var topoffset = element.height() + 10;
+
+    } else {
+        topoffset += 10;
+    }
+
+    // console.log('>>> scrolling back to');
+    // console.log(target);
+    // console.log(element);
+    // console.log('>>> with offset');
+    // console.log(topoffset);
+
+    var destination = element.offset().top - topoffset;
+
+    $('html:not(:animated),body:not(:animated)')
+        .animate({scrollTop: destination}, speed, function() {
+            // disabled, it doesn't play nice with Bootstrap's
+            // topnav: the target get hidden behind, and the end
+            // of the scrolling is flaky.
+            //
+            //window.location.hash = target;
+        });
+
+    return false;
+}
 function find_start(parent, klass){
 
     if (typeof parent == 'undefined') {
