@@ -10,6 +10,7 @@
 
 common_init();
 
+
 function eventually_toggle(event) {
     // see http://stackoverflow.com/a/9183467/654755 for the base I used.
 
@@ -130,6 +131,7 @@ function toggle_content(oid, callback) {
                 scrollToElement(me);
             }
 
+            bindable_hovered = content;
             content.slideDown(scroll_speed, "swing", run_callback);
         };
 
@@ -151,6 +153,7 @@ function toggle_content(oid, callback) {
 
         content.slideUp(scroll_speed, "swing", run_callback);
         open_content = null;
+        bindable_hovered = null;
 
     } else {
         if(open_content != null) {
