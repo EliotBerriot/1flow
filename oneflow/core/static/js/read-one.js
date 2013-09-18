@@ -1,7 +1,7 @@
 
 //'use strict';
 
-var change_selector_ids   = ['#title-', ];
+var change_selector_ids   = []; // not used anymore, thus empty.
 var read_actions_messages = {};
 
 function mark_something(read_id, mark_what, mark_inverse, send_notify, message) {

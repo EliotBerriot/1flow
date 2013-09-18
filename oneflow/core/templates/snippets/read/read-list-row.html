@@ -20,7 +20,7 @@
 
           </div>
 
-          <h2 id="title-{{ read.id }}" class="heading article-title {% if not read.is_read %}is_unread{% endif %}"
+          <h2 id="title-{{ read.id }}" class="heading article-title"
               onclick="javascript: return toggle_content('{{ read.id }}');">
             {{ article.title }}
           </h2>
