@@ -55,7 +55,7 @@ function read_setup(parent) {
 
     //console.debug('read setup binding…');
 
-    find_start(parent, 'slide-togglable').click(eventually_toggle);
+    //find_start(parent, 'slide-togglable').dblclick(eventually_toggle);
 }
 
 // for now, this one does nothing.
