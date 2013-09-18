@@ -203,7 +203,7 @@ function open_previous_read() {
 
         } else {
             notify({
-                text: "{% trans 'No Previous, captain. You are at the top!' %}",
+                text: read_actions_messages.already_top_first,
                 type: 'warning',
                 icon: false,
                 sticker: false
@@ -212,7 +212,7 @@ function open_previous_read() {
 
     } else {
         notify({
-            text: "{% trans 'Already at the top!' %}",
+            text: read_actions_messages.already_top_more,
             type: 'info',
             icon: false,
             sticker: false
