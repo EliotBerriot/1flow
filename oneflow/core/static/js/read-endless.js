@@ -239,3 +239,8 @@ function open_previous_read() {
         });
     }
 }
+function close_current_read() {
+    if (open_content) {
+        return toggle_content(open_content);
+    }
+}
