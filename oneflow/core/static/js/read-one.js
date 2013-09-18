@@ -4,7 +4,7 @@
 var change_selector_ids   = ['#title-', ];
 var read_actions_messages = {};
 
-function mark_something(read_id, mark_what, mark_not, send_notify, message) {
+function mark_something(read_id, mark_what, mark_inverse, send_notify, message) {
 
     var read = $("#" + read_id);
 
@@ -16,7 +16,11 @@ function mark_something(read_id, mark_what, mark_not, send_notify, message) {
         var message = null;
     }
 
-    if (mark_not) {
+    if(typeof mark_inverse == 'undefined') {
+        var mark_inverse = false;
+    }
+
+    if (mark_inverse) {
         var klass    = 'not_' + mark_what;
         var inverse  = mark_what;
         var notifmsg = message || read_actions_messages[mark_what]['undone']
@@ -38,15 +42,17 @@ function mark_something(read_id, mark_what, mark_not, send_notify, message) {
                     text: notifmsg,
                     type: 'success',
                     icon: false,
-                    sticker: false
+                    sticker: false,
+                    nonblock: true,
+                    nonblock_opacity: .2
                 });
             }
 
-            read.find(".action-mark-" + inverse).fadeOut('fast', function(){
-                read.find(".action-mark-" + klass).fadeIn('fast');
+            read.find(".action-mark-" + klass).fadeOut('fast', function(){
+                read.find(".action-mark-" + inverse).fadeIn('fast');
             });
 
-            read.removeClass(klass).addClass(inverse);
+            read.removeClass(inverse).addClass(klass);
 
             _.each(change_selector_ids, function(sel) {
                 $(sel + read_id).removeClass(inverse).addClass(klass);
@@ -63,34 +69,22 @@ function toggle_is_read(read_id, send_notify) {
 
     var read = $("#" + read_id);
 
-    if (read.hasClass('is_read')) {
-        return mark_something(read_id, 'is_read', false, send_notify);
-
-    } else {
-        return mark_something(read_id, 'is_read', true, send_notify);
-    }
+    return mark_something(read_id, 'is_read',
+                          !!read.hasClass('is_read'), send_notify);
 }
 
 function toggle_is_starred(read_id, send_notify) {
 
     var read = $("#" + read_id);
 
-    if (read.hasClass('is_starred')) {
-        return mark_something(read_id, 'is_starred', false, send_notify);
-
-    } else {
-        return mark_something(read_id, 'is_starred', true, send_notify);
-    }
+    return mark_something(read_id, 'is_starred',
+                          !!read.hasClass('is_starred'), send_notify);
 }
 
 function toggle_is_bookmarked(read_id, send_notify) {
 
     var read = $("#" + read_id);
 
-    if (read.hasClass('is_bookmarked')) {
-        return mark_something(read_id, 'is_bookmarked', false, send_notify);
-
-    } else {
-        return mark_something(read_id, 'is_bookmarked', true, send_notify);
-    }
+    return mark_something(read_id, 'is_bookmarked',
+                          !!read.hasClass('is_bookmarked'), send_notify);
 }
