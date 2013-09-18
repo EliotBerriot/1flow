@@ -5,6 +5,8 @@
 {% endcomment %}
 
 read_actions_messages = {
+    open_first: "{% trans 'Opening first item…' %}",
+
     is_read: {
         done: "{% trans 'Marked read.' %}",
         undone: "{% trans 'Marked unread.' %}"
