@@ -553,6 +553,13 @@ header {
     }
 }
 
+.read-list-item.is_read {
+    .article-title,
+    .article-meta .meta {
+        opacity: 0.3;
+    }
+}
+
 .read-tile {
     width: 170px;
     padding: 10px;
