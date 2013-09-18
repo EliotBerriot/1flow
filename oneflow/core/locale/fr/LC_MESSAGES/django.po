@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-16 17:44+0200\n"
-"PO-Revision-Date: 2013-09-16 17:47+0009\n"
+"POT-Creation-Date: 2013-09-18 16:49+0200\n"
+"PO-Revision-Date: 2013-09-18 16:51+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -91,7 +91,7 @@ msgstr "Parents"
 msgid "Children"
 msgstr "Enfants"
 
-#: admin.py:269 models/nonrel.py:1888 models/nonrel.py:3176
+#: admin.py:269 models/nonrel.py:1888 models/nonrel.py:3194
 msgid "Tags"
 msgstr "Tags"
 
@@ -252,8 +252,8 @@ msgid "^read/([0-9a-f]{24,24})/$"
 msgstr "^lire/([0-9a-f]{24,24})/$"
 
 #: urls.py:36
-msgid "^(?P<klass>\\w+)/(?P<id>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
-msgstr "^(?P<klass>\\w+)/(?P<id>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
+msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
+msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
 #: urls.py:39
 msgid "^help/$"
@@ -295,36 +295,36 @@ msgstr "^connexion/$"
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:242
+#: views.py:255
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:246
+#: views.py:259
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:250
+#: views.py:263
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:257
+#: views.py:270
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:261
+#: views.py:274
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:267
+#: views.py:280
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:270
+#: views.py:283
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -743,29 +743,41 @@ msgstr "Source inconnue"
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
 
-#: models/nonrel.py:3177
+#: models/nonrel.py:3165
+msgid "Undefined"
+msgstr ""
+
+#: models/nonrel.py:3166
+msgid "This afternoon"
+msgstr ""
+
+#: models/nonrel.py:3167
+msgid "This week-end"
+msgstr ""
+
+#: models/nonrel.py:3195
 msgid "User set of tags for this read."
 msgstr "Ensemble des tags de l'utilisateur pour cette lecture."
 
-#: models/nonrel.py:3202
+#: models/nonrel.py:3220
 #, python-format
 msgid "%s∞%s (#%s) %s %s"
 msgstr "%s∞%s (#%s) %s %s"
 
-#: models/nonrel.py:3204
+#: models/nonrel.py:3222
 msgid "read"
 msgstr "lu"
 
-#: models/nonrel.py:3204
+#: models/nonrel.py:3222
 msgid "unread"
 msgstr "non-lu"
 
-#: models/nonrel.py:3213
+#: models/nonrel.py:3231
 #, python-brace-format
 msgid " ({feed})"
 msgstr " ({feed}) "
 
-#: models/nonrel.py:3218
+#: models/nonrel.py:3236
 #, python-brace-format
 msgid "{title}{source}"
 msgstr "{title}{source}"
@@ -821,7 +833,7 @@ msgstr "Section d'aide"
 msgid "Help contents"
 msgstr "Contenu de l'aide"
 
-#: templates/help.html:3 templates/snippets/navbar.html:149
+#: templates/help.html:3 templates/snippets/navbar.html:158
 msgid "Help"
 msgstr "Aide"
 
@@ -850,7 +862,7 @@ msgstr "Sections d'aide"
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/profile.html:6 templates/snippets/navbar.html:93
+#: templates/profile.html:6 templates/snippets/navbar.html:91
 msgid "Profile"
 msgstr "Profil"
 
@@ -955,7 +967,7 @@ msgstr "Associer d'autres comptes"
 msgid "Associate accounts"
 msgstr "Associer des comptes"
 
-#: templates/read-endless.html:4 templates/snippets/navbar.html:121
+#: templates/read-endless.html:4 templates/snippets/navbar.html:120
 msgid "Read"
 msgstr "Lecture"
 
@@ -994,6 +1006,18 @@ msgstr "Chargement…"
 msgid "Nothing to read yet. Buy a book?"
 msgstr "Rien à lire. Achetez-vous un livre ;-)"
 
+#: templates/read-endless.html:221
+msgid "Nothing open to mark as read/unread"
+msgstr "Rien d'ouvert à marquer lu/non-lu"
+
+#: templates/read-endless.html:236
+msgid "Nothing open to star/unstar"
+msgstr "Rien d'ouvert à sélectionner/désélectionner"
+
+#: templates/read-endless.html:251
+msgid "Nothing open to mark/unmark for later"
+msgstr "Rien d'ouvert à marquer (ou pas) pour plus tard"
+
 #: templates/register.html:3
 msgid "Register"
 msgstr "Enregistrement"
@@ -1028,7 +1052,7 @@ msgstr ""
 "\n"
 "Vous pouvez utiliser un compte de réseau social pour vous enregistrer en un clic sur <strong>1flow</strong>. Ceci importera automatiquement vos données dans  <strong>1flow</strong>. D'une pierre deux coups !"
 
-#: templates/signin.html:3 templates/snippets/navbar.html:111
+#: templates/signin.html:3 templates/snippets/navbar.html:109
 msgid "Sign in…"
 msgstr "Connexion…"
 
@@ -1218,47 +1242,35 @@ msgstr ""
 "\n"
 "Pour importer vos données Google Reader, merci de <a href=\"%(gg_url)s\">vous connecter via Google</a> d'abord."
 
-#: templates/snippets/navbar.html:27
+#: templates/snippets/navbar.html:22
 msgid "Maintenance"
 msgstr "Maintenance"
 
-#: templates/snippets/navbar.html:98
+#: templates/snippets/navbar.html:96
 msgid "Constance config."
 msgstr "Config. constance"
 
-#: templates/snippets/navbar.html:99
+#: templates/snippets/navbar.html:97
 msgid "Django admin."
 msgstr "Admin. Django"
 
-#: templates/snippets/navbar.html:100
+#: templates/snippets/navbar.html:98
 msgid "1flow translations"
 msgstr "Traductions 1flow"
 
-#: templates/snippets/navbar.html:104
+#: templates/snippets/navbar.html:102
 msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: templates/snippets/navbar.html:125
-msgid "Teams"
-msgstr "Équipes"
-
-#: templates/snippets/navbar.html:126
-msgid "Subscriptions"
-msgstr "Abonnements"
-
 #: templates/snippets/navbar.html:127
-msgid "Discovery"
-msgstr "Découverte"
-
-#: templates/snippets/navbar.html:133
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: templates/snippets/navbar.html:139
+#: templates/snippets/navbar.html:133
 msgid "About"
 msgstr "À propos"
 
-#: templates/snippets/navbar.html:140
+#: templates/snippets/navbar.html:134
 msgid "Contact"
 msgstr "Contact"
 
@@ -1310,6 +1322,46 @@ msgstr ""
 msgid "Embrace your world in a sight. For experts."
 msgstr ""
 
+#: templates/snippets/read/actions-messages.js.html:12
+msgid "Opening first item…"
+msgstr "Ouverture du premier article…"
+
+#: templates/snippets/read/actions-messages.js.html:13
+msgid "No previous, captain. You are on the first!"
+msgstr "Pas de précédent, capitaine. Vous êtes sur le premier !"
+
+#: templates/snippets/read/actions-messages.js.html:14
+msgid "Already at the top!"
+msgstr "Déjà au début !"
+
+#: templates/snippets/read/actions-messages.js.html:15
+msgid "No next, captain. You are on the last!"
+msgstr "Pas de suivant, capitaine. Vous êtes sur le dernier !"
+
+#: templates/snippets/read/actions-messages.js.html:17
+msgid "Marked read."
+msgstr "Marqué lu."
+
+#: templates/snippets/read/actions-messages.js.html:18
+msgid "Marked unread."
+msgstr "Marqué non-lu."
+
+#: templates/snippets/read/actions-messages.js.html:21
+msgid "Marked starred."
+msgstr "Sélectionné."
+
+#: templates/snippets/read/actions-messages.js.html:22
+msgid "Marked unstarred."
+msgstr "Désélectionné."
+
+#: templates/snippets/read/actions-messages.js.html:25
+msgid "Added to your reading list."
+msgstr "Ajouté à votre liste de lecture."
+
+#: templates/snippets/read/actions-messages.js.html:26
+msgid "Removed from your reading list."
+msgstr "Supprimé de votre liste de lecture."
+
 #: templates/snippets/read/no-content.html:9
 msgid "This article seems empty."
 msgstr "Cet article semble vide."
@@ -1349,102 +1401,79 @@ msgstr ""
 "Nous avons détecté que le contenu de cet article est potentiellement dangereux (pour votre navigateur, pas pour vos yeux…). Pour protéger votre ordinateur bien-aimé, nous ne l'affichons pas.<br />\n"
 "Alternativement, vous pouvez <a href=\"%(article_url)s\" target=\"_blank\">le lire sur le site d'origine</a>. Désolé du désagrément.\n"
 
-#: templates/snippets/read/read-admin-informations.html:6
-msgid "Admin stuff"
-msgstr "Trucs d'admins"
+#: templates/snippets/read/read-actions.html:5
+msgid "Do not read later"
+msgstr "Ne pas lire plus tard"
 
-#: templates/snippets/read/read-admin-informations.html:7
-msgid "Read: "
-msgstr "Lecture :"
-
-#: templates/snippets/read/read-admin-informations.html:10
-msgid "Article: "
-msgstr "Article :"
-
-#: templates/snippets/read/read-admin-informations.html:14
-msgid "Feeds: "
-msgstr "Flux :"
-
-#: templates/snippets/read/read-admin-informations.html:22
-msgid "no feeds"
-msgstr "pas de flux"
-
-#: templates/snippets/read/read-end-actions.html:4
-#: templates/snippets/read/read-end-actions.html:9
-#: templates/snippets/read/read-end-actions.html:14
-#: templates/snippets/read/read-list-row.html:17
-#: templates/snippets/read/read-list-row.html:21
-#: templates/snippets/read/read-list-row.html:25
-#: templates/snippets/read/read-one.html:17
-#: templates/snippets/read/read-one.html:21
-#: templates/snippets/read/read-one.html:25
-msgid "Action not yet available"
-msgstr "Action non disponible pour l'instant"
-
-#: templates/snippets/read/read-end-actions.html:6
+#: templates/snippets/read/read-actions.html:10
 msgid "Read later"
 msgstr "Lire plus tard"
 
-#: templates/snippets/read/read-end-actions.html:11
+#: templates/snippets/read/read-actions.html:16
+msgid "Unstar"
+msgstr "Désélectionner"
+
+#: templates/snippets/read/read-actions.html:21
 msgid "Star"
-msgstr "Garder"
+msgstr "Sélectionner"
 
-#: templates/snippets/read/read-end-actions.html:16
-msgid "Re-blog"
-msgstr "Re-blogguer"
+#: templates/snippets/read/read-actions.html:37
+#: templates/snippets/read/read-actions.html:40
+msgid "mark as unread"
+msgstr "marquer non-lu"
 
-#: templates/snippets/read/read-end-actions.html:19
-#: templates/snippets/read/read-list-row.html:29
-#: templates/snippets/read/read-one.html:29
+#: templates/snippets/read/read-actions.html:41
+msgid "Mark unread"
+msgstr "Marquer non-lu"
+
+#: templates/snippets/read/read-actions.html:44
+#: templates/snippets/read/read-actions.html:47
+msgid "mark as read"
+msgstr "marquer lu"
+
+#: templates/snippets/read/read-actions.html:48
+msgid "Mark read"
+msgstr "Marquer lu"
+
+#: templates/snippets/read/read-actions.html:52
 #: templates/snippets/read/read-tiles-experimental-tile.html:34
 #: templates/snippets/read/read-tiles-tile.html:34
 msgid "Open this article on the original website"
 msgstr "Ouvrir cet article sur le site web d'origine"
 
-#: templates/snippets/read/read-end-actions.html:21
+#: templates/snippets/read/read-actions.html:54
 msgid "Read original"
 msgstr "Voir l'original"
 
-#: templates/snippets/read/read-end-actions.html:25
-#: templates/snippets/read/read-end-actions.html:28
-#: templates/snippets/read/read-list-row.html:34
-#: templates/snippets/read/read-list-row.html:35
-#: templates/snippets/read/read-one.html:34
-#: templates/snippets/read/read-one.html:35
-msgid "mark as unread"
-msgstr "marquer non-lu"
+#: templates/snippets/read/read-admin-informations.html:6
+msgid "Read: "
+msgstr "Lecture :"
 
-#: templates/snippets/read/read-end-actions.html:28
-msgid "Mark unread"
-msgstr "Marquer non-lu"
+#: templates/snippets/read/read-admin-informations.html:9
+msgid "Article: "
+msgstr "Article :"
 
-#: templates/snippets/read/read-end-actions.html:32
-#: templates/snippets/read/read-end-actions.html:35
+#: templates/snippets/read/read-admin-informations.html:17
+msgid "Feeds: "
+msgstr "Flux :"
+
+#: templates/snippets/read/read-admin-informations.html:24
+msgid "no feeds"
+msgstr "pas de flux"
+
 #: templates/snippets/read/read-list-row.html:39
-#: templates/snippets/read/read-list-row.html:40
-#: templates/snippets/read/read-one.html:39
-#: templates/snippets/read/read-one.html:40
-msgid "mark as read"
-msgstr "marquer lu"
-
-#: templates/snippets/read/read-end-actions.html:36
-msgid "Mark read"
-msgstr "Marquer lu"
-
-#: templates/snippets/read/read-list-row.html:63
-#: templates/snippets/read/read-one.html:60
+#: templates/snippets/read/read-one.html:24
 msgid "by"
 msgstr "par"
 
-#: templates/snippets/read/read-list-row.html:69
-#: templates/snippets/read/read-one.html:69
+#: templates/snippets/read/read-list-row.html:45
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid "in"
 msgstr "dans"
 
-#: templates/snippets/read/read-list-row.html:70
-#: templates/snippets/read/read-one.html:75
+#: templates/snippets/read/read-list-row.html:46
+#: templates/snippets/read/read-one.html:32
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid ", rated "
@@ -1524,6 +1553,24 @@ msgstr "Emmène-moi à mes articles<br />et n'affiche plus cette introduction !
 #: templates/snippets/wizards/welcome-beta/welcome-beta.html:55
 msgid "Start adding some sources"
 msgstr "Ajoutons des sources d'information"
+
+#~ msgid "Teams"
+#~ msgstr "Équipes"
+
+#~ msgid "Subscriptions"
+#~ msgstr "Abonnements"
+
+#~ msgid "Discovery"
+#~ msgstr "Découverte"
+
+#~ msgid "Admin stuff"
+#~ msgstr "Trucs d'admins"
+
+#~ msgid "Action not yet available"
+#~ msgstr "Action non disponible pour l'instant"
+
+#~ msgid "Re-blog"
+#~ msgstr "Re-blogguer"
 
 #~ msgid "1flow: "
 #~ msgstr "1flow :"
