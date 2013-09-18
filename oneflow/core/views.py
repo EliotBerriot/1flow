@@ -14,7 +14,7 @@ from constance import config
 from django.http import (HttpResponseRedirect,
                          HttpResponseForbidden,
                          HttpResponseBadRequest,
-                         HttpResponse, Http404)
+                         HttpResponse)
 from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
@@ -36,6 +36,7 @@ from .forms import FullUserCreationForm
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Read
 from .models.reldb import HelpContent
+from ..base.utils.dateutils import now
 
 from .gr_import import GoogleReaderImport
 
@@ -49,6 +50,7 @@ add_to_builtins('pipeline.templatetags.compressed')
 add_to_builtins('absolute.templatetags.absolute_future')
 add_to_builtins('markdown_deux.templatetags.markdown_deux_tags')
 add_to_builtins('oneflow.base.templatetags.base_utils')
+add_to_builtins('oneflow.core.templatetags.coretags')
 
 if settings.TEMPLATE_DEBUG:
     add_to_builtins('template_debug.templatetags.debug_tags')
@@ -147,20 +149,31 @@ def set_preference(request, base, sub, value):
                                 reverse('home')))
 
 
-def toggle(request, klass, id, key):
+def toggle(request, klass, oid, key):
 
     try:
-        obj = globals()[klass].objects.get(id=id)
+        obj = globals()[klass].get_or_404(oid)
 
     except:
-        raise Http404
+        return HttpResponseTemporaryServerError()
 
     try:
-        setattr(obj, key, not getattr(obj, key))
+        new_value = not getattr(obj, key)
+        setattr(obj, key, new_value)
+
     except:
         msg = (u'Unable to toggle %s of %s', key, obj)
         LOGGER.exception(*msg)
         return HttpResponseTemporaryServerError(msg[0] % msg[1:])
+
+    else:
+        if key.startswith('is_'):
+            date_attr = 'date_' + key[3:]
+
+            if hasattr(obj, date_attr):
+                setattr(obj, date_attr, now())
+
+        obj.save()
 
     if request.is_ajax():
         return HttpResponse(u'DONE.')

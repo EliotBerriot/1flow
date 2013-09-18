@@ -2,7 +2,56 @@
 // I need to learn to write good JS first. Sorry for that.
 
 var page_cleaner_interval;
+var scroll_speed = 750;
+$.pnotify.defaults.delay = 5000;
 
+// bindable_hovered NOT USED YET
+//var bindable_hovered = null;
+
+function notify(params){
+    // did you ever see a that-simple wrapper?
+    $.pnotify(params);
+}
+
+function scrollToElement(target, speed, topoffset) {
+
+    var element = $(target);
+
+    if(typeof speed == 'undefined') {
+        var speed = scroll_speed;
+    }
+
+    //
+    // NOTE: 10px is the "comfort margin" to avoid cropping the article
+    //       title or rewinding while sliding up an upper element.
+    //
+
+    if(typeof topoffset == 'undefined') {
+        var topoffset = element.height() + 10;
+
+    } else {
+        topoffset += 10;
+    }
+
+    // console.log('>>> scrolling back to');
+    // console.log(target);
+    // console.log(element);
+    // console.log('>>> with offset');
+    // console.log(topoffset);
+
+    var destination = element.offset().top - topoffset;
+
+    $('html:not(:animated),body:not(:animated)')
+        .animate({scrollTop: destination}, speed, function() {
+            // disabled, it doesn't play nice with Bootstrap's
+            // topnav: the target get hidden behind, and the end
+            // of the scrolling is flaky.
+            //
+            //window.location.hash = target;
+        });
+
+    return false;
+}
 function find_start(parent, klass){
 
     if (typeof parent == 'undefined') {
@@ -165,7 +214,7 @@ function page_cleaner() {
 
     } catch (err) {
         try {
-            //console.debug('page_cleaner: ' + err);
+            console.debug('page_cleaner: ' + err);
 
         } catch (err) {
             // nothing. Silently ignored.
@@ -356,11 +405,49 @@ function launch_faders(parent) {
 
     parent.find('.new-fade').each(flash_fade);
 }
+
+// bindable_hovered NOT USED YET
+function setup_hover_notifiers(parent) {
+    // cf. http://stackoverflow.com/questions/3479849/jquery-how-do-i-get-the-element-underneath-my-cursor
+
+    if (typeof parent == 'undefined') {
+        parent = $('body');
+    }
+
+    if (parent.hasClass('hover-notifier')) {
+        parent.on('mouseenter', function() { bindable_hovered = this; });
+    }
+
+    parent.find('.hover-notifier').on('mouseenter',
+        function() { bindable_hovered = this; });
+}
+
+// bindable_hovered NOT USED YET
+function on_hovered(func_if_found, func_if_not_found){
+    // last hovered element can be already closed.
+    // Do not act if it's the case. But if it's not,
+    // we've got it's reference, even if the mouse
+    // cursor got ouside :-)
+    if (bindable_hovered != null) {
+        element = $(bindable_hovered);
+        if (element.is(':visible')) {
+            return func_if_found(element);
+        }
+    } else {
+        if (typeof func_if_not_found == 'function') {
+            func_if_not_found();
+        }
+    }
+}
 function setup_everything(parent) {
 
     setup_tooltips(parent);
     setup_hover_muters(parent);
     setup_popovers(parent);
+
+    // bindable_hovered NOT USED YET
+    //setup_hover_notifiers(parent);
+
     setup_clickovers(parent);
     setup_delayed_loaders(parent);
     launch_faders(parent);
@@ -370,13 +457,14 @@ function setup_everything(parent) {
         // Don't use eval. Thanks
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
-        window[$('body').attr('id') + '_setup'](parent);
+        var func_name = $('body').attr('id') + '_setup';
+
+        window[func_name](parent);
 
     } catch(err) {
-        console.debug(err);
+        console.debug('Exception while trying to run '
+                      + func_name + '(): ' + err);
     }
-
-
 }
 function setup_auto_cleaner() {
     // every 10 minutes, the page is cleaned from old and orphaned elements.
@@ -412,10 +500,13 @@ function common_init() {
         // Don't use eval. Thanks
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
-        window[$('body').attr('id') + '_init']();
+        var func_name = $('body').attr('id') + '_init';
+
+        window[func_name]();
 
     } catch(err) {
-        console.debug(err);
+        console.debug('Exception while trying to run '
+                      + func_name + '(): ' + err);
     }
 
     //setup_table_sorter();

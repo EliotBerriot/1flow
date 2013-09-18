@@ -3,6 +3,14 @@
 {% block title %}{{ read.title }}{% endblock title %}
 {% block body_id %}read{% endblock body_id %}
 
+{% block extrajs_header %}
+    {{ block.super }}
+
+    <script type="text/javascript">
+        var read_id = "{{ read.id }}";
+    </script>
+{% endblock extrajs_header %}
+
 {% block application_content %}
 <div class="row-fluid">
     <div id="article-container" class="span8 offset2">
@@ -13,7 +21,39 @@
 
 {% block extrajs_footer %}
     {{ block.super }}
+    {% compressed_js 'read-one' %}
 
     <script type="text/javascript">
+        {% include "snippets/read/actions-messages.js" %}
+
+        common_init();
+
+        {% if user.is_superuser %}
+        var admin_informations = $("#admin-{{ read.id }}");
+
+        Mousetrap.bind('> >', function() {
+            admin_informations.slideToggle(function() {
+                if (admin_informations.is(':visible')) {
+                    scrollToElement("#admin-{{ read.id }}");
+                }
+            });
+        });
+        {% endif %}
+
+        // “Mark Read”, “Toggle Read”
+        Mousetrap.bind(['m r', 't r'], function() {
+            return toggle_is_read(read_id);
+        });
+
+        // “Mark Starred”, “Toggle Starred”
+        Mousetrap.bind(['m s','t s'], function() {
+            return toggle_is_starred(read_id);
+        });
+
+        // “Mark later”, “Mark For Later”, “Read Later”
+        Mousetrap.bind(['m l', 'm f l', 'r l'], function() {
+            return toggle_is_bookmarked(read_id);
+        });
+
     </script>
 {% endblock extrajs_footer %}

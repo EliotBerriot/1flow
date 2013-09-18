@@ -10,10 +10,11 @@
 
 common_init();
 
+
 function eventually_toggle(event) {
     // see http://stackoverflow.com/a/9183467/654755 for the base I used.
 
-    console.log('toggled: ' + event.target);
+    //console.log('toggled: ' + event.target);
 
     if ($(event.target).attr('href') == undefined) {
         var togglable   = $(this).closest('.slide-togglable');
@@ -55,7 +56,6 @@ function read_setup(parent) {
     //console.debug('read setup binding…');
 
     find_start(parent, 'slide-togglable').click(eventually_toggle);
-
 }
 
 // for now, this one does nothing.
@@ -64,47 +64,7 @@ function read_setup(parent) {
 function read_init(){};
 
 var open_content = null;
-var scroll_speed = 750;
-
-function scrollToElement(target, speed, topoffset) {
-
-    var element = $(target);
-
-    if(typeof speed == 'undefined') {
-        var speed = scroll_speed;
-    }
-
-    //
-    // NOTE: 10px is the "comfort margin" to avoid cropping the article
-    //       title or rewinding while sliding up an upper element.
-    //
-
-    if(typeof topoffset == 'undefined') {
-        var topoffset = element.height() + 10;
-
-    } else {
-        topoffset += 10;
-    }
-
-    // console.log('>>> scrolling back to');
-    // console.log(target);
-    // console.log(element);
-    // console.log('>>> with offset');
-    // console.log(topoffset);
-
-    var destination = element.offset().top - topoffset;
-
-    $('html:not(:animated),body:not(:animated)')
-        .animate({scrollTop: destination}, speed, function() {
-            // disabled, it doesn't play nice with Bootstrap's
-            // topnav: the target get hidden behind, and the end
-            // of the scrolling is flaky.
-            //
-            //window.location.hash = target;
-        });
-
-    return false;
-}
+var last_opened  = null;
 
 function notice_element(oid) {
 
@@ -130,6 +90,9 @@ function toggle_content(oid, callback) {
                 scrollToElement(me);
             }
 
+            // bindable_hovered NOT USED YET
+            //bindable_hovered = content;
+
             content.slideDown(scroll_speed, "swing", run_callback);
         };
 
@@ -151,6 +114,14 @@ function toggle_content(oid, callback) {
 
         content.slideUp(scroll_speed, "swing", run_callback);
         open_content = null;
+        last_opened  = oid;
+
+        // This is not mandatory, but doesn't hurt.
+        // As we close the content, there is nothing
+        // bindable anymore, anyway.
+        //
+        // bindable_hovered NOT USED YET
+        //bindable_hovered = null;
 
     } else {
         if(open_content != null) {
@@ -180,10 +151,91 @@ function toggle_content(oid, callback) {
         } else {
             open_me(true, run_callback);
             open_content = oid;
+
+            // "last" is not previous.
+            last_opened  = oid;
         }
 
     }
 
     // in case we where clicked.
     return false;
+}
+
+function open_next_read() {
+
+    if (last_opened) {
+        var next = $("#" + last_opened)
+            .closest('.read-list-item')
+            .next('.read-list-item');
+
+        console.debug('opening ' + next.attr('id'));
+
+        toggle_content(next.attr('id'));
+
+    } else {
+
+        notify({
+            text: "{% trans 'Opening first item…' %}",
+            type: 'info',
+            icon: false,
+            sticker: false
+        });
+
+        toggle_content($('.read-list-item').first().attr('id'));
+    }
+
+    /*
+    The same, with hovered events.
+    Doesn't work if we hit the keyboard too fast,
+    or if the mouse is outside of the hoverable area.
+
+
+    on_hovered(function(current){
+    toggle_content(current
+        .closest('.read-list-item')
+        .next('.read-list-item').attr('id'));
+
+    }, function(){
+    notify({
+        text: "{% trans 'Opening first item…' %}",
+        type: 'info',
+        icon: false,
+        sticker: false
+    });
+
+    toggle_content($('.read-list-item').first().attr('id'));
+    });
+    */
+}
+function open_previous_read() {
+
+    if (last_opened) {
+
+        var previous = $("#" + last_opened)
+            .closest('.read-list-item')
+            .prev('.read-list-item');
+
+        console.debug('opening ' + previous.attr('id'));
+
+        if (previous) {
+            toggle_content(previous.attr('id'));
+
+        } else {
+            notify({
+                text: "{% trans 'No Previous, captain. You are at the top!' %}",
+                type: 'warning',
+                icon: false,
+                sticker: false
+            });
+        }
+
+    } else {
+        notify({
+            text: "{% trans 'Already at the top!' %}",
+            type: 'info',
+            icon: false,
+            sticker: false
+        });
+    }
 }

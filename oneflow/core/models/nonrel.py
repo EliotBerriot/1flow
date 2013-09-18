@@ -3161,15 +3161,33 @@ class OriginalData(Document, DocumentHelperMixin):
         return None
 
 
+READ_BOOKMARK_TYPE_CHOICES = (
+    (u'U', _(u'Undefined')),
+    (u'A', _(u'This afternoon')),
+    (u'W', _(u'This week-end')),
+)
+
+
 class Read(Document, DocumentHelperMixin):
     user = ReferenceField('User', reverse_delete_rule=CASCADE)
     article = ReferenceField('Article', unique_with='user',
                              reverse_delete_rule=CASCADE)
-    is_read = BooleanField(default=False)
-    is_auto_read = BooleanField(default=False)
+
     date_created = DateTimeField(default=now)
+
+    is_read   = BooleanField(default=False)
     date_read = DateTimeField()
+
+    is_auto_read   = BooleanField(default=False)
     date_auto_read = DateTimeField()
+
+    is_starred   = BooleanField(default=False)
+    date_starred = DateTimeField()
+
+    is_bookmarked   = BooleanField(default=False)
+    date_bookmarked = DateTimeField()
+    bookmark_type   = StringField(max_length=1, default=u'U',
+                                  choices=READ_BOOKMARK_TYPE_CHOICES)
 
     # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
     tags = ListField(GenericReferenceField(),

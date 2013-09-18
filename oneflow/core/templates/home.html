@@ -8,6 +8,9 @@
     <link rel="stylesheet" type="text/css"
         href="http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800">
 
+    <link rel="stylesheet" type="text/css"
+        href="http://cdn.jsdelivr.net/pnotify/1.2/jquery.pnotify.default.css">
+
     {% comment %}
         @import url('http://fonts.googleapis.com/css?family=Lato:300,400,700,900,300italic,400italic,700italic,900italic');
     {% endcomment %}
@@ -41,9 +44,28 @@
 {% endblock body %}
 
 {% block extrajs_footer %}
+    {{ block.super }}
 
-    {# NOTE: order matters. #}
-    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/underscore.js/1.5.1/underscore-min.js"></script>
+    {# NOTE: JS inclusion order matters. #}
+    {% django_js jquery=false %}
+
+    {% comment %}
+        This version is not the same as on Github
+            https://github.com/jeresig/jquery.hotkeys
+
+        Syntax is different, as commented at
+            https://github.com/tzuryby/jquery.hotkeys/issues/1#issuecomment-5930686
+
+        <script type="text/javascript" src="http://cdn.jsdelivr.net/jquery.hotkeys/0.8b/jquery.hotkeys.js"></script>
+
+        Thus, we use MouseTrap, which is simpler and allows combinations.
+
+    {% endcomment %}
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/underscorejs/1.5.1/underscore-min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/mousetrap/1.4.2/mousetrap.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+    <script type="text/javascript" src="http://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
+    <script type="text/javascript" src="http://cdn.jsdelivr.net/pnotify/1.2/jquery.pnotify.js"></script>
 
     {% compressed_js 'vendor-all' %}
     {#{% compressed_js 'core' %}#}

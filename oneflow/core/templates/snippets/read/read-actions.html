@@ -1,0 +1,54 @@
+
+  <a href="#" onclick="javascript:return toggle_is_bookmarked('{{ read.id }}')"
+      class="action-mark-not_is_bookmarked nowrap {{ read.is_bookmarked|yesno:",hide" }}">
+    <i class="icon-bookmark"></i>{% if with_text %}<span
+        class="hidden-phone"> {% trans "Do not read later" %}</span>{% endif %}</a>
+
+  <a href="#" onclick="javascript:return toggle_is_bookmarked('{{ read.id }}')"
+      class="action-mark-is_bookmarked nowrap {{ read.is_bookmarked|yesno:"hide," }}">
+    <i class="icon-bookmark-empty"></i>{% if with_text %}<span
+        class="hidden-phone"> {% trans "Read later" %}</span>{% endif %}</a>
+
+
+  <a href="#" onclick="javascript:return toggle_is_starred('{{ read.id }}')"
+      class="action-mark-not_is_starred nowrap {{ read.is_starred|yesno:",hide" }}">
+    <i class="icon-star"></i>{% if with_text %}<span
+        class="hidden-phone"> {% trans "Unstar" %}</span>{% endif %}</a>
+
+  <a href="#" onclick="javascript:return toggle_is_starred('{{ read.id }}')"
+      class="action-mark-is_starred nowrap {{ read.is_starred|yesno:"hide," }}">
+    <i class="icon-star-empty"></i>{% if with_text %}<span
+        class="hidden-phone"> {% trans "Star" %}</span>{% endif %}</a>
+
+
+  {% comment %}
+    NOT READY
+
+    <a href="#" target="_blank" class="nowrap"
+        title="{% trans "Action not yet available" %}">
+      <i class="icon-retweet"></i>{% if with_text %}<span
+          class="hidden-phone"> {% trans "Re-blog" %}</span>{% endif %}</a>
+
+  {% endcomment %}
+
+
+  <a href="#" onclick="javascript:return toggle_is_read('{{ read.id }}')"
+      title="{% trans "mark as unread" %}" data-toggle="tooltip"
+      class="action-mark-not_is_read nowrap {{ read.is_read|yesno:",hide" }}">
+    <i class="icon-check"
+        alt="{% trans "mark as unread" %}"></i>{% if with_text %}<span
+        class="hidden-phone">&nbsp;{% trans "Mark unread" %}</span>{% endif %}</a>
+
+  <a href="#" onclick="javascript:return toggle_is_read('{{ read.id }}')"
+      title="{% trans "mark as read" %}" data-toggle="tooltip"
+      class="action-mark-is_read nowrap {{ read.is_read|yesno:"hide," }}">
+    <i class="icon-check-empty"
+        alt="{% trans "mark as read" %}"></i>{% if with_text %}<span
+        class="hidden-phone"> {% trans "Mark read" %}</span>{% endif %}</a>
+
+
+  <a href="{{ article.url }}" target="_blank" class="nowrap"
+      title="{% trans "Open this article on the original website" %}">
+    <i class="icon-circle-arrow-right"></i>{% if with_text %}<span
+        class="hidden-phone"> {% trans "Read original" %}</span>{% endif %}</a>
+

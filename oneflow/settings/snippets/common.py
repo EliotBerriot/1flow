@@ -274,13 +274,23 @@ PIPELINE_JS = {
         'output_filename': 'js/min/utils.js',
     },
 
-    'read': {
+    'read-endless': {
         'source_filenames': (
             'js/utils/*.js',
             'js/common.js',
-            'js/read.js',
+            'js/read-one.js',
+            'js/read-endless.js',
         ),
-        'output_filename': 'js/min/read.js',
+        'output_filename': 'js/min/read-endless.js',
+    },
+
+    'read-one': {
+        'source_filenames': (
+            'js/utils/*.js',
+            'js/common.js',
+            'js/read-one.js',
+        ),
+        'output_filename': 'js/min/read-one.js',
     },
 
     'core': {

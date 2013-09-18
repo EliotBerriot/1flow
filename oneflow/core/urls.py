@@ -33,7 +33,7 @@ urlpatterns = patterns(
         login_required(read_one),
         name='read_one'),
 
-    url(_(r'^(?P<klass>\w+)/(?P<id>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
+    url(_(r'^(?P<klass>\w+)/(?P<oid>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
         login_required(never_cache(toggle)), name='toggle'),
 
     url(_(r'^help/$'), login_required(help), name='help'),
