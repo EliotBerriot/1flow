@@ -94,164 +94,118 @@
 
         {% include "snippets/read/actions-messages.js" %}
 
-    function endless_load_next_if_needed() {
+        function endless_load_next_if_needed() {
 
-        {% comment %}
-            When there are un-processed articles, they are skipped and not
-            displayed. In that particular case, the reading list page can
-            appear nearly empty if there are a lot of them. We compensate
-            by fetching one or two more to fill the user view.
+            {% comment %}
+                When there are un-processed articles, they are skipped and not
+                displayed. In that particular case, the reading list page can
+                appear nearly empty if there are a lot of them. We compensate
+                by fetching one or two more to fill the user view.
 
-            We do this only for the first set of pages, to avoid the fuss
-            of selecting and couting a large set of items when the user
-            has already scrolled a lot.
+                We do this only for the first set of pages, to avoid the fuss
+                of selecting and couting a large set of items when the user
+                has already scrolled a lot.
 
-            As a side node, the farther he scrolls, the less non-processed
-            articles he will encounter, because he gets back in the past.
-        {% endcomment %}
+                As a side node, the farther he scrolls, the less non-processed
+                articles he will encounter, because he gets back in the past.
+            {% endcomment %}
 
-        next_page = parseInt($('.endless_more').attr('href').split('=')[1]);
-        //console.log('next_page: ' + next_page);
+            next_page = parseInt($('.endless_more').attr('href').split('=')[1]);
+            //console.log('next_page: ' + next_page);
 
-        if (next_page <= 5) {
-            if ($(".read-list-item").length
-                    < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
-                console.debug('fetching next page to fill the view…');
-                $('.endless_container').find('a.endless_more').click();
+            if (next_page <= 5) {
+                if ($(".read-list-item").length
+                        < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
+                    console.debug('fetching next page to fill the view…');
+                    $('.endless_container').find('a.endless_more').click();
+                }
             }
         }
-    }
 
-    function endless_new_page_load_completed(context, fragment) {
-        // console.log('Label:', $(this).text());
-        //console.log('URL:', context.url);
-        //console.log('Querystring key:', context.key);
-        // console.log('Fragment:', fragment);
+        function endless_new_page_load_completed(context, fragment) {
+            // console.log('Label:', $(this).text());
+            //console.log('URL:', context.url);
+            //console.log('Querystring key:', context.key);
+            // console.log('Fragment:', fragment);
 
-        $('body').find('.endless_container').remove();
+            $('body').find('.endless_container').remove();
 
-        var new_items   = $(fragment);
-        var new_endless = new_items.find('.endless_container');
+            var new_items   = $(fragment);
+            var new_endless = new_items.find('.endless_container');
 
-        // NOTE: .after() moved the new_endless.
-        // No need to remove it from the fragment.
+            // NOTE: .after() moved the new_endless.
+            // No need to remove it from the fragment.
 
-        reads_container
-            .after(new_endless)
-            .append(new_items)
+            reads_container
+                .after(new_endless)
+                .append(new_items)
+            {% if preferences.home.style|slice:'1' == 'T' %}
+                .isotope('appended', new_items);
+            {% else %}
+                ;
+            {% endif %}
+
+            setup_everything(new_items);
+
+            console.debug('Finished loading ', context.url);
+
+            endless_load_next_if_needed();
+
+            // We return false to avoid
+            // endless normal processing.
+            return false;
+        }
+
+        var reads_container = $('#reads-container');
+
         {% if preferences.home.style|slice:'1' == 'T' %}
-            .isotope('appended', new_items);
-        {% else %}
-            ;
+
+            reads_container.isotope({
+              itemSelector: '.read-list-item'
+            });
+
         {% endif %}
 
-        setup_everything(new_items);
+        $.endlessPaginate({
 
-        console.debug('Finished loading ', context.url);
+            {% if config.READ_INFINITE_AUTOSCROLL_ENABLED %}
+                paginateOnScroll: true,
+                paginateOnScrollMargin: 1500,
+
+            {% endif %}
+
+            onCompleted: endless_new_page_load_completed
+        });
 
         endless_load_next_if_needed();
 
-        // We return false to avoid
-        // endless normal processing.
-        return false;
-    }
 
-    var reads_container = $('#reads-container');
-
-    {% if preferences.home.style|slice:'1' == 'T' %}
-
-        reads_container.isotope({
-          itemSelector: '.read-list-item'
-        });
-
-    {% endif %}
-
-    $.endlessPaginate({
-
-        {% if config.READ_INFINITE_AUTOSCROLL_ENABLED %}
-            paginateOnScroll: true,
-            paginateOnScrollMargin: 1500,
-
-        {% endif %}
-
-        onCompleted: endless_new_page_load_completed
-    });
-
-    endless_load_next_if_needed();
-
-        {% if user.is_superuser %}
-
-        Mousetrap.bind('> >', function() {
-            on_hovered(function(current) {
-                var admin_informations = current.find('.admin-informations');
-                admin_informations.slideToggle(function() {
-                    if (admin_informations.is(':visible')) {
-                        scrollToElement(admin_informations.attr('id'));
-                    }
-                });
-            });
-        });
-        {% endif %}
-
-        // “Next”, “Goto Next”, “Open Next”
-        Mousetrap.bind(['n', 'g n', 'o n'], function() {
-            open_next_read();
-            return false;
-        });
-
-        // “Mark Read” + “Next”, “Goto Next”, “Open Next”
-        Mousetrap.bind(['shift+n',
-                        'g shift+n', 'shift+g shift+n',
-                        'o shift+n', 'shift+o shift+n'], function() {
-            mark_current_read_is_read();
-            open_next_read();
-            return false;
-        });
-
-        // “Previous”, “Goto Previous”, “Open Previous”
-        Mousetrap.bind(['p', 'g p', 'o p'], function() {
-            open_previous_read();
-            return false;
-        });
-
-        // “Mark Read” + “Next”, “Goto Next”, “Open Next”
-        Mousetrap.bind(['shift+p',
-                        'g shift+p', 'shift+g shift+p',
-                        'o shift+p', 'shift+o shift+p'], function() {
-            mark_current_read_is_read();
-            open_previous_read();
-            return false;
-        });
-
-        function mark_current_read_is_read() {
+        function mark_current_read_as_read() {
             if (open_content) {
                 var read = $("#" + open_content);
 
-                if (!read.hasClass('is_read')) {
-                    return mark_something(open_content, 'is_read', true,
-                                          '<no_notification>', false);
+                if (read.hasClass('not_is_read')) {
+                    return mark_something(open_content, 'is_read');
                 }
             }
         }
 
-        function mark_current_read_is_starred() {
+        function mark_current_read_as_starred() {
             if (open_content) {
                 var read = $("#" + open_content);
 
-                if (!read.hasClass('is_starred')) {
-                    return mark_something(open_content, 'is_starred', true,
-                                          '<no_notification>', false);
+                if (read.hasClass('not_is_starred')) {
+                    return mark_something(open_content, 'is_starred');
                 }
             }
         }
 
-        function mark_current_read_is_bookmarked() {
+        function mark_current_read_as_bookmarked() {
             if (open_content) {
                 var read = $("#" + open_content);
 
-                if (!read.hasClass('is_bookmarked')) {
-                    return mark_something(open_content, 'is_bookmarked', true,
-                                          '<no_notification>', false);
+                if (read.hasClass('not_is_bookmarked')) {
+                    return mark_something(open_content, 'is_bookmarked');
                 }
             }
         }
@@ -259,10 +213,7 @@
         function toggle_current_read_is_read() {
 
             if (open_content) {
-                return toggle_is_read(open_content, {
-                    done: "{% trans 'Marked read.' %}",
-                    undone: "{% trans 'Marked unread.' %}"
-                });
+                return toggle_is_read(open_content);
 
             } else {
                 notify({
@@ -277,10 +228,7 @@
         function toggle_current_read_is_starred() {
 
             if (open_content) {
-                return toggle_is_starred(open_content, {
-                    done: "{% trans 'Oh my GOD! it shines!! [like a star]' %}",
-                    undone: "{% trans 'A star is dead.' %}"
-                });
+                return toggle_is_starred(open_content);
 
             } else {
                 notify({
@@ -295,10 +243,7 @@
         function toggle_current_read_is_bookmarked() {
 
             if (open_content) {
-                return toggle_is_bookmarked(open_content, {
-                    done: "{% trans 'Marked for reading later.' %}",
-                    undone: "{% trans 'Removed from reading list.' %}"
-                });
+                return toggle_is_bookmarked(open_content);
 
             } else {
                 notify({
@@ -309,6 +254,39 @@
                 });
             }
         }
+
+        {% if user.is_superuser %}
+
+        Mousetrap.bind('> >', function() {
+            if (open_content) {
+                var admin_informations = $("#" + open_content).find(
+                                            '.admin-informations');
+
+                admin_informations.slideToggle(function() {
+                    if (admin_informations.is(':visible')) {
+                        scrollToElement(admin_informations.attr('id'));
+                    }
+                });
+            }
+        });
+
+        {% endif %}
+
+        // ———————————————————————————————————————————— open first/next/previous
+
+        // “Next”, “Goto Next”, “Open Next”
+        Mousetrap.bind(['n', 'g n', 'o n'], function() {
+            open_next_read();
+            return false;
+        });
+
+        // “Previous”, “Goto Previous”, “Open Previous”
+        Mousetrap.bind(['p', 'g p', 'o p'], function() {
+            open_previous_read();
+            return false;
+        });
+
+        // ——————————————————————————————————————————— actions on currently open
 
         // “Mark Read”, “Toggle Read”
         Mousetrap.bind(['m r', 't r'], function() {
@@ -321,23 +299,42 @@
             toggle_current_read_is_starred();
             return false;
         });
+        // “Mark [fF]or Later”, “Toggle Later status”,
+        // “Mark Bookmarked”, “Toggle Bookmarked”,
+        // “Keep For Later”, “Read Later”
+        Mousetrap.bind(['m l', 't l', 'm b', 't b',
+                        'r l', 'm f l', 'k f l'], function() {
+            toggle_current_read_is_bookmarked();
+            return false;
+        });
 
-        // “Star and go next”
-        Mousetrap.bind(['shift+s'], function() {
-            toggle_current_read_is_starred();
+        // ——————————————————————————————————————————————————— read-flow actions
+
+        // “Mark Read” + “Next”, “Goto Next”, “Open Next”
+        Mousetrap.bind(['shift+r', 'shift+n'], function() {
+            mark_current_read_as_read();
             open_next_read();
             return false;
         });
 
-        // “Mark Bookmarked”, “Toggle Bookmarked”
-        Mousetrap.bind(['m b', 'r l', 'm f l', 'k f l'], function() {
-            toggle_current_read_is_bookmarked();
+
+        // “Mark Read” + “Next”, “Goto Next”, “Open Next”
+        Mousetrap.bind(['shift+p'], function() {
+            mark_current_read_as_read();
+            open_previous_read();
+            return false;
+        });
+
+        // “Star and go next”
+        Mousetrap.bind(['shift+s'], function() {
+            mark_current_read_as_starred();
+            open_next_read();
             return false;
         });
 
         // “mark for Later and go next”
         Mousetrap.bind(['shift+l'], function() {
-            toggle_current_read_is_bookmarked();
+            mark_current_read_as_bookmarked();
             open_next_read();
             return false;
         });
