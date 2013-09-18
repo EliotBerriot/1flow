@@ -2,7 +2,7 @@
 // I need to learn to write good JS first. Sorry for that.
 
 var page_cleaner_interval;
-var scroll_speed = 750;
+var scroll_speed = 500;
 $.pnotify.defaults.delay = 5000;
 
 // bindable_hovered NOT USED YET
