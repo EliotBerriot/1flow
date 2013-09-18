@@ -278,6 +278,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/utils/*.js',
             'js/common.js',
+            'js/read-one.js',
             'js/read-endless.js',
         ),
         'output_filename': 'js/min/read-endless.js',
@@ -287,6 +288,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/utils/*.js',
             'js/common.js',
+            'js/read-one.js',
         ),
         'output_filename': 'js/min/read-one.js',
     },
