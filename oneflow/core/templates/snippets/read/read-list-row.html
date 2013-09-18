@@ -74,9 +74,13 @@
 
           {% endif %}
 
-          {% with with_text=1 %}
-            {% include 'snippets/read/read-actions.html' %}
-          {% endwith %}
+          <div class="article-actions end-actions actions centered">
+
+            {% with with_text=1 %}
+              {% include 'snippets/read/read-actions.html' %}
+            {% endwith %}
+
+          </div><!-- .article-actions -->
 
       </div><!-- .article-content -->
 
