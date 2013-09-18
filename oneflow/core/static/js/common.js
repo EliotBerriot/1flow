@@ -3,8 +3,10 @@
 
 var page_cleaner_interval;
 var scroll_speed = 750;
-var bindable_hovered = null;
 $.pnotify.defaults.delay = 5000;
+
+// bindable_hovered NOT USED YET
+//var bindable_hovered = null;
 
 function notify(params){
     // did you ever see a that-simple wrapper?
@@ -403,11 +405,49 @@ function launch_faders(parent) {
 
     parent.find('.new-fade').each(flash_fade);
 }
+
+// bindable_hovered NOT USED YET
+function setup_hover_notifiers(parent) {
+    // cf. http://stackoverflow.com/questions/3479849/jquery-how-do-i-get-the-element-underneath-my-cursor
+
+    if (typeof parent == 'undefined') {
+        parent = $('body');
+    }
+
+    if (parent.hasClass('hover-notifier')) {
+        parent.on('mouseenter', function() { bindable_hovered = this; });
+    }
+
+    parent.find('.hover-notifier').on('mouseenter',
+        function() { bindable_hovered = this; });
+}
+
+// bindable_hovered NOT USED YET
+function on_hovered(func_if_found, func_if_not_found){
+    // last hovered element can be already closed.
+    // Do not act if it's the case. But if it's not,
+    // we've got it's reference, even if the mouse
+    // cursor got ouside :-)
+    if (bindable_hovered != null) {
+        element = $(bindable_hovered);
+        if (element.is(':visible')) {
+            return func_if_found(element);
+        }
+    } else {
+        if (typeof func_if_not_found == 'function') {
+            func_if_not_found();
+        }
+    }
+}
 function setup_everything(parent) {
 
     setup_tooltips(parent);
     setup_hover_muters(parent);
     setup_popovers(parent);
+
+    // bindable_hovered NOT USED YET
+    //setup_hover_notifiers(parent);
+
     setup_clickovers(parent);
     setup_delayed_loaders(parent);
     launch_faders(parent);
@@ -432,9 +472,6 @@ function setup_auto_cleaner() {
     page_cleaner_interval = setInterval(page_cleaner, 600000);
 }
 function setup_keyboard() {
-
-    // cf. http://stackoverflow.com/questions/3479849/jquery-how-do-i-get-the-element-underneath-my-cursor
-    //$('.keyboard-bindable').live('mouseenter', function() { bindable_hovered = this; });
 
     $(document).keydown(function(ev) {
 

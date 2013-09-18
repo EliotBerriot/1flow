@@ -14,7 +14,7 @@ common_init();
 function eventually_toggle(event) {
     // see http://stackoverflow.com/a/9183467/654755 for the base I used.
 
-    console.log('toggled: ' + event.target);
+    //console.log('toggled: ' + event.target);
 
     if ($(event.target).attr('href') == undefined) {
         var togglable   = $(this).closest('.slide-togglable');
@@ -56,7 +56,6 @@ function read_setup(parent) {
     //console.debug('read setup binding…');
 
     find_start(parent, 'slide-togglable').click(eventually_toggle);
-
 }
 
 // for now, this one does nothing.
@@ -65,6 +64,7 @@ function read_setup(parent) {
 function read_init(){};
 
 var open_content = null;
+var last_opened  = null;
 
 function notice_element(oid) {
 
@@ -90,7 +90,9 @@ function toggle_content(oid, callback) {
                 scrollToElement(me);
             }
 
-            bindable_hovered = content;
+            // bindable_hovered NOT USED YET
+            //bindable_hovered = content;
+
             content.slideDown(scroll_speed, "swing", run_callback);
         };
 
@@ -112,7 +114,14 @@ function toggle_content(oid, callback) {
 
         content.slideUp(scroll_speed, "swing", run_callback);
         open_content = null;
-        bindable_hovered = null;
+        last_opened  = oid;
+
+        // This is not mandatory, but doesn't hurt.
+        // As we close the content, there is nothing
+        // bindable anymore, anyway.
+        //
+        // bindable_hovered NOT USED YET
+        //bindable_hovered = null;
 
     } else {
         if(open_content != null) {
@@ -142,10 +151,91 @@ function toggle_content(oid, callback) {
         } else {
             open_me(true, run_callback);
             open_content = oid;
+
+            // "last" is not previous.
+            last_opened  = oid;
         }
 
     }
 
     // in case we where clicked.
     return false;
+}
+
+function open_next_read() {
+
+    if (last_opened) {
+        var next = $("#" + last_opened)
+            .closest('.read-list-item')
+            .next('.read-list-item');
+
+        console.debug('opening ' + next.attr('id'));
+
+        toggle_content(next.attr('id'));
+
+    } else {
+
+        notify({
+            text: "{% trans 'Opening first item…' %}",
+            type: 'info',
+            icon: false,
+            sticker: false
+        });
+
+        toggle_content($('.read-list-item').first().attr('id'));
+    }
+
+    /*
+    The same, with hovered events.
+    Doesn't work if we hit the keyboard too fast,
+    or if the mouse is outside of the hoverable area.
+
+
+    on_hovered(function(current){
+    toggle_content(current
+        .closest('.read-list-item')
+        .next('.read-list-item').attr('id'));
+
+    }, function(){
+    notify({
+        text: "{% trans 'Opening first item…' %}",
+        type: 'info',
+        icon: false,
+        sticker: false
+    });
+
+    toggle_content($('.read-list-item').first().attr('id'));
+    });
+    */
+}
+function open_previous_read() {
+
+    if (last_opened) {
+
+        var previous = $("#" + last_opened)
+            .closest('.read-list-item')
+            .prev('.read-list-item');
+
+        console.debug('opening ' + previous.attr('id'));
+
+        if (previous) {
+            toggle_content(previous.attr('id'));
+
+        } else {
+            notify({
+                text: "{% trans 'No Previous, captain. You are at the top!' %}",
+                type: 'warning',
+                icon: false,
+                sticker: false
+            });
+        }
+
+    } else {
+        notify({
+            text: "{% trans 'Already at the top!' %}",
+            type: 'info',
+            icon: false,
+            sticker: false
+        });
+    }
 }
