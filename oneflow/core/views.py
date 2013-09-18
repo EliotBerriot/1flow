@@ -50,6 +50,7 @@ add_to_builtins('pipeline.templatetags.compressed')
 add_to_builtins('absolute.templatetags.absolute_future')
 add_to_builtins('markdown_deux.templatetags.markdown_deux_tags')
 add_to_builtins('oneflow.base.templatetags.base_utils')
+add_to_builtins('oneflow.core.templatetags.coretags')
 
 if settings.TEMPLATE_DEBUG:
     add_to_builtins('template_debug.templatetags.debug_tags')
