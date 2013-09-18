@@ -6,9 +6,9 @@
 
 read_actions_messages = {
     open_first: "{% trans 'Opening first item…' %}",
-    already_top_first: "{% trans 'No Previous, captain. You are at the top!' %}",
+    already_top_first: "{% trans 'No previous, captain. You are on the first!' %}",
     already_top_more: "{% trans 'Already at the top!' %}",
-
+    already_end_last: "{% trans 'No next, captain. You are on the last!' %}",
     is_read: {
         done: "{% trans 'Marked read.' %}",
         undone: "{% trans 'Marked unread.' %}"

@@ -168,7 +168,17 @@ function open_next_read() {
             .closest('.read-list-item')
             .next('.read-list-item');
 
-        toggle_content(next.attr('id'));
+        if (next.length) {
+            toggle_content(next.attr('id'));
+        } else {
+            notify({
+                text: read_actions_messages.already_at_end,
+                type: 'warning',
+                icon: false,
+                sticker: false
+            });
+
+        }
     }
 
     if (open_content) {
@@ -192,13 +202,12 @@ function open_next_read() {
 }
 function open_previous_read() {
 
-    if (last_opened) {
-
-        var previous = $("#" + last_opened)
+    function open_previous_internal(which) {
+        var previous = $("#" + which)
             .closest('.read-list-item')
             .prev('.read-list-item');
 
-        if (previous) {
+        if (previous.length) {
             toggle_content(previous.attr('id'));
 
         } else {
@@ -210,14 +219,26 @@ function open_previous_read() {
             });
         }
 
-    } else {
-        notify({
-            text: read_actions_messages.already_top_more,
-            type: 'info',
-            icon: false,
-            sticker: false
-        });
     }
+
+    if (open_content) {
+        open_previous_internal(open_content);
+    } else {
+        if (last_opened) {
+            open_previous_internal(last_opened);
+
+        } else {
+            notify({
+                text: read_actions_messages.already_top_more,
+                type: 'info',
+                icon: false,
+                sticker: false
+            });
+        }
+    }
+
+
+
 }
 function close_current_read() {
     if (open_content) {
