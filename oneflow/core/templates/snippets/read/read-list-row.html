@@ -1,5 +1,6 @@
-  <li id="{{ read.id }}" class="read-list-row read-list-item row-fluid"
-      data-index="{{ tenths_counter|add:forloop.counter }}">
+  <li id="{{ read.id }}" class="read-list-row read-list-item row-fluid {% read_status_css read %}"
+      {% read_data_urls read %} data-index="{{ tenths_counter|add:forloop.counter }}">
+
   {% with read.article as article %}
 
     <div class="article span12 hover-unmute-children">
@@ -8,41 +9,14 @@
         <div class="span12 article-meta">
           <div class="pull-right actions hover-muted hide">
 
-          {% if user.is_superuser %}
-            <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;">
-              <i class="icon-cog"></i></a>
-          {% endif %}
-
-            <a href="#" target="_blank"
-                title="{% trans "Action not yet available" %}">
-              <i class="icon-bookmark-empty"></i></a>
-
-            <a href="#" target="_blank"
-                title="{% trans "Action not yet available" %}">
-              <i class="icon-star-empty"></i></a>
-
-            <a href="#" target="_blank"
-                title="{% trans "Action not yet available" %}">
-              <i class="icon-retweet"></i></a>
-
-            <a href="{{ article.url }}" target="_blank"
-                title="{% trans "Open this article on the original website" %}">
-              <i class="icon-circle-arrow-right"></i></a>
-
-            {% if read.is_read %}
-              <a href="{% url 'toggle' klass='Read' oid=read.id key='is_read' %}"
-                  title="{% trans "mark as unread" %}" data-toggle="tooltip"
-                  id="mark-unread-{{ read.id }}">
-                <i class="icon-check-empty" alt="{% trans "mark as unread" %}"></i>
-              </a>
-            {% else %}
-              <a href="{% url 'toggle' klass='Read' oid=read.id key='is_read' %}"
-                  title="{% trans "mark as read" %}" data-toggle="tooltip"
-                  id="mark-read-{{ read.id }}">
-                <i class="icon-check" alt="{% trans "mark as read" %}"></i>
-              </a>
-
+            {% if user.is_superuser %}
+              <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;">
+                <i class="icon-cog"></i></a>
             {% endif %}
+
+            {% with with_text=0 %}
+              {% include "snippets/read/read-actions.html" %}
+            {% endwith %}
 
           </div>
 
@@ -100,7 +74,9 @@
 
           {% endif %}
 
-          {% include 'snippets/read/read-end-actions.html' %}
+          {% with with_text=1 %}
+            {% include 'snippets/read/read-actions.html' %}
+          {% endwith %}
 
       </div><!-- .article-content -->
 

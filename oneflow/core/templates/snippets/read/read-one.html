@@ -1,4 +1,5 @@
-  <main id="{{ read.id }}" class="read-list-item row-fluid {% if not read.is_read %}is_unread{% endif %}">
+  <main id="{{ read.id }}" class="read-list-item row-fluid {% read_status_css read %}"
+    {% read_data_urls read %}>
 
   {% with read.article as article %}
 
@@ -37,7 +38,7 @@
           <div class="clearfix"></div>
 
           <h1 id="title-{{ read.id }}"
-                class="heading article-title {% if not read.is_read %}is_unread{% endif %}">
+                class="heading article-title {% read_status_css read %}">
             {{ article.title }}
           </h1>
 
@@ -66,7 +67,13 @@
 
           {% endif %}
 
-          {% include 'snippets/read/read-end-actions.html' %}
+        <div class="article-actions end-actions actions centered">
+
+          {% with with_text=1 %}
+            {% include 'snippets/read/read-actions.html' %}
+          {% endwith %}
+
+        </div><!-- .article-actions -->
 
       </div><!-- .article-content -->
 
