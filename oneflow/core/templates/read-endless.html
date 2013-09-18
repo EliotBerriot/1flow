@@ -286,6 +286,12 @@
             return false;
         });
 
+        // “Close”
+        Mousetrap.bind(['c'], function() {
+            close_current_read();
+            return false;
+        });
+
         // ——————————————————————————————————————————— actions on currently open
 
         // “Mark Read”, “Toggle Read”

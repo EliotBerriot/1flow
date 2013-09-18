@@ -55,7 +55,7 @@ function read_setup(parent) {
 
     //console.debug('read setup binding…');
 
-    find_start(parent, 'slide-togglable').click(eventually_toggle);
+    //find_start(parent, 'slide-togglable').dblclick(eventually_toggle);
 }
 
 // for now, this one does nothing.
@@ -237,5 +237,10 @@ function open_previous_read() {
             icon: false,
             sticker: false
         });
+    }
+}
+function close_current_read() {
+    if (open_content) {
+        return toggle_content(open_content);
     }
 }
