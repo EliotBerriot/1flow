@@ -92,6 +92,8 @@
 
     <script type="text/javascript">
 
+        {% include "snippets/read/actions-messages.js" %}
+
     function endless_load_next_if_needed() {
 
         {% comment %}
@@ -176,6 +178,169 @@
     });
 
     endless_load_next_if_needed();
+
+        {% if user.is_superuser %}
+
+        Mousetrap.bind('> >', function() {
+            on_hovered(function(current) {
+                var admin_informations = current.find('.admin-informations');
+                admin_informations.slideToggle(function() {
+                    if (admin_informations.is(':visible')) {
+                        scrollToElement(admin_informations.attr('id'));
+                    }
+                });
+            });
+        });
+        {% endif %}
+
+        // “Next”, “Goto Next”, “Open Next”
+        Mousetrap.bind(['n', 'g n', 'o n'], function() {
+            open_next_read();
+            return false;
+        });
+
+        // “Mark Read” + “Next”, “Goto Next”, “Open Next”
+        Mousetrap.bind(['shift+n',
+                        'g shift+n', 'shift+g shift+n',
+                        'o shift+n', 'shift+o shift+n'], function() {
+            mark_current_read_is_read();
+            open_next_read();
+            return false;
+        });
+
+        // “Previous”, “Goto Previous”, “Open Previous”
+        Mousetrap.bind(['p', 'g p', 'o p'], function() {
+            open_previous_read();
+            return false;
+        });
+
+        // “Mark Read” + “Next”, “Goto Next”, “Open Next”
+        Mousetrap.bind(['shift+p',
+                        'g shift+p', 'shift+g shift+p',
+                        'o shift+p', 'shift+o shift+p'], function() {
+            mark_current_read_is_read();
+            open_previous_read();
+            return false;
+        });
+
+        function mark_current_read_is_read() {
+            if (open_content) {
+                var read = $("#" + open_content);
+
+                if (!read.hasClass('is_read')) {
+                    return mark_something(open_content, 'is_read', true,
+                                          '<no_notification>', false);
+                }
+            }
+        }
+
+        function mark_current_read_is_starred() {
+            if (open_content) {
+                var read = $("#" + open_content);
+
+                if (!read.hasClass('is_starred')) {
+                    return mark_something(open_content, 'is_starred', true,
+                                          '<no_notification>', false);
+                }
+            }
+        }
+
+        function mark_current_read_is_bookmarked() {
+            if (open_content) {
+                var read = $("#" + open_content);
+
+                if (!read.hasClass('is_bookmarked')) {
+                    return mark_something(open_content, 'is_bookmarked', true,
+                                          '<no_notification>', false);
+                }
+            }
+        }
+
+        function toggle_current_read_is_read() {
+
+            if (open_content) {
+                return toggle_is_read(open_content, {
+                    done: "{% trans 'Marked read.' %}",
+                    undone: "{% trans 'Marked unread.' %}"
+                });
+
+            } else {
+                notify({
+                    text: "{% trans 'Nothing open to mark as read/unread' %}",
+                    type: 'warning',
+                    icon: false,
+                    sticker: false
+                });
+            }
+        }
+
+        function toggle_current_read_is_starred() {
+
+            if (open_content) {
+                return toggle_is_starred(open_content, {
+                    done: "{% trans 'Oh my GOD! it shines!! [like a star]' %}",
+                    undone: "{% trans 'A star is dead.' %}"
+                });
+
+            } else {
+                notify({
+                    text: "{% trans 'Nothing open to star/unstar' %}",
+                    type: 'warning',
+                    icon: false,
+                    sticker: false
+                });
+            }
+        }
+
+        function toggle_current_read_is_bookmarked() {
+
+            if (open_content) {
+                return toggle_is_bookmarked(open_content, {
+                    done: "{% trans 'Marked for reading later.' %}",
+                    undone: "{% trans 'Removed from reading list.' %}"
+                });
+
+            } else {
+                notify({
+                    text: "{% trans 'Nothing open to mark/unmark for later' %}",
+                    type: 'warning',
+                    icon: false,
+                    sticker: false
+                });
+            }
+        }
+
+        // “Mark Read”, “Toggle Read”
+        Mousetrap.bind(['m r', 't r'], function() {
+            toggle_current_read_is_read();
+            return false;
+        });
+
+        // “Mark Starred”, “Toggle Starred”
+        Mousetrap.bind(['m s', 't s'], function() {
+            toggle_current_read_is_starred();
+            return false;
+        });
+
+        // “Star and go next”
+        Mousetrap.bind(['shift+s'], function() {
+            toggle_current_read_is_starred();
+            open_next_read();
+            return false;
+        });
+
+        // “Mark Bookmarked”, “Toggle Bookmarked”
+        Mousetrap.bind(['m b', 'r l', 'm f l', 'k f l'], function() {
+            toggle_current_read_is_bookmarked();
+            return false;
+        });
+
+        // “mark for Later and go next”
+        Mousetrap.bind(['shift+l'], function() {
+            toggle_current_read_is_bookmarked();
+            open_next_read();
+            return false;
+        });
 
     </script>
 {% endblock extrajs_footer %}
