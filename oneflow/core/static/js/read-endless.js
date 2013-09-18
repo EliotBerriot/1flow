@@ -7,6 +7,18 @@
 
 // TODO: put this in our own namespace, not in the window…
 
+// ——————————————————————————————————————————————————————————— for memories
+// different value for toggle_content()::open_me()
+//
+// TODO: if (!inViewport(me))
+//scrollToElement(me, scroll_speed, $(me).height());
+//scrollToElement(me, scroll_speed, 0);
+//scrollToElement(me);
+// put the current item in the center of the window.
+//scrollToElement(me, scroll_speed, $(window).height() / 2);
+// put the current item in the upper part of the window.
+//scrollToElement(me, scroll_speed, $(window).height() / 4);
+
 
 common_init();
 
@@ -53,15 +65,15 @@ function read_setup(parent) {
 
     $(".article-content p").find('img').parent().addClass('img-legend');
 
-    //console.debug('read setup binding…');
-
+    //console.debug('read setup bindings');
     //find_start(parent, 'slide-togglable').dblclick(eventually_toggle);
 }
 
-// for now, this one does nothing.
-// It's not mandatory to create it,
-// but I keep it here as an example.
-function read_init(){};
+function read_init(){
+    // for now, this one does nothing.
+    // It's not mandatory to create it,
+    // but I keep it here as an example.
+};
 
 var open_content = null;
 var last_opened  = null;
@@ -80,11 +92,18 @@ function toggle_content(oid, callback) {
     var me      = "#" + oid,
         content = $("#content-" + oid),
 
-        open_me = function(scrollTo, callback) {
+        open_me = function(scrollTo) {
 
             if(typeof scrollTo == 'undefined') {
                 var scrollTo = true;
             }
+
+            // set everything open before the animation starts,
+            // else potential parallely executed function could
+            // fail or get the "old" (previous) values.
+            last_opened  = oid;
+            open_content = oid;
+            //console.debug('set open to ' + oid + ' and last to ' + oid);
 
             if (scrollTo) {
                 scrollToElement(me);
@@ -97,36 +116,29 @@ function toggle_content(oid, callback) {
         };
 
     if (content.is(':visible')) {
-
-        // TODO: if (!inViewport(me))
-        //scrollToElement(me, scroll_speed, $(me).height());
-        //scrollToElement(me, scroll_speed, 0);
-        //scrollToElement(me);
-
         // put the current item to top of window
         scrollToElement(me, scroll_speed, 50);
 
-        // put the current item in the center of the window.
-        //scrollToElement(me, scroll_speed, $(window).height() / 2);
-
-        // put the current item in the upper part of the window.
-        //scrollToElement(me, scroll_speed, $(window).height() / 4);
-
-        content.slideUp(scroll_speed, "swing", run_callback);
+        // set everything open before the animation starts,
+        // else potential parallely executed function could
+        // fail or get the "old" (previous) values.
         open_content = null;
         last_opened  = oid;
+        //console.debug('set open to null and last to ' + oid);
 
+        content.slideUp(scroll_speed, "swing", run_callback);
+
+        // bindable_hovered NOT USED YET
+        //
         // This is not mandatory, but doesn't hurt.
         // As we close the content, there is nothing
         // bindable anymore, anyway.
-        //
-        // bindable_hovered NOT USED YET
         //bindable_hovered = null;
 
     } else {
         if(open_content != null) {
-
-            var current    = "#" + open_content,
+            var to_close   = open_content,
+                current    = "#" + open_content,
                 cur_height = $(current).height();
 
             // compensate the slideUp() of the current open
@@ -137,107 +149,96 @@ function toggle_content(oid, callback) {
                 open_me(false);
 
             } else {
-                open_me(true, run_callback);
+                open_me(true);
             }
 
-            $("#content-" + open_content).slideUp(
-                scroll_speed, "swing",
-                function() {
-                    open_content = oid;
-                    run_callback();
-                }
-            );
+            $("#content-" + to_close).slideUp(scroll_speed, "swing");
 
         } else {
-            open_me(true, run_callback);
-            open_content = oid;
-
-            // "last" is not previous.
-            last_opened  = oid;
+            open_me(true);
         }
-
     }
-
-    // in case we where clicked.
-    return false;
 }
 
 function open_next_read() {
 
-    if (last_opened) {
-        var next = $("#" + last_opened)
+    function open_next_internal(which) {
+
+        var next = $("#" + which)
             .closest('.read-list-item')
             .next('.read-list-item');
 
-        console.debug('opening ' + next.attr('id'));
+        if (next.length) {
+            toggle_content(next.attr('id'));
+        } else {
+            notify({
+                text: read_actions_messages.already_at_end,
+                type: 'warning',
+                icon: false,
+                sticker: false
+            });
 
-        toggle_content(next.attr('id'));
-
-    } else {
-
-        notify({
-            text: "{% trans 'Opening first item…' %}",
-            type: 'info',
-            icon: false,
-            sticker: false
-        });
-
-        toggle_content($('.read-list-item').first().attr('id'));
+        }
     }
 
-    /*
-    The same, with hovered events.
-    Doesn't work if we hit the keyboard too fast,
-    or if the mouse is outside of the hoverable area.
+    if (open_content) {
+        open_next_internal(open_content);
 
+    } else {
+        if (last_opened) {
+            open_next_internal(last_opened);
 
-    on_hovered(function(current){
-    toggle_content(current
-        .closest('.read-list-item')
-        .next('.read-list-item').attr('id'));
+        } else {
+            notify({
+                text: read_actions_messages.open_first,
+                type: 'info',
+                icon: false,
+                sticker: false
+            });
 
-    }, function(){
-    notify({
-        text: "{% trans 'Opening first item…' %}",
-        type: 'info',
-        icon: false,
-        sticker: false
-    });
-
-    toggle_content($('.read-list-item').first().attr('id'));
-    });
-    */
+            toggle_content($('.read-list-item').first().attr('id'));
+        }
+    }
 }
 function open_previous_read() {
 
-    if (last_opened) {
-
-        var previous = $("#" + last_opened)
+    function open_previous_internal(which) {
+        var previous = $("#" + which)
             .closest('.read-list-item')
             .prev('.read-list-item');
 
-        console.debug('opening ' + previous.attr('id'));
-
-        if (previous) {
+        if (previous.length) {
             toggle_content(previous.attr('id'));
 
         } else {
             notify({
-                text: "{% trans 'No Previous, captain. You are at the top!' %}",
+                text: read_actions_messages.already_top_first,
                 type: 'warning',
                 icon: false,
                 sticker: false
             });
         }
 
-    } else {
-        notify({
-            text: "{% trans 'Already at the top!' %}",
-            type: 'info',
-            icon: false,
-            sticker: false
-        });
     }
+
+    if (open_content) {
+        open_previous_internal(open_content);
+    } else {
+        if (last_opened) {
+            open_previous_internal(last_opened);
+
+        } else {
+            notify({
+                text: read_actions_messages.already_top_more,
+                type: 'info',
+                icon: false,
+                sticker: false
+            });
+        }
+    }
+
+
+
 }
 function close_current_read() {
     if (open_content) {
