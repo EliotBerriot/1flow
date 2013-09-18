@@ -370,6 +370,8 @@ header {
     font-family: georgia, times, serif;
 
     .article-meta {
+
+
         .meta {
             font-family: 'open sans', 'lucida grande', sans-serif;
             font-size: 130%;
@@ -408,16 +410,13 @@ header {
     }
 }
 
-.read-list-item {
+.read-list-item,
+.read-individual-item {
 
     /* cancel Bootstrap's media margin. */
     margin-top: 0;
 
     font-weight: 300;
-
-    .is_unread {
-        font-weight: 400;
-    }
 
     .actions {
         position: relative;
@@ -425,7 +424,8 @@ header {
         right: 0;
         z-index: 20;
 
-        font-size: 19px;
+        padding-top: 11px;
+        font-size: 24px;
         line-height: 100%;
 
         a {
@@ -447,38 +447,25 @@ header {
             &:visited, &:active {
                 border: none;
             }
+        }
+    }
 
-            &:first-child {
+    .end-actions {
+        font-size: 18px;
+        margin-top: 4em;
+        border-top: 2px solid #949aa1;
+
+        a {
+            &:first-child,
+            &:nth-child(2) {
+                /* Actions icons come by pair, one of them being hidden */
                 margin-left: 0;
             }
         }
     }
 
-    .end-actions {
-        margin-top: 4em;
-        border-top: 2px solid #949aa1;
-        padding-top: 10px;
-    }
-
     .hover-muted {
         opacity: 0;
-    }
-
-    .superuser-item {
-        position: relative;
-        right: 0;
-        bottom: 0;
-        text-align: right;
-        padding-bottom: 20px;
-        margin-top: -55px;
-
-        h1 {
-            font-size: 800%;
-        }
-
-        .muted {
-            opacity: 0.05;
-        }
     }
 }
 
@@ -654,7 +641,8 @@ header {
         }
     }
 
-    .read-list-item {
+    .read-list-item,
+    .read-individual-item {
         .actions {
             font-size: 16px;
         }
@@ -675,7 +663,8 @@ header {
         }
     }
 
-    .read-list-item {
+    .read-list-item,
+    .read-individual-item {
         .end-actions {
             margin-top: 1em;
             border-top-width: 1px;

@@ -1,4 +1,4 @@
-  <main id="{{ read.id }}" class="read-list-item row-fluid {% read_status_css read %}"
+  <main id="{{ read.id }}" class="read-individual-item row-fluid {% read_status_css read %}"
     {% read_data_urls read %}>
 
   {% with read.article as article %}
@@ -67,7 +67,7 @@
 
           {% endif %}
 
-        <div class="article-actions end-actions actions centered">
+        <div class="actions article-actions end-actions centered">
 
           {% with with_text=1 %}
             {% include 'snippets/read/read-actions.html' %}
