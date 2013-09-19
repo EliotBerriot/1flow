@@ -260,38 +260,36 @@ function setup_popovers(parent){
 
     // Bootstrap 2.3+
     parent.find('[data-toggle=popover]').popover();
+}
+function show_hover_muted() {
+    objekt = $(this).find('.hover-muted');
 
+    if(objekt.hasClass('hide')){
+        objekt.show(function(){
+            $(this).animate({
+                opacity: 1
+            }, 250);
+        });
+
+    } else {
+        objekt.animate({
+                opacity: 1
+        }, 250);
+    }
+}
+function hide_hover_muted() {
+    $(this).find('.hover-muted').stop(true, true).animate({
+        opacity: 0
+    }, 250, function(){
+        if($(this).hasClass('hide')){
+           $(this).hide();
+        }
+    });
 }
 function setup_hover_muters(parent){
 
     find_start(parent, 'hover-unmute-children')
-        .hover(
-            function() {
-                objekt = $(this).find('.hover-muted');
-
-                if(objekt.hasClass('hide')){
-                    objekt.show(function(){
-                        $(this).animate({
-                            opacity: 1
-                        }, 250);
-                    });
-
-                } else {
-                    objekt.animate({
-                            opacity: 1
-                    }, 250);
-                }
-            },
-            function() {
-                $(this).find('.hover-muted').stop(true, true).animate({
-                    opacity: 0
-                }, 250, function(){
-                    if($(this).hasClass('hide')){
-                       $(this).hide();
-                    }
-                });
-            }
-        );
+        .hover(show_hover_muted, hide_hover_muted);
 }
 function setup_tooltips(parent){
 
