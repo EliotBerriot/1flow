@@ -275,29 +275,33 @@ function setup_popovers(parent){
     parent.find('[data-toggle=popover]').popover();
 }
 function show_hover_muted() {
-    objekt = $(this).find('.hover-muted');
 
-    if(objekt.hasClass('hide')){
-        objekt.show(function(){
-            $(this).animate({
-                opacity: 1
+    $(this).find('.hover-muted').each(function(){
+        var $this = $(this);
+
+        if($this.hasClass('hide')){
+            $this.show(function(){
+                $this.animate({
+                    opacity: 1
+                }, 250);
+            });
+
+        } else {
+            $this.animate({
+                    opacity: 1
             }, 250);
-        });
-
-    } else {
-        objekt.animate({
-                opacity: 1
-        }, 250);
-    }
-}
-function hide_hover_muted() {
-    $(this).find('.hover-muted').stop(true, true).animate({
-        opacity: 0
-    }, 250, function(){
-        if($(this).hasClass('hide')){
-           $(this).hide();
         }
     });
+}
+function hide_hover_muted() {
+    $(this).find('.hover-muted')
+        .stop(true, true).animate({
+            opacity: 0
+        }, 250, function(){
+            if($(this).hasClass('hide')){
+               $(this).hide();
+            }
+        });
 }
 function setup_hover_muters(parent){
 
@@ -384,7 +388,6 @@ function setup_delayed_loaders(parent) {
         });
     });
 }
-
 function flash_fade(objekt, bg_color, fg_color){
 
     var curfore = objekt.css('color');
