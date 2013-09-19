@@ -9,12 +9,7 @@
         <div class="span12 article-meta">
           <div class="pull-right actions hover-muted hide">
 
-            {% if user.is_superuser %}
-              <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;">
-                <i class="icon-cog"></i></a>
-            {% endif %}
-
-            {% with with_text=0 %}
+            {% with with_text=0 with_admin_actions=1 %}
               {% include "snippets/read/read-actions.html" %}
             {% endwith %}
 
@@ -27,7 +22,7 @@
 
           <p class="meta pointer"
               onclick="javascript: return toggle_content('{{ read.id }}');">
-            <span class="source muted">
+            <span id="source-{{ read.id }}" class="source muted">
               {{ article.get_source_unicode }}
             </span>
 
