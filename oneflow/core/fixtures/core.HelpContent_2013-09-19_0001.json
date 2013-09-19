@@ -1,0 +1,50 @@
+[
+{
+    "pk": 1, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "", 
+        "name": "Google Reader Import", 
+        "ordering": 999, 
+        "active": true, 
+        "content_nt": "", 
+        "content_en": "*NOTE*: **the Google Import has been discontinued on 2013-07-01, when Google closed the service.**\r\n\r\nThe Google Reader import takes places in the background. You can safely\r\nlogout of **1flow** or close your browser window without disrupting it.\r\n\r\nImporting data will take longer if many users are importing at once as we\r\nhave finite computing resources. Your import status is updated every 5 seconds.\r\n\r\nUpon completion, the number of imported articles may be less than the number\r\nof processed articles due to duplicate content in Google data.\r\n\r\nAbout the approximate ETA\u2026 Well\u2026 Given the nature of the data we fetch\r\nfrom Google, it's **very** approximate. Don't rely on it; we don't do.\r\nThe import will probably end before the ETA. It pleased our developer\r\nto display it."
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "Si vous souhaitez entrer en contact avec des humains, vous pouvez utiliser :\r\n\r\n- le **[formulaire de feedback](#chat-fake-url)**, qui vous redirigera vers notre forum d'aide,\r\n- le **[widget de chat](#chat-fake-url)**, auquel l'\u00e9quipe de 1flow est connect\u00e9e en temps r\u00e9el (ce n'est pas un robot !).\r\n\r\nRemarque : si vous utilisez twitter, soyez patient. Nous utilisons ce canal essentiellement pour publier des informations et nous ne le consultons pas r\u00e9guli\u00e8rement.", 
+        "name": "Reaching us", 
+        "ordering": 900, 
+        "active": true, 
+        "content_nt": "", 
+        "content_en": "If you need to reach real people, you can use:\r\n\r\n- the **[feedback form](#chat-fake-url)**, which links to our help forums,\r\n- the **[chat widget](#chat-fake-url)**, to which we are connected in real time (it's not a robot!).\r\n\r\nNote: If you use twitter to contact us, please be patient: we use it primarily\r\nfor publishing informations and don't read it very regularly."
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "### Lecture en mode liste\r\n\r\n#### Gestes pour t\u00e9l\u00e9phones et tablettes tactiles\r\n\r\n- `Glisser le titre vers la gauche`\u00a0: marquer comme lu\r\n- `Glisser le titre vers la droite`\u00a0: \u00e0 lire plus tard\r\n- `appuyer une fois sur le titre [1 doigt]` : ouvrir un article\r\n- `appuyer une fois sur le titre [2 doigts]`\u00a0: marque comme pr\u00e9f\u00e9r\u00e9 (ne fonctionne que sur la ligne de titre de l'article, et non sur le contenu de l'article lorsqu'il est ouvert)\r\n\r\nSur un article ouvert, n'importe o\u00f9 dans le corps de celui-ci\u00a0:\r\n\r\n- `appuyer 2 fois [1 doigt]`\u00a0: fermer l'article et le positionner en haut de liste\r\n- `glisser \u00e0 gauche [2 doigts]`\u00a0: ouvrir l'article suivant\r\n- `glisser \u00e0 droite [2 doigts]`\u00a0: ouvrir l'article pr\u00e9c\u00e9dent\r\n\r\n#### Liste des raccourcis claviers\r\n\r\nO\u00f9 que vous soyez dans la liste de lecture :\r\n\r\n- `n`\u00a0: ouvre le prochain article de la liste (ou le premier, si aucun autre article n'est ouvert\u00a0; en anglais \u00ab\u00a0*Next*\u00a0\u00bb),\r\n- `p`\u00a0: ouvre l'article pr\u00e9c\u00e9dent celui que vous \u00eates en train de lire (en anglais \u00ab\u00a0*Previous*\u00a0\u00bb),\r\n- `o l`\u00a0: r\u00e9-ouvrir le dernier article ferm\u00e9 (si applicable\u00a0; en anglais \u00ab\u00a0*Open Last*\u00a0\u00bb)\r\n\r\nQuand un article est ouvert :\r\n\r\n- `m r` : **m**arque l'article actuellement ouvert comme lu ( **r**ead),\r\n- `m s` : **m**arque l'article actuellement ouvert comme pr\u00e9f\u00e9r\u00e9 (**s**tarred),\r\n- `m l` : **m**arque l'article actuellement ouvert comme \u00e0 lire plus tard (read **l**ater),\r\n- `c` : ferme l'article actuellement ouvert et l'affiche en haut de l'\u00e9cran pour continuer la lecture,\r\n\r\n#### Raccourcis de lecture en mode flux\r\n\r\nOuvez le premier article avec `n`, puis :\r\n\r\n- `R` ou `N` : marque l'article actuel comme lu et ouvre le suivant,\r\n- `S` : marque l'article actuel comme pr\u00e9f\u00e9r\u00e9 et ouvre le suivant,\r\n- `L` : marque l'article actuel comme \u00e0 lire plus tard et ouvre le suivant,\r\n\r\n#### Raccourcis en mode phrase\r\n\r\nLa plupart des raccourcis indiqu\u00e9s ci-dessus sont \u00e9galement activables via des abr\u00e9viations de phrases en anglais, en prenant les premi\u00e8res lettre de chaque mot. Par exemple,  *mark for later* (marquer \u00e0 lire plus tard) peut \u00eatre activ\u00e9 en tapant `m f l` ou encore `r l` (*read later*)\u00a0. *Open next* (ouvrir l'article suivant) s'active en tapant \u00e9videmment `o n`, mais *goto next* (`g n`) marche \u00e9galement. Essayez de tous les trouver ;-)\r\n\r\n#### Astuces pour une navigation \u00e0 la souris\r\n\r\nQuand un article est ouvert, faites un triple clic dans le corps pour le fermer.", 
+        "name": "Reading in 1flow", 
+        "ordering": 0, 
+        "active": true, 
+        "content_nt": "H2 (##) is used on the \u201cHelp section name\u201d in final output. You should start using titles at H3 (###).", 
+        "content_en": "### Reading in list mode\r\n\r\n#### Gestures on touch-enabled mobile devices\r\n\r\n- `swipe-left`: mark as read\r\n- `swipe-right`: keep for later\r\n- `single tap [1 finger]`: open an article\r\n- `single tap [2 fingers]`: mark as starred (only works on the article row, not on the body when it's open)\r\n\r\nOn an open article:\r\n\r\n- `double tap [1 finger]`: close the currently open article\r\n- `swipe-left [2 fingers]`: open next article\r\n- `swipe-right [2 fingers]`: open previous article\r\n\r\n\r\n#### Keyboard shortcuts\r\n\r\nAnywhere in the reading list:\r\n\r\n- `n`: open next article (or first, if none was open),\r\n- `p`: open previous article,\r\n- `o l`: re-open last closed article (if any) \r\n\r\nWhen an article is open:\r\n\r\n- `m r`: **m**ark currently open as **r**ead,\r\n- `m s`: **m**ark currently open as **s**tarred,\r\n- `m l`: **m**ark currently open as read **l**ater.\r\n- `c`: close it and move it to the top of screen to continue reading,\r\n\r\n##### Flow-based reading shortcuts\r\n\r\nOpen the first article with `n`, and then:\r\n\r\n- `R` or `N`: mark current as read and open next\r\n- `S`: star current and open next\r\n- `L`: mark current for later and open next\r\n\r\n##### Phrased keyboard shortcuts\r\n\r\nMost of the previous shortcuts are available as abbreviations of english sentences. For example *mark for later* can be typed as `m f l` or `r l` (*read later*) too; *open next* is obviously `o n`, but *goto next* works too. Try to find them all ;-)\r\n\r\n#### Mouse tricks\r\n\r\nWhen an article is open, triple click closes it."
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "### Flux d'information standards\r\n\r\nLes flux d'informations standards (ce que les geeks appellent flux [RSS][] ou [Atom][]) font partie des formats natifs de 1fow, comme c'est le cas dans la majorit\u00e9 des lecteurs de flux. Vous pouvez vous abonner directement aux sources que nous avons pre-selectionn\u00e9es pour vous, ou bien ajouter directement un nouveau flux soit en copiant/collant n'importe quelle adresse (URL) de site internet (1flow partira en qu\u00eate de l'adresse r\u00e9elle du flux associ\u00e9 \u00e0 ce site), soit en copiant/collant directement l'adresse (URL) du flux (par exemple : `http://siteweb.com/rss.xml`). \r\n\r\n### Twitter / facebook / etc\r\n\r\nTwitter, Tumblr, facebook et de nombreux autres flux populaires sont actuellement en cours d'int\u00e9gration dans 1flow ou le seront prochainement.\r\n\r\n  [RSS]: http://fr.wikipedia.org/wiki/RSS\r\n  [Atom]: http://fr.wikipedia.org/wiki/Atom", 
+        "name": "Adding news sources", 
+        "ordering": 0, 
+        "active": false, 
+        "content_nt": "", 
+        "content_en": "### Standard news feeds\r\n\r\nStandard news feeds (what geeks call [RSS][] or [Atom][] feeds) are one of the native 1flow formats, as in the majority of other news readers. You can search in our already known sources, or add a new feed by copy and pasting any website URL (1flow will hunt for the real feed URL), or a direct feed URL (eg. `http://website.com/rss.xml`). \r\n\r\n### Twitter / facebook / etc\r\n\r\nTwitter, Tumblr, facebook and other common news streams are beiing added to 1flow, or are planned to be.\r\n\r\n  [RSS]: http://en.wikipedia.org/wiki/RSS\r\n  [Atom]: http://en.wikipedia.org/wiki/Atom_%28standard%29"
+    }
+}
+]
