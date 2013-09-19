@@ -6,48 +6,10 @@
     <div class="article span12 hover-unmute-children">
 
       <div class="row-fluid">
-        <div class="span12 article-meta"
-            data-toggle-id="{{ read.id }}">
-          <div class="pull-right actions hover-muted hide">
 
-            {% with with_text=0 with_admin_actions=1 %}
-              {% include "snippets/read/read-actions.html" %}
-            {% endwith %}
-
-          </div>
-
-          <h2 id="title-{{ read.id }}" class="heading article-title content-toggle"
-              data-toggle-id="{{ read.id }}"
-              data-toggle-function="toggle_content"
-              data-toggle-callback="notice_element">
-            {{ article.title }}
-          </h2>
-
-          <p class="meta content-toggle"
-              data-toggle-id="{{ read.id }}"
-              data-toggle-function="toggle_content"
-              data-toggle-callback="notice_element">
-            <span id="source-{{ read.id }}" class="source muted">
-              {{ article.get_source_unicode }}
-            </span>
-
-            <span class="meta hover-muted hide">
-
-              {{ article.date_published }}{% if read.tags %},
-
-              {% if article.authors %}
-                <span class="muted">{% trans "by" %}</span>
-                {% for author in article.authors %}
-                    {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
-                {% endfor %}
-              {% endif %}
-
-              <span class="muted">{% trans "in" %}</span> {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}{% endif %}
-              {% if read.rating %}{% trans ", rated " %}{{ read.rating }}.{% endif %}
-            </span>
-          </p>
-        </div>
-      </div><!-- .article-meta -->
+        {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 %}
+          {% include "snippets/read/article-meta.html" %}
+        {% endwith %}
 
       {% include 'snippets/read/read-admin-informations.html' %}
 
