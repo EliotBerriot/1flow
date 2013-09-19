@@ -293,6 +293,14 @@ function setup_hover_muters(parent){
 }
 function setup_tooltips(parent){
 
+    //
+    // NOTE: we chose popover-tooltip as the trigger class,
+    //      because data-toggle is too slow to get on big
+    //      pages, and .tooltip is already taken by the CSS
+    //      and messes the visual. This is a tradeoff when
+    //      using only classes: they can conflict with CSS.
+    //
+
     if (typeof parent == 'undefined') {
         parent = $('body');
     }
@@ -301,10 +309,14 @@ function setup_tooltips(parent){
     // twitter popovers. Not needed for clickovers, though, which
     // work perfectly.
     // https://github.com/twitter/bootstrap/issues/3417
-    parent.find('[rel="tooltip"]').tooltip({
-            placement: popover_placement }).click(function(e) {
-        $(this).tooltip('toggle');
-    });
+    parent.find('.popover-tooltip')
+        .tooltip({
+            placement: popover_placement,
+            // Since Bootstrap 2.2 http://stackoverflow.com/q/14025438/654755
+            container: 'body'
+        }).click(function(e) {
+            $(this).tooltip('toggle');
+        });
 }
 function setup_clickovers(parent) {
 
