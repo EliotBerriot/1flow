@@ -373,14 +373,8 @@ function hide_actions(objekt) {
 
 function handle_tap(ev) {
 
-    // WOW. without ev.preventDefault(), the 2 others
-    // don't suffice to avoid the event being sent twice.
-    ev.gesture.preventDefault();
-    ev.stopPropagation();
-    ev.preventDefault();
-
     var $this  = $(this),
-        target = $this.data('toggle-id');
+        target = $this.data('toggle-id') || $this.attr('id');
 
     function open_or_hide_actions() {
 
@@ -394,9 +388,29 @@ function handle_tap(ev) {
         }
     }
 
-    debug_notify('tap event on ' + target);
+    if (ev.gesture.touches.length > 3) {
+        return;
+    }
 
-    toggle_content(target, open_or_hide_actions);
+    // WOW. without ev.preventDefault(), the 2 others
+    // don't suffice to avoid the event being sent twice.
+    ev.gesture.preventDefault();
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    if (ev.gesture.touches.length == 3) {
+        debug_notify('3-fingers tap on ' + target);
+        open_or_hide_actions();
+
+    } else if (ev.gesture.touches.length == 2) {
+        debug_notify('2-fingers tap on ' + target);
+        toggle_is_starred(target);
+
+    } else {
+        debug_notify('1-finger tap on ' + target);
+        toggle_content(target, open_or_hide_actions);
+    }
+    return false;
 }
 
 // ——————————————————————————————————————————————————— open first/next/previous
@@ -487,6 +501,11 @@ if (Modernizr.touch) {
     //console.debug('touch events start…');
 
     hammertime.on("swipeleft", ".read-list-item", function(ev) {
+
+        if (ev.gesture.touches.length != 1) {
+            return;
+        }
+
         var $this = $(this);
 
         ev.gesture.preventDefault();
@@ -497,9 +516,16 @@ if (Modernizr.touch) {
             $this.animate({marginLeft: 0}, 150);
         });
         toggle_is_read($this.attr('id'));
+
+        return false;
     });
 
     hammertime.on("swiperight", ".read-list-item", function(ev) {
+
+        if (ev.gesture.touches.length != 1) {
+            return;
+        }
+
         var $this = $(this);
 
         ev.gesture.preventDefault();
@@ -511,6 +537,38 @@ if (Modernizr.touch) {
         });
 
         toggle_is_bookmarked($this.attr('id'));
+
+        return false;
+    });
+
+    hammertime.on("swipeleft", ".article-content", function(ev) {
+        var $this = $(this);
+
+        if(ev.gesture.touches.length == 2) {
+
+            ev.gesture.preventDefault();
+            ev.stopPropagation();
+            ev.preventDefault();
+
+            open_next_read();
+        }
+
+        return false;
+    });
+
+    hammertime.on("swiperight", ".article-content", function(ev) {
+        var $this = $(this);
+
+        if(ev.gesture.touches.length == 2) {
+
+            ev.gesture.preventDefault();
+            ev.stopPropagation();
+            ev.preventDefault();
+
+            open_previous_read();
+        }
+
+        return false;
     });
 
     /*
