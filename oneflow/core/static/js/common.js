@@ -9,6 +9,14 @@ $.pnotify.defaults.delay = 5000;
 // bindable_hovered NOT USED YET
 //var bindable_hovered = null;
 
+try {
+    var hammertime = $("#application").hammer();
+
+} catch (err) {
+    console.log("Could not start hammer: " + err);
+    var hammertime = null;
+}
+
 function notify(params){
     // did you ever see a that-simple wrapper?
     $.pnotify(params);
@@ -276,7 +284,13 @@ function setup_popovers(parent){
 }
 function show_hover_muted() {
 
-    $(this).find('.hover-muted').each(function(){
+    var $this = $(this);
+
+    if ($this.hasClass('hover-muted-shown')) {
+        return;
+    }
+
+    $this.find('.hover-muted').each(function(){
         var $this = $(this);
 
         if($this.hasClass('hide')){
@@ -292,8 +306,17 @@ function show_hover_muted() {
             }, 250);
         }
     });
+
+    $this.addClass('hover-muted-shown');
 }
 function hide_hover_muted() {
+
+    var $this = $(this);
+
+    if (!$this.hasClass('hover-muted-shown')) {
+        return;
+    }
+
     $(this).find('.hover-muted')
         .stop(true, true).animate({
             opacity: 0
@@ -302,6 +325,8 @@ function hide_hover_muted() {
                $(this).hide();
             }
         });
+
+    $this.removeClass('hover-muted-shown');
 }
 function setup_hover_muters(parent){
 
