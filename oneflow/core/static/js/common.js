@@ -16,6 +16,7 @@ try {
     // drag_horizontal: false,
     transform: false,
     transformend: false,
+    swipe_max_touches: 3,
     swipe_velocity: 0.5
     //stopBrowserBehavior: {userSelect: true}
     // swipe: false,
