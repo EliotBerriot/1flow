@@ -100,8 +100,10 @@ function read_init(){
     // but I keep it here as an example.
 };
 
+// These will hold IDs of DOM/jQuery elements.
 var open_content = null;
 var last_opened  = null;
+var open_actions = null;
 
 function notice_element(oid) {
 
@@ -348,6 +350,27 @@ function toggle_current_read_is_bookmarked() {
     }
 }
 
+function show_actions(objekt) {
+    // objekt is a DOM entity
+
+    debug_notify('Opening actions for ' + objekt);
+
+    if (open_actions) {
+        hide_actions(document.getElementById(open_actions));
+    }
+
+    show_hover_muted.call(objekt);
+    open_actions = objekt.getAttribute('id');
+}
+function hide_actions(objekt) {
+    // objekt is a DOM entity
+
+    debug_notify('Closing actions for ' + objekt);
+
+    hide_hover_muted.call(objekt);
+    open_actions = null;
+}
+
 function handle_tap(ev) {
 
     // WOW. without ev.preventDefault(), the 2 others
@@ -359,11 +382,21 @@ function handle_tap(ev) {
     var $this  = $(this),
         target = $this.data('toggle-id');
 
+    function open_or_hide_actions() {
+
+        debug_notify('Acting on ' + target);
+
+        if (open_content && open_content == target) {
+            show_actions(document.getElementById(target));
+
+        } else {
+            hide_actions(document.getElementById(target));
+        }
+    }
+
     debug_notify('tap event on ' + target);
 
-    toggle_content(target, function() {
-        show_hover_muted.call(document.getElementById(target));
-    });
+    toggle_content(target, open_or_hide_actions);
 }
 
 // ——————————————————————————————————————————————————— open first/next/previous
@@ -559,7 +592,7 @@ if (Modernizr.touch) {
         debug_notify('pinch/dbltap event on ' + target);
 
         toggle_content(target, function() {
-            hide_hover_muted.call(document.getElementById(target));
+            hide_actions(document.getElementById(target));
         });
     });
 
@@ -577,7 +610,7 @@ if (Modernizr.touch) {
         debug_notify('pinchout event on ' + target);
 
         toggle_content(target, function() {
-            show_hover_muted.call(document.getElementById(target));
+            show_actions(document.getElementById(target));
         });
     });
 
@@ -592,10 +625,10 @@ if (Modernizr.touch) {
         var $this = $(this);
 
         if ($this.hasClass("hover-muter-open")) {
-            hide_hover_muted.call(this);
+            hide_actions(this);
 
         } else {
-            show_hover_muted.call(this);
+            show_actions(this);
         }
     });
 }
