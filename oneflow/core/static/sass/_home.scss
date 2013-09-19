@@ -545,6 +545,42 @@ header {
     }
 }
 
+.read-list-item.is_bookmarked.not_is_starred {
+    .article-meta h2.article-title:before {
+        font-family: FontAwesome;
+        font-weight: normal;
+        font-style: normal;
+        display: inline-block;
+        content: "\f02e";
+        color: #7f7f00;
+        opacity: 0.8;
+    }
+}
+
+.read-list-item.is_starred.not_is_bookmarked {
+    .article-meta h2.article-title:before {
+        font-family: FontAwesome;
+        font-weight: normal;
+        font-style: normal;
+        display: inline-block;
+        content: "\f005";
+        color: #7f7f00;
+        opacity: 0.8;
+    }
+}
+
+.read-list-item.is_bookmarked.is_starred {
+    .article-meta h2.article-title:before {
+        font-family: FontAwesome;
+        font-weight: normal;
+        font-style: normal;
+        display: inline-block;
+        content: "\f02e \f005";
+        color: #7f7f00;
+        opacity: 0.8;
+    }
+}
+
 .read-tile {
     width: 170px;
     padding: 10px;
