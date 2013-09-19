@@ -6,7 +6,8 @@
     <div class="article span12 hover-unmute-children">
 
       <div class="row-fluid">
-        <div class="span12 article-meta">
+        <div class="span12 article-meta"
+            data-toggle-id="{{ read.id }}">
           <div class="pull-right actions hover-muted hide">
 
             {% with with_text=0 with_admin_actions=1 %}
@@ -15,13 +16,17 @@
 
           </div>
 
-          <h2 id="title-{{ read.id }}" class="heading article-title"
-              onclick="javascript: return toggle_content('{{ read.id }}');">
+          <h2 id="title-{{ read.id }}" class="heading article-title content-toggle"
+              data-toggle-id="{{ read.id }}"
+              data-toggle-function="toggle_content"
+              data-toggle-callback="notice_element">
             {{ article.title }}
           </h2>
 
-          <p class="meta pointer"
-              onclick="javascript: return toggle_content('{{ read.id }}');">
+          <p class="meta content-toggle"
+              data-toggle-id="{{ read.id }}"
+              data-toggle-function="toggle_content"
+              data-toggle-callback="notice_element">
             <span id="source-{{ read.id }}" class="source muted">
               {{ article.get_source_unicode }}
             </span>
@@ -47,7 +52,8 @@
       {% include 'snippets/read/read-admin-informations.html' %}
 
       <div class="article-content slide-togglable slide-toggle-notice hide"
-          id="content-{{ read.id }}" data-toggle-id="{{ read.id }}"
+          id="content-{{ read.id }}"
+          data-toggle-id="{{ read.id }}"
           data-toggle-function="toggle_content"
           data-toggle-callback="notice_element">
 
