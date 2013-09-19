@@ -422,7 +422,6 @@ header {
         position: relative;
         top: 0;
         right: 0;
-        z-index: 20;
 
         padding-top: 11px;
         font-size: 24px;
@@ -492,14 +491,13 @@ header {
         /* END flash_fade() */
 
         .article-meta {
-            max-height: 4em;
+            max-height: 3.76em;
             overflow: hidden;
 
             .article-title {
                 position: relative;
                 top: 0;
                 left: 0;
-                z-index: 10;
 
                 overflow: hidden;
                 text-overflow: ellipsis;
@@ -641,10 +639,24 @@ header {
         }
     }
 
-    .read-list-item,
-    .read-individual-item {
+    .read-list-row {
+        .article {
+            .article-meta {
+                max-height: 4.2em;
+            }
+        }
+    }
+
+    .read-list-item {
+        .heading {
+            font-size: 1.8em;
+            cursor: pointer;
+        }
+    }
+
+    .read-list-item {
         .actions {
-            font-size: 16px;
+            padding-top: 13px;
         }
     }
 }
