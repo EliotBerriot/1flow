@@ -10,19 +10,25 @@
 
 read_actions_messages = {
     open_first: "{% trans 'Opening first item…' %}",
+
     already_top_first: "{% trans 'No previous, captain. You are on the first!' %}",
     already_top_more: "{% trans 'Already at the top!' %}",
+
     already_end_last: "{% trans 'No next, captain. You are on the last!' %}",
+
     is_read: {
         done: "{% trans 'Marked read.' %}",
-        undone: "{% trans 'Marked unread.' %}"
+        undone: "{% trans 'Marked unread.' %}",
+        nothing: "{% trans 'Nothing open to mark as read/unread' %}"
     },
     is_starred: {
         done: "{% trans 'Marked starred.' %}",
-        undone: "{% trans 'Marked unstarred.' %}"
+        undone: "{% trans 'Marked unstarred.' %}",
+        nothing: "{% trans 'Nothing open to star/unstar' %}",
     },
     is_bookmarked: {
         done: "{% trans 'Added to your reading list.' %}",
-        undone: "{% trans 'Removed from your reading list.' %}"
+        undone: "{% trans 'Removed from your reading list.' %}",
+        nothing: "{% trans 'Nothing open to mark/unmark for later' %}"
     }
 }
