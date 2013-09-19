@@ -236,12 +236,153 @@ function open_previous_read() {
             });
         }
     }
-
-
-
 }
 function close_current_read() {
     if (open_content) {
         return toggle_content(open_content);
     }
 }
+function mark_current_read_as_read() {
+    if (open_content) {
+        var read = $("#" + open_content);
+
+        if (read.hasClass('not_is_read')) {
+            return mark_something(open_content, 'is_read');
+        }
+    }
+}
+function mark_current_read_as_starred() {
+    if (open_content) {
+        var read = $("#" + open_content);
+
+        if (read.hasClass('not_is_starred')) {
+            return mark_something(open_content, 'is_starred');
+        }
+    }
+}
+function mark_current_read_as_bookmarked() {
+    if (open_content) {
+        var read = $("#" + open_content);
+
+        if (read.hasClass('not_is_bookmarked')) {
+            return mark_something(open_content, 'is_bookmarked');
+        }
+    }
+}
+function toggle_current_read_is_read() {
+
+    if (open_content) {
+        return toggle_is_read(open_content);
+
+    } else {
+        notify({
+            text: read_actions_messages.is_read.nothing,
+            type: 'warning',
+            icon: false,
+            sticker: false
+        });
+    }
+}
+function toggle_current_read_is_starred() {
+
+    if (open_content) {
+        return toggle_is_starred(open_content);
+
+    } else {
+        notify({
+            text: read_actions_messages.is_starred.nothing,
+            type: 'warning',
+            icon: false,
+            sticker: false
+        });
+    }
+}
+function toggle_current_read_is_bookmarked() {
+
+    if (open_content) {
+        return toggle_is_bookmarked(open_content);
+
+    } else {
+        notify({
+            text: read_actions_messages.is_bookmarked.nothing,
+            type: 'warning',
+            icon: false,
+            sticker: false
+        });
+    }
+}
+
+
+// ——————————————————————————————————————————————————— open first/next/previous
+
+// “Next”, “Goto Next”, “Open Next”
+Mousetrap.bind(['n', 'g n', 'o n'], function() {
+    open_next_read();
+    return false;
+});
+
+// “Previous”, “Goto Previous”, “Open Previous”
+Mousetrap.bind(['p', 'g p', 'o p'], function() {
+    open_previous_read();
+    return false;
+});
+
+// “Close”
+Mousetrap.bind(['c'], function() {
+    close_current_read();
+    return false;
+});
+
+// —————————————————————————————————————————————————— actions on currently open
+
+// “Mark Read”, “Toggle Read”
+Mousetrap.bind(['m r', 't r'], function() {
+    toggle_current_read_is_read();
+    return false;
+});
+
+// “Mark Starred”, “Toggle Starred”
+Mousetrap.bind(['m s', 't s'], function() {
+    toggle_current_read_is_starred();
+    return false;
+});
+// “Mark [fF]or Later”, “Toggle Later status”,
+// “Mark Bookmarked”, “Toggle Bookmarked”,
+// “Keep For Later”, “Read Later”
+Mousetrap.bind(['m l', 't l', 'm b', 't b',
+                'r l', 'm f l', 'k f l'], function() {
+    toggle_current_read_is_bookmarked();
+    return false;
+});
+
+// —————————————————————————————————————————————————————————— read-flow actions
+
+// “Mark Read” + “Next”, “Goto Next”, “Open Next”
+Mousetrap.bind(['shift+r', 'shift+n'], function() {
+    mark_current_read_as_read();
+    open_next_read();
+    return false;
+});
+
+
+// “Mark Read” + “Next”, “Goto Next”, “Open Next”
+Mousetrap.bind(['shift+p'], function() {
+    mark_current_read_as_read();
+    open_previous_read();
+    return false;
+});
+
+// “Star and go next”
+Mousetrap.bind(['shift+s'], function() {
+    mark_current_read_as_starred();
+    open_next_read();
+    return false;
+});
+
+// “mark for Later and go next”
+Mousetrap.bind(['shift+l'], function() {
+    mark_current_read_as_bookmarked();
+    open_next_read();
+    return false;
+});
+
