@@ -7,42 +7,8 @@
 
       {% include 'snippets/read/read-admin-informations.html' %}
 
-      <div class="article-meta">
-          <div class="meta">
-            {% spaceless %}
-
-            <span class="source muted">
-              {{ article.get_source_unicode }}
-            </span>
-
-            <span class="date">
-              {{ article.date_published }}
-            </span>
-
-            {% if article.authors %}
-              <span class="author">
-                  <span class="muted">{% trans "by" %}</span>
-                  {% for author in article.authors %}
-                      {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
-                  {% endfor %}
-              </span>
-            {% endif %}
-
-              {% if read.rating %}
-              <span class="rating">{% trans ", rated " %}{{ read.rating }}
-              </span>{% endif %}
-
-            {% endspaceless %}
-          </div>
-
-          <div class="clearfix"></div>
-
-          <h1 id="title-{{ read.id }}"
-                class="heading article-title {% read_status_css read %}">
-            {{ article.title }}
-          </h1>
-
-      </div><!-- .article-meta -->
+      {# No with_{metahX,action,title_first,tags,ratings,meta_muted}. This is intended. #}
+      {% include "snippets/read/article-meta.html" %}
 
       <div class="article-content"
           id="content-{{ read.id }}" data-toggle-id="{{ read.id }}"

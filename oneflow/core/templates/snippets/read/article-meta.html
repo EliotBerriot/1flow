@@ -1,0 +1,82 @@
+<div class="article-meta" data-toggle-id="{{ read.id }}">
+
+  {% if with_actions %}
+    <div class="pull-right actions hover-muted hide">
+      {% with with_text=0 with_admin_actions=1 %}
+        {% include "snippets/read/read-actions.html" %}
+      {% endwith %}
+    </div>
+  {% endif %}
+
+
+  <div class="meta content-toggle"
+      data-toggle-id="{{ read.id }}"
+      data-toggle-function="toggle_content"
+      data-toggle-callback="notice_element">
+
+    {% spaceless %}
+
+  {% if with_title_first %}
+
+    <{% firstof meta_hX "h2" %}
+        class="heading article-title content-toggle"
+        data-toggle-id="{{ read.id }}"
+        data-toggle-function="toggle_content"
+        data-toggle-callback="notice_element">
+      {{ article.title }}
+    </{% firstof meta_hX "h2" %}>
+  {% endif %}
+
+    <span class="source muted">
+      {{ article.get_source_unicode }}
+    </span>
+
+    {% if with_meta_muted %}
+      <span class="meta hover-muted hide">
+    {% endif %}
+
+    <span class="date">
+      {{ article.date_published }}
+    </span>
+
+    {% if article.authors %}
+      <span class="author">
+          <span class="muted">{% trans "by" %}</span>
+          {% for author in article.authors %}
+              {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+      </span>
+    {% endif %}
+
+    {% if with_tags %}
+      {% if read.tags %}
+        <span class="tags">
+          <span class="muted">{% trans "in" %}</span> {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </span>
+      {% endif %}
+    {% endif %}
+
+    {% if with_rating %}
+      {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
+    {% endif %}
+
+    {% if with_meta_muted %}
+      </span>
+    {% endif %}
+
+    {% endspaceless %}
+  </div>
+
+  {% if not with_title_first %}
+    <div class="clearfix"></div>
+
+    <{% firstof meta_hX "h1" %}
+        class="heading article-title content-toggle"
+        data-toggle-id="{{ read.id }}"
+        data-toggle-function="toggle_content"
+        data-toggle-callback="notice_element">
+      {{ article.title }}
+    </{% firstof meta_hX "h1" %}>
+  {% endif %}
+
+</div><!-- .article-meta -->
