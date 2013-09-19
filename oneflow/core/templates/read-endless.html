@@ -92,6 +92,10 @@
 
     <script type="text/javascript">
 
+        {% if settings.DEBUG %}
+            debug_touch = true;
+        {% endif %}
+
         {% include "snippets/read/actions-messages.js.html" %}
 
         function endless_load_next_if_needed() {
