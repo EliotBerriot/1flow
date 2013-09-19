@@ -107,8 +107,9 @@ function notice_element(oid) {
 
     flash_fade($("#" + oid + " .article"), "#ddd", "#bbb");
 }
-
 function toggle_content(oid, callback) {
+
+    debug_notify('toggle_content(' + oid + ', ' + callback + ')');
 
     var run_callback = function() {
         typeof callback === 'function' && callback(oid);
@@ -161,7 +162,12 @@ function toggle_content(oid, callback) {
         //bindable_hovered = null;
 
     } else {
+        //console.debug(oid + ' not visible.');
+
         if(open_content != null) {
+
+            //console.debug('open_content: ' + open_content);
+
             var to_close   = open_content,
                 current    = "#" + open_content,
                 cur_height = $(current).height();
@@ -202,7 +208,6 @@ function open_next_read() {
                 icon: false,
                 sticker: false
             });
-
         }
     }
 
@@ -243,11 +248,11 @@ function open_previous_read() {
                 sticker: false
             });
         }
-
     }
 
     if (open_content) {
         open_previous_internal(open_content);
+
     } else {
         if (last_opened) {
             open_previous_internal(last_opened);
@@ -265,6 +270,12 @@ function open_previous_read() {
 function close_current_read() {
     if (open_content) {
         return toggle_content(open_content);
+    }
+}
+function open_last_opened() {
+    if (last_opened && !open_content) {
+        debug_notify('re-opening ' + last_opened);
+        return toggle_content(last_opened);
     }
 }
 function mark_current_read_as_read() {
@@ -355,6 +366,14 @@ Mousetrap.bind(['p', 'g p', 'o p'], function() {
 // “Close”
 Mousetrap.bind(['c'], function() {
     close_current_read();
+    return false;
+});
+
+// “Last Open” (re-open last closed one)
+// WARNING: using just 'o' as only shortcut won't work because
+//          of other multi-key shortcuts starting with an 'o'.
+Mousetrap.bind(['l o', 'o l'], function() {
+    open_last_opened();
     return false;
 });
 
