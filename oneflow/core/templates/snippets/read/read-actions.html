@@ -1,10 +1,10 @@
 
   {% if with_admin_actions and user.is_superuser %}
     <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;"
-        title="{% trans "Admin. informations" %}"
+        title="{% trans "Informations for administrators/staff" %}"
         class="action-admin-informations nowrap {{ with_text|yesno:",popover-tooltip" }} popover-top">
       <i class="icon-cog"></i>{% if with_text %}<span
-        class="hidden-phone"> {% trans "Admin.informations" %}</span>{% endif %}</a>
+        class="hidden-phone"> {% trans "Admin. informations" %}</span>{% endif %}</a>
   {% endif %}
 
 
