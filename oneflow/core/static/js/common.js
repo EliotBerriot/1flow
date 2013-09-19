@@ -451,8 +451,10 @@ function on_hovered(func_if_found, func_if_not_found){
 }
 function setup_everything(parent) {
 
-    setup_tooltips(parent);
-    setup_hover_muters(parent);
+    if (!Modernizr.touch){
+        setup_tooltips(parent);
+        setup_hover_muters(parent);
+    }
     setup_popovers(parent);
 
     // bindable_hovered NOT USED YET
