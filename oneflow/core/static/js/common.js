@@ -3,6 +3,7 @@
 
 var page_cleaner_interval;
 var scroll_speed = 500;
+var debug_touch = false;
 $.pnotify.defaults.delay = 5000;
 
 // bindable_hovered NOT USED YET
@@ -11,6 +12,18 @@ $.pnotify.defaults.delay = 5000;
 function notify(params){
     // did you ever see a that-simple wrapper?
     $.pnotify(params);
+}
+
+function debug_notify(message) {
+    if (debug_touch) {
+        notify({
+            text: message,
+            type: 'warning',
+            icon: false,
+            sticker: false,
+            width: '500px',
+        });
+    }
 }
 
 function scrollToElement(target, speed, topoffset) {
