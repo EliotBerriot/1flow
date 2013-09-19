@@ -28,32 +28,40 @@ function eventually_toggle(event) {
 
     //console.log('toggled: ' + event.target);
 
+    debug_notify('eventually_toggle ' + event);
+
     if ($(event.target).attr('href') == undefined) {
         var togglable   = $(this).closest('.slide-togglable');
         var custom_func = togglable.data('toggle-function');
         var custom_cbk  = togglable.data('toggle-callback');
         var target_sel  = togglable.data('toggle-id');
 
-        if (custom_func != 'undefined') {
+        if (custom_func != 'undefined'
+                && typeof window[custom_func] == 'function') {
 
-            if (custom_cbk != 'undefined') {
+            if (custom_cbk != 'undefined'
+                    && typeof window[custom_cbk] == 'function') {
+
                 window[custom_func](target_sel,
                                     window[custom_cbk]);
+            } else {
+                window[custom_func](target_sel);
             }
-
-            window[custom_func](target_sel);
 
         } else {
 
-            if (custom_cbk != 'undefined') {
+            if (custom_cbk != 'undefined'
+                    && typeof window[custom_cbk] == 'function') {
+
                 togglable.slideToggle(function(){
+
                     // we have to pass the OID in some way, thus we do not
                     // simply pass the callback like we do for `custom_func`.
                     window[custom_cbk](target_sel);
                 });
+            } else {
+                togglable.slideToggle();
             }
-
-            togglable.slideToggle();
         }
     }
 
