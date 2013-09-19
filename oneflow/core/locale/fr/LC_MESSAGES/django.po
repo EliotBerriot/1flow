@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-18 16:49+0200\n"
-"PO-Revision-Date: 2013-09-18 16:51+0009\n"
+"POT-Creation-Date: 2013-09-19 14:31+0200\n"
+"PO-Revision-Date: 2013-09-19 14:32+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -983,10 +983,10 @@ msgid_plural ""
 "            "
 msgstr[0] ""
 "\n"
-" <span id=\"reads_count\">%(reads)s</span> articles"
+" <span id=\"reads_count\">%(reads)s</span> article"
 msgstr[1] ""
 "\n"
-" <span id=\"reads_count\">%(reads)s</span> article"
+" <span id=\"reads_count\">%(reads)s</span> articles"
 
 #: templates/read-endless.html:37
 msgid "Experimental tiles #1"
@@ -1005,18 +1005,6 @@ msgstr "Chargement…"
 #: templates/read-endless.html:81
 msgid "Nothing to read yet. Buy a book?"
 msgstr "Rien à lire. Achetez-vous un livre ;-)"
-
-#: templates/read-endless.html:221
-msgid "Nothing open to mark as read/unread"
-msgstr "Rien d'ouvert à marquer lu/non-lu"
-
-#: templates/read-endless.html:236
-msgid "Nothing open to star/unstar"
-msgstr "Rien d'ouvert à sélectionner/désélectionner"
-
-#: templates/read-endless.html:251
-msgid "Nothing open to mark/unmark for later"
-msgstr "Rien d'ouvert à marquer (ou pas) pour plus tard"
 
 #: templates/register.html:3
 msgid "Register"
@@ -1326,41 +1314,53 @@ msgstr ""
 msgid "Opening first item…"
 msgstr "Ouverture du premier article…"
 
-#: templates/snippets/read/actions-messages.js.html:13
+#: templates/snippets/read/actions-messages.js.html:14
 msgid "No previous, captain. You are on the first!"
 msgstr "Pas de précédent, capitaine. Vous êtes sur le premier !"
 
-#: templates/snippets/read/actions-messages.js.html:14
+#: templates/snippets/read/actions-messages.js.html:15
 msgid "Already at the top!"
 msgstr "Déjà au début !"
 
-#: templates/snippets/read/actions-messages.js.html:15
+#: templates/snippets/read/actions-messages.js.html:17
 msgid "No next, captain. You are on the last!"
 msgstr "Pas de suivant, capitaine. Vous êtes sur le dernier !"
 
-#: templates/snippets/read/actions-messages.js.html:17
+#: templates/snippets/read/actions-messages.js.html:20
 msgid "Marked read."
 msgstr "Marqué lu."
 
-#: templates/snippets/read/actions-messages.js.html:18
+#: templates/snippets/read/actions-messages.js.html:21
 msgid "Marked unread."
 msgstr "Marqué non-lu."
 
-#: templates/snippets/read/actions-messages.js.html:21
+#: templates/snippets/read/actions-messages.js.html:22
+msgid "Nothing open to mark as read/unread"
+msgstr "Rien d'ouvert à marquer lu/non-lu"
+
+#: templates/snippets/read/actions-messages.js.html:25
 msgid "Marked starred."
 msgstr "Sélectionné."
 
-#: templates/snippets/read/actions-messages.js.html:22
+#: templates/snippets/read/actions-messages.js.html:26
 msgid "Marked unstarred."
 msgstr "Désélectionné."
 
-#: templates/snippets/read/actions-messages.js.html:25
+#: templates/snippets/read/actions-messages.js.html:27
+msgid "Nothing open to star/unstar"
+msgstr "Rien d'ouvert à sélectionner/désélectionner"
+
+#: templates/snippets/read/actions-messages.js.html:30
 msgid "Added to your reading list."
 msgstr "Ajouté à votre liste de lecture."
 
-#: templates/snippets/read/actions-messages.js.html:26
+#: templates/snippets/read/actions-messages.js.html:31
 msgid "Removed from your reading list."
 msgstr "Supprimé de votre liste de lecture."
+
+#: templates/snippets/read/actions-messages.js.html:32
+msgid "Nothing open to mark/unmark for later"
+msgstr "Rien d'ouvert à marquer (ou pas) pour plus tard"
 
 #: templates/snippets/read/no-content.html:9
 msgid "This article seems empty."
@@ -1401,47 +1401,66 @@ msgstr ""
 "Nous avons détecté que le contenu de cet article est potentiellement dangereux (pour votre navigateur, pas pour vos yeux…). Pour protéger votre ordinateur bien-aimé, nous ne l'affichons pas.<br />\n"
 "Alternativement, vous pouvez <a href=\"%(article_url)s\" target=\"_blank\">le lire sur le site d'origine</a>. Désolé du désagrément.\n"
 
-#: templates/snippets/read/read-actions.html:5
+#: templates/snippets/read/read-actions.html:4
+msgid "Informations for administrators/staff"
+msgstr "Informations pour les administrateurs / le staff"
+
+#: templates/snippets/read/read-actions.html:7
+msgid "Admin. informations"
+msgstr "Informations d'admin."
+
+#: templates/snippets/read/read-actions.html:12
+#: templates/snippets/read/read-actions.html:15
 msgid "Do not read later"
 msgstr "Ne pas lire plus tard"
 
-#: templates/snippets/read/read-actions.html:10
+#: templates/snippets/read/read-actions.html:18
+msgid "Keep for reading later"
+msgstr "Garder pour lire plus tard"
+
+#: templates/snippets/read/read-actions.html:21
 msgid "Read later"
 msgstr "Lire plus tard"
 
-#: templates/snippets/read/read-actions.html:16
+#: templates/snippets/read/read-actions.html:25
+msgid "Remove star"
+msgstr "Désélectionner"
+
+#: templates/snippets/read/read-actions.html:28
 msgid "Unstar"
 msgstr "Désélectionner"
 
-#: templates/snippets/read/read-actions.html:21
+#: templates/snippets/read/read-actions.html:31
+msgid "Star and love it"
+msgstr "Sélectionner"
+
+#: templates/snippets/read/read-actions.html:34
 msgid "Star"
 msgstr "Sélectionner"
 
-#: templates/snippets/read/read-actions.html:37
-#: templates/snippets/read/read-actions.html:40
+#: templates/snippets/read/read-actions.html:50
+#: templates/snippets/read/read-actions.html:53
 msgid "mark as unread"
 msgstr "marquer non-lu"
 
-#: templates/snippets/read/read-actions.html:41
+#: templates/snippets/read/read-actions.html:54
 msgid "Mark unread"
 msgstr "Marquer non-lu"
 
-#: templates/snippets/read/read-actions.html:44
-#: templates/snippets/read/read-actions.html:47
+#: templates/snippets/read/read-actions.html:57
+#: templates/snippets/read/read-actions.html:60
 msgid "mark as read"
 msgstr "marquer lu"
 
-#: templates/snippets/read/read-actions.html:48
+#: templates/snippets/read/read-actions.html:61
 msgid "Mark read"
 msgstr "Marquer lu"
 
-#: templates/snippets/read/read-actions.html:52
-#: templates/snippets/read/read-tiles-experimental-tile.html:34
-#: templates/snippets/read/read-tiles-tile.html:34
-msgid "Open this article on the original website"
-msgstr "Ouvrir cet article sur le site web d'origine"
+#: templates/snippets/read/read-actions.html:65
+msgid "Display on the original website"
+msgstr "Afficher sur le site d'origine"
 
-#: templates/snippets/read/read-actions.html:54
+#: templates/snippets/read/read-actions.html:67
 msgid "Read original"
 msgstr "Voir l'original"
 
@@ -1493,6 +1512,11 @@ msgstr ""
 #: templates/snippets/read/read-tiles-tile.html:6
 msgid "No Image for this Article, this is a default one"
 msgstr "Pas d'image pour cette article, c'est une image par défaut"
+
+#: templates/snippets/read/read-tiles-experimental-tile.html:34
+#: templates/snippets/read/read-tiles-tile.html:34
+msgid "Open this article on the original website"
+msgstr "Ouvrir cet article sur le site web d'origine"
 
 #: templates/snippets/read/read-tiles-experimental-tile.html:44
 #: templates/snippets/read/read-tiles-tile.html:44

@@ -3,14 +3,46 @@
 
 var page_cleaner_interval;
 var scroll_speed = 500;
+var debug_touch = false;
 $.pnotify.defaults.delay = 5000;
 
 // bindable_hovered NOT USED YET
 //var bindable_hovered = null;
 
+try {
+    var hammertime = $("#application").hammer({
+    //drag: false,
+    // drag_vertical: false,
+    // drag_horizontal: false,
+    transform: false,
+    transformend: false
+    //stopBrowserBehavior: {userSelect: true}
+    // swipe: false,
+    // tap: false,
+    // tap_double: true,
+    // hold: false,
+});
+
+} catch (err) {
+    console.log("Could not start hammer: " + err);
+    var hammertime = null;
+}
+
 function notify(params){
     // did you ever see a that-simple wrapper?
     $.pnotify(params);
+}
+
+function debug_notify(message) {
+    if (debug_touch) {
+        notify({
+            text: message,
+            type: 'warning',
+            icon: false,
+            sticker: false,
+            width: '500px',
+        });
+    }
 }
 
 function scrollToElement(target, speed, topoffset) {
@@ -260,40 +292,69 @@ function setup_popovers(parent){
 
     // Bootstrap 2.3+
     parent.find('[data-toggle=popover]').popover();
+}
+function show_hover_muted() {
+    // "this" is a DOM entity
 
+    var $this = $(this);
+
+    if ($this.hasClass('hover-muted-shown')) {
+        return;
+    }
+
+    $this.find('.hover-muted').each(function(){
+        var $this = $(this);
+
+        if($this.hasClass('hide')){
+            $this.show(function(){
+                $this.animate({
+                    opacity: 1
+                }, 250);
+            });
+
+        } else {
+            $this.animate({
+                    opacity: 1
+            }, 250);
+        }
+    });
+
+    $this.addClass('hover-muted-shown');
+}
+function hide_hover_muted() {
+    // "this" is a DOM entity
+
+    var $this = $(this);
+
+    if (!$this.hasClass('hover-muted-shown')) {
+        return;
+    }
+
+    $(this).find('.hover-muted')
+        .stop(true, true).animate({
+            opacity: 0
+        }, 250, function(){
+            if($(this).hasClass('hide')){
+               $(this).hide();
+            }
+        });
+
+    $this.removeClass('hover-muted-shown');
 }
 function setup_hover_muters(parent){
 
     find_start(parent, 'hover-unmute-children')
-        .hover(
-            function() {
-                objekt = $(this).find('.hover-muted');
-
-                if(objekt.hasClass('hide')){
-                    objekt.show(function(){
-                        $(this).animate({
-                            opacity: 1
-                        }, 250);
-                    });
-
-                } else {
-                    objekt.animate({
-                            opacity: 1
-                    }, 250);
-                }
-            },
-            function() {
-                $(this).find('.hover-muted').stop(true, true).animate({
-                    opacity: 0
-                }, 250, function(){
-                    if($(this).hasClass('hide')){
-                       $(this).hide();
-                    }
-                });
-            }
-        );
+        .hover(show_hover_muted, hide_hover_muted);
 }
 function setup_tooltips(parent){
+
+    //
+    // NOTE: we chose popover-tooltip as the trigger class,
+    //      because data-toggle is too slow to get on big
+    //      pages, and .tooltip is already taken by the CSS
+    //      and messes the visual. This is a tradeoff when
+    //      using only classes: they can conflict with CSS.
+    //
 
     if (typeof parent == 'undefined') {
         parent = $('body');
@@ -303,10 +364,14 @@ function setup_tooltips(parent){
     // twitter popovers. Not needed for clickovers, though, which
     // work perfectly.
     // https://github.com/twitter/bootstrap/issues/3417
-    parent.find('[rel="tooltip"]').tooltip({
-            placement: popover_placement }).click(function(e) {
-        $(this).tooltip('toggle');
-    });
+    parent.find('.popover-tooltip')
+        .tooltip({
+            placement: popover_placement,
+            // Since Bootstrap 2.2 http://stackoverflow.com/q/14025438/654755
+            container: 'body'
+        }).click(function(e) {
+            $(this).tooltip('toggle');
+        });
 }
 function setup_clickovers(parent) {
 
@@ -361,7 +426,6 @@ function setup_delayed_loaders(parent) {
         });
     });
 }
-
 function flash_fade(objekt, bg_color, fg_color){
 
     var curfore = objekt.css('color');
@@ -441,8 +505,10 @@ function on_hovered(func_if_found, func_if_not_found){
 }
 function setup_everything(parent) {
 
-    setup_tooltips(parent);
-    setup_hover_muters(parent);
+    if (!Modernizr.touch){
+        setup_tooltips(parent);
+        setup_hover_muters(parent);
+    }
     setup_popovers(parent);
 
     // bindable_hovered NOT USED YET
