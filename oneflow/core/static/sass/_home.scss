@@ -125,17 +125,16 @@ header {
 
 #profile {
     h1 {
-        padding-bottom: 20px;
+        margin-top: 50px;
+        min-height: 2em;
         line-height: 0.9em;
+        vertical-align: text-bottom;
     }
 
     .application {
-        h1.user-profile {
-            line-height: 100px;
-            vertical-align: bottom;
-        }
 
         .avatar-frame {
+            margin-top: 50px;
             box-shadow: 1px 1px 5px #999;
             border-radius: 100px;
             -moz-border-radius: 100px;
