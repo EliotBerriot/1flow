@@ -371,7 +371,6 @@ header {
 
     .article-meta {
 
-
         .meta {
             font-family: 'open sans', 'lucida grande', sans-serif;
             font-size: 130%;
@@ -510,8 +509,10 @@ header {
             }
 
             .meta {
-                .date_author_tags {
-                    margin-left: 1em;
+                .meta {
+                    .date {
+                        margin-left: 2em;
+                    }
                 }
             }
         }
