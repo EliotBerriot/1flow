@@ -543,10 +543,19 @@ header {
     }
 }
 
-.read-list-item.is_read {
+/* .not_is_bookmarked.not_is_starred */
+.read-list-item.not_is_read {
+    .article-title {
+        /* 29323d #29313c #a2b1c3 #586a7f */
+        text-shadow: 0 0 1px #a2b1c3;
+
+    }
+}
+
+.read-list-item.is_read.not_is_bookmarked.not_is_starred {
     .article-title,
     .article-meta .meta {
-        opacity: 0.3;
+        opacity: 0.4;
     }
 }
 
