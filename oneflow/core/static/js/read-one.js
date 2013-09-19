@@ -32,7 +32,7 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message) 
     }
 
     if(typeof send_notify == 'undefined') {
-        var send_notify = true;
+        var send_notify = false;
     }
 
     $.get(read.data('url-action-' + mark_what),
