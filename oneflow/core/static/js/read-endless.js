@@ -348,6 +348,23 @@ function toggle_current_read_is_bookmarked() {
     }
 }
 
+function handle_tap(ev) {
+
+    // WOW. without ev.preventDefault(), the 2 others
+    // don't suffice to avoid the event being sent twice.
+    ev.gesture.preventDefault();
+    ev.stopPropagation();
+    ev.preventDefault();
+
+    var $this  = $(this),
+        target = $this.data('toggle-id');
+
+    debug_notify('tap event on ' + target);
+
+    toggle_content(target, function() {
+        show_hover_muted.call(document.getElementById(target));
+    });
+}
 
 // ——————————————————————————————————————————————————— open first/next/previous
 
@@ -430,3 +447,155 @@ Mousetrap.bind(['shift+l'], function() {
     return false;
 });
 
+// ——————————————————————————————————————————————————————————————— touch events
+
+if (Modernizr.touch) {
+
+    //console.debug('touch events start…');
+
+    hammertime.on("swipeleft", ".read-list-item", function(ev) {
+        var $this = $(this);
+
+        ev.gesture.preventDefault();
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        $this.animate({marginLeft: -50}, 200, function(){
+            $this.animate({marginLeft: 0}, 150);
+        });
+        toggle_is_read($this.attr('id'));
+    });
+
+    hammertime.on("swiperight", ".read-list-item", function(ev) {
+        var $this = $(this);
+
+        ev.gesture.preventDefault();
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        $this.animate({marginLeft: 50}, 200, function(){
+            $this.animate({marginLeft: 0}, 150);
+        });
+
+        toggle_is_bookmarked($this.attr('id'));
+    });
+
+    /*
+        NOT READY YET
+
+    hammertime.on("swipeleft", ".read-list-item", function(ev) {
+        var $this = $(this);
+
+        $this.animate({marginLeft: -ev.distance}, 200, function(){
+            $this.animate({marginLeft: 0}, 150);
+        });
+
+        var something_done = false;
+
+        if (ev.distance > 100) {
+            if ($this.hasClass("hover-muter-open")) {
+                $this.removeClass("hover-muter-open");
+                hide_hover_muted.call(this);
+            }
+
+            something_done = true;
+
+        } else if (ev.distance > 25) {
+            toggle_is_read($this.attr('id'));
+            something_done = true;
+        }
+
+        if (something_done) {
+            ev.gesture.preventDefault();
+            ev.stopPropagation();
+        }
+    });
+
+    hammertime.on("swiperight", ".read-list-item", function(ev) {
+        var $this = $(this);
+
+        $this.animate({marginLeft: ev.distance}, 200, function(){
+            $this.animate({marginLeft: 0}, 150);
+        });
+
+        var something_done = false;
+
+        if (ev.distance > 100) {
+            if (!$this.hasClass("hover-muter-open")) {
+                $this.addClass("hover-muter-open");
+                show_hover_muted.call(this);
+            }
+            something_done = true;
+
+        } else if (ev.distance > 25) {
+            toggle_is_bookmarked($this.attr('id'));
+            something_done = true;
+
+        }
+
+        if (something_done) {
+            ev.gesture.preventDefault();
+            ev.stopPropagation();
+        }
+    });
+
+        END NOT READY YET
+    */
+
+    hammertime.on("tap", ".article-meta .heading", handle_tap);
+    hammertime.on("tap", ".article-meta .meta",    handle_tap);
+
+    hammertime.on("pinchin doubletap", ".article-content", function(ev) {
+
+        // WOW. without ev.preventDefault(), the 2 others
+        // don't suffice to avoid the event being sent twice.
+        ev.gesture.preventDefault();
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        var $this  = $(this),
+            target = $this.data('toggle-id');
+
+        debug_notify('pinch/dbltap event on ' + target);
+
+        toggle_content(target, function() {
+            hide_hover_muted.call(document.getElementById(target));
+        });
+    });
+
+    hammertime.on("pinchout", ".article-meta", function(ev) {
+
+        // WOW. without ev.preventDefault(), the 2 others
+        // don't suffice to avoid the event being sent twice.
+        ev.gesture.preventDefault();
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        var $this  = $(this),
+            target = $this.data('toggle-id');
+
+        debug_notify('pinchout event on ' + target);
+
+        toggle_content(target, function() {
+            show_hover_muted.call(document.getElementById(target));
+        });
+    });
+
+    hammertime.on("hold", ".read-list-item", function(ev) {
+
+        // WOW. without ev.preventDefault(), the 2 others
+        // don't suffice to avoid the event being sent twice.
+        ev.gesture.preventDefault();
+        ev.stopPropagation();
+        ev.preventDefault();
+
+        var $this = $(this);
+
+        if ($this.hasClass("hover-muter-open")) {
+            hide_hover_muted.call(this);
+
+        } else {
+            show_hover_muted.call(this);
+        }
+    });
+}
