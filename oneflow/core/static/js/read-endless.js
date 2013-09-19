@@ -71,10 +71,27 @@ function eventually_toggle(event) {
 function read_setup(parent) {
     // this function is run after each ajax call, via setup_everything().
 
+    //console.debug('read setup bindings');
+   //debug_notify('read_setup(' + parent + ')');
+
     $(".article-content p").find('img').parent().addClass('img-legend');
 
-    //console.debug('read setup bindings');
-    //find_start(parent, 'slide-togglable').dblclick(eventually_toggle);
+    if(!Modernizr.touch) {
+        find_start(parent, 'content-toggle').on('click', function(ev){
+            var target   = $(this).data('toggle-id'),
+                callback = $(this).data('toggle-callback');
+
+            if(!target) {
+                console.error('No target (data-toggle-id) for ' + this + '!');
+                return;
+            }
+            ev.preventDefault();
+            ev.stopPropagation();
+            toggle_content(target, callback);
+        });
+
+        find_start(parent, 'slide-togglable').on('tripleclick', eventually_toggle);
+    }
 }
 
 function read_init(){
