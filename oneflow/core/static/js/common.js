@@ -10,7 +10,18 @@ $.pnotify.defaults.delay = 5000;
 //var bindable_hovered = null;
 
 try {
-    var hammertime = $("#application").hammer();
+    var hammertime = $("#application").hammer({
+    //drag: false,
+    // drag_vertical: false,
+    // drag_horizontal: false,
+    transform: false,
+    transformend: false
+    //stopBrowserBehavior: {userSelect: true}
+    // swipe: false,
+    // tap: false,
+    // tap_double: true,
+    // hold: false,
+});
 
 } catch (err) {
     console.log("Could not start hammer: " + err);
@@ -283,6 +294,7 @@ function setup_popovers(parent){
     parent.find('[data-toggle=popover]').popover();
 }
 function show_hover_muted() {
+    // "this" is a DOM entity
 
     var $this = $(this);
 
@@ -310,6 +322,7 @@ function show_hover_muted() {
     $this.addClass('hover-muted-shown');
 }
 function hide_hover_muted() {
+    // "this" is a DOM entity
 
     var $this = $(this);
 
