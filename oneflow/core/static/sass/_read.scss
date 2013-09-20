@@ -1,0 +1,237 @@
+/* --------------------------------------------------------------------- Read */
+
+#read {
+    #reads-number {
+        padding: 0 10px;
+
+        h2 small {
+            margin-left: 0;
+        }
+    }
+}
+
+.read-list-item,
+.read-individual-item {
+
+    /* cancel Bootstrap's media margin. */
+    margin-top: 0;
+
+    font-weight: 300;
+
+    .actions {
+        display: block;
+        position: relative;
+        top: 0;
+        right: 0;
+        padding-top: 11px;
+        line-height: 100%;
+
+        li.action {
+            display: inline;
+
+            ul.dropdown-menu {
+                margin-left: -63px;
+                padding: 10px 0;
+                text-align: center;
+            }
+        }
+
+        i {
+            font-size: 24px;
+        }
+
+        a {
+            margin-left: 10px;
+            color: #29313c;
+            opacity: 0.5;
+
+            /* reset the one from Bootstrap */
+            text-decoration: none;
+
+            /* reset the one from .article-content */
+            border-bottom: none;
+
+
+            &:hover, &:active {
+                opacity: 1;
+            }
+
+            &:visited, &:active {
+                border: none;
+            }
+        }
+    }
+
+    .end-actions {
+        font-size: 16px;
+        margin-top: 4em;
+        border-top: 2px solid #949aa1;
+
+        a {
+            &:first-child,
+            &:nth-child(2) {
+                /* Actions icons come by pair, one of them being hidden */
+                margin-left: 0;
+            }
+        }
+
+        ul.dropdown-menu li {
+            font-size: 16px;
+        }
+    }
+
+    .hover-muted {
+        opacity: 0;
+    }
+}
+
+.read-list-row {
+
+    .article {
+        padding: 10px 10px;
+        border-bottom: 1px dotted #ddd;
+
+        /*
+            START flash_fade():
+            bring the body color here
+            for the flash_fade() to work.
+
+            Thus, we need to reset the H* colors.
+        */
+
+        color: #29323d;
+
+        h1, h2, h3 {
+            color: inherit;
+        }
+
+        /* END flash_fade() */
+
+        .article-meta {
+            /*
+                We need overflow: visible for the dropdown.
+
+                max-height: 3.76em;
+                overflow: hidden;
+            */
+
+            .article-title {
+                position: relative;
+                top: 0;
+                left: 0;
+                max-height: 1.5em;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                vertical-align: top;
+                width: auto;
+            }
+
+            .meta {
+                height: 3.7em;
+                overflow: hidden;
+
+                ul.status-icons {
+                    display: inline;
+                    margin-left: 1em;
+                    width: 10px;
+
+                    li {
+                        display: inline;
+                        list-style: none;
+                        i {
+                            margin-left: 0.5em;
+                        }
+
+                        &:first-child {
+                            margin-left: 0;
+                        }
+                    }
+
+                    .hide {
+                        /*  need to recall this `.hide`, because of the
+                            default "inline" defined 10 lines before.*/
+                        display: none;
+                    }
+                }
+
+                .meta {
+                    max-height: 1.5em;
+                    overflow: hidden;
+
+                    span {
+                        max-height: 1.5em;
+                        overflow: hidden;
+                        vertical-align: top;
+                        width: auto;
+                    }
+
+                    .date {
+                        margin-left: 1em;
+                    }
+                }
+            }
+        }
+    }
+
+    p {
+        /* cancel Bootstrap's media margin. */
+        margin-bottom: 0;
+    }
+
+    .list-item-number {
+        font-size: 500%;
+        line-height: 100%;
+        vertical-align: center;
+        text-align: right;
+    }
+
+    .heading {
+        font-size: 1.5em;
+        max-height: 1.4em;
+        line-height: 1.4em;
+        cursor: pointer;
+    }
+
+    .admin-informations {
+        /* don't know why, we've got a blank space after the slideToggle(). */
+        margin-bottom: -20px;
+    }
+}
+
+/* .not_is_bookmarked.not_is_starred */
+.read-list-item.not_is_read {
+    .article-title {
+        /* 29323d #29313c #a2b1c3 #586a7f */
+        text-shadow: 0 0 1px #a2b1c3;
+
+    }
+}
+
+.read-list-item.is_read.not_is_bookmarked.not_is_starred {
+    .article-title,
+    .article-meta .meta {
+        opacity: 0.4;
+    }
+}
+
+
+.read-tile {
+    width: 170px;
+    padding: 10px;
+    /*margin-bottom: 20px;*/
+
+    img {
+        min-width: 150px;
+        min-height: 150px;
+        margin: 0 10px;
+    }
+
+    .article-title {
+        font-size: 14px;
+        cursor: pointer;
+    }
+
+    .muted {
+       opacity: 0.2;
+    }
+}
