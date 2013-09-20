@@ -4,6 +4,8 @@
 var page_cleaner_interval;
 var scroll_speed = 500;
 var debug_touch = false;
+var open_hover_muted = [];
+var hover_muted_timers = {};
 $.pnotify.defaults.delay = 5000;
 
 // bindable_hovered NOT USED YET
@@ -287,10 +289,10 @@ function setup_popovers(parent){
     // twitter popovers. Not needed for clickovers, though, which
     // work perfectly.
     // https://github.com/twitter/bootstrap/issues/3417
-    parent.find('[rel="popover"]').popover({
-            placement: popover_placement }).click(function(e) {
-        $(this).popover('toggle');
-    });
+    // parent.find('[rel="popover"]').popover({
+    //         placement: popover_placement }).click(function(e) {
+    //     $(this).popover('toggle');
+    // });
 
     // Bootstrap 2.3+
     parent.find('[data-toggle=popover]').popover();
@@ -299,10 +301,33 @@ function show_hover_muted() {
     // "this" is a DOM entity
 
     var $this = $(this);
+    var myid = $this.attr('id');
 
     if ($this.hasClass('hover-muted-shown')) {
+
+        try {
+            clearTimeout(hover_muted_timers[myid])
+            delete hover_muted_timers[myid];
+        } catch (err) {}
+
+        //console.log('showing: ' + myid + ' again (cleared timer)!')
+
         return;
     }
+
+    // close all other open muters
+    _.each(open_hover_muted, function(otherid) {
+        try {
+            clearTimeout(hover_muted_timers[otherid]);
+            delete hover_muted_timers[otherid];
+        } catch (err) {}
+
+        hide_hover_muted.call(document.getElementById(otherid));
+    });
+
+    open_hover_muted = [];
+
+    //console.log('showing: ' + myid)
 
     $this.find('.hover-muted').each(function(){
         var $this = $(this);
@@ -321,32 +346,74 @@ function show_hover_muted() {
         }
     });
 
+    open_hover_muted.push(myid);
+
     $this.addClass('hover-muted-shown');
 }
 function hide_hover_muted() {
     // "this" is a DOM entity
 
     var $this = $(this);
+    var myid = $this.attr('id');
 
     if (!$this.hasClass('hover-muted-shown')) {
+        //console.log('hiding: ' + myid + ' not shown!')
         return;
     }
 
-    $(this).find('.hover-muted')
+    $this.find('.hover-muted')
         .stop(true, true).animate({
             opacity: 0
         }, 250, function(){
-            if($(this).hasClass('hide')){
-               $(this).hide();
+            if($this.hasClass('hide')){
+               $this.hide();
             }
         });
 
     $this.removeClass('hover-muted-shown');
+
+    // useless: we were just called by the time, it already timed out.
+    //clearTimeout(hover_muted_timers[this])
+
+    // clear for next detection.
+    delete hover_muted_timers[myid];
+    open_hover_muted = _.without(open_hover_muted, myid);
+
+    //console.log('hiding: cleared timer ' + myid)
+}
+function trigger_hide_over_muted() {
+
+    var shown = this;
+    var myid = $(this).attr('id');
+
+    // console.log('HIDE');
+    // console.log(this);
+    // console.log($(this));
+    // console.log(myid);
+
+    if (!$(this).hasClass('hover-muted-shown')) {
+        //console.log('trigger hide of ' + myid + ' not needed.')
+        return;
+    }
+
+    if (typeof hover_muted_timers[myid] != 'undefined') {
+        //console.log('trigger hide of ' + myid + ': timer restart.')
+        clearTimeout(hover_muted_timers[myid])
+    }
+
+    //console.log('trigger hide of ' + myid + '.')
+
+    hover_muted_timers[myid] = setTimeout(function() {
+        hide_hover_muted.call(shown)
+    }, 2000);
 }
 function setup_hover_muters(parent){
 
+    // NOTE: we really want mouseover() (not mouseenter()), to not
+    // trigger the "out" when mouse gets over a sub-dropdown or a
+    // sub-tooltip.
     find_start(parent, 'hover-unmute-children')
-        .hover(show_hover_muted, hide_hover_muted);
+        .mouseover(show_hover_muted).mouseleave(trigger_hide_over_muted);
 }
 function setup_tooltips(parent){
 
@@ -381,26 +448,27 @@ function setup_clickovers(parent) {
         parent = $('body');
     }
 
-    parent.find('[rel="clickover"]').each(function(){
+    parent.find('[data-toggle="clickover"]').each(function(){
 
-        params = {};
+        var $this  = $(this),
+            params = {};
 
-        if ($(this).hasClass('clickover-large')) {
+        if ($this.hasClass('clickover-large')) {
             $.extend(params, { width: 400 });
         }
 
-        if ($(this).hasClass('iframed')) {
+        if ($this.hasClass('iframed')) {
             $.extend(params, { width: 800, height: 450 });
         }
 
-        if ($(this).hasClass('clickover-auto-close')) {
+        if ($this.hasClass('clickover-auto-close')) {
             $.extend(params, { auto_close: 5000 });
         }
 
         // WARNING: don't use "data-clickover", it will conflict
         // with rel="clickover" and the clickover will not work.
 
-        data_ = $(this).data('clickover-params');
+        data_ = $this.data('clickover-params');
 
         if (typeof data_ != 'undefined') {
             $.extend(params, eval(data_));
@@ -408,7 +476,7 @@ function setup_clickovers(parent) {
 
         $.extend(params, { placement: popover_placement });
 
-        $(this).clickover(params);
+        $this.clickover(params);
     });
 }
 function setup_delayed_loaders(parent) {
