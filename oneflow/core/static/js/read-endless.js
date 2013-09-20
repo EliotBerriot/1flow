@@ -192,7 +192,6 @@ function toggle_content(oid, callback) {
         }
     }
 }
-
 function open_next_read() {
 
     function open_next_internal(which) {
@@ -280,76 +279,29 @@ function open_last_opened() {
         return toggle_content(last_opened);
     }
 }
-function mark_current_read_as_read() {
+function mark_current_read_as(what) {
     if (open_content) {
         var read = $("#" + open_content);
 
-        if (read.hasClass('not_is_read')) {
-            return mark_something(open_content, 'is_read');
+        if (read.hasClass('not_' + what)) {
+            return mark_something(open_content, what);
         }
     }
 }
-function mark_current_read_as_starred() {
-    if (open_content) {
-        var read = $("#" + open_content);
-
-        if (read.hasClass('not_is_starred')) {
-            return mark_something(open_content, 'is_starred');
-        }
-    }
-}
-function mark_current_read_as_bookmarked() {
-    if (open_content) {
-        var read = $("#" + open_content);
-
-        if (read.hasClass('not_is_bookmarked')) {
-            return mark_something(open_content, 'is_bookmarked');
-        }
-    }
-}
-function toggle_current_read_is_read() {
+function toggle_current_read_status(status) {
 
     if (open_content) {
-        return toggle_is_read(open_content);
+        return toggle_status(open_content, status);
 
     } else {
         notify({
-            text: read_actions_messages.is_read.nothing,
+            text: read_actions_messages[status].nothing,
             type: 'warning',
             icon: false,
             sticker: false
         });
     }
 }
-function toggle_current_read_is_starred() {
-
-    if (open_content) {
-        return toggle_is_starred(open_content);
-
-    } else {
-        notify({
-            text: read_actions_messages.is_starred.nothing,
-            type: 'warning',
-            icon: false,
-            sticker: false
-        });
-    }
-}
-function toggle_current_read_is_bookmarked() {
-
-    if (open_content) {
-        return toggle_is_bookmarked(open_content);
-
-    } else {
-        notify({
-            text: read_actions_messages.is_bookmarked.nothing,
-            type: 'warning',
-            icon: false,
-            sticker: false
-        });
-    }
-}
-
 function show_actions(objekt) {
     // objekt is a DOM entity
 
@@ -370,7 +322,6 @@ function hide_actions(objekt) {
     hide_hover_muted.call(objekt);
     open_actions = null;
 }
-
 function handle_tap(ev) {
 
     var $this  = $(this),
@@ -404,7 +355,7 @@ function handle_tap(ev) {
 
     } else if (ev.gesture.touches.length == 2) {
         debug_notify('2-fingers tap on ' + target);
-        toggle_is_starred(target);
+        toggle_status(target, "is_starred");
 
     } else {
         debug_notify('1-finger tap on ' + target);
@@ -445,21 +396,63 @@ Mousetrap.bind(['l o', 'o l'], function() {
 
 // “Mark Read”, “Toggle Read”
 Mousetrap.bind(['m r', 't r'], function() {
-    toggle_current_read_is_read();
+    toggle_current_read_status("is_read");
     return false;
 });
 
 // “Mark Starred”, “Toggle Starred”
 Mousetrap.bind(['m s', 't s'], function() {
-    toggle_current_read_is_starred();
+    toggle_current_read_status("is_starred");
     return false;
 });
 // “Mark [fF]or Later”, “Toggle Later status”,
 // “Mark Bookmarked”, “Toggle Bookmarked”,
 // “Keep For Later”, “Read Later”
-Mousetrap.bind(['m l', 't l', 'm b', 't b',
+Mousetrap.bind(['m l', 't l',
                 'r l', 'm f l', 'k f l'], function() {
-    toggle_current_read_is_bookmarked();
+    toggle_current_read_status("is_bookmarked");
+    return false;
+});
+
+// “Mark Fact”, “Toggle Fact”
+Mousetrap.bind(['m f', 't f'], function() {
+    toggle_current_read_status("is_fact");
+    return false;
+});
+
+// “Mark Prospective”, “Toggle Prospective”
+Mousetrap.bind(['m p', 't p'], function() {
+    toggle_current_read_status("is_prospective");
+    return false;
+});
+
+// “Mark Number”, “Toggle Number”
+Mousetrap.bind(['m n', 't n'], function() {
+    toggle_current_read_status("is_number");
+    return false;
+});
+
+// “Mark Quote”, “Toggle Quote”
+Mousetrap.bind(['m q', 't q'], function() {
+    toggle_current_read_status("is_quote");
+    return false;
+});
+
+// “Mark Know-how”, “Toggle Know-how”
+Mousetrap.bind(['m k', 't k'], function() {
+    toggle_current_read_status("is_knowhow");
+    return false;
+});
+
+// “Mark Rules”, “Toggle Rules”
+Mousetrap.bind(['m u', 't u'], function() {
+    toggle_current_read_status("is_rules");
+    return false;
+});
+
+// “Mark Knowledge”, “Toggle Knowledge”
+Mousetrap.bind(['m w', 't w'], function() {
+    toggle_current_read_status("is_knowledge");
     return false;
 });
 
@@ -467,29 +460,29 @@ Mousetrap.bind(['m l', 't l', 'm b', 't b',
 
 // “Mark Read” + “Next”, “Goto Next”, “Open Next”
 Mousetrap.bind(['shift+r', 'shift+n'], function() {
-    mark_current_read_as_read();
+    mark_current_read_as('is_read');
     open_next_read();
     return false;
 });
 
 
-// “Mark Read” + “Next”, “Goto Next”, “Open Next”
+// “Mark Read” + “Previous”
 Mousetrap.bind(['shift+p'], function() {
-    mark_current_read_as_read();
+    mark_current_read_as('is_read');
     open_previous_read();
     return false;
 });
 
 // “Star and go next”
 Mousetrap.bind(['shift+s'], function() {
-    mark_current_read_as_starred();
+    mark_current_read_as('is_starred');
     open_next_read();
     return false;
 });
 
 // “mark for Later and go next”
 Mousetrap.bind(['shift+l'], function() {
-    mark_current_read_as_bookmarked();
+    mark_current_read_as('is_bookmarked');
     open_next_read();
     return false;
 });
@@ -515,7 +508,7 @@ if (Modernizr.touch) {
         $this.animate({marginLeft: -50}, 200, function(){
             $this.animate({marginLeft: 0}, 150);
         });
-        toggle_is_read($this.attr('id'));
+        toggle_status($this.attr('id'), "is_read");
 
         return false;
     });
@@ -536,7 +529,7 @@ if (Modernizr.touch) {
             $this.animate({marginLeft: 0}, 150);
         });
 
-        toggle_is_bookmarked($this.attr('id'));
+        toggle_status($this.attr('id'), "is_bookmarked");
 
         return false;
     });
@@ -592,7 +585,7 @@ if (Modernizr.touch) {
             something_done = true;
 
         } else if (ev.distance > 25) {
-            toggle_is_read($this.attr('id'));
+            toggle_status($this.attr('id'), "is_read");
             something_done = true;
         }
 
@@ -619,7 +612,7 @@ if (Modernizr.touch) {
             something_done = true;
 
         } else if (ev.distance > 25) {
-            toggle_is_bookmarked($this.attr('id'));
+            toggle_status($this.attr('id'), "is_bookmarked");
             something_done = true;
 
         }
