@@ -38,12 +38,8 @@
           {% endif %}
 
           <ul class="article-actions end-actions actions centered">
-
-            {% with with_text=1 %}
-              {% include 'snippets/read/read-actions.html' %}
-            {% endwith %}
-
-          </ul><!-- .article-actions -->
+            {% include 'snippets/read/read-actions.html' with with_text=1 %}
+          </ul>
 
       </div><!-- .article-content -->
 
