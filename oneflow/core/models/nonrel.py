@@ -3228,19 +3228,62 @@ class Read(Document, DocumentHelperMixin):
 
     date_created = DateTimeField(default=now)
 
-    is_read   = BooleanField(default=False)
+    is_read   = BooleanField(help_text=_(u'The Owner has read the content or '
+                             u'has manually marked it as such.'),
+                             default=False)
     date_read = DateTimeField()
 
-    is_auto_read   = BooleanField(default=False)
+    is_auto_read   = BooleanField(help_text=_(u'The system has automatically '
+                                  u'marked it as read, in respect of a system '
+                                  u'rule or a user preference.'), default=False)
     date_auto_read = DateTimeField()
 
-    is_starred   = BooleanField(default=False)
+    is_starred   = BooleanField(help_text=_(u'The owner has starred the '
+                                u'content, signifying he/she loves it or '
+                                u'that it is much of interest for him/her.'),
+                                default=False)
     date_starred = DateTimeField()
 
-    is_bookmarked   = BooleanField(default=False)
+    is_bookmarked   = BooleanField(help_text=_(u'This content is marked to '
+                                   u'be read later. When, depends on the '
+                                   u'`.bookmark_type` attribute.'),
+                                   default=False)
     date_bookmarked = DateTimeField()
     bookmark_type   = StringField(max_length=1, default=u'U',
                                   choices=READ_BOOKMARK_TYPE_CHOICES)
+
+    is_fact   = BooleanField(help_text=_(u'Qualifies a time-dependant fact.'),
+                             default=False)
+    date_fact = DateTimeField()
+
+    is_quote   = BooleanField(help_text=_(u'Qualifies someone’s words, '
+                              u'thoughts or intentions.'), default=False)
+    date_quote = DateTimeField()
+
+    is_number   = BooleanField(help_text=_(u'Qualifies explicitely quantized '
+                               u'data.'), default=False)
+    date_number = DateTimeField()
+
+    is_prospective   = BooleanField(help_text=_(u'Qualifies things that want'
+                                    u' to watch, that will happen or not.'),
+                                    default=False)
+    date_prospective = DateTimeField()
+
+    is_knowhow   = BooleanField(help_text=_(u'Qualifies anything about '
+                                u'How-to-do things and profession '
+                                u'best-practices.'), default=False)
+    date_knowhow = DateTimeField()
+
+    is_rules   = BooleanField(help_text=_(u'Qualifies anything about laws, '
+                              u'governments/public regulations.'),
+                              default=False)
+    date_rules = DateTimeField()
+
+    is_knowledge   = BooleanField(help_text=_(u'Qualifies anything that the '
+                                  u'owner wants to retain as a “must know”, '
+                                  u'whatever the context.'), default=False)
+    date_knowledge = DateTimeField()
+    knowledge_type = StringField(max_length=2)
 
     # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
     tags = ListField(GenericReferenceField(),
@@ -3253,6 +3296,142 @@ class Read(Document, DocumentHelperMixin):
 
     # For free users, fix a limit ?
     #meta = {'max_documents': 1000, 'max_size': 2000000}
+
+    status_data = {
+
+        'is_read': {
+            'do_title':   _(u'Mark as read'),
+            'undo_title': _(u'Mark as unread'),
+            'do_label' :   _(u'Read'),
+            'undo_label':  _(u'Unread'),
+            'do_icon':    'check-empty',
+            'undo_icon':  'check',
+        },
+
+        'is_starred': {
+            'do_title':   _(u'Star (add to favorites)'),
+            'undo_title': _(u'Remove from starred/favorites'),
+            'do_label' :   _(u'Star'),
+            'undo_label':  _(u'Unstar'),
+            'do_icon':    'star-empty',
+            'undo_icon':  'star',
+        },
+
+        'is_bookmarked': {
+            'do_title':   _(u'Keep for reading later'),
+            'undo_title': _(u'Remove from reading list'),
+            'do_label':    _(u'Read later'),
+            'undo_label':  _(u'Do not read later'),
+            'do_icon':    'bookmark-empty',
+            'undo_icon':  'bookmark',
+        },
+
+        'is_fact': {
+            'do_title':     _(u'Mark as fact / important event'),
+            'undo_title':   _(u'Remove from facts / important events'),
+            'status_title': _(u'This article contains one or '
+                              u'more important facts'),
+            'do_label' :    _(u"It's a fact"),
+            'undo_label':   _(u'Not a fact'),
+            'do_icon':      'circle-blank',
+            'undo_icon':    'bullseye',
+        },
+
+        'is_number': {
+            'do_title':     _(u'Mark as valuable number'),
+            'undo_title':   _(u'Remove from valuable numbers'),
+            'status_title': _(u'This article contains important '
+                              u'numbers for a watch'),
+            'do_label' :    _(u"It's a number"),
+            'undo_label':   _(u'Not a number'),
+            'do_icon':      'bar-chart',
+            'undo_icon':    'bar-chart',
+            #'undo_icon_stack': True,
+        },
+
+        'is_quote': {
+            'do_title':   _(u'Mark as containing quote(s) from people '
+                            u'you consider important'),
+            'undo_title': _(u'Does not contain quotes anymore '
+                            u'(or people is not important anymore?)'),
+            'status_title': _(u'This article contains one or more quote '
+                              u'from people you care about.'),
+            'do_label' :   _(u'Quote'),
+            'undo_label':  _(u'No quote'),
+            'do_icon':    'comment-alt',
+            'undo_icon':  'comment',
+        },
+
+        'is_prospective': {
+            'do_title':     _(u'Mark as prospective-related content'),
+            'undo_title':   _(u'Unmark as prospective-related content '
+                              u'(eg. article is obsolete)'),
+            'status_title': _(u'This article contains prospective element(s)'),
+            'do_label' :    _(u"Prospective"),
+            'undo_label':   _(u'Obsolete'),
+            'do_icon':      'asterisk',
+            'undo_icon':    'asterisk',
+            #'undo_icon_stack': True,
+        },
+
+        'is_rules': {
+            'do_title':   _(u'Mark as legal/regulations-related content'),
+            'undo_title': _(u'Unmark as legal content (overriden laws?)'),
+            'status_title': _(u'This article contains regulations/'
+                              u'law/rules element(s)'),
+            'do_label' :   _(u"Law/regulations"),
+            'undo_label':  _(u'Not relevant'),
+            'do_icon':    'legal',
+            'undo_icon':  'legal',
+            #'undo_icon_stack': True,
+        },
+
+        'is_knowhow': {
+            'do_title':   _(u'Contains state of the art or best-practices'),
+            'undo_title': _(u'Does not contain quotes anymore '
+                            u'(or people is not important anymore?)'),
+            'status_title': _(u'This article contains know-how or '
+                              u'best-practices element(s)'),
+            'do_label' :   _(u"Best-Practice"),
+            'undo_label':  _(u'Obsolete'),
+            'do_icon':    'key',
+            'undo_icon':  'key',
+            #'undo_icon_stack': True,
+        },
+
+        'is_knowledge': {
+            'do_title':   _(u'Mark as containing a valuable piece of knowlegde '
+                            u'for your brain or life.'),
+            'undo_title': _(u'Does not contain any neuronal-exciting '
+                            u'element(s) anymore.'),
+            'status_title': _(u'This article contains a valuable '
+                              u'piece of knowlegde'),
+            'do_label' :   _(u"Knowledge"),
+            'undo_label':  _(u'Useless'),
+            'do_icon':    'puzzle-piece',
+            'undo_icon':  'puzzle-piece',
+            #'undo_icon_stack': True,
+        },
+
+        #
+        #   fact: exclamation exclamation-sign
+        #         globe map-marker
+        #
+    }
+
+    @classmethod
+    def get_status_attributes(cls):
+        try:
+            return cls._status_attributes_cache
+
+        except AttributeError:
+            cls._status_attributes_cache = [fname for fname, field
+                                            in cls._fields.items()
+                                            if fname.startswith('is_')
+                                            and isinstance(field,
+                                                           BooleanField)]
+
+            return cls._status_attributes_cache
 
     @classmethod
     def signal_pre_save_handler(cls, sender, document, **kwargs):
