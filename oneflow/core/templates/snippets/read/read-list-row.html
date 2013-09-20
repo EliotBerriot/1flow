@@ -1,9 +1,9 @@
-  <li id="{{ read.id }}" class="read-list-row read-list-item row-fluid {% read_status_css read %}"
+  <li id="{{ read.id }}" class="read-list-row read-list-item row-fluid hover-unmute-children {% read_status_css read %}"
       {% read_data_urls read %} data-index="{{ tenths_counter|add:forloop.counter }}">
 
   {% with read.article as article %}
 
-    <div class="article span12 hover-unmute-children">
+    <div class="article span12">
 
       <div class="row-fluid">
 
@@ -37,13 +37,13 @@
 
           {% endif %}
 
-          <div class="article-actions end-actions actions centered">
+          <ul class="article-actions end-actions actions centered">
 
             {% with with_text=1 %}
               {% include 'snippets/read/read-actions.html' %}
             {% endwith %}
 
-          </div><!-- .article-actions -->
+          </ul><!-- .article-actions -->
 
       </div><!-- .article-content -->
 
