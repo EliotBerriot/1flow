@@ -75,8 +75,16 @@
             }
         }
 
-        ul.dropdown-menu li {
-            font-size: 16px;
+        li.action {
+            ul.dropdown-menu {
+                margin-left: 0;
+                padding: 10px;
+                text-align: left;
+
+                li {
+                    font-size: 16px;
+                }
+            }
         }
     }
 
