@@ -365,8 +365,9 @@ function hide_hover_muted() {
         .stop(true, true).animate({
             opacity: 0
         }, 250, function(){
-            if($this.hasClass('hide')){
-               $this.hide();
+            // WARNING: $(this) is the "new" one from .find(), not the parent…
+            if($(this).hasClass('hide')){
+               $(this).hide();
             }
         });
 
