@@ -27,42 +27,46 @@
     </{% firstof meta_hX "h2" %}>
   {% endif %}
 
-    <span class="source muted">
-      {{ article.get_source_unicode }}
-    </span>
+    <span class="meta">
 
-    {% if with_meta_muted %}
-      <span class="meta hover-muted hide">
-    {% endif %}
-
-    <span class="date">
-      {{ article.date_published }}
-    </span>
-
-    {% if article.authors %}
-      <span class="author">
-          <span class="muted">{% trans "by" %}</span>
-          {% for author in article.authors %}
-              {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
-          {% endfor %}
+      <span class="source muted">
+        {{ article.get_source_unicode }}
       </span>
-    {% endif %}
 
-    {% if with_tags %}
-      {% if read.tags %}
-        <span class="tags">
-          <span class="muted">{% trans "in" %}</span> {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+      {% if with_meta_muted %}
+        <span class="hover-muted hide">
+      {% endif %}
+
+      <span class="date">
+        {{ article.date_published }}
+      </span>
+
+      {% if article.authors %}
+        <span class="author">
+            <span class="muted">{% trans "by" %}</span>
+            {% for author in article.authors %}
+                {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
         </span>
       {% endif %}
-    {% endif %}
 
-    {% if with_rating %}
-      {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
-    {% endif %}
+      {% if with_tags %}
+        {% if read.tags %}
+          <span class="tags">
+            <span class="muted">{% trans "in" %}</span> {% for tag in read.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          </span>
+        {% endif %}
+      {% endif %}
 
-    {% if with_meta_muted %}
-      </span>
-    {% endif %}
+      {% if with_rating %}
+        {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
+      {% endif %}
+
+      {% if with_meta_muted %}
+        </span>
+      {% endif %}
+
+    </span>
 
     {% endspaceless %}
   </div>

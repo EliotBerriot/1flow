@@ -81,7 +81,8 @@ from ...base.utils import (connect_mongoengine_signals,
                            HttpResponseLogProcessor, StopProcessingException)
 
 from ...base.utils.http import clean_url
-from ...base.utils.dateutils import now, timedelta, today, datetime
+from ...base.utils.dateutils import (now, timedelta, today,
+                                     datetime, time, combine)
 from ...base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 
 from .keyval import FeedbackDocument
@@ -1288,6 +1289,58 @@ class Feed(Document, DocumentHelperMixin):
 
         # Don't forget the parenthesis else we return ``False`` everytime.
         return created or (None if mutualized else False)
+
+    def subscribe_user(self, user, force=False):
+
+        try:
+            Subscription(user=user, feed=self,
+                         name=self.name, tags=self.tags).save()
+
+        except (NotUniqueError, DuplicateKeyError):
+            if not force:
+                LOGGER.warning(u'User %s already subscribed to feed %s, '
+                               u'aborting.', user, self)
+                return
+
+        yesterday = combine(today() - timedelta(days=1), time(0, 0, 0))
+        is_older  = False
+        my_now    = now()
+        reads     = 0
+        unreads   = 0
+
+        for article in self.all_articles().order_by('-id'):
+
+            params = {}
+
+            if is_older:
+                params = {
+                    'is_read': True,
+                    'is_auto_read': True,
+                    'date_read': my_now,
+                    'date_auto_read': my_now,
+                }
+            else:
+                if article.date_published < yesterday:
+                    is_older = True
+                    params = {
+                        'is_read': True,
+                        'is_auto_read': True,
+                        'date_read': my_now,
+                        'date_auto_read': my_now,
+                    }
+                else:
+                    unreads += 1
+            try:
+                Read(article=article, user=user, **params).save()
+
+            except (NotUniqueError, DuplicateKeyError):
+                continue
+
+            else:
+                reads += 1
+
+        LOGGER.info(u'Subscribed %s to %s (%s/%s un/reads created).',
+                    user, self, unreads, reads)
 
     def build_refresh_kwargs(self):
 
