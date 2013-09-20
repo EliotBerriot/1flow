@@ -40,6 +40,7 @@ def read_action(read, action_name, with_text=True):
     action_value = getattr(read, action_name)
 
     return {
+        'with_text': with_text,
         'action_name': action_name,
         'action_data' : Read.status_data.get(action_name),
         'popover_class': '' if with_text else 'popover-tooltip',
