@@ -424,6 +424,8 @@ header {
         position: relative;
         top: 0;
         right: 0;
+        /* This allows us to click on the icons… */
+        z-index: 20;
 
         padding-top: 11px;
         font-size: 24px;
@@ -500,6 +502,8 @@ header {
                 position: relative;
                 top: 0;
                 left: 0;
+                /* This allows us to click on the icons… */
+                z-index: 20;
 
                 overflow: hidden;
                 text-overflow: ellipsis;
