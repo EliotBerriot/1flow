@@ -35,12 +35,13 @@ def read_data_urls(read):
 
 
 @register.inclusion_tag('snippets/read/read-action.html')
-def read_action(read, action_name, with_text=True):
+def read_action(read, action_name, with_text=True, popover_direction=None):
 
     action_value = getattr(read, action_name)
 
     return {
         'with_text': with_text,
+        'popover_direction' : popover_direction or 'top',
         'action_name': action_name,
         'action_data' : Read.status_data.get(action_name),
         'popover_class': '' if with_text else 'popover-tooltip',
