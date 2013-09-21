@@ -3285,6 +3285,10 @@ class Read(Document, DocumentHelperMixin):
     date_knowledge = DateTimeField()
     knowledge_type = StringField(max_length=2)
 
+    is_fun   = BooleanField(help_text=_(u'Qualifies anything that makes you '
+                            u'laugh out loud.'), default=False)
+    date_fun = DateTimeField()
+
     # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
     tags = ListField(GenericReferenceField(),
                      default=list, verbose_name=_(u'Tags'),
@@ -3410,6 +3414,18 @@ class Read(Document, DocumentHelperMixin):
             'undo_label':  _(u'Useless'),
             'do_icon':    'puzzle-piece',
             'undo_icon':  'puzzle-piece',
+            #'undo_icon_stack': True,
+        },
+
+        'is_fun': {
+            'do_title':   _(u'Mark as being fun.'),
+            'undo_title': _(u'Not fun anymore, sadly.'),
+            'status_title': _(u'OMG, this thing is sooooooooo funny!'),
+            'do_label' :   _(u"Funny"),
+            'undo_label':  _(u'Boring'),
+            'do_icon':    'smile',
+            'undo_icon':  'frown',
+            'status_icon': 'smile',
             #'undo_icon_stack': True,
         },
 
