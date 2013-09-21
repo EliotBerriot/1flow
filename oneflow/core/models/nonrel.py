@@ -3381,8 +3381,8 @@ class Read(Document, DocumentHelperMixin):
                               u'law/rules element(s)'),
             'do_label' :   _(u"Law/regulations"),
             'undo_label':  _(u'Not relevant'),
-            'do_icon':    'legal',
-            'undo_icon':  'legal',
+            'do_icon':    'legal icon-flip-horizontal',
+            'undo_icon':  'legal icon-flip-horizontal',
             #'undo_icon_stack': True,
         },
 
@@ -3394,8 +3394,8 @@ class Read(Document, DocumentHelperMixin):
                               u'best-practices element(s)'),
             'do_label' :   _(u"Best-Practice"),
             'undo_label':  _(u'Obsolete'),
-            'do_icon':    'key',
-            'undo_icon':  'key',
+            'do_icon':    'key icon-flip-vertical',
+            'undo_icon':  'key icon-flip-vertical',
             #'undo_icon_stack': True,
         },
 
