@@ -48,6 +48,9 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message) 
                 });
             }
 
+            //console.debug(read.find(".action-mark-" + klass));
+            //console.debug(read.find(".action-mark-" + inverse));
+
             read.find(".action-mark-" + klass).fadeOut('fast', function(){
                 read.find(".action-mark-" + inverse).fadeIn('fast');
             });
@@ -64,27 +67,15 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message) 
     return false;
 }
 
-
-function toggle_is_read(read_id, send_notify) {
-
-    var read = $("#" + read_id);
-
-    return mark_something(read_id, 'is_read',
-                          !!read.hasClass('is_read'), send_notify);
-}
-
-function toggle_is_starred(read_id, send_notify) {
+function toggle_status(read_id, attr_name, send_notify) {
 
     var read = $("#" + read_id);
 
-    return mark_something(read_id, 'is_starred',
-                          !!read.hasClass('is_starred'), send_notify);
-}
+    mark_something(read_id, attr_name,
+                   !!read.hasClass(attr_name), send_notify);
 
-function toggle_is_bookmarked(read_id, send_notify) {
-
-    var read = $("#" + read_id);
-
-    return mark_something(read_id, 'is_bookmarked',
-                          !!read.hasClass('is_bookmarked'), send_notify);
+    // if (ev) {
+    //     ev.stopPropagation();
+    // }
+    return false;
 }

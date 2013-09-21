@@ -1,11 +1,11 @@
 <div class="article-meta" data-toggle-id="{{ read.id }}">
 
   {% if with_actions %}
-    <div class="pull-right actions hover-muted hide">
-      {% with with_text=0 with_admin_actions=1 %}
+    <ul class="pull-right actions hover-muted hide">
+      {% with with_text=0 %}{# with_admin_actions=1 #}
         {% include "snippets/read/read-actions.html" %}
       {% endwith %}
-    </div>
+    </ul>
   {% endif %}
 
 
@@ -27,11 +27,13 @@
     </{% firstof meta_hX "h2" %}>
   {% endif %}
 
-    <span class="meta">
+    <div class="meta">
 
       <span class="source muted">
         {{ article.get_source_unicode }}
       </span>
+
+      {% include "snippets/read/meta-status-icons.html" %}
 
       {% if with_meta_muted %}
         <span class="hover-muted hide">
@@ -66,7 +68,7 @@
         </span>
       {% endif %}
 
-    </span>
+    </div>
 
     {% endspaceless %}
   </div>
