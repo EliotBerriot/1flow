@@ -8,11 +8,12 @@
   {% endcomment %}
 
   {% if with_admin_actions and user.is_superuser %}
-  <li class="action">
+  <li class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+      title="{% trans "Informations for administrators/staff" %}">
     <span>
       <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;"
-          title="{% trans "Informations for administrators/staff" %}"
-          class="action-admin-informations nowrap {{ with_text|yesno:",popover-tooltip" }} popover-top">
+
+          class="action-admin-informations nowrap">
         <i class="icon-cog"></i>{% if with_text %}<span
             class="hidden-phone"> {% trans "Admin. informations" %}</span>{% endif %}</a>
     </span>
@@ -34,23 +35,22 @@
 
   {% endcomment %}
 
-  <li class="action dropdown">
+  <li class="action dropdown {{ with_text|yesno:",popover-tooltip" }} popover-top"
+      title="{% trans "Assign or remove watch-related attributes" %}">
     <span>
-      <a class="dropdown-toggle nowrap {{ with_text|yesno:",popover-tooltip" }} popover-top"
-          data-toggle="dropdown" href="#"
-          title="{% trans "Assign (or not) watch-related attributes" %}">
+      <a class="dropdown-toggle nowrap" data-toggle="dropdown" href="#">
         <i class="icon-book"></i>{% if with_text %}<span
             class="hidden-phone">&nbsp;{% trans "Watch attributes" %}</span>{% endif %}
       </a>
       <ul class="dropdown-menu">
 
-        {% read_action read 'is_fact' 1 %}
-        {% read_action read 'is_number' 1 %}
-        {% read_action read 'is_prospective' 1 %}
-        {% read_action read 'is_knowhow' 1 %}
-        {% read_action read 'is_rules' 1 %}
-        {% read_action read 'is_quote' 1 %}
-        {% read_action read 'is_knowledge' 1 %}
+        {% read_action read 'is_fact' with_text %}
+        {% read_action read 'is_number' with_text %}
+        {% read_action read 'is_knowhow' with_text %}
+        {% read_action read 'is_prospective' with_text %}
+        {% read_action read 'is_rules' with_text "bottom" %}
+        {% read_action read 'is_quote' with_text "bottom" %}
+        {% read_action read 'is_knowledge' with_text "bottom" %}
 
       </ul>
     </span>
@@ -58,10 +58,9 @@
 
   {% read_action read 'is_read' with_text %}
 
-  <li class="action">
-    <a href="{{ article.url }}" target="_blank"
-        class="nowrap {{ with_text|yesno:",popover-tooltip" }} popover-top"
-        title="{% trans "Display on the original website" %}">
+  <li class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+      title="{% trans "Display on the original website" %}">
+    <a href="{{ article.url }}" target="_blank" class="nowrap">
       <i class="icon-double-angle-right"></i>{% if with_text %}<span
           class="hidden-phone"> {% trans "Read original" %}</span>{% endif %}</a>
   </li>

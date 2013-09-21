@@ -1,5 +1,5 @@
 
-  <li class="action  {{ popover_class }} popover-top"
+  <li class="action {{ popover_class }} popover-{{ popover_direction }}"
       title="{{ action_data.undo_title }}">
     <span class="action-mark-not_{{ action_name }} {{ undo_start_hidden }}">
       <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
@@ -17,17 +17,15 @@
             class="hidden-phone"> {{ action_data.undo_label }}</span>{% endif %}</a>
     </span>
   </li>
-  <li class="action">
+  <li class="action {{ popover_class }} popover-{{ popover_direction }}"
+      title="{{ action_data.do_title }}">
     <span class="action-mark-{{ action_name }} {{ do_start_hidden }}">
-      <a href="#" onclick="javascript:return {{ js_func }};"
-          title="{{ action_data.do_title }}"
-          class="nowrap {{ popover_class }} popover-top">
-        {% if action_data.do_icon_stack %}
+      <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
 
+        {% if action_data.do_icon_stack %}
           <span class="icon-stack">
               <i class="icon-sign-blank icon-stack-base"></i>
-              <i class="icon-{{ action_data.do_icon }} icon-light"
-                  alt="{% trans "unmark as number" %}"></i>
+              <i class="icon-{{ action_data.do_icon }} icon-light"></i>
           </span>
 
         {% else %}
