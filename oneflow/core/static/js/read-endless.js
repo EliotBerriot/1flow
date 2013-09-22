@@ -472,6 +472,12 @@ Mousetrap.bind(['m w', 't w'], function() {
     return false;
 });
 
+// “Oh My God”, “Laugh Out Loud”, “Laughing My Ass Out”, “FUN”
+Mousetrap.bind(['o m g', 'l o l', 'l m a o', 'f u n'], function() {
+    toggle_current_read_status("is_fun");
+    return false;
+});
+
 // —————————————————————————————————————————————————————————— read-flow actions
 
 // “Mark Read” + “Next”, “Goto Next”, “Open Next”
