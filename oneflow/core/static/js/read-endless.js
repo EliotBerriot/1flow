@@ -143,6 +143,15 @@ function toggle_content(oid, callback) {
 
             $me.addClass('open_content');
             $content.slideDown(scroll_speed, "swing", run_callback);
+        },
+
+        close_auxilliary = function ($on_what) {
+
+            $on_what.find('.clicker-muted').each(function() {
+                // no need bothering testing is(':visible'). It costs
+                // a lot, and if it's not, slideUp() will do nothing.
+                $(this).slideUp();
+            });
         };
 
     if ($content.is(':visible')) {
@@ -157,8 +166,8 @@ function toggle_content(oid, callback) {
         //console.debug('set open to null and last to ' + oid);
 
         $content.slideUp(scroll_speed, "swing", run_callback);
+        close_auxilliary($me);
         $me.removeClass('open_content');
-
         // bindable_hovered NOT USED YET
         //
         // This is not mandatory, but doesn't hurt.
@@ -190,6 +199,7 @@ function toggle_content(oid, callback) {
 
             $("#content-" + to_close).slideUp(scroll_speed, "swing", function(){
                 $current.removeClass('open_content');
+                close_auxilliary($current);
             });
 
 
