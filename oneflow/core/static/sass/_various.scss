@@ -38,6 +38,62 @@ $ellipsiswidth: 3em !default;
 
 }
 
+@mixin text-full-outline ($color: #000) {
+  text-shadow: 1px 1px 0 $color,
+    -1px 1px 0 $color,
+    1px -1px 0 $color,
+    -1px -1px 0 $color,
+    0px 1px 0 $color,
+    0px -1px 0 $color,
+    -1px 0px 0 $color,
+    1px 0px 0 $color,
+    2px 2px 0 $color,
+    -2px 2px 0 $color,
+    2px -2px 0 $color,
+    -2px -2px 0 $color,
+    0px 2px 0 $color,
+    0px -2px 0 $color,
+    -2px 0px 0 $color,
+    2px 0px 0 $color,
+    1px 2px 0 $color,
+    -1px 2px 0 $color,
+    1px -2px 0 $color,
+    -1px -2px 0 $color,
+    2px 1px 0 $color,
+    -2px 1px 0 $color,
+    2px -1px 0 $color,
+    -2px -1px 0 $color;
+}
+
+/* http://sachagreif.com/useful-sass-mixins/ */
+
+@function black($opacity){
+    @return rgba(0, 0, 0, $opacity)
+}
+@function white($opacity){
+    @return rgba(255, 255, 255, $opacity)
+}
+
+@mixin box-emboss($opacity, $opacity2){
+    box-shadow: white($opacity) 0 1px 0, inset black($opacity2) 0 1px 0;
+}
+
+@mixin box-tb-shadow ($color: #888) {
+    box-shadow: 0px 10px 5px $color, 0px -10px 5px $color;
+
+}
+
+@mixin box-inset-tb-shadow($bitb_width: 5px, $color: #aaa) {
+    /* http://forrst.com/posts/Inset_box_shadow_on_top_and_bottom_only-Dfb */
+
+    -moz-box-shadow:    inset 0   $bitb_width  $bitb_width (-$bitb_width) $color,
+                        inset 0 (-$bitb_width) $bitb_width (-$bitb_width) $color;
+    -webkit-box-shadow: inset 0   $bitb_width  $bitb_width (-$bitb_width) $color,
+                        inset 0 (-$bitb_width) $bitb_width (-$bitb_width) $color;
+     box-shadow:        inset 0   $bitb_width  $bitb_width (-$bitb_width) $color,
+                        inset 0 (-$bitb_width) $bitb_width (-$bitb_width) $color;
+}
+
 a.brand {
     text-transform: none;
 }

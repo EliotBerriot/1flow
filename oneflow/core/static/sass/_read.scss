@@ -18,27 +18,20 @@
 
     font-weight: 300;
 
-    .actions {
+    .read-actions {
         display: block;
         position: relative;
         top: 0;
         right: 0;
-        padding-top: 10px;
 
         /* Keep the icons over the title. */
         z-index: 20;
 
-        li.action {
-            margin-left: 10px;
-            display: inline-block;
-
-            &:first-child {
-                margin-left: 0;
-            }
-
+        .action {
             ul.dropdown-menu {
                 margin-left: -78px;
-                padding: 10px 10px 10px 0;
+                width: 175px;
+                padding: 10px;
                 text-align: center;
             }
         }
@@ -48,7 +41,12 @@
         }
 
         a {
-            /*padding-left: 10px;*/
+            display: inline-block;
+            padding-top: 10px;
+            height: 33px;
+            width: 43px;
+            text-align: center;
+            vertical-align: middle;
             color: #29313c;
             opacity: 0.5;
 
@@ -58,6 +56,10 @@
             /* reset the one from .article-content */
             border-bottom: none;
 
+            &:first-child,
+            &:nth-child(2) {
+                padding-left: 0;
+            }
 
             &:hover, &:active {
                 opacity: 1;
@@ -69,34 +71,108 @@
         }
     }
 
+    .article-meta {
+        .watch-actions {
+            position: relative;
+            bottom: 0;
+            right: 0;
+            padding-top: 5px;
+            padding-bottom: 5px;
+            padding-right: 10px;
+            text-align: right;
+
+            background-color: rgb(247, 247, 247);
+            @include box-inset-tb-shadow();
+
+            /* inset-box-shadow hacking to make it visually integrated */
+            margin-left: -10px;
+            margin-right: -10px;
+            margin-bottom: -11px;
+            margin-top: 10px;
+        }
+    }
+
     .end-actions {
-        /* Reset the article-content margin. */
-        margin-left: 0;
+        font-size: 14px;
+        text-align: center;
+        border-top: 1px solid #949aa1;
 
-        font-size: 15px;
-        margin-top: 4em;
-        border-top: 2px solid #949aa1;
+        .action {
+            text-align: center;
 
-        li.action {
+            a {
+                vertical-align: top;
 
-            vertical-align: center;
+                i {
+                    padding-top: 5px;
+                }
 
-            &:first-child,
-            &:nth-child(2) {
-                /* Actions icons come by pair, one of them being hidden */
-                margin-left: 0;
+                span {
+                    line-height: 15px;
+                }
             }
+        }
+    }
 
-            ul.dropdown-menu {
-                margin-left: -20px;
-                padding: 10px;
-                text-align: left;
+    .end-meta {
+        /*
+            Overlap the .article padding for .end-meta to snap to borders.
+            NOTE: only valid for big screens. Phones re-overlap this in
+            responsive stlyesheets.
+        */
+        margin-left: -10px;
+        margin-right: -10px;
 
-                li {
-                    margin-left: 0;
+        .end-watch-status {
+            height: 20px;
+            border-bottom: 1px solid #949aa1;
+            margin-bottom: -1px;
+
+            span {
+                margin-right: 1em;
+
+                &:last-child,
+                &:nth-child(-2) {
+                    margin-right: 0;
+                }
+            }
+        }
+
+        .watch-actions {
+            text-align: center;
+            padding-bottom: 5px;
+            background-color: rgb(247, 247, 247);
+            @include box-inset-tb-shadow(5px, #949aa1);
+
+            .action a {
+                height: inherit;
+                min-width: 130px;
+
+                i {
                     font-size: 16px;
                 }
             }
+        }
+    }
+
+    .end-actions .action,
+    .end-meta .watch-actions .action {
+
+        padding-left: 10px;
+        padding-right: 10px;
+
+        &:first-child,
+        &:nth-child(2) {
+            padding-left: 0;
+        }
+
+        &:last-child,
+        &:nth-child(-2) {
+            padding-right: 0;
+        }
+
+        a {
+            width: inherit;
         }
     }
 
@@ -109,7 +185,7 @@
 
     .article {
         padding: 10px 10px;
-        border-bottom: 1px dotted #ddd;
+        border-bottom: 1px solid #ddd;
 
         /*
             START flash_fade():
@@ -127,6 +203,10 @@
 
         /* END flash_fade() */
 
+        &:hover {
+            background-color: #fff;
+        }
+
         .article-meta {
             /*
                 We need overflow: visible for the dropdown.
@@ -134,10 +214,6 @@
                 max-height: 3.76em;
                 overflow: hidden;
             */
-
-            ul.actions.hide {
-                display: none;
-            }
 
             .article-title {
                 position: relative;
@@ -155,42 +231,32 @@
             }
 
             .meta {
-                /*height: 3.7em;*/
+                /* height: 3.7em; */
 
-                ul.status-icons {
+                .status-icons {
                     display: inline;
                     margin-left: 1em;
                     width: 10px;
 
-                    li {
-                        display: inline;
-                        list-style: none;
+                    span {
                         i {
                             margin-left: 0.5em;
                         }
 
                         &:first-child {
+                            /*
+                                NOTE: no nth-child(2) here, we don't have
+                                icons pairs, but only positive feedback icons
+                            */
+
                             margin-left: 0;
                         }
-                    }
-
-                    .hide {
-                        /*  need to recall this `.hide`, because of the
-                            default "inline" defined 10 lines before.*/
-                        display: none;
                     }
                 }
 
                 .meta {
                     max-height: 1.5em;
                     overflow: hidden;
-
-                    span {
-                        max-height: 1.5em;
-                        overflow: hidden;
-                        vertical-align: top;
-                        width: auto;
-                    }
 
                     .date {
                         margin-left: 1em;
@@ -225,11 +291,16 @@
     }
 }
 
+.actions.hide {
+    display: none;
+}
+
 /* .not_is_bookmarked.not_is_starred */
 .read-list-item.not_is_read {
     .article-title {
-        /* 29323d #29313c #a2b1c3 #586a7f */
-        text-shadow: 0 0 1px #a2b1c3;
+        /* #a2b1c3 #29323d #29313c #586a7f */
+        text-shadow: 0 0 2px #bbb;
+        /* @include text-full-outline(#ccc);*/
 
     }
 }
@@ -240,7 +311,6 @@
         opacity: 0.4;
     }
 }
-
 
 .read-tile {
     width: 170px;
