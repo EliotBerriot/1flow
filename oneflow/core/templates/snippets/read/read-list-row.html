@@ -3,45 +3,50 @@
 
   {% with read.article as article %}
 
-    <div class="article span12">
+    <div class="article">
 
-      <div class="row-fluid">
-
-        {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 %}
-          {% include "snippets/read/article-meta.html" %}
-        {% endwith %}
+      {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 %}
+        {% include "snippets/read/article-meta.html" %}
+      {% endwith %}
 
       {% include 'snippets/read/read-admin-informations.html' %}
 
-      <div class="article-content slide-togglable slide-toggle-notice hide"
+      <div class="read-content-wrapper slide-togglable slide-toggle-notice hide"
           id="content-{{ read.id }}"
           data-toggle-id="{{ read.id }}"
           data-toggle-function="toggle_content"
           data-toggle-callback="notice_element">
+        <div class="article-content">
+            {% if article.content_type == 3 %}
+              {% with content=article.content_display %}
+                {% if content %}
+                  {{ content|safe }}
+                {% else %}
+                  {% include 'snippets/read/no-content.html' %}
 
-          {% if article.content_type == 3 %}
-            {% with content=article.content_display %}
-              {% if content %}
-                {{ content|safe }}
-              {% else %}
-                {% include 'snippets/read/no-content.html' %}
+                {% endif %}
+              {% endwith %}
 
-              {% endif %}
-            {% endwith %}
+            {% elif article.content_type == 1 %}
+                  {% include 'snippets/read/not-safe.html' %}
 
-          {% elif article.content_type == 1 %}
-                {% include 'snippets/read/not-safe.html' %}
+            {% else %}
+              {% include 'snippets/read/no-content.html' %}
 
-          {% else %}
-            {% include 'snippets/read/no-content.html' %}
+            {% endif %}
+        </div><!-- .article-content -->
 
-          {% endif %}
+        <div class="end-meta clicker-muter-constrainer">
+            <div class="status-icons watch-status end-watch-status centered">
+              {% include "snippets/read/watch-status.html" with with_text=1 %}
+            </div>
 
-          <ul class="article-actions end-actions actions centered">
-            {% include 'snippets/read/read-actions.html' with with_text=1 %}
-          </ul>
-
-      </div><!-- .article-content -->
+          {% with end_actions=1 with_text=1 %}
+            {% include 'snippets/read/watch-actions.html' %}
+            {% include 'snippets/read/read-actions.html' %}
+          {% endwith %}
+        </div>
+      </div><!-- .article-content-wrapper -->
 
     </div><!-- .article -->
   {% endwith %}

@@ -1,13 +1,11 @@
-<div class="article-meta" data-toggle-id="{{ read.id }}">
+<div class="article-meta clicker-muter-constrainer" data-toggle-id="{{ read.id }}">
 
   {% if with_actions %}
-    <ul class="pull-right actions hover-muted hide">
-      {% with with_text=0 %}{# with_admin_actions=1 #}
+      {% with with_text=0 %}
+        {# with_admin_actions=1 #}
         {% include "snippets/read/read-actions.html" %}
       {% endwith %}
-    </ul>
   {% endif %}
-
 
   <div class="meta content-toggle"
       data-toggle-id="{{ read.id }}"
@@ -33,7 +31,9 @@
         {{ article.get_source_unicode }}
       </span>
 
-      {% include "snippets/read/meta-status-icons.html" %}
+      <span class="status-icons watch-status">
+        {% include "snippets/read/watch-status.html" %}
+      </span>
 
       {% if with_meta_muted %}
         <span class="hover-muted hide">
@@ -72,6 +72,12 @@
 
     {% endspaceless %}
   </div>
+
+  {% if with_actions %}
+      {% with with_text=0 %}
+        {% include "snippets/read/watch-actions.html" %}
+      {% endwith %}
+  {% endif %}
 
   {% if not with_title_first %}
     <div class="clearfix"></div>

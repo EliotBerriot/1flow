@@ -1,8 +1,7 @@
 
-<li class="nowrap popover-tooltip popover-top "
+<span class="nowrap popover-tooltip popover-top action-mark-not_{{ action_name }} {{ status_hidden }}"
     title="{{ action_data.status_title }}">
-  <span class="action-mark-not_{{ action_name }} {{ status_hidden }}">
-    <i class="icon-{% firstof action_data.status_icon action_data.undo_icon %}"
+  <i class="icon-{% firstof action_data.status_icon action_data.undo_icon %}"
       alt="{{ action_data.status_title }}"></i>
-  </span>
-</li>
+      {% if with_text %}<span class="hidden-phone">&nbsp;{{ action_data.status_label }}</span>{% endif %}
+</span>

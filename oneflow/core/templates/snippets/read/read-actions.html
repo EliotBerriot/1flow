@@ -1,70 +1,44 @@
 
-  {% comment %}
+{% if end_actions %}
+  <div class="read-actions actions end-actions">
 
-    NOTE: about complexity. We need <span> inside <li class="action">, else the fade*()
-      functions will restore <li class="action"> to display:list-item, even if they are
-      display:inline in CSS. Gosh. It's a jQuery *feature*. 20130920
+{% else %}
+  <div class="read-actions actions pull-right hover-muted hide hidden-phone"
+    data-hover-muter-block="actions-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
 
-  {% endcomment %}
+{% endif %}
+
 
   {% if with_admin_actions and user.is_superuser %}
-  <li class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+  <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
       title="{% trans "Informations for administrators/staff" %}">
-    <span>
-      <a href="#" onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;"
-
-          class="action-admin-informations nowrap">
-        <i class="icon-cog"></i>{% if with_text %}<span
-            class="hidden-phone"> {% trans "Admin. informations" %}</span>{% endif %}</a>
-    </span>
-  </li>
+    <a href="#" class="action-admin-informations nowrap"
+        onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;">
+      <i class="icon-cog"></i>{% if with_text %}<span
+          class="hidden-phone">&nbsp;{% trans "Admin. informations" %}</span>{% endif %}</a>
+  </span>
   {% endif %}
 
   {% read_action read 'is_bookmarked' with_text %}
   {% read_action read 'is_starred' with_text %}
 
-  {% comment %}
-    NOT READY
-
-    <li class="action">
-    <a href="#" target="_blank" class="nowrap {{ with_text|yesno:",popover-tooltip" }} popover-top"
-        title="{% trans "Action not yet available" %}">
-      <i class="icon-retweet"></i>{% if with_text %}<span
-          class="hidden-phone"> {% trans "Re-blog" %}</span>{% endif %}</a>
-    </li>
-
-  {% endcomment %}
-
-  <li class="action dropdown {{ with_text|yesno:",popover-tooltip" }} popover-top"
+  <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
       title="{% trans "Assign or remove watch-related attributes" %}">
-    <span>
-      <a class="dropdown-toggle nowrap" data-toggle="dropdown" href="#">
-        <i class="icon-book"></i>{% if with_text %}<span
-            class="hidden-phone">&nbsp;{% trans "Watch attributes" %}</span>{% endif %}
-      </a>
-      <ul class="dropdown-menu">
-
-        {% read_action read 'is_fact'        with_text %}
-        {% read_action read 'is_number'      with_text %}
-        {% read_action read 'is_knowhow'     with_text %}
-        {% read_action read 'is_prospective' with_text %}
-        {% read_action read 'is_rules'       with_text "bottom" %}
-        {% read_action read 'is_quote'       with_text "bottom" %}
-        {% read_action read 'is_knowledge'   with_text "bottom" %}
-        {% read_action read 'is_fun'         with_text "bottom" %}
-
-      </ul>
-    </span>
-  </li>
+    <a class="clicker-muter-toggle nowrap" href="#"
+        data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
+      <i class="icon-book"></i>{% if with_text %}<span
+          class="hidden-phone">&nbsp;{% trans "Watch attributes" %}</span>{% endif %}
+    </a>
+  </span>
 
   {% read_action read 'is_read' with_text %}
 
-  <li class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+  <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
       title="{% trans "Display on the original website" %}">
-    <span>
-      <a href="{{ article.url }}" target="_blank" class="nowrap">
-        <i class="icon-double-angle-right"></i>{% if with_text %}<span
-            class="hidden-phone"> {% trans "Read original" %}</span>{% endif %}</a>
-    <span>
-  </li>
+    <a href="{{ article.url }}" target="_blank" class="nowrap">
+      {% if with_text %}<span
+          class="hidden-phone">{% trans "Read original" %}&nbsp;</span>{% endif %}<i class="icon-double-angle-right"></i>
+    </a>
+  </span>
 
+</div>
