@@ -54,9 +54,10 @@ def read_action(read, action_name, with_text=True, popover_direction=None):
 
 
 @register.inclusion_tag('snippets/read/read-action-status.html')
-def read_action_status(read, action_name):
+def read_action_status(read, action_name, with_text=False):
 
     return {
+        'with_text': with_text,
         'action_name': action_name,
         'action_data' : Read.status_data.get(action_name),
         'status_hidden' : '' if getattr(read, action_name) else 'hide',
