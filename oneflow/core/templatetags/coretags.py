@@ -25,13 +25,14 @@ def read_status_css(read):
 
 
 @register.simple_tag()
-def read_data_urls(read):
+def read_action_toggle_url(read):
 
-    rid = read.id
+    any_key = Read.get_status_attributes()[0]
+    url_base = reverse('toggle', kwargs={'klass': 'Read',
+                       'oid': read.id, 'key': any_key}).replace(
+                        any_key, u'@@KEY@@')
 
-    return u'\n'.join(u'data-url-action-{0}={1}'.format(key, reverse('toggle',
-                      kwargs={'klass': 'Read', 'oid': rid, 'key': key}))
-                      for key in Read.get_status_attributes())
+    return u'data-url-action-toggle={0}'.format(url_base)
 
 
 @register.inclusion_tag('snippets/read/read-action.html')
