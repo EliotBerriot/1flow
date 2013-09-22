@@ -416,6 +416,38 @@ function setup_hover_muters(parent){
     find_start(parent, 'hover-unmute-children')
         .mouseover(show_hover_muted).mouseleave(trigger_hide_over_muted);
 }
+function clicker_muter_toggle(ev, group_name) {
+
+    // console.log('clicker_muter_toggle: ' + group_name);
+    // console.log($(this));
+    // console.log($(this).closest('.clicker-muter-constrainer'));
+    // console.log($(this).closest('.clicker-muter-constrainer')
+    //                 .find('.clicker-muted'));
+
+    $(this).closest('.clicker-muter-constrainer')
+        .find('.clicker-muted').each(function(thing) {
+            console.log('clicker-muter: ' + thing + this);
+
+            var $this = $(this);
+            if ($this.data('clicker-muter-group') == group_name) {
+                $this.slideToggle();
+            }
+        });
+
+    // stopPropagation & preventDefault
+    return false;
+}
+function setup_clicker_muters(parent){
+
+    // NOTE: we really want mouseover() (not mouseenter()), to not
+    // trigger the "out" when mouse gets over a sub-dropdown or a
+    // sub-tooltip.
+    find_start(parent, 'clicker-muter-toggle')
+        .on("click", function(ev) {
+            var group_name = $(this).data('clicker-muter-group');
+            return clicker_muter_toggle.call(this, ev, group_name);
+        });
+}
 function setup_tooltips(parent){
 
     //
@@ -581,6 +613,7 @@ function setup_everything(parent) {
         setup_hover_muters(parent);
     }
     setup_popovers(parent);
+    setup_clicker_muters(parent);
 
     // bindable_hovered NOT USED YET
     //setup_hover_notifiers(parent);

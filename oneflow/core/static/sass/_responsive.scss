@@ -3,11 +3,6 @@
 @media (min-width: 1024px) and (max-width: 1279px) {
     /* styles for tablets in landscape mode. */
 
-    .read-list-item {
-        .actions {
-            font-size: 18px;
-        }
-    }
 }
 
 @media (min-width: 768px) and (max-width: 1023px) {
@@ -66,11 +61,13 @@
             font-size: 1.8em;
             cursor: pointer;
         }
-    }
 
-    .read-list-item {
         .actions {
-            padding-top: 15px;
+            a {
+                padding-top: 17px;
+                padding-bottom: 5px;
+                /*height: 25px;*/
+            }
         }
     }
 }
@@ -91,23 +88,80 @@
 
     .read-list-item,
     .read-individual-item {
+
         .end-actions {
-            margin-top: 1em;
             border-top-width: 1px;
             margin-bottom: 1em;
 
-            li.action {
-                ul.dropdown-menu {
-                    margin-left: -80px;
-                    padding: 10px;
+            span {
+                /*  We have only icons on small devices.
+                    Make them bigger and spaced. */
+                margin-left: 20px;
+
+                &:first-child,
+                &:nth-child(2) {
+                    margin-left: 0;
+                }
+
+                a {
+                    font-size: 26px;
+                }
+            }
+        }
+
+        .end-meta {
+
+            /*  Override the overlap made on big screens
+                to snap to article content. */
+            margin-left: 0;
+            margin-right: 0;
+
+            .end-watch-status {
+
+                /*  On phone, we override the content
+                    color for better appearance/reading. */
+                background-color: rgb(247, 247, 247);
+
+                font-size: 18px;
+                padding-bottom: 5px;
+                border-bottom-width: 1px;
+                margin-bottom: -1px;
+
+                span {
+                    margin-right: 1em;
+
+                    &:last-child {
+                        margin-right: 0;
+                    }
                 }
             }
 
-            a {
-                /*  We have only icons on small devices.
-                    Make them bigger and spaced. */
-                margin-left: 30px;
-                font-size: 26px;
+            .watch-actions {
+
+                /* Make the shadow a little narrower on small devices. */
+                @include box-inset-tb-shadow(3px, #949aa1);
+
+                .action a {
+                    /* Override the global 150px. */
+                    min-width: 0;
+                }
+            }
+        }
+
+        .end-actions .action,
+        .end-meta .watch-actions .action {
+
+            padding-left: 8px;
+            padding-right: 8px;
+
+            &:first-child,
+            &:nth-child(2) {
+                padding-left: 0;
+            }
+
+            &:last-child,
+            &:nth-child(-2) {
+                padding-right: 0;
             }
         }
     }
@@ -116,10 +170,12 @@
         .article {
             /* cancel the 10px padding of big screens to gain space */
             padding: 5px 0;
-        }
 
-        .article-content {
-            padding: 0;
+            .article-content {
+                padding-left: 0;
+                padding-right: 0;
+                background-color: rgb(247, 247, 247);
+            }
         }
     }
 
