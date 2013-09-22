@@ -199,6 +199,14 @@
     }
 }
 
+.open_content {
+    /*
+        Make the content white, like the hover. this avoids
+        disgracefull flip/flaps on mouse out while we read.
+    */
+    background-color: #fff;
+}
+
 .read-list-row {
 
     .article {
