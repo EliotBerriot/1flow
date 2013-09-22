@@ -35,7 +35,7 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message) 
         var send_notify = false;
     }
 
-    $.get(read.data('url-action-' + mark_what),
+    $.get(read.data('url-action-toggle').replace('@@KEY@@', mark_what),
         function(){
             if (send_notify) {
                 notify({

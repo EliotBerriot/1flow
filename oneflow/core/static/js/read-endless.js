@@ -118,7 +118,8 @@ function toggle_content(oid, callback) {
     };
 
     var me      = "#" + oid,
-        content = $("#content-" + oid),
+        $me     = $(me),
+        $content = $("#content-" + oid),
 
         open_me = function(scrollTo) {
 
@@ -140,10 +141,20 @@ function toggle_content(oid, callback) {
             // bindable_hovered NOT USED YET
             //bindable_hovered = content;
 
-            content.slideDown(scroll_speed, "swing", run_callback);
+            $me.addClass('open_content');
+            $content.slideDown(scroll_speed, "swing", run_callback);
+        },
+
+        close_auxilliary = function ($on_what) {
+
+            $on_what.find('.clicker-muted').each(function() {
+                // no need bothering testing is(':visible'). It costs
+                // a lot, and if it's not, slideUp() will do nothing.
+                $(this).slideUp();
+            });
         };
 
-    if (content.is(':visible')) {
+    if ($content.is(':visible')) {
         // put the current item to top of window
         scrollToElement(me, scroll_speed, 50);
 
@@ -154,8 +165,9 @@ function toggle_content(oid, callback) {
         last_opened  = oid;
         //console.debug('set open to null and last to ' + oid);
 
-        content.slideUp(scroll_speed, "swing", run_callback);
-
+        $content.slideUp(scroll_speed, "swing", run_callback);
+        close_auxilliary($me);
+        $me.removeClass('open_content');
         // bindable_hovered NOT USED YET
         //
         // This is not mandatory, but doesn't hurt.
@@ -171,13 +183,13 @@ function toggle_content(oid, callback) {
             //console.debug('open_content: ' + open_content);
 
             var to_close   = open_content,
-                current    = "#" + open_content,
-                cur_height = $(current).height();
+                $current   = $("#" + open_content),
+                cur_height = $current.height();
 
-            // compensate the slideUp() of the current open
+            // compensate the slideUp() of the $current open
             // element if it's located before us, else the
             // movement in not visually fluent.
-            if ($(current).data('index') < $(me).data('index')) {
+            if ($current.data('index') < $(me).data('index')) {
                 scrollToElement(me, scroll_speed, cur_height);
                 open_me(false);
 
@@ -185,7 +197,11 @@ function toggle_content(oid, callback) {
                 open_me(true);
             }
 
-            $("#content-" + to_close).slideUp(scroll_speed, "swing");
+            $("#content-" + to_close).slideUp(scroll_speed, "swing", function(){
+                $current.removeClass('open_content');
+                close_auxilliary($current);
+            });
+
 
         } else {
             open_me(true);
@@ -453,6 +469,12 @@ Mousetrap.bind(['m u', 't u'], function() {
 // “Mark Knowledge”, “Toggle Knowledge”
 Mousetrap.bind(['m w', 't w'], function() {
     toggle_current_read_status("is_knowledge");
+    return false;
+});
+
+// “Oh My God”, “Laugh Out Loud”, “Laughing My Ass Out”, “FUN”
+Mousetrap.bind(['o m g', 'l o l', 'l m a o', 'f u n'], function() {
+    toggle_current_read_status("is_fun");
     return false;
 });
 

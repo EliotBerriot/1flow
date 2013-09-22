@@ -79,6 +79,11 @@
         padding-top: 0;
     }
 
+    .application {
+        margin-left: -10px;
+        margin-right: -10px;
+    }
+
     #read {
         #reads-number {
             /* cancel the 10px padding of big screens to gain space */
@@ -91,7 +96,20 @@
 
         .end-actions {
             border-top-width: 1px;
-            margin-bottom: 1em;
+
+            /*
+                Override the bottom of the main article <li>, to have
+                the bottom of article content have only one color.
+
+                We have -6px (instead of -5px) to overlap the border-bottom
+                which doesn't take  all the width. This is better looking if
+                it's not here under the pseudo-navbar.
+            */
+            padding-bottom: 10px;
+            margin-bottom: -6px;
+
+            /* Lower the whole thing to be visually correct. */
+            padding-top: 10px;
 
             span {
                 /*  We have only icons on small devices.
@@ -104,24 +122,21 @@
                 }
 
                 a {
-                    font-size: 26px;
+                    font-size: 28px;
                 }
             }
         }
 
         .end-meta {
-
-            /*  Override the overlap made on big screens
-                to snap to article content. */
+            /*
+                Override the desktop overlaping. On mobile devices, the
+                overlapping is handled by the .read-content-wrapper, which
+                does the job for all the content at once.
+            */
             margin-left: 0;
             margin-right: 0;
 
             .end-watch-status {
-
-                /*  On phone, we override the content
-                    color for better appearance/reading. */
-                background-color: rgb(247, 247, 247);
-
                 font-size: 18px;
                 padding-bottom: 5px;
                 border-bottom-width: 1px;
@@ -171,10 +186,19 @@
             /* cancel the 10px padding of big screens to gain space */
             padding: 5px 0;
 
+            .read-content-wrapper {
+                /*
+                    Make the end-actions bar snap to screen edges. This whill
+                    ease transforming it into a pseudo-fixed navbar in the future.
+                */
+                margin-left: -10px;
+                margin-right: -10px;
+            }
+
             .article-content {
-                padding-left: 0;
-                padding-right: 0;
-                background-color: rgb(247, 247, 247);
+                /* Compensate the .read-content-wrapper expansion. */
+                padding-left: 10px;
+                padding-right: 10px;
             }
         }
     }

@@ -1,5 +1,5 @@
   <li id="{{ read.id }}" class="read-list-row read-list-item row-fluid hover-unmute-children {% read_status_css read %}"
-      {% read_data_urls read %} data-index="{{ tenths_counter|add:forloop.counter }}">
+      {% read_action_toggle_url read %} data-index="{{ tenths_counter|add:forloop.counter }}">
 
   {% with read.article as article %}
 

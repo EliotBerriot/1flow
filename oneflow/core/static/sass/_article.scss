@@ -54,7 +54,10 @@
     img {
         display: block;
         max-width: 100%;
-        margin: 1.5em    auto;
+        margin: 1.5em auto;
+        /* @include border-radius(2px); */
+        border-radius: 2px;
+        box-shadow: 0 3px #bbb;
     }
 
     .img-legend {
@@ -137,6 +140,10 @@
            which is bigger, for reading. */
         font-size: 120%;
         margin-top: 2em;
+    }
+
+    img {
+        box-shadow: none;
     }
 }
 

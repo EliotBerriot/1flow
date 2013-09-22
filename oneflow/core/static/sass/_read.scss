@@ -73,6 +73,8 @@
 
     .article-meta {
         .watch-actions {
+            border-top: 1px solid #ccc;
+            border-bottom: 1px solid #ccc;
             position: relative;
             bottom: 0;
             right: 0;
@@ -82,12 +84,12 @@
             text-align: right;
 
             background-color: rgb(247, 247, 247);
-            @include box-inset-tb-shadow();
+            @include box-inset-tb-shadow(5px, #949aa1);
 
             /* inset-box-shadow hacking to make it visually integrated */
             margin-left: -10px;
             margin-right: -10px;
-            margin-bottom: -11px;
+            margin-bottom: -16px;
             margin-top: 10px;
         }
     }
@@ -95,7 +97,16 @@
     .end-actions {
         font-size: 14px;
         text-align: center;
-        border-top: 1px solid #949aa1;
+        background-color: #ddd;
+        padding-top: 15px;
+        color: #000;
+
+        /*
+            Override the bottom of the main article <li>, to have
+            the bottom of article content have only one color.
+        */
+        padding-bottom: 25px;
+        margin-bottom: -15px;
 
         .action {
             text-align: center;
@@ -124,8 +135,13 @@
         margin-right: -10px;
 
         .end-watch-status {
+
+            /*  A minimum height to avoid the content
+                moving when the first icon pops out. */
             height: 20px;
-            border-bottom: 1px solid #949aa1;
+
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ccc;
             margin-bottom: -1px;
 
             span {
@@ -142,6 +158,8 @@
             text-align: center;
             padding-bottom: 5px;
             background-color: rgb(247, 247, 247);
+
+            border-top: 1px solid #ccc;
             @include box-inset-tb-shadow(5px, #949aa1);
 
             .action a {
@@ -181,10 +199,18 @@
     }
 }
 
+.open_content {
+    /*
+        Make the content white, like the hover. this avoids
+        disgracefull flip/flaps on mouse out while we read.
+    */
+    background-color: #fff;
+}
+
 .read-list-row {
 
     .article {
-        padding: 10px 10px;
+        padding: 15px 10px;
         border-bottom: 1px solid #ddd;
 
         /*
@@ -231,7 +257,6 @@
             }
 
             .meta {
-                /* height: 3.7em; */
 
                 .status-icons {
                     display: inline;
