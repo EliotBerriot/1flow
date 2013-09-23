@@ -436,12 +436,6 @@ Mousetrap.bind(['m f', 't f'], function() {
     return false;
 });
 
-// “Mark Prospective”, “Toggle Prospective”
-Mousetrap.bind(['m p', 't p'], function() {
-    toggle_current_read_status("is_prospective");
-    return false;
-});
-
 // “Mark Number”, “Toggle Number”
 Mousetrap.bind(['m n', 't n'], function() {
     toggle_current_read_status("is_number");
@@ -460,6 +454,12 @@ Mousetrap.bind(['m q', 't q'], function() {
     return false;
 });
 
+// “Mark Prospective”, “Toggle Prospective”
+Mousetrap.bind(['m p', 't p'], function() {
+    toggle_current_read_status("is_prospective");
+    return false;
+});
+
 // “Mark Know-how”, “Toggle Know-how”
 Mousetrap.bind(['m k', 't k'], function() {
     toggle_current_read_status("is_knowhow");
@@ -473,7 +473,7 @@ Mousetrap.bind(['m u', 't u'], function() {
 });
 
 // “Mark Knowledge”, “Toggle Knowledge”
-Mousetrap.bind(['m w', 't w'], function() {
+Mousetrap.bind(['m o', 't o'], function() {
     toggle_current_read_status("is_knowledge");
     return false;
 });

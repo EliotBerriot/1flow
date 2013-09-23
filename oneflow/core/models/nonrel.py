@@ -3310,33 +3310,33 @@ class Read(Document, DocumentHelperMixin):
     status_data = {
 
         'is_read': {
-            'do_title':   _(u'Mark as read'),
-            'undo_title': _(u'Mark as unread'),
-            'do_label' :   _(u'Mark read'),
-            'undo_label':  _(u'Mark unread'),
+            'do_title':     _(u'Mark as read'),
+            'undo_title':   _(u'Mark as unread'),
+            'do_label' :    _(u'Mark read'),
+            'undo_label':   _(u'Mark unread'),
             'status_label': _(u'read'),
-            'do_icon':    'check-empty',
-            'undo_icon':  'check',
+            'do_icon':      _(u'check-empty'),
+            'undo_icon':    _(u'check'),
         },
 
         'is_starred': {
-            'do_title':   _(u'Star (add to favorites)'),
-            'undo_title': _(u'Remove from starred/favorites'),
-            'do_label' :   _(u'Star'),
-            'undo_label':  _(u'Unstar'),
+            'do_title':     _(u'Star (add to favorites)'),
+            'undo_title':   _(u'Remove from starred/favorites'),
+            'do_label' :    _(u'Star'),
+            'undo_label':   _(u'Unstar'),
             'status_label': _(u'starred'),
-            'do_icon':    'star-empty',
-            'undo_icon':  'star',
+            'do_icon':      _(u'star-empty'),
+            'undo_icon':    _(u'star'),
         },
 
         'is_bookmarked': {
-            'do_title':   _(u'Keep for reading later'),
-            'undo_title': _(u'Remove from reading list'),
-            'do_label':    _(u'Read later'),
-            'undo_label':  _(u'Do not read later'),
+            'do_title':     _(u'Keep for reading later'),
+            'undo_title':   _(u'Remove from reading list'),
+            'do_label':     _(u'Read later'),
+            'undo_label':   _(u'Do not read later'),
             'status_label': _(u'kept for later'),
-            'do_icon':    'bookmark-empty',
-            'undo_icon':  'bookmark',
+            'do_icon':      _(u'bookmark-empty'),
+            'undo_icon':    _(u'bookmark'),
         },
 
         'is_fact': {
@@ -3347,21 +3347,21 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :    _(u"Mark as fact"),
             'undo_label':   _(u'Unmark fact'),
             'status_label': _(u'fact'),
-            'do_icon':      'circle-blank',
-            'undo_icon':    'bullseye',
+            'do_icon':      _(u'circle-blank'),
+            'undo_icon':    _(u'bullseye'),
         },
 
         'is_number': {
             'do_title':     _(u'Mark as valuable number'),
             'undo_title':   _(u'Remove from valuable numbers'),
-            'status_title': _(u'This article contains important '
-                              u'numbers for a watch'),
+            'status_title': _(u'This article contains quantified '
+                              u'numbers for a watch.'),
             'do_label' :    _(u"Mark as number"),
             'undo_label':   _(u'Unmark number'),
             'status_label': _(u'number'),
-            'do_icon':      'bar-chart',
-            'undo_icon':    'bar-chart icon-flip-horizontal',
-            'status_icon':  'bar-chart',
+            'do_icon':      _(u'bar-chart'),
+            'undo_icon':    _(u'bar-chart icon-flip-horizontal'),
+            'status_icon':  _(u'bar-chart'),
             #'undo_icon_stack': True,
         },
 
@@ -3380,91 +3380,88 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_quote': {
-            'do_title':   _(u'Mark as containing quote(s) from people '
-                            u'you consider important'),
-            'undo_title': _(u'Does not contain quotes anymore '
-                            u'(or people is not important anymore?)'),
+            'do_title':     _(u'Mark as containing quote(s) from people '
+                              u'you consider important'),
+            'undo_title':   _(u'Unmark as containing quotes '
+                              u'(people are not famous anymore?)'),
             'status_title': _(u'This article contains one or more quote '
                               u'from people you care about.'),
-            'do_label' :   _(u'Mark as quote'),
-            'undo_label':  _(u'Unmark quote'),
+            'do_label' :    _(u'Mark as quote'),
+            'undo_label':   _(u'Unmark quote'),
             'status_label': _(u'quote'),
-            'do_icon':    'comment-alt',
-            'undo_icon':  'comment',
+            'do_icon':      _(u'quote-left icon-flip-vertical'),
+            'undo_icon':    _(u'quote-right'),
+            'status_icon':  _(u'quote-left icon-flip-vertical'),
         },
 
         'is_prospective': {
             'do_title':     _(u'Mark as prospective-related content'),
-            'undo_title':   _(u'Unmark as prospective-related content '
-                              u'(eg. article is obsolete)'),
-            'status_title': _(u'This article contains prospective element(s)'),
+            'undo_title':   _(u'Unmark as prospective-related content'),
+            'status_title': _(u'This article contains prospective element(s) '
+                              u'or must-remember hypothesis.'),
             'do_label' :    _(u"Mark as prospective"),
             'undo_label':   _(u'Unmark prospective'),
             'status_label': _(u'prospective'),
-            'do_icon':      'asterisk',
-            'undo_icon':    'asterisk icon-rotate-90',
-            'status_icon':  'asterisk',
+            'do_icon':      _(u'lightbulb'),
+            'undo_icon':    _(u'lightbulb icon-rotate-180'),
+            'status_icon':  _(u'lightbulb'),
             #'undo_icon_stack': True,
         },
 
         'is_rules': {
-            'do_title':   _(u'Mark as legal/regulations-related content'),
-            'undo_title': _(u'Unmark as legal content (overriden laws?)'),
+            'do_title':     _(u'Mark as legal/regulations-related content'),
+            'undo_title':   _(u'Unmark as legal content (overriden laws?)'),
             'status_title': _(u'This article contains regulations/'
                               u'law/rules element(s)'),
-            'do_label' :   _(u" Mark as law/regul."),
-            'undo_label':  _(u'Unmark law/regul.'),
+            'do_label' :    _(u" Mark as law/regul."),
+            'undo_label':   _(u'Unmark law/regul.'),
             'status_label': _(u'regulations'),
-            'do_icon':    'legal icon-flip-horizontal',
-            'undo_icon':  'legal icon-flip-horizontal icon-rotate-90',
-            #'undo_icon_stack': True,
+            'do_icon':      _(u'legal icon-flip-horizontal'),
+            'undo_icon':    _(u'legal icon-rotate-180'),
+            'status_icon':  _(u'legal icon-flip-horizontal'),
         },
 
         'is_knowhow': {
-            'do_title':   _(u'Contains state of the art or best-practices'),
-            'undo_title': _(u'Does not contain quotes anymore '
-                            u'(or people is not important anymore?)'),
-            'status_title': _(u'This article contains know-how or '
-                              u'best-practices element(s)'),
-            'do_label' :   _(u"Mark as Best-Practice"),
-            'undo_label':  _(u'Unmark best-practice'),
+            'do_title':     _(u'Mark as best-practices / state of art '
+                              u'content'),
+            'undo_title':   _(u'Unmark as best-practices / state of art '
+                              u'(has it become obsolete?)'),
+            'status_title': _(u'This article contains best-practices / '
+                              u' state of art element(s).'),
+            'do_label' :    _(u"Mark as best-practice"),
+            'undo_label':   _(u'Unmark best-practice'),
             'status_label': _(u'know-how'),
-            'do_icon':    'key icon-flip-vertical',
-            'undo_icon':  'key icon-flip-vertical icon-rotate-90',
-            #'undo_icon_stack': True,
+            'do_icon':      _(u'trophy'),
+            'undo_icon':    _(u'trophy icon-flip-vertical'),
+            'status_icon':  _(u'trophy'),
         },
 
         'is_knowledge': {
-            'do_title':   _(u'Mark as containing a valuable piece of knowlegde '
-                            u'for your brain or life.'),
-            'undo_title': _(u'Does not contain any neuronal-exciting '
-                            u'element(s) anymore.'),
+            'do_title':     _(u'Mark as a valuable piece of '
+                              u'knowlegde for your brain or life'),
+            'undo_title':   _(u'Unmark as neuronal-exciting '
+                              u'element(s)'),
             'status_title': _(u'This article contains a valuable '
-                              u'piece of knowlegde'),
-            'do_label' :   _(u"Mark as Knowledge"),
-            'undo_label':  _(u'Unmark knowlegde'),
+                              u'piece of knowlegde.'),
+            'do_label' :    _(u"Mark as Knowledge"),
+            'undo_label':   _(u'Unmark knowlegde'),
             'status_label': _(u'knowledge'),
-            'do_icon':    'puzzle-piece',
-            'undo_icon':  'puzzle-piece icon-flip-vertical',
-            'status_icon': 'puzzle-piece',
+            'do_icon':      _(u'globe'),
+            'undo_icon':    _(u'globe icon-rotate-180'),
+            'status_icon':  _('globe'),
         },
 
         'is_fun': {
-            'do_title':   _(u'Mark as being fun. Are you sure?'),
-            'undo_title': _(u'Not fun anymore, sadly.'),
+            'do_title':     _(u'Mark as being fun. Are you sure?'),
+            'undo_title':   _(u'Not fun anymore, sadly.'),
             'status_title': _(u'OMG, this thing is sooooooooo fun! LMAO!'),
-            'do_label' :   _(u"Mark as fun"),
-            'undo_label':  _(u'Mark as Boring'),
+            'do_label' :    _(u"Mark as fun"),
+            'undo_label':   _(u'Mark as boring'),
             'status_label': _(u'fun'),
-            'do_icon':    'smile',
-            'undo_icon':  'frown',
-            'status_icon': 'smile',
+            'do_icon':      _(u'smile'),
+            'undo_icon':    _(u'frown'),
+            'status_icon':  _(u'smile'),
         },
-
-        #
-        #   fact: exclamation exclamation-sign
-        #         globe map-marker
-        #
     }
 
     @classmethod
