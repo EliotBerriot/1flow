@@ -1,4 +1,5 @@
 {% extends 'base.html' %}
+{% load raven %}
 
 {% block body_id %}home{% endblock body_id %}
 
@@ -47,6 +48,13 @@
 
 {% block extrajs_footer %}
     {{ block.super }}
+
+    <script type="text/javascript"
+        src="//cdnjs.cloudflare.com/ajax/libs/raven.js/1.0.8/raven.min.js"></script>
+
+    <script type="text/javascript">
+        Raven.config('{% sentry_public_dsn %}').install();
+    </script>
 
     {# NOTE: JS inclusion order matters. #}
     {% django_js jquery=false %}
