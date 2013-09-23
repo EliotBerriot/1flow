@@ -73,6 +73,7 @@ def read_with_endless_pagination(request, **kwargs):
 
     query_kwargs = {}
     combinations = ()
+    attributes   = Read.status_data.keys()
 
     def check_order_by(value):
         if value in (u'id', ):
@@ -87,38 +88,21 @@ def read_with_endless_pagination(request, **kwargs):
         # default case where we get only the unread.
         pass
 
-    elif kwargs.get('later', False):
-        query_kwargs['is_bookmarked'] = True
-
-        if request.user.is_superuser or request.user.is_staff:
-            combinations = (
-                ('is_read', request.GET.get('unread', None), bool),
-                ('is_starred', request.GET.get('starred', None), bool),
-            )
-
-    elif kwargs.get('starred', False):
-        LOGGER.info('loading starred!')
-
-        query_kwargs['is_starred'] = True
-
-        if request.user.is_superuser or request.user.is_staff:
-            combinations = (
-                ('is_read', request.GET.get('unread', None), bool),
-                ('is_bookmarked', request.GET.get('later', None), bool),
-            )
-
     else:
-        # By default, we get the unread
-        query_kwargs['is_read'] = False
+        for attrname in attributes:
+            if kwargs.get(attrname, False):
+                query_kwargs[attrname] = True
 
-        if request.user.is_superuser or request.user.is_staff:
-            combinations = (
-                ('is_starred', request.GET.get('starred', None), bool),
-                ('is_bookmarked', request.GET.get('later', None), bool),
-            )
+                if request.user.is_superuser or request.user.is_staff:
+                    combinations = (
+                        (attr2, request.GET.get(attr2, None), bool)
+                            for attr2 in attributes if attr2 != attrname
+                    )
 
-    # Then allow the user to mix with manual query parameters,
-    # but check them. This is a hidden feature.
+                break
+
+    # Then allow the user to mix with manual query
+    # parameters, but check them to avoid crashes.
     for parameter, value, checker in combinations:
         if value is None:
             continue
@@ -139,12 +123,15 @@ def read_with_endless_pagination(request, **kwargs):
             # - all Reads (old and new) can have `.is_starred` == None
             #   because False and True mean "I don't like" and "I like",
             #   None meaning "like status not set".
-            query_kwargs[parameter+'__ne'] = True
+            query_kwargs[parameter + '__ne'] = True
 
         else:
             query_kwargs[parameter] = checked_value
 
-    order_by = unicode(request.GET.get('order_by', u'-id'))
+    if request.user.is_superuser or request.user.is_staff:
+        order_by = unicode(request.GET.get('order_by', u'-id'))
+    else:
+        order_by = u'-id'
 
     try:
         if order_by.startswith(u'-'):
