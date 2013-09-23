@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-23 11:43+0200\n"
-"PO-Revision-Date: 2013-09-23 12:14+0009\n"
+"PO-Revision-Date: 2013-09-23 12:30+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1062,7 +1062,7 @@ msgstr "quote-right"
 
 #: models/nonrel.py:3410
 msgid "Mark as prospective-related content"
-msgstr ""
+msgstr "Marquer comme élément de prospective"
 
 #: models/nonrel.py:3411
 msgid "Unmark as prospective-related content"
@@ -1072,42 +1072,44 @@ msgstr "Supprimer des contenus à teneur prospective"
 msgid ""
 "This article contains prospective element(s) or must-remember hypothesis."
 msgstr ""
+"Cet article contient un ou plusieurs éléments de prospective, ou des "
+"hypothèses à retenir."
 
 #: models/nonrel.py:3414
 msgid "Mark as prospective"
-msgstr ""
+msgstr "Ajouter aux prospectives"
 
 #: models/nonrel.py:3415
 msgid "Unmark prospective"
-msgstr ""
+msgstr "Enlever des prospectives"
 
 #: models/nonrel.py:3416
 msgid "prospective"
-msgstr ""
+msgstr "prospective"
 
 #: models/nonrel.py:3417 models/nonrel.py:3419
 msgid "lightbulb"
-msgstr ""
+msgstr "lightbulb"
 
 #: models/nonrel.py:3418
 msgid "lightbulb icon-rotate-180"
-msgstr ""
+msgstr "lightbulb icon-rotate-180"
 
 #: models/nonrel.py:3424
 msgid "Mark as legal/regulations-related content"
-msgstr ""
+msgstr "Marquer comme point de règlementation ou texte de loi"
 
 #: models/nonrel.py:3425
 msgid "Unmark as legal content (overriden laws?)"
-msgstr ""
+msgstr "Supprimer des point de règlementation / lois"
 
 #: models/nonrel.py:3426
 msgid "This article contains regulations/law/rules element(s)"
-msgstr ""
+msgstr "Cet article contient de la règlementation ou des textes de loi."
 
 #: models/nonrel.py:3428
 msgid " Mark as law/regul."
-msgstr ""
+msgstr "Ajouter aux règlementations"
 
 #: models/nonrel.py:3429
 msgid "Unmark law/regul."
@@ -1841,7 +1843,7 @@ msgstr "Ajouté aux faits marquants"
 
 #: templates/snippets/read/actions-messages.js.html:39
 msgid "Unmarked as fact/event."
-msgstr ""
+msgstr "Supprimé des faits marquants."
 
 #: templates/snippets/read/actions-messages.js.html:40
 msgid "Nothing open to mark as fact/event"
@@ -1849,11 +1851,11 @@ msgstr "Rien d'ouvert à ajouter aux fait marquant."
 
 #: templates/snippets/read/actions-messages.js.html:44
 msgid "Marked as numbers/financial content."
-msgstr ""
+msgstr "Ajouté aux chiffres clefs."
 
 #: templates/snippets/read/actions-messages.js.html:45
 msgid "Unmarked as numbers/financial content."
-msgstr ""
+msgstr "Supprimé des chiffres clefs."
 
 #: templates/snippets/read/actions-messages.js.html:46
 msgid "Nothing open to mark as numbers/financial content."
@@ -1861,11 +1863,11 @@ msgstr "Rien d'ouvert à marquer comme chiffre-clef / donnée quantifiée."
 
 #: templates/snippets/read/actions-messages.js.html:50
 msgid "Marked as analysis/study/research content."
-msgstr ""
+msgstr "Ajouté aux analyses / travaux de recherches."
 
 #: templates/snippets/read/actions-messages.js.html:51
 msgid "Unmarked as analysis/study/research content."
-msgstr ""
+msgstr "Supprimé des analyses / travaux de recherches."
 
 #: templates/snippets/read/actions-messages.js.html:52
 msgid "Nothing open to mark as analysis/study/research content."
@@ -1873,11 +1875,11 @@ msgstr "Rien d'ouvert à ajouter aux analyses / travaux de recherches."
 
 #: templates/snippets/read/actions-messages.js.html:56
 msgid "Marked as prospective-related content."
-msgstr ""
+msgstr "Marquer comme élément de prospective."
 
 #: templates/snippets/read/actions-messages.js.html:57
 msgid "Unarked as prospective-related content."
-msgstr ""
+msgstr "Supprimer des éléments de prospective."
 
 #: templates/snippets/read/actions-messages.js.html:58
 msgid "Nothing open to mark as prospective-related content"
@@ -1885,11 +1887,11 @@ msgstr "Rien d'ouvert à ajouter aux prospectives."
 
 #: templates/snippets/read/actions-messages.js.html:62
 msgid "Marked as law/regulations/rules."
-msgstr ""
+msgstr "Marqué comme règlementation / texte de loi."
 
 #: templates/snippets/read/actions-messages.js.html:63
 msgid "Unmarked as low/regulations/rules."
-msgstr ""
+msgstr "Supprimé des règlementations / textes de loi."
 
 #: templates/snippets/read/actions-messages.js.html:64
 msgid "Nothing open to mark as law/regulations"
@@ -1937,7 +1939,7 @@ msgstr ""
 
 #: templates/snippets/read/actions-messages.js.html:87
 msgid "Not fun anymore. I'm crying."
-msgstr ""
+msgstr "Plus drôle du tout.  QUE JE SUIS MALHEUREUUUUUX !!!"
 
 #: templates/snippets/read/actions-messages.js.html:88
 msgid "Nothing open to mark as fun. That's not fun."
