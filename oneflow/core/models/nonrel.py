@@ -70,7 +70,7 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
 
 from django.http import Http404
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
 
@@ -3310,97 +3310,99 @@ class Read(Document, DocumentHelperMixin):
     status_data = {
 
         'is_read': {
-            'list_name':    _(u'reads'),
+            'list_name':    _p(u'past participle, plural', u'read'),
             'view_name':    u'read',
-            'list_url':     _(r'^read/read/$'),
+            'list_url':     _(ur'^read/read/$'),
             'do_title':     _(u'Mark as read'),
             'undo_title':   _(u'Mark as unread'),
             'do_label' :    _(u'Mark read'),
             'undo_label':   _(u'Mark unread'),
-            'status_label': _(u'read'),
-            'do_icon':      _(u'check-empty'),
-            'undo_icon':    _(u'check'),
+            'status_label': _p(u'adjective', u'read'),
+            'do_icon':      _p(u'awesome-font icon name', u'check-empty'),
+            'undo_icon':    _p(u'awesome-font icon name', u'check'),
         },
 
         'is_starred': {
             'list_name':    _(u'starred'),
             'view_name':    u'starred',
-            'list_url':     _(r'^read/starred/$'),
+            'list_url':     _(ur'^read/starred/$'),
             'do_title':     _(u'Star (add to favorites)'),
             'undo_title':   _(u'Remove from starred/favorites'),
-            'do_label' :    _(u'Star'),
+            'do_label' :    _p(u'verb', u'Star'),
             'undo_label':   _(u'Unstar'),
             'status_label': _(u'starred'),
-            'do_icon':      _(u'star-empty'),
-            'undo_icon':    _(u'star'),
+            'do_icon':      _p(u'awesome-font icon name', u'star-empty'),
+            'undo_icon':    _p(u'awesome-font icon name', u'star'),
         },
 
         'is_bookmarked': {
             'list_name':    _(u'later'),
             'view_name':    u'later',
-            'list_url':     _(r'^read/later/$'),
+            'list_url':     _(ur'^read/later/$'),
             'do_title':     _(u'Keep for reading later'),
             'undo_title':   _(u'Remove from reading list'),
             'do_label':     _(u'Read later'),
             'undo_label':   _(u'Do not read later'),
             'status_label': _(u'kept for later'),
-            'do_icon':      _(u'bookmark-empty'),
-            'undo_icon':    _(u'bookmark'),
+            'do_icon':      _p(u'awesome-font icon name', u'bookmark-empty'),
+            'undo_icon':    _p(u'awesome-font icon name', u'bookmark'),
         },
 
         'is_fact': {
             'list_name':    _(u'facts'),
             'view_name':    u'facts',
-            'list_url':     _(r'^read/facts/$'),
+            'list_url':     _(ur'^read/facts/$'),
             'do_title':     _(u'Mark as fact / important event'),
             'undo_title':   _(u'Remove from facts / important events'),
             'status_title': _(u'This article contains one or '
                               u'more important facts'),
-            'do_label' :    _(u"Mark as fact"),
+            'do_label' :    _(u'Mark as fact'),
             'undo_label':   _(u'Unmark fact'),
             'status_label': _(u'fact'),
-            'do_icon':      _(u'circle-blank'),
-            'undo_icon':    _(u'bullseye'),
+            'do_icon':      _p(u'awesome-font icon name', u'circle-blank'),
+            'undo_icon':    _p(u'awesome-font icon name', u'bullseye'),
         },
 
         'is_number': {
             'list_name':    _(u'numbers'),
             'view_name':    u'numbers',
-            'list_url':     _(r'^read/numbers/$'),
+            'list_url':     _(ur'^read/numbers/$'),
             'do_title':     _(u'Mark as valuable number'),
             'undo_title':   _(u'Remove from valuable numbers'),
             'status_title': _(u'This article contains quantified '
                               u'numbers for a watch.'),
-            'do_label' :    _(u"Mark as number"),
+            'do_label' :    _(u'Mark as number'),
             'undo_label':   _(u'Unmark number'),
             'status_label': _(u'number'),
-            'do_icon':      _(u'bar-chart'),
-            'undo_icon':    _(u'bar-chart icon-flip-horizontal'),
-            'status_icon':  _(u'bar-chart'),
+            'do_icon':      _p(u'awesome-font icon name', u'bar-chart'),
+            'undo_icon':    _p(u'awesome-font icon name',
+                               u'bar-chart icon-flip-horizontal'),
+            'status_icon':  _p(u'awesome-font icon name', u'bar-chart'),
             #'undo_icon_stack': True,
         },
 
         'is_analysis': {
             'list_name':    _(u'analysis'),
             'view_name':    u'analysis',
-            'list_url':     _(r'^read/analysis/$'),
+            'list_url':     _(ur'^read/analysis/$'),
             'do_title':     _(u'Mark as analysis / study / research'),
             'undo_title':   _(u'Unmark analysis / study / research'),
             'status_title': _(u'This article contains an analysis, '
                               u'an in-depth study or a research '
                               u'publication.'),
-            'do_label' :    _(u"Mark as analysis"),
+            'do_label' :    _(u'Mark as analysis'),
             'undo_label':   _(u'Unmark analysis'),
             'status_label': _(u'analysis'),
-            'do_icon':      _(u'beaker'),
-            'undo_icon':    _(u'beaker icon-rotate-90'),
-            'status_icon':  _(u'beaker'),
+            'do_icon':      _p(u'awesome-font icon name', u'beaker'),
+            'undo_icon':    _p(u'awesome-font icon name',
+                               u'beaker icon-rotate-90'),
+            'status_icon':  _p(u'awesome-font icon name', u'beaker'),
         },
 
         'is_quote': {
             'list_name':    _(u'quotes'),
             'view_name':    u'quotes',
-            'list_url':     _(r'^read/quotes/$'),
+            'list_url':     _(ur'^read/quotes/$'),
             'do_title':     _(u'Mark as containing quote(s) from people '
                               u'you consider important'),
             'undo_title':   _(u'Unmark as containing quotes '
@@ -3409,95 +3411,103 @@ class Read(Document, DocumentHelperMixin):
                               u'from people you care about.'),
             'do_label' :    _(u'Mark as quote'),
             'undo_label':   _(u'Unmark quote'),
-            'status_label': _(u'quote'),
-            'do_icon':      _(u'quote-left icon-flip-vertical'),
-            'undo_icon':    _(u'quote-right'),
-            'status_icon':  _(u'quote-left icon-flip-vertical'),
+            'status_label': _p(u'noun', u'quote'),
+            'do_icon':      _p(u'awesome-font icon name',
+                               u'quote-left icon-flip-vertical'),
+            'undo_icon':    _p(u'awesome-font icon name', u'quote-right'),
+            'status_icon':  _p(u'awesome-font icon name',
+                               u'quote-left icon-flip-vertical'),
         },
 
         'is_prospective': {
             'list_name':    _(u'prospective'),
             'view_name':    u'prospective',
-            'list_url':     _(r'^read/prospective/$'),
+            'list_url':     _(ur'^read/prospective/$'),
             'do_title':     _(u'Mark as prospective-related content'),
             'undo_title':   _(u'Unmark as prospective-related content'),
             'status_title': _(u'This article contains prospective element(s) '
                               u'or must-remember hypothesis.'),
-            'do_label' :    _(u"Mark as prospective"),
+            'do_label' :    _(u'Mark as prospective'),
             'undo_label':   _(u'Unmark prospective'),
             'status_label': _(u'prospective'),
-            'do_icon':      _(u'lightbulb'),
-            'undo_icon':    _(u'lightbulb icon-rotate-180'),
-            'status_icon':  _(u'lightbulb'),
+            'do_icon':      _p(u'awesome-font icon name', u'lightbulb'),
+            'undo_icon':    _p(u'awesome-font icon name',
+                               u'lightbulb icon-rotate-180'),
+            'status_icon':  _p(u'awesome-font icon name', u'lightbulb'),
             #'undo_icon_stack': True,
         },
 
         'is_rules': {
             'list_name':    _(u'rules'),
             'view_name':    u'rules',
-            'list_url':     _(r'^read/rules/$'),
+            'list_url':     _(ur'^read/rules/$'),
             'do_title':     _(u'Mark as legal/regulations-related content'),
             'undo_title':   _(u'Unmark as legal content (overriden laws?)'),
             'status_title': _(u'This article contains regulations/'
                               u'law/rules element(s)'),
-            'do_label' :    _(u" Mark as law/regul."),
+            'do_label' :    _(u'Mark as law/regul.'),
             'undo_label':   _(u'Unmark law/regul.'),
             'status_label': _(u'regulations'),
-            'do_icon':      _(u'legal icon-flip-horizontal'),
-            'undo_icon':    _(u'legal icon-rotate-180'),
-            'status_icon':  _(u'legal icon-flip-horizontal'),
+            'do_icon':      _p(u'awesome-font icon name',
+                               u'legal icon-flip-horizontal'),
+            'undo_icon':    _p(u'awesome-font icon name',
+                               u'legal icon-rotate-180'),
+            'status_icon':  _p(u'awesome-font icon name',
+                               u'legal icon-flip-horizontal'),
         },
 
         'is_knowhow': {
             'list_name':    _(u'best-practices'),
             # WARNING: there is a '_' in the view name, and a '-' in the URL.
             'view_name':    u'best_practices',
-            'list_url':     _(r'^read/best-practices/$'),
+            'list_url':     _(ur'^read/best-practices/$'),
             'do_title':     _(u'Mark as best-practices / state of art '
                               u'content'),
             'undo_title':   _(u'Unmark as best-practices / state of art '
                               u'(has it become obsolete?)'),
             'status_title': _(u'This article contains best-practices / '
                               u' state of art element(s).'),
-            'do_label' :    _(u"Mark as best-practice"),
+            'do_label' :    _(u'Mark as best-practice'),
             'undo_label':   _(u'Unmark best-practice'),
-            'status_label': _(u'know-how'),
-            'do_icon':      _(u'trophy'),
-            'undo_icon':    _(u'trophy icon-flip-vertical'),
-            'status_icon':  _(u'trophy'),
+            'status_label': _p(u'noun', u'know-how'),
+            'do_icon':      _p(u'awesome-font icon name', u'trophy'),
+            'undo_icon':    _p(u'awesome-font icon name',
+                               u'trophy icon-flip-vertical'),
+            'status_icon':  _p(u'awesome-font icon name', u'trophy'),
         },
 
         'is_knowledge': {
             'list_name':    _(u'knowlegde'),
             'view_name':    u'knowledge',
-            'list_url':     _(r'^read/knowledge/$'),
+            'list_url':     _(ur'^read/knowledge/$'),
             'do_title':     _(u'Mark as a valuable piece of '
                               u'knowlegde for your brain or life'),
             'undo_title':   _(u'Unmark as neuronal-exciting '
                               u'element(s)'),
             'status_title': _(u'This article contains a valuable '
                               u'piece of knowlegde.'),
-            'do_label' :    _(u"Mark as Knowledge"),
+            'do_label' :    _(u'Mark as Knowledge'),
             'undo_label':   _(u'Unmark knowlegde'),
             'status_label': _(u'knowledge'),
-            'do_icon':      _(u'globe'),
-            'undo_icon':    _(u'globe icon-rotate-180'),
-            'status_icon':  _('globe'),
+            'do_icon':      _p(u'awesome-font icon name', u'globe'),
+            'undo_icon':    _p(u'awesome-font icon name',
+                               u'globe icon-rotate-180'),
+            'status_icon':  _p(u'awesome-font icon name', u'globe'),
         },
 
         'is_fun': {
             'list_name':    _(u'funbox'),
             'view_name':    u'fun',
-            'list_url':     _(r'^read/fun/$'),
+            'list_url':     _(ur'^read/fun/$'),
             'do_title':     _(u'Mark as being fun. Are you sure?'),
             'undo_title':   _(u'Not fun anymore, sadly.'),
             'status_title': _(u'OMG, this thing is sooooooooo fun! LMAO!'),
-            'do_label' :    _(u"Mark as fun"),
+            'do_label' :    _(u'Mark as fun'),
             'undo_label':   _(u'Mark as boring'),
             'status_label': _(u'fun'),
-            'do_icon':      _(u'smile'),
-            'undo_icon':    _(u'frown'),
-            'status_icon':  _(u'smile'),
+            'do_icon':      _p(u'awesome-font icon name', u'smile'),
+            'undo_icon':    _p(u'awesome-font icon name', u'frown'),
+            'status_icon':  _p(u'awesome-font icon name', u'smile'),
         },
     }
 
@@ -3533,7 +3543,8 @@ class Read(Document, DocumentHelperMixin):
     def __unicode__(self):
         return _(u'{0}∞{1} (#{2}) {3} {4}').format(
             self.user, self.article, self.id,
-            _(u'read') if self.is_read else _(u'unread'), self.rating)
+            _p(u'adjective', u'read')
+                if self.is_read else _p(u'adjective', u'unread'), self.rating)
 
     @property
     def title(self):
