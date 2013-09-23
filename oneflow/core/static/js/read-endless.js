@@ -125,7 +125,7 @@ function toggle_content(oid, callback) {
 
             // no need bothering testing !is(':visible'). It costs
             // a lot, and if it's not, slideDown() will do nothing.
-            $on_what.find('.clicker-muted').first().slideDown();
+            //$on_what.find('.clicker-muted').first().slideDown();
         },
 
         open_me = function(scrollTo) {
@@ -315,7 +315,7 @@ function mark_current_read_as(what) {
 function toggle_current_read_status(status) {
 
     if (open_content) {
-        return toggle_status(open_content, status);
+        return toggle_status(open_content, status, true);
 
     } else {
         notify({
@@ -408,10 +408,20 @@ Mousetrap.bind(['c'], function() {
     return false;
 });
 
+// “Toggle Watch”
+Mousetrap.bind(['t w'], function() {
+    if (open_content) {
+        $('#'+open_content).find('.clicker-muted').slideToggle();
+    }
+
+    return false;
+});
+
+
 // “Last Open” (re-open last closed one)
 // WARNING: using just 'o' as only shortcut won't work because
 //          of other multi-key shortcuts starting with an 'o'.
-Mousetrap.bind(['l o', 'o l'], function() {
+Mousetrap.bind(['o l'], function() {
     open_last_opened();
     return false;
 });

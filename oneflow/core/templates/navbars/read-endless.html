@@ -1,0 +1,66 @@
+<div class="navbar navbar-inverse navbar-fixed-bottom">
+  <div class="navbar-inner">
+    <div class="container">
+      <ul class="nav">
+          {# nowrap is necessary, else the username gets to next line on Safari+iPad@portrait #}
+          <li class="dropup nowrap">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="icon-book"></i>
+              <span class="hidden-phone">
+                {% trans "Reading lists" %}
+                <span class="caret"></span>
+              </span>
+            </a>
+            <ul class="dropdown-menu">
+
+              {% if user.is_superuser %}
+                <li class="{% reverse_active 'read_all' %}"><a href="{% url 'read_all' %}">{% trans 'All' %}</a></li>
+                <li class="divider"></li>
+              {% endif %}
+
+              <li class="{% reverse_active 'read_fun' %}"><a href="{% url 'read_fun' %}">{% trans 'Funbox' %}</a></li>
+
+              <li class="{% reverse_active 'read_starred' %}"><a href="{% url 'read_starred' %}">{% trans 'Starred' %}</a></li>
+
+              <li class="divider"></li>
+
+              <li class="{% reverse_active 'read_later' %}"><a href="{% url 'read_later' %}">{% trans 'Read later' %}</a></li>
+              <li class="{% reverse_active 'read' %}"><a href="{% url 'read' %}">{% trans 'Unread' %}</a></li>
+            </ul>
+          </li>
+
+          <li class="dropup nowrap">
+            <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                <i class="icon-book"></i>
+              <span class="hidden-phone">
+                {% trans "Watching lists" %}
+                <span class="caret"></span>
+              </span>
+            </a>
+            <ul class="dropdown-menu">
+
+              <li class="{% reverse_active 'read_facts' %}">
+                <a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
+              <li class="{% reverse_active 'read_knowledge' %}">
+                <a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
+              <li class="{% reverse_active 'read_quotes' %}">
+                <a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
+              <li class="{% reverse_active 'read_prospective' %}">
+                <a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
+              <li class="{% reverse_active 'read_best_practices' %}">
+                <a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>
+
+              <li class="divider"></li>
+
+              <li class="{% reverse_active 'read_facts' %}">
+                <a href="{% url 'read_facts' %}">{% trans 'Facts' %}</a></li>
+              <li class="{% reverse_active 'read_numbers' %}">
+                <a href="{% url 'read_numbers' %}">{% trans 'Numbers' %}</a></li>
+              <li class="{% reverse_active 'read_analysis' %}">
+                <a href="{% url 'read_analysis' %}">{% trans 'Analysis' %}</a></li>
+            </ul>
+          </li>
+      </ul>
+    </div>
+  </div>
+</div>

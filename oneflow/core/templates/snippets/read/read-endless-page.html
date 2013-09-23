@@ -66,16 +66,25 @@
         </div>
     </li>
 
-
-    {% show_more _('Load more entries') _('Loading…') %}
-
     {% comment %}
-    {% for read in reads %}
-        {% if read.article.url_absolute and not read.article.duplicate_of %}
-            {% include preferences.home.get_template %}
-        {% endif %}
-    {% endfor %}
+        At first, I used the lazy paginate mechanism to generate an official
+        "show_more" div, to allow the whole mecanism to be completely DRY,
+        without creating any exception for the first page.
+
+        But then, the 1st page gets munged and never displays; results start
+        at page 2… Besides, instanciating the `lazy_paginate` just for a <div>
+        make the first page loading "not so fast", because `endless` is acting.
+
+        Thus, this is a completely fake "show_more". Hard-coded. With this,
+        the first page comes blazingly fast, and results are loaded totally
+        asynchronously.
     {% endcomment %}
+
+    <div class="endless_container">
+        <a class="endless_more" href="{{ request.path }}?page=1"
+            rel="page">Charger plus d'articles</a>
+        <div class="endless_loading" style="display: none;">Chargement…</div>
+    </div>
 
 {% else %}
 
@@ -83,11 +92,11 @@
 
         {% lazy_paginate items_per_fetch reads %}
 
-        {% for read in reads %}
-            {% if read.article.url_absolute and not read.article.duplicate_of %}
-                {% include preferences.home.get_template %}
-            {% endif %}
-        {% endfor %}
+            {% for read in reads %}
+                {% if read.article.url_absolute and not read.article.duplicate_of %}
+                    {% include preferences.home.get_template %}
+                {% endif %}
+            {% endfor %}
 
         {% comment %}
             The 'show_more' button is hidden via CSS, don't try to find
