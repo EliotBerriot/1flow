@@ -421,7 +421,7 @@ Mousetrap.bind(['t w'], function() {
 // “Last Open” (re-open last closed one)
 // WARNING: using just 'o' as only shortcut won't work because
 //          of other multi-key shortcuts starting with an 'o'.
-Mousetrap.bind(['l o', 'o l'], function() {
+Mousetrap.bind(['o l'], function() {
     open_last_opened();
     return false;
 });
