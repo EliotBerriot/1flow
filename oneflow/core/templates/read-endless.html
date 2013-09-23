@@ -122,6 +122,14 @@
                         < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
                     console.debug('fetching next page to fill the view…');
                     $('.endless_container').find('a.endless_more').click();
+
+                } else {
+                    try {
+                        $(".initial-loading").slideUp().delete();
+
+                    } catch (err) {
+                        // nothing, just don't crash if it's not here.
+                    }
                 }
             }
         }

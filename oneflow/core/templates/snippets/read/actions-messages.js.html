@@ -34,12 +34,6 @@ read_actions_messages = {
         nothing: "{% trans 'Nothing open to mark/unmark for later' %}"
     },
 
-    is_quote: {
-        done: "{% trans 'Marked as quote.' %}",
-        undone: "{% trans 'Not a quote anymore.' %}",
-        nothing: "{% trans 'Nothing open to quote' %}"
-    },
-
     is_fact: {
         done: "{% trans 'Marked as fact/event.' %}",
         undone: "{% trans 'Unmarked as fact/event.' %}",
@@ -50,6 +44,12 @@ read_actions_messages = {
         done: "{% trans 'Marked as numbers/financial content.' %}",
         undone: "{% trans 'Unmarked as numbers/financial content.' %}",
         nothing: "{% trans 'Nothing open to mark as numbers/financial content.' %}"
+    },
+
+    is_analysis: {
+        done: "{% trans 'Marked as analysis/study/research content.' %}",
+        undone: "{% trans 'Unmarked as analysis/study/research content.' %}",
+        nothing: "{% trans 'Nothing open to mark as analysis/study/research content.' %}"
     },
 
     is_prospective: {
@@ -68,6 +68,12 @@ read_actions_messages = {
         done: "{% trans 'Marked as know-how/best-practice.' %}",
         undone: "{% trans 'Unmarked as know-how/best-practice.' %}",
         nothing: "{% trans 'Nothing open to mark asknow-how/best-practice' %}"
+    },
+
+    is_quote: {
+        done: "{% trans 'Marked as quote.' %}",
+        undone: "{% trans 'Not a quote anymore.' %}",
+        nothing: "{% trans 'Nothing open to quote' %}"
     },
 
     is_knowledge: {

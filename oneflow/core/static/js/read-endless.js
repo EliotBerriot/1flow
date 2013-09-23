@@ -121,6 +121,13 @@ function toggle_content(oid, callback) {
         $me     = $(me),
         $content = $("#content-" + oid),
 
+        open_auxilliary = function ($on_what) {
+
+            // no need bothering testing !is(':visible'). It costs
+            // a lot, and if it's not, slideDown() will do nothing.
+            $on_what.find('.clicker-muted').first().slideDown();
+        },
+
         open_me = function(scrollTo) {
 
             if(typeof scrollTo == 'undefined') {
@@ -142,6 +149,7 @@ function toggle_content(oid, callback) {
             //bindable_hovered = content;
 
             $me.addClass('open_content');
+            open_auxilliary($me);
             $content.slideDown(scroll_speed, "swing", run_callback);
         },
 
@@ -436,21 +444,27 @@ Mousetrap.bind(['m f', 't f'], function() {
     return false;
 });
 
-// “Mark Prospective”, “Toggle Prospective”
-Mousetrap.bind(['m p', 't p'], function() {
-    toggle_current_read_status("is_prospective");
-    return false;
-});
-
 // “Mark Number”, “Toggle Number”
 Mousetrap.bind(['m n', 't n'], function() {
     toggle_current_read_status("is_number");
     return false;
 });
 
+// “Mark Analysis”, “Toggle Analysis”
+Mousetrap.bind(['m a', 't a'], function() {
+    toggle_current_read_status("is_analysis");
+    return false;
+});
+
 // “Mark Quote”, “Toggle Quote”
 Mousetrap.bind(['m q', 't q'], function() {
     toggle_current_read_status("is_quote");
+    return false;
+});
+
+// “Mark Prospective”, “Toggle Prospective”
+Mousetrap.bind(['m p', 't p'], function() {
+    toggle_current_read_status("is_prospective");
     return false;
 });
 
@@ -467,7 +481,7 @@ Mousetrap.bind(['m u', 't u'], function() {
 });
 
 // “Mark Knowledge”, “Toggle Knowledge”
-Mousetrap.bind(['m w', 't w'], function() {
+Mousetrap.bind(['m o', 't o'], function() {
     toggle_current_read_status("is_knowledge");
     return false;
 });

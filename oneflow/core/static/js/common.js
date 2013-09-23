@@ -426,7 +426,7 @@ function clicker_muter_toggle(ev, group_name) {
 
     $(this).closest('.clicker-muter-constrainer')
         .find('.clicker-muted').each(function(thing) {
-            console.log('clicker-muter: ' + thing + this);
+            //console.log('clicker-muter: ' + thing + this);
 
             var $this = $(this);
             if ($this.data('clicker-muter-group') == group_name) {
