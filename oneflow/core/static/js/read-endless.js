@@ -315,7 +315,7 @@ function mark_current_read_as(what) {
 function toggle_current_read_status(status) {
 
     if (open_content) {
-        return toggle_status(open_content, status);
+        return toggle_status(open_content, status, true);
 
     } else {
         notify({
