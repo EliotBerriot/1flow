@@ -121,6 +121,13 @@ function toggle_content(oid, callback) {
         $me     = $(me),
         $content = $("#content-" + oid),
 
+        open_auxilliary = function ($on_what) {
+
+            // no need bothering testing !is(':visible'). It costs
+            // a lot, and if it's not, slideDown() will do nothing.
+            $on_what.find('.clicker-muted').first().slideDown();
+        },
+
         open_me = function(scrollTo) {
 
             if(typeof scrollTo == 'undefined') {
@@ -142,6 +149,7 @@ function toggle_content(oid, callback) {
             //bindable_hovered = content;
 
             $me.addClass('open_content');
+            open_auxilliary($me);
             $content.slideDown(scroll_speed, "swing", run_callback);
         },
 
