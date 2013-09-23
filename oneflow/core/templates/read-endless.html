@@ -136,7 +136,15 @@
 
             if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
 
-                next_page = parseInt($('.endless_more').attr('href').split('=')[1]);
+                try {
+                    next_page = parseInt($('.endless_more')
+                                         .attr('href').split('=')[1]);
+
+                } catch (err) {
+                    // no more reads in the endless pagination…
+                    return;
+                }
+
                 //console.log('next_page: ' + next_page);
 
                 if (next_page <= 5) {
