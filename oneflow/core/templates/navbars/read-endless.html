@@ -39,13 +39,13 @@
             </a>
             <ul class="dropdown-menu">
 
-              <li class="{% reverse_active 'read_facts' %}">
-                <a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
               <li class="{% reverse_active 'read_knowledge' %}">
-                <a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
+                <a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
               <li class="{% reverse_active 'read_quotes' %}">
-                <a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
+                <a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
               <li class="{% reverse_active 'read_prospective' %}">
+                <a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
+              <li class="{% reverse_active 'read_rules' %}">
                 <a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
               <li class="{% reverse_active 'read_best_practices' %}">
                 <a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>

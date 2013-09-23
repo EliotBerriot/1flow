@@ -7,7 +7,7 @@ from humanize.i18n import django_language
 from constance import config
 from django.forms import TextInput, CheckboxSelectMultiple
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
 from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
@@ -93,7 +93,7 @@ class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
 
         return u'%s/%s' % (number, total)
 
-    gri_reads_display.short_description = _(u'reads')
+    gri_reads_display.short_description = _p(u'noun, plural', u'reads')
 
     def gri_starred_display(self, obj):
 
@@ -447,7 +447,7 @@ class FeedAdmin(admin.DocumentAdmin):
                 return _(u'<span title="Last 3 errors:\n{0}" '
                          u'style="cursor: pointer">'
                          u'{1} error(s)</span>').format(u'\n'.join(
-                                _(u'%s: %s') % (naturaltime(
+                                _(u'{0}: {1}').format(naturaltime(
                                     dateutil.parser.parse(y)), x)
                                 for x, y in last3), len(obj.errors))
 
