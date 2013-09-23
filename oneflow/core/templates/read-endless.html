@@ -93,6 +93,10 @@
 {% endwith %}
 {% endblock application_content %}
 
+{% block application_footer %}
+    {% include "navbars/read-endless.html" %}
+{% endblock application_footer %}
+
 {% block extrajs_footer %}
     {{ block.super }}
     {% compressed_js 'read-endless' %}
