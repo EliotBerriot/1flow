@@ -448,6 +448,12 @@ Mousetrap.bind(['m n', 't n'], function() {
     return false;
 });
 
+// “Mark Analysis”, “Toggle Analysis”
+Mousetrap.bind(['m a', 't a'], function() {
+    toggle_current_read_status("is_analysis");
+    return false;
+});
+
 // “Mark Quote”, “Toggle Quote”
 Mousetrap.bind(['m q', 't q'], function() {
     toggle_current_read_status("is_quote");

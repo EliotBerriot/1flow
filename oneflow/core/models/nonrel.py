@@ -3264,6 +3264,11 @@ class Read(Document, DocumentHelperMixin):
                                u'data.'), default=False)
     date_number = DateTimeField()
 
+    is_analysis   = BooleanField(help_text=_(u'Qualifies in-depth analysis, '
+                                 u'studies or research publications.'),
+                                 default=False)
+    date_analysis = DateTimeField()
+
     is_prospective   = BooleanField(help_text=_(u'Qualifies things that want'
                                     u' to watch, that will happen or not.'),
                                     default=False)
@@ -3357,6 +3362,20 @@ class Read(Document, DocumentHelperMixin):
             'undo_icon':    'bar-chart icon-flip-horizontal',
             'status_icon':  'bar-chart',
             #'undo_icon_stack': True,
+        },
+
+        'is_analysis': {
+            'do_title':     _(u'Mark as analysis / study / research'),
+            'undo_title':   _(u'Unmark analysis / study / research'),
+            'status_title': _(u'This article contains an analysis, '
+                              u'an in-depth study or a research '
+                              u'publication.'),
+            'do_label' :    _(u"Mark as analysis"),
+            'undo_label':   _(u'Unmark analysis'),
+            'status_label': _(u'analysis'),
+            'do_icon':      _(u'beaker'),
+            'undo_icon':    _(u'beaker icon-rotate-90'),
+            'status_icon':  _(u'beaker'),
         },
 
         'is_quote': {
