@@ -665,7 +665,7 @@ class Tag(Document, DocumentHelperMixin):
     #                      u'help search connectable but.'))
 
     def __unicode__(self):
-        return _(u'%s ⚐%s (#%s)') % (self.name, self.language, self.id)
+        return _(u'{0} {1}⚐ (#{2})').format(self.name, self.language, self.id)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -1055,7 +1055,7 @@ class Feed(Document, DocumentHelperMixin):
     #     return ('name__icontains', 'url__icontains', 'site_url__icontains', )
 
     def __unicode__(self):
-        return _(u'%s (#%s)') % (self.name, self.id)
+        return _(u'{0} (#{1})').format(self.name, self.id)
 
     @property
     def refresh_lock(self):
@@ -2020,7 +2020,7 @@ class Article(Document, DocumentHelperMixin):
     }
 
     def __unicode__(self):
-        return _(u'%s (#%s) from %s') % (self.title, self.id, self.url)
+        return _(u'{0} (#{1}) from {2}').format(self.title, self.id, self.url)
 
     def safe_reload(self):
         """ Because it fails if no object present. """
@@ -3531,7 +3531,7 @@ class Read(Document, DocumentHelperMixin):
             pass
 
     def __unicode__(self):
-        return _(u'%s∞%s (#%s) %s %s') % (
+        return _(u'{0}∞{1} (#{2}) {3} {4}').format(
             self.user, self.article, self.id,
             _(u'read') if self.is_read else _(u'unread'), self.rating)
 

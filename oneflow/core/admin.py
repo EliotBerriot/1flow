@@ -447,7 +447,7 @@ class FeedAdmin(admin.DocumentAdmin):
                 return _(u'<span title="Last 3 errors:\n{0}" '
                          u'style="cursor: pointer">'
                          u'{1} error(s)</span>').format(u'\n'.join(
-                                _(u'%s: %s') % (naturaltime(
+                                _(u'{0}: {1}').format(naturaltime(
                                     dateutil.parser.parse(y)), x)
                                 for x, y in last3), len(obj.errors))
 
