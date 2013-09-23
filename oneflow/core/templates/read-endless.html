@@ -114,22 +114,25 @@
                 articles he will encounter, because he gets back in the past.
             {% endcomment %}
 
-            next_page = parseInt($('.endless_more').attr('href').split('=')[1]);
-            //console.log('next_page: ' + next_page);
+            nr_items = $(".read-list-item").length;
 
-            if (next_page <= 5) {
-                if ($(".read-list-item").length
-                        < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
+            if (nr_items > 0) {
+                try {
+                    $(".initial-loading").slideUp().delete();
+
+                } catch (err) {
+                    // nothing, just don't crash if it's not here.
+                }
+            }
+
+            if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
+
+                next_page = parseInt($('.endless_more').attr('href').split('=')[1]);
+                //console.log('next_page: ' + next_page);
+
+                if (next_page <= 5) {
                     console.debug('fetching next page to fill the view…');
                     $('.endless_container').find('a.endless_more').click();
-
-                } else {
-                    try {
-                        $(".initial-loading").slideUp().delete();
-
-                    } catch (err) {
-                        // nothing, just don't crash if it's not here.
-                    }
                 }
             }
         }
