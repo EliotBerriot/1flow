@@ -89,17 +89,30 @@ def read_with_endless_pagination(request, **kwargs):
         pass
 
     else:
+        combinations = set()
+
         for attrname in attributes:
-            if kwargs.get(attrname, False):
-                query_kwargs[attrname] = True
+            mykwarg = kwargs.get(attrname, None)
+
+            if mykwarg is not None:
+                if mykwarg:
+                    query_kwargs[attrname] = mykwarg
+
+                else:
+                    # For 2 reasons we need to negate:
+                    # - old reads don't have default attribute because some
+                    #   didn't exist at the time, thus the value is None in
+                    #   the database.
+                    # - all Reads (old and new) can have `.is_starred` == None
+                    #   because False and True mean "I don't like" and "I like",
+                    #   None meaning "like status not set".
+                    query_kwargs[attrname + '__ne'] = True
 
                 if request.user.is_superuser or request.user.is_staff:
-                    combinations = (
-                        (attr2, request.GET.get(attr2, None), bool)
-                            for attr2 in attributes if attr2 != attrname
+                    combinations.union(set(
+                        attr2, request.GET.get(attr2, None), bool)
+                            for attr2 in attributes if attr2 not in attributes
                     )
-
-                break
 
     # Then allow the user to mix with manual query
     # parameters, but check them to avoid crashes.
@@ -116,13 +129,7 @@ def read_with_endless_pagination(request, **kwargs):
             continue
 
         if checker == bool and not checked_value:
-            # For 2 reasons we need to negate:
-            # - old reads don't have default attribute because some
-            #   didn't exist at the time, thus the value is None in
-            #   the database.
-            # - all Reads (old and new) can have `.is_starred` == None
-            #   because False and True mean "I don't like" and "I like",
-            #   None meaning "like status not set".
+            # See before, in the for loop.
             query_kwargs[parameter + '__ne'] = True
 
         else:
@@ -143,7 +150,7 @@ def read_with_endless_pagination(request, **kwargs):
                          order_by)
         order_by = u'-id'
 
-    LOGGER.info(query_kwargs)
+    #LOGGER.info(query_kwargs)
 
     reads = Read.objects(user=request.user.mongo,
                          **query_kwargs).order_by(order_by).no_cache()
