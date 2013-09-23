@@ -47,7 +47,8 @@ urlpatterns = patterns(
         kwargs={'all': True}),
 
     url(_(r'^read/$'), login_required(never_cache(
-        read_with_endless_pagination)), name='read'),
+        read_with_endless_pagination)), name='read',
+        kwargs={'is_read': False, 'is_bookmarked': False}),
 
     url(_(r'^read/([0-9a-f]{24,24})/$'),
         login_required(read_one),
