@@ -26,6 +26,23 @@ urlpatterns = patterns(
 
     url(_(r'^profile/$'), login_required(never_cache(profile)), name='profile'),
 
+    url(_(r'^read/unread/$'), login_required(never_cache(
+        read_with_endless_pagination)), name='read_unread',
+        kwargs={'unread': True}),
+
+    url(_(r'^read/starred/$'), login_required(never_cache(
+        read_with_endless_pagination)), name='read_starred',
+        kwargs={'starred': True}),
+
+    url(_(r'^read/later/$'), login_required(never_cache(
+        read_with_endless_pagination)), name='read_later',
+        kwargs={'later': True}),
+
+    # This one is not activated to the public yet.
+    url(_(r'^read/all/$'), staff_member_required(never_cache(
+        read_with_endless_pagination)), name='read_all',
+        kwargs={'all': True}),
+
     url(_(r'^read/$'), login_required(never_cache(
         read_with_endless_pagination)), name='read'),
 

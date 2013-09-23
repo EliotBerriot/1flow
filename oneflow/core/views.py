@@ -71,19 +71,98 @@ def home(request):
 
 def read_with_endless_pagination(request, **kwargs):
 
-    # Computing tenths_counter here is much efficient than doing:
-    # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
-    # in the template…
-    tenths_counter = (get_page_number_from_request(request)
-                      - 1) * config.READ_INFINITE_ITEMS_PER_FETCH
+    query_kwargs = {}
+    combinations = ()
 
-    is_read = request.GET.get('is_read', False)
-    reads   = Read.objects(user=request.user.mongo,
-                           is_read=is_read).order_by('-id').no_cache()
+    def check_order_by(value):
+        if value in (u'id', ):
+            return
+
+        raise RuntimeError()
+
+    # First, get the view mode we were called from.
+    if kwargs.get('all', False):
+        # No particular kwargs for this one, but we
+        # needed to pass in the 'if' to avoid the
+        # default case where we get only the unread.
+        pass
+
+    elif kwargs.get('later', False):
+        query_kwargs['is_bookmarked'] = True
+
+        if request.user.is_superuser or request.user.is_staff:
+            combinations = (
+                ('is_read', request.GET.get('unread', None), bool),
+                ('is_starred', request.GET.get('starred', None), bool),
+            )
+
+    elif kwargs.get('starred', False):
+        LOGGER.info('loading starred!')
+
+        query_kwargs['is_starred'] = True
+
+        if request.user.is_superuser or request.user.is_staff:
+            combinations = (
+                ('is_read', request.GET.get('unread', None), bool),
+                ('is_bookmarked', request.GET.get('later', None), bool),
+            )
+
+    else:
+        # By default, we get the unread
+        query_kwargs['is_read'] = False
+
+        if request.user.is_superuser or request.user.is_staff:
+            combinations = (
+                ('is_starred', request.GET.get('starred', None), bool),
+                ('is_bookmarked', request.GET.get('later', None), bool),
+            )
+
+    # Then allow the user to mix with manual query parameters,
+    # but check them. This is a hidden feature.
+    for parameter, value, checker in combinations:
+        if value is None:
+            continue
+
+        try:
+            checked_value = checker(value)
+
+        except:
+            LOGGER.exception(u'Check %s on value "%s" of parameter %s '
+                             u'failed; skipped.', checker, value, parameter)
+            continue
+
+        if checker == bool and not checked_value:
+            # For 2 reasons we need to negate:
+            # - old reads don't have default attribute because some
+            #   didn't exist at the time, thus the value is None in
+            #   the database.
+            # - all Reads (old and new) can have `.is_starred` == None
+            #   because False and True mean "I don't like" and "I like",
+            #   None meaning "like status not set".
+            query_kwargs[parameter+'__ne'] = True
+
+        else:
+            query_kwargs[parameter] = checked_value
+
+    order_by = unicode(request.GET.get('order_by', u'-id'))
+
+    try:
+        if order_by.startswith(u'-'):
+            check_order_by(order_by[1:])
+        else:
+            check_order_by(order_by)
+    except:
+        LOGGER.exception(u'order_by check failed (value "%s"); using "-id".',
+                         order_by)
+        order_by = u'-id'
+
+    LOGGER.info(query_kwargs)
+
+    reads = Read.objects(user=request.user.mongo,
+                         **query_kwargs).order_by(order_by).no_cache()
 
     context = {
         u'reads': reads,
-        u'tenths_counter': tenths_counter,
 
         # are we rendering the first "main"
         # page, or just a subset via ajax?
@@ -93,12 +172,24 @@ def read_with_endless_pagination(request, **kwargs):
     #preferences = request.user.mongo.preferences
 
     if request.is_ajax():
-        template = u'snippets/read/read-endless-page.html'
+
+        if request.GET.get('count', False):
+            template = u'snippets/read/read-endless-count.html'
+            context[u'reads_count'] = reads.count()
+
+        else:
+            template = u'snippets/read/read-endless-page.html'
+
+            # Computing tenths_counter here is much efficient than doing:
+            # {% captureas tenths_counter %}{{ request.GET['page']|mul:10 }}{% endcaptureas %} # NOQA
+            # in the template…
+            context[u'tenths_counter'] = \
+                (get_page_number_from_request(request) - 1) \
+                * config.READ_INFINITE_ITEMS_PER_FETCH
 
     else:
         template = u'read-endless.html'
-        context['initial']     = True
-        context['reads_count'] = reads.count()
+        context[u'initial'] = True
 
     return render(request, template, context)
 
