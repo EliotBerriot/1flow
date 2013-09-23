@@ -3310,6 +3310,9 @@ class Read(Document, DocumentHelperMixin):
     status_data = {
 
         'is_read': {
+            'list_name':    _(u'reads'),
+            'view_name':    u'read',
+            'list_url':     _(r'^read/read/$'),
             'do_title':     _(u'Mark as read'),
             'undo_title':   _(u'Mark as unread'),
             'do_label' :    _(u'Mark read'),
@@ -3320,6 +3323,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_starred': {
+            'list_name':    _(u'starred'),
+            'view_name':    u'starred',
+            'list_url':     _(r'^read/starred/$'),
             'do_title':     _(u'Star (add to favorites)'),
             'undo_title':   _(u'Remove from starred/favorites'),
             'do_label' :    _(u'Star'),
@@ -3330,6 +3336,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_bookmarked': {
+            'list_name':    _(u'later'),
+            'view_name':    u'later',
+            'list_url':     _(r'^read/later/$'),
             'do_title':     _(u'Keep for reading later'),
             'undo_title':   _(u'Remove from reading list'),
             'do_label':     _(u'Read later'),
@@ -3340,6 +3349,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_fact': {
+            'list_name':    _(u'facts'),
+            'view_name':    u'facts',
+            'list_url':     _(r'^read/facts/$'),
             'do_title':     _(u'Mark as fact / important event'),
             'undo_title':   _(u'Remove from facts / important events'),
             'status_title': _(u'This article contains one or '
@@ -3352,6 +3364,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_number': {
+            'list_name':    _(u'numbers'),
+            'view_name':    u'numbers',
+            'list_url':     _(r'^read/numbers/$'),
             'do_title':     _(u'Mark as valuable number'),
             'undo_title':   _(u'Remove from valuable numbers'),
             'status_title': _(u'This article contains quantified '
@@ -3366,6 +3381,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_analysis': {
+            'list_name':    _(u'analysis'),
+            'view_name':    u'analysis',
+            'list_url':     _(r'^read/analysis/$'),
             'do_title':     _(u'Mark as analysis / study / research'),
             'undo_title':   _(u'Unmark analysis / study / research'),
             'status_title': _(u'This article contains an analysis, '
@@ -3380,6 +3398,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_quote': {
+            'list_name':    _(u'quotes'),
+            'view_name':    u'quotes',
+            'list_url':     _(r'^read/quotes/$'),
             'do_title':     _(u'Mark as containing quote(s) from people '
                               u'you consider important'),
             'undo_title':   _(u'Unmark as containing quotes '
@@ -3395,6 +3416,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_prospective': {
+            'list_name':    _(u'prospective'),
+            'view_name':    u'prospective',
+            'list_url':     _(r'^read/prospective/$'),
             'do_title':     _(u'Mark as prospective-related content'),
             'undo_title':   _(u'Unmark as prospective-related content'),
             'status_title': _(u'This article contains prospective element(s) '
@@ -3409,6 +3433,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_rules': {
+            'list_name':    _(u'rules'),
+            'view_name':    u'rules',
+            'list_url':     _(r'^read/rules/$'),
             'do_title':     _(u'Mark as legal/regulations-related content'),
             'undo_title':   _(u'Unmark as legal content (overriden laws?)'),
             'status_title': _(u'This article contains regulations/'
@@ -3422,6 +3449,10 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_knowhow': {
+            'list_name':    _(u'best-practices'),
+            # WARNING: there is a '_' in the view name, and a '-' in the URL.
+            'view_name':    u'best_practices',
+            'list_url':     _(r'^read/best-practices/$'),
             'do_title':     _(u'Mark as best-practices / state of art '
                               u'content'),
             'undo_title':   _(u'Unmark as best-practices / state of art '
@@ -3437,6 +3468,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_knowledge': {
+            'list_name':    _(u'knowlegde'),
+            'view_name':    u'knowledge',
+            'list_url':     _(r'^read/knowledge/$'),
             'do_title':     _(u'Mark as a valuable piece of '
                               u'knowlegde for your brain or life'),
             'undo_title':   _(u'Unmark as neuronal-exciting '
@@ -3452,6 +3486,9 @@ class Read(Document, DocumentHelperMixin):
         },
 
         'is_fun': {
+            'list_name':    _(u'funbox'),
+            'view_name':    u'fun',
+            'list_url':     _(r'^read/fun/$'),
             'do_title':     _(u'Mark as being fun. Are you sure?'),
             'undo_title':   _(u'Not fun anymore, sadly.'),
             'status_title': _(u'OMG, this thing is sooooooooo fun! LMAO!'),

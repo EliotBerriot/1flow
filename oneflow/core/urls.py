@@ -7,6 +7,8 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
+from .models.nonrel import Read
+
 from .views import (home, read_with_endless_pagination,
                     help, toggle, read_one,
                     register, profile,
@@ -17,6 +19,18 @@ from .views import (home, read_with_endless_pagination,
                     google_reader_import_status,
                     google_reader_can_import_toggle)
 
+
+readpatterns = tuple(
+    url(attrval.get('list_url'),
+        login_required(never_cache(
+            read_with_endless_pagination)),
+        name=u'read_' + attrval.get('view_name'),
+        kwargs={attrkey: True})
+    for attrkey, attrval
+        in Read.status_data.items()
+        if 'list_url' in attrval
+)
+
 urlpatterns = patterns(
     'oneflow.core.views',
     url(_(r'^home/$'), login_required(never_cache(home)), name='home'),
@@ -26,17 +40,6 @@ urlpatterns = patterns(
 
     url(_(r'^profile/$'), login_required(never_cache(profile)), name='profile'),
 
-    url(_(r'^read/unread/$'), login_required(never_cache(
-        read_with_endless_pagination)), name='read_unread',
-        kwargs={'unread': True}),
-
-    url(_(r'^read/starred/$'), login_required(never_cache(
-        read_with_endless_pagination)), name='read_starred',
-        kwargs={'starred': True}),
-
-    url(_(r'^read/later/$'), login_required(never_cache(
-        read_with_endless_pagination)), name='read_later',
-        kwargs={'later': True}),
 
     # This one is not activated to the public yet.
     url(_(r'^read/all/$'), staff_member_required(never_cache(
@@ -61,7 +64,6 @@ urlpatterns = patterns(
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••  Google Reader
 
-
     url(_(r'^grimport/(?:(?P<user_id>\d+)/)?$'),
         login_required(google_reader_import),
         name='google_reader_import'),
@@ -80,6 +82,7 @@ urlpatterns = patterns(
         staff_member_required(feed_closed_toggle),
         name='feed_closed_toggle'),
 
+    *readpatterns
 )
 
 urlpatterns += patterns(
