@@ -3238,10 +3238,11 @@ class Read(Document, DocumentHelperMixin):
                                   u'rule or a user preference.'), default=False)
     date_auto_read = DateTimeField()
 
+    # NOTE: is_starred has no default, because we use True
+    #       as "I like it" and False as "I don't like it".
     is_starred   = BooleanField(help_text=_(u'The owner has starred the '
                                 u'content, signifying he/she loves it or '
-                                u'that it is much of interest for him/her.'),
-                                default=False)
+                                u'that it is much of interest for him/her.'))
     date_starred = DateTimeField()
 
     is_bookmarked   = BooleanField(help_text=_(u'This content is marked to '
