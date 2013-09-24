@@ -9,7 +9,7 @@
         {% include "snippets/read/article-meta.html" %}
       {% endwith %}
 
-      {% include 'snippets/read/read-admin-informations.html' %}
+      {% include 'snippets/read/read-admin-informations.html' with with_index=1 %}
 
       <div class="read-content-wrapper slide-togglable slide-toggle-notice hide"
           id="content-{{ read.id }}"
