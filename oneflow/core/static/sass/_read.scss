@@ -365,6 +365,23 @@
     }
 }
 
+#reads-list-header {
+    /* Don't let the reads-number slide the whole list, this is disgratious. */
+    min-height: 80px;
+
+    /* Align all the content on the list content (not the list edge). */
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
 .initial-loading .loading {
     margin: 15px 0 25px;
+}
+
+#no-items {
+    margin: 15% 0 0;
+
+    .title {
+        margin-bottom: 20px;
+    }
 }

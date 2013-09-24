@@ -1,0 +1,87 @@
+
+<li id="no-items" class="hide">
+    <div class="centered">
+        <h3 class="title"><i class="icon-coffee icon-large"></i>
+            &nbsp;{% trans "No items" %}</h3>
+        <h4 class="descr1 hide">{% trans "Time for a break :-)" %}</h4>
+        <h4 class="descr2 hide">
+            {% url 'read' as read_url %}
+            {% blocktrans %}
+                Or <a href="{{read_url}}">get some fresh news</a>?
+            {% endblocktrans %}
+        </h4>
+        <h4 class="descr3 hide">
+            {% trans "Is it really possible you didn't put anything in here?" %}
+        </h4>
+        <h4 class="descr4 hide">
+            {% trans "I just don't believe it." %}
+        </h4>
+        <h4 class="descr5 hide">
+            {% trans "Wait, I'm double-checking on the server." %}
+        </h4>
+
+        <h4 class="descr6 hide">
+            {% trans "Just kidding. I'm not evolved enough to do it on my own." %}
+        </h4>
+
+        <h4 class="descr7 hide">
+            {% trans "Hey, are you still here?" %}
+        </h4>
+
+        <script type="text/javascript">
+
+            function cycle_messages() {
+
+                $('#no-items .descr7').slideUp();
+                $('#no-items .descr1').slideDown();
+
+                setTimeout(function() {
+                    try {
+                        $('#no-items .descr1').slideUp();
+                        $('#no-items .descr2').slideDown();
+                    } catch (err) {}
+                }, 5000);
+
+                setTimeout(function() {
+                    try {
+                        $('#no-items .descr2').slideUp();
+                        $('#no-items .descr3').slideDown();
+                    } catch (err) {}
+                }, 10000);
+
+                setTimeout(function() {
+                    try {
+                        $('#no-items .descr3').slideUp();
+                        $('#no-items .descr4').slideDown();
+                    } catch (err) {}
+                }, 13000);
+
+                setTimeout(function() {
+                    try {
+                        $('#no-items .descr4').slideUp();
+                        $('#no-items .descr5').slideDown();
+                    } catch (err) {}
+                }, 18000);
+
+                setTimeout(function() {
+                    try {
+                        $('#no-items .descr5').slideUp();
+                        $('#no-items .descr6').slideDown();
+                    } catch (err) {}
+                }, 21000);
+
+                setTimeout(function() {
+                    try {
+                        $('#no-items .descr6').slideUp();
+                        $('#no-items .descr7').slideDown();
+                    } catch (err) {}
+                }, 28000);
+
+                setTimeout(cycle_messages, 32000);
+            }
+
+            setTimeout(cycle_messages, 2000);
+
+        </script>
+    </div>
+</li>

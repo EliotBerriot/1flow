@@ -3511,6 +3511,10 @@ class Read(Document, DocumentHelperMixin):
         },
     }
 
+    meta = {
+        'indexes': ['user', ]
+    }
+
     @classmethod
     def get_status_attributes(cls):
         try:

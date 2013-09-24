@@ -10,17 +10,7 @@
     <div id="reads-list-header" class="span8 offset2">
         <div class="row-fluid">
             <div class="span6">
-                <span id="reads-number" class="hide">
-                    <script type="text/javascript">
-
-                        setTimeout(function(){
-                            $.get(document.location + '?count=1', function(data){
-                                $('#reads-number').html(data);
-                            });
-                        }, 2000);
-
-                    </script>
-                </span>
+                <span id="reads-number" class="hide"></span>
             </div>
             <div class="span6">
                 {# buttons here #}
@@ -109,6 +99,34 @@
 
         {% include "snippets/read/actions-messages.js.html" %}
 
+        function hide_initial_loading(show_number) {
+
+            if (typeof show_number == 'undefined') {
+                var show_number = true;
+            }
+
+            try {
+                $(".initial-loading").stop(true, true).slideUp(function(){
+                    if (show_number) {
+                        $.get(document.location + '?count=1', function(data){
+                            $('#reads-number').html(data).slideDown();
+                        });
+                    }
+                }).delete();
+
+            } catch (err) {
+                // nothing, just don't crash if it's not here.
+            }
+        }
+
+        function show_initial_loading() {
+            $(".initial-loading").stop(true, true).fadeIn();
+        }
+
+        function show_no_items() {
+            $("#no-items").fadeIn();
+        }
+
         function endless_load_next_if_needed() {
 
             {% comment %}
@@ -127,32 +145,40 @@
 
             nr_items = $(".read-list-item").length;
 
-            if (nr_items > 0) {
-                try {
-                    $(".initial-loading").slideUp(function(){
-                        $('#reads-number').fadeIn();
-                    }).delete();
+            try {
+                next_page = parseInt($('.endless_more')
+                                     .attr('href').split('=')[1]);
 
-                } catch (err) {
-                    // nothing, just don't crash if it's not here.
-                }
+            } catch (err) {
+                // no more reads in the endless pagination…
+                next_page = null;
+            }
+
+            //console.log('next_page: ' + next_page);
+
+            if (nr_items == 0 && next_page == null) {
+
+                hide_initial_loading(false);
+
+                // no item at all in this list.
+                show_no_items();
+
+                return;
+            }
+
+            if (next_page == 1) {
+                show_initial_loading();
+            }
+
+            if (nr_items > 15) {
+                hide_initial_loading();
             }
 
             if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
+                if (next_page != null && next_page <= 5) {
+                    console.debug('fetching next page ('
+                                  + next_page + ') to fill the view…');
 
-                try {
-                    next_page = parseInt($('.endless_more')
-                                         .attr('href').split('=')[1]);
-
-                } catch (err) {
-                    // no more reads in the endless pagination…
-                    return;
-                }
-
-                //console.log('next_page: ' + next_page);
-
-                if (next_page <= 5) {
-                    console.debug('fetching next page to fill the view…');
                     $('.endless_container').find('a.endless_more').click();
                 }
             }
@@ -214,7 +240,6 @@
         });
 
         endless_load_next_if_needed();
-
 
         // ——————————————————————————————————————————————— admin hidden features
 
