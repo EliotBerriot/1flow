@@ -1,0 +1,30 @@
+
+{# This template must be included inside a <script> block, it's javascript. #}
+
+{% if user.is_superuser %}
+    {% if read_id %}
+        var admin_informations = $("#admin-{{ read.id }}");
+
+    {% else %}
+        var admin_informations = null;
+
+    {% endif %}
+
+    Mousetrap.bind('> >', function() {
+
+        if (admin_informations == null) {
+            if (open_content) {
+                admin_informations = $("#" + open_content).find(
+                                       '.admin-informations');
+            }
+        }
+
+        if(admin_informations) {
+            admin_informations.slideToggle(function() {
+                if (admin_informations.is(':visible')) {
+                    scrollToElement(admin_informations);
+                }
+            });
+        }
+    });
+{% endif %}

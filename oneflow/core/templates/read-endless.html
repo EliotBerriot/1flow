@@ -243,22 +243,7 @@
 
         // ——————————————————————————————————————————————— admin hidden features
 
-        {% if user.is_superuser %}
-
-        Mousetrap.bind('> >', function() {
-            if (open_content) {
-                var admin_informations = $("#" + open_content).find(
-                                            '.admin-informations');
-
-                admin_informations.slideToggle(function() {
-                    if (admin_informations.is(':visible')) {
-                        scrollToElement(admin_informations);
-                    }
-                });
-            }
-        });
-
-        {% endif %}
+        {% include "snippets/read/admin-shortcuts.js.html" with read_id=read.id %}
 
     </script>
 {% endblock extrajs_footer %}
