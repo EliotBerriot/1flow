@@ -98,14 +98,15 @@
         font-size: 14px;
         text-align: center;
         background-color: #ddd;
-        padding-top: 25px;
         color: #000;
+
+        padding-top: 25px;
+        padding-bottom: 25px;
 
         /*
             Override the bottom of the main article <li>, to have
             the bottom of article content have only one color.
         */
-        padding-bottom: 25px;
         margin-bottom: -15px;
 
         .action {
