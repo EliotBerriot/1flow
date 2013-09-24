@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-23 20:04+0200\n"
-"PO-Revision-Date: 2013-09-23 22:31+0009\n"
+"POT-Creation-Date: 2013-09-24 10:31+0200\n"
+"PO-Revision-Date: 2013-09-24 10:34+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1178,17 +1178,17 @@ msgstr "Supprimer des blagues"
 msgid "fun"
 msgstr "drôle"
 
-#: models/nonrel.py:3556
+#: models/nonrel.py:3560
 #, python-brace-format
 msgid "{0}∞{1} (#{2}) {3} {4}"
 msgstr "{0}∞{1} (#{2}) {3} {4}"
 
-#: models/nonrel.py:3568
+#: models/nonrel.py:3572
 #, python-brace-format
 msgid " ({feed})"
 msgstr " ({feed}) "
 
-#: models/nonrel.py:3573
+#: models/nonrel.py:3577
 #, python-brace-format
 msgid "{title}{source}"
 msgstr "{title}{source}"
@@ -1269,7 +1269,7 @@ msgstr ""
 msgid "Help sections"
 msgstr "Sections d'aide"
 
-#: templates/home.html:5
+#: templates/home.html:6
 msgid "Home"
 msgstr "Accueil"
 
@@ -1382,7 +1382,7 @@ msgstr "Associer des comptes"
 msgid "Read"
 msgstr "Lecture"
 
-#: templates/read-endless.html:89
+#: templates/read-endless.html:79
 msgid "Nothing to read yet. Buy a book?"
 msgstr "Rien à lire. Achetez-vous un livre ;-)"
 
@@ -2023,31 +2023,31 @@ msgstr[1] ""
 "\n"
 " <span id=\"reads_count\">%(reads)s</span> articles"
 
-#: templates/snippets/read/read-endless-page.html:8
+#: templates/snippets/read/read-endless-initial-loading.html:4
 msgid "Loading entries…"
 msgstr "Chargement des articles…"
 
-#: templates/snippets/read/read-endless-page.html:9
+#: templates/snippets/read/read-endless-initial-loading.html:5
 msgid "Thanks for your patience."
 msgstr "Merci de votre patience."
 
-#: templates/snippets/read/read-endless-page.html:10
+#: templates/snippets/read/read-endless-initial-loading.html:6
 msgid "Oh my GOD, Djangooooo!?"
 msgstr "Allo ?! Djangoooooo !?"
 
-#: templates/snippets/read/read-endless-page.html:12
+#: templates/snippets/read/read-endless-initial-loading.html:8
 msgid "Oh my god, something must be wrong?!"
 msgstr "Sacrebleu, il y a un serpent dans ma botte !"
 
-#: templates/snippets/read/read-endless-page.html:15
+#: templates/snippets/read/read-endless-initial-loading.html:11
 msgid "Or do <em>you</em> have <strong>soooo</strong> much to read?"
 msgstr "Ou alors vous avez <em>tant</em> de lecture que ça à charger ?"
 
-#: templates/snippets/read/read-endless-page.html:18
+#: templates/snippets/read/read-endless-initial-loading.html:14
 msgid "Anyway, thanks again for you patience."
 msgstr "En tous les cas, merci encore de votre patience."
 
-#: templates/snippets/read/read-endless-page.html:20
+#: templates/snippets/read/read-endless-initial-loading.html:16
 msgid ""
 "You shouldn't have waited so long, there must be something wrong with the "
 "servers. Could you please contact us to report the problem?"
@@ -2056,11 +2056,49 @@ msgstr ""
 "problème avec nos serveurs. Auriez-vous l'amabilité de nous contacter pour "
 "nous rapporter le problème ?"
 
-#: templates/snippets/read/read-endless-page.html:109
+#: templates/snippets/read/read-endless-no-items.html:5
+msgid "No items"
+msgstr "Pas d'articles"
+
+#: templates/snippets/read/read-endless-no-items.html:6
+msgid "Time for a break :-)"
+msgstr "C'est le moment idéal pour faire une pause :-)"
+
+#: templates/snippets/read/read-endless-no-items.html:9
+#, python-format
+msgid ""
+"\n"
+"                Or <a href=\"%(read_url)s\">get some fresh news</a>?\n"
+"            "
+msgstr ""
+"\n"
+" Ou alors <a href=\"%(read_url)s\">lire des nouvelles fraîches</a> ?"
+
+#: templates/snippets/read/read-endless-no-items.html:14
+msgid "Is it really possible you didn't put anything in here?"
+msgstr "C'est vraiment possible que vous n'ayez rien ici ?"
+
+#: templates/snippets/read/read-endless-no-items.html:17
+msgid "I just don't believe it."
+msgstr "Je ne le crois pas."
+
+#: templates/snippets/read/read-endless-no-items.html:20
+msgid "Wait, I'm double-checking on the server."
+msgstr "Attendez, je re-vérifie sur le serveur."
+
+#: templates/snippets/read/read-endless-no-items.html:24
+msgid "Just kidding. I'm not evolved enough to do it on my own."
+msgstr "Je blague. Je suis pas assez évolué pour faire ça tout seul."
+
+#: templates/snippets/read/read-endless-no-items.html:28
+msgid "Hey, are you still here?"
+msgstr "Hé, vous êtes toujours là ?"
+
+#: templates/snippets/read/read-endless-page.html:48
 msgid "Load more entries"
 msgstr "Charger plus d'articles"
 
-#: templates/snippets/read/read-endless-page.html:109
+#: templates/snippets/read/read-endless-page.html:48
 msgid "Loading…"
 msgstr "Chargement…"
 
