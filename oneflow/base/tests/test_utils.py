@@ -18,6 +18,14 @@ class TestHttpUtilsCleanUrl(TestCase):
         good_url = u'http://test.com/mytest/'
 
         for bad_url in (
+            u'http://test.com/mytest/?=',
+            u'http://test.com/mytest/?#',
+            u'http://test.com/mytest/#?=',
+            u'http://test.com/mytest/?=rss',
+            u'http://test.com/mytest/?=rss-450',
+            u'http://test.com/mytest/?=rss-450&',
+            u'http://test.com/mytest/?=rss-450&=rss',
+
             u'http://test.com/mytest/?utm_X',
             u'http://test.com/mytest/?utm_X&',
             u'http://test.com/mytest/?utm_X=',
@@ -119,5 +127,7 @@ class TestHttpUtilsCleanUrl(TestCase):
                  u'http://www.begeek.fr/visitez-le-tardis-de-doctor-who-sur-google-maps-101125'), # NOQA
                 (u'http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/?utm_source=feedburner&utm_medium=feed&utm_campaign=Feed%3A+francaistechcrunch+%28TechCrunch+en+Francais%29', # NOQA
                  u'http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/'), # NOQA
+                (u'http://www.liberation.fr/politiques/2013/09/24/la-niche-fiscale-pour-les-parents-d-enfants-scolarises-sera-conservee_934193?=rss-450', # NOQA
+                 u'http://www.liberation.fr/politiques/2013/09/24/la-niche-fiscale-pour-les-parents-d-enfants-scolarises-sera-conservee_934193'), # NOQA
                       ):
                 self.assertEquals(clean_url(bad_url), good_url)
