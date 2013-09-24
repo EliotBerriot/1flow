@@ -1,48 +1,6 @@
-  <main id="{{ read.id }}" class="read-individual-item row-fluid {% read_status_css read %}"
+<main id="{{ read.id }}" class="read-individual-item row-fluid {% read_status_css read %}"
     {% read_action_toggle_url read %}>
 
-  {% with read.article as article %}
+  {% include "snippets/read/article-body.html" with article=read.article read_only_one=1 %}
 
-    <div class="article">
-
-      {% include 'snippets/read/read-admin-informations.html' %}
-
-      {# No with_{metahX,action,title_first,tags,ratings,meta_muted}. This is intended. #}
-      {% include "snippets/read/article-meta.html" %}
-
-      <div class="article-content"
-          id="content-{{ read.id }}" data-toggle-id="{{ read.id }}"
-          data-toggle-function="toggle_content"
-          data-toggle-callback="notice_element">
-
-          {% if article.content_type == 3 %}
-            {% with content=article.content_display %}
-              {% if content %}
-                {{ content|safe }}
-              {% else %}
-                {% include 'snippets/read/no-content.html' %}
-
-              {% endif %}
-            {% endwith %}
-
-          {% elif article.content_type == 1 %}
-                {% include 'snippets/read/not-safe.html' %}
-
-          {% else %}
-            {% include 'snippets/read/no-content.html' %}
-
-          {% endif %}
-
-        <div class="actions article-actions end-actions centered">
-
-          {% with with_text=1 %}
-            {% include 'snippets/read/read-actions.html' %}
-          {% endwith %}
-
-        </div><!-- .article-actions -->
-
-      </div><!-- .article-content -->
-
-    </div><!-- .article -->
-  {% endwith %}
 </main>
