@@ -1,0 +1,63 @@
+<li>
+    <div class="initial-loading centered hide">
+        <h3 class="loading"><i class="icon-spinner icon-spin icon-large"></i>
+            &nbsp;&nbsp;{% trans "Loading entries…" %}</h3>
+        <h4 class="thanks1 hide">{% trans "Thanks for your patience." %}</h4>
+        <h4 class="thanks-devel hide">{% trans "Oh my GOD, Djangooooo!?" %}</h4>
+        <h4 class="thanks2 hide">
+            {% trans "Oh my god, something must be wrong?!" %}
+        </h4>
+        <h4 class="thanks3 hide">
+            {% trans "Or do <em>you</em> have <strong>soooo</strong> much to read?" %}
+        </h4>
+        <h4 class="thanks4 hide">
+            {% trans "Anyway, thanks again for you patience." %}
+        </h4>
+        <h5 class="problem-report hide">{% trans "You shouldn't have waited so long, there must be something wrong with the servers. Could you please contact us to report the problem?" %}</h5>
+        <script type="text/javascript">
+
+            setTimeout(function() {
+                try {
+                    $('.initial-loading .thanks1').slideDown();
+                } catch (err) {}
+            }, 5000);
+
+            {% if debug %}
+
+                setTimeout(function() {
+                    try {
+                        $('.initial-loading .thanks1').slideUp();
+                        $('.initial-loading .thanks-devel').slideDown();
+                    } catch (err) {}
+                }, 9000);
+
+            {% else %}
+
+                setTimeout(function() {
+                    try {
+                        $('.initial-loading .thanks1').slideUp();
+                        $('.initial-loading .thanks2').slideDown();
+                    } catch (err) {}
+                }, 10000);
+
+                setTimeout(function() {
+                    try {
+                        $('.initial-loading .thanks2').slideUp();
+                        $('.initial-loading .thanks3').slideDown();
+                    } catch (err) {}
+                }, 15000);
+
+                setTimeout(function() {
+                    try {
+                        $('.initial-loading .thanks3').slideUp();
+                        $('.initial-loading .thanks4').slideDown(function(){
+                            $('.initial-loading .problem-report').slideDown();
+                        });
+                    } catch (err) {}
+                }, 20000);
+
+            {% endif %}
+
+        </script>
+    </div>
+</li>
