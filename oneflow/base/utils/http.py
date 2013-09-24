@@ -4,8 +4,8 @@ import re
 
 UTM_RE  = re.compile(ur'[&]?utm_[^=]+(=[^&]*)?', re.I)
 XTOR_RE = re.compile(ur'[&#]?xtor(=[^&]*)?', re.I)
-EQL_RE  = re.compile(ur'[&#]?=[^&]*', re.I)
-LAST_RE = re.compile(ur'[?&#]*$', re.I)
+EQL_RE  = re.compile(ur'[#&?]=[^&]+', re.I)
+LAST_RE = re.compile(ur'[?&#=]*$', re.I)
 
 
 def clean_url(url):

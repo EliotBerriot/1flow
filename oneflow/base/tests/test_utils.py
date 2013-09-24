@@ -129,5 +129,9 @@ class TestHttpUtilsCleanUrl(TestCase):
                  u'http://techcrunch.com/2013/05/18/hell-no-tumblr-users-wont-go-to-yahoo/'), # NOQA
                 (u'http://www.liberation.fr/politiques/2013/09/24/la-niche-fiscale-pour-les-parents-d-enfants-scolarises-sera-conservee_934193?=rss-450', # NOQA
                  u'http://www.liberation.fr/politiques/2013/09/24/la-niche-fiscale-pour-les-parents-d-enfants-scolarises-sera-conservee_934193'), # NOQA
+
+                # This one must not be changed.
+                (u'http://tctechcrunch2011.files.wordpress.com/2013/09/screen-shot-2013-09-24-at-5-57-35-am.png?w=1280&h=948', # NOQA
+                 u'http://tctechcrunch2011.files.wordpress.com/2013/09/screen-shot-2013-09-24-at-5-57-35-am.png?w=1280&h=948'), # NOQA
                       ):
                 self.assertEquals(clean_url(bad_url), good_url)
