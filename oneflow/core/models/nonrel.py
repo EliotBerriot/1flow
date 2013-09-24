@@ -38,6 +38,7 @@ import ast
 import sys
 import uuid
 import errno
+import difflib
 import logging
 import requests
 import strainer
@@ -2104,8 +2105,29 @@ class Article(Document, DocumentHelperMixin):
     def content_display(self):
 
         if len(self.content) > config.READ_ARTICLE_MIN_LENGTH:
+
+            # TODO: temporary measure, please get rid of this…
+
+            title_len  = len(self.title)
+
+            transient_content = self.content
+
+            if title_len > 10:
+                search_len = title_len * 2
+
+                diff = difflib.SequenceMatcher(None,
+                                               self.content[:search_len],
+                                               self.title)
+
+                if diff.ratio() > 0.51:
+                    for blk in reversed(diff.matching_blocks):
+                        # Sometimes, last match is the empty string… Skip it.
+                        if blk[-1] != 0:
+                            transient_content = self.content[blk[0] + blk[2]:]
+                            break
+
             try:
-                return markdown(self.content)
+                return markdown(transient_content)
 
             except Exception:
                 LOGGER.exception(u'Live Markdown to HTML conversion '
