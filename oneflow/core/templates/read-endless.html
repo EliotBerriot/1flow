@@ -108,9 +108,14 @@
             try {
                 $(".initial-loading").stop(true, true).slideUp(function(){
                     if (show_number) {
-                        $.get(document.location + '?count=1', function(data){
-                            $('#reads-number').html(data).slideDown();
-                        });
+                        // WARNING: do not use sole document.location.
+                        // In case of a '#' inside it will loop all the
+                        // articles in the counter span!!
+                        $.get(document.location.pathname + '?count=1',
+                            function(data){
+                                $('#reads-number').html(data).slideDown();
+                            }
+                        );
                     }
                 }).delete();
 
@@ -120,10 +125,12 @@
         }
 
         function show_initial_loading() {
+
             $(".initial-loading").stop(true, true).fadeIn();
         }
 
         function show_no_items() {
+
             $("#no-items").fadeIn();
         }
 
