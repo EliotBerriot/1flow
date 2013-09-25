@@ -51,25 +51,19 @@
     {% if reads %}
         {% if preferences.home.style == 'RL' %}
             <ul id="reads-container" class="media-list span8 offset2">
-                {% with read_item_template='snippets/read/read-list-row.html' %}
                     {% include 'snippets/read/read-endless-page.html' %}
-                {% endwith %}
             </ul>
 
         {% elif preferences.home.style == 'T1' %}
             <div id="reads-container" class="span8 offset2">
-                {% with read_item_template='snippets/read/read-tiles-experimental-tile.html' %}
                     {% include 'snippets/read/read-endless-page.html' %}
-                {% endwith %}
             </div>
 
         {% else %}
             {# by default, with no preference, we use the TILING mode #}
 
             <div id="reads-container" class="span8 offset2">
-                {% with read_item_template='snippets/read/read-tiles-tile.html' %}
                     {% include 'snippets/read/read-endless-page.html' %}
-                {% endwith %}
             </div>
         {% endif %}
 

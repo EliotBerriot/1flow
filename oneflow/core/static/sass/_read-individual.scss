@@ -1,0 +1,22 @@
+
+.read-individual-item {
+    padding-top: 5em;
+    margin-bottom: 10em;
+
+    background-color: white;
+
+    .article-meta-top {
+        display: none;
+    }
+
+    .article-meta-bottom {
+        .article-title {
+            margin-top: 1em;
+        }
+    }
+
+    .end-meta {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}

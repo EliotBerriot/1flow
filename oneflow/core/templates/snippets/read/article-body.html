@@ -1,25 +1,26 @@
 
-<div class="article">
+{% if read_in_list %}
+  {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 meta_class='top only_when_collapsed' %}
+    {% include "snippets/read/article-meta.html" %}
+  {% endwith %}
+{% endif %}
 
-  {% if not read_only_one %}
-    {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 %}
-      {% include "snippets/read/article-meta.html" %}
-    {% endwith %}
-  {% endif %}
+<div class="article {{ read_in_list|yesno:'slide-togglable slide-toggle-notice,' }}"
+    {% if read_in_list %}
+      data-toggle-id="{{ read.id }}"
+      data-toggle-function="toggle_content"
+      data-toggle-callback="notice_element"
+    {% endif %}
+    >
 
   {% include 'snippets/read/read-admin-informations.html' %}
 
-  {% if read_only_one %}
-    {# No with_{metahX,action,title_first,tags,ratings,meta_muted}. This is intended. #}
-    {% include "snippets/read/article-meta.html" %}
-  {% endif %}
+  {# No with_{metahX,action,title_first,tags,ratings,meta_muted}. This is intended. #}
+  {% include "snippets/read/article-meta.html" with meta_class='bottom only_when_open' %}
 
-  <div class="read-content-wrapper {{ read_only_one|yesno:',slide-togglable slide-toggle-notice hide' }}"
-      id="content-{{ read.id }}"
-      data-toggle-id="{{ read.id }}"
-      data-toggle-function="toggle_content"
-      data-toggle-callback="notice_element">
-    <div class="article-content">
+  <div class="read-content-wrapper {{ read_in_list|yesno:'hide,' }}"
+      id="content-{{ read.id }}">
+    <div class="article-content ">
         {% if article.content_type == 3 %}
           {% with content=article.content_display %}
             {% if content %}
