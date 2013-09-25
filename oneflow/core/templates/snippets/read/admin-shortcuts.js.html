@@ -21,8 +21,9 @@
 
         if(admin_informations) {
             admin_informations.slideToggle(function() {
-                if (admin_informations.is(':visible')) {
-                    scrollToElement(admin_informations);
+                if (!admin_informations.is(':visible')) {
+                    //scrollToElement(admin_informations);
+                    admin_informations = null;
                 }
             });
         }
