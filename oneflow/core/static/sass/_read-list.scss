@@ -55,7 +55,9 @@
         text-align: right;
 
         // Make a little room for the gradient
-        width: 325px;
+        // for 5 icons: width: 325px;
+        // for 2 icons:
+        width: 125px;
 
         @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(247,247,247,1) 15%));
 

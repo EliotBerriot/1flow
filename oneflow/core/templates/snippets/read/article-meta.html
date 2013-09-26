@@ -77,11 +77,28 @@
     {% endspaceless %}
   </div>
 
-  {% if with_actions %}
-      {% with with_text=0 %}
-        {% include "snippets/read/watch-actions.html" %}
-      {% endwith %}
-  {% endif %}
+  {% comment %}
+
+      Disabled on 20130926. We don't need them here anymore, they don't
+      fit in the workflow.
+
+      User must read content before setting watch attributes, for quality
+      reasons. Setting a watch attribute without having read — or at least
+      rapidly looked over — makes the operation prone to setting false
+      attributes.
+
+      Only in rare case the user can pre-set attributes without reading
+      the content. For this, he has keyboard shortcuts, which makes the
+      operation very fast and aleviate the need to have the first of icons.
+
+
+      {% if with_actions %}
+          {% with with_text=0 %}
+            {% include "snippets/read/watch-actions.html" %}
+          {% endwith %}
+      {% endif %}
+
+  {% endcomment %}
 
   {% if not with_title_first %}
     <div class="clearfix"></div>
