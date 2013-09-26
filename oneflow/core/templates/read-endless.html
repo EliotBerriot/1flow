@@ -220,6 +220,13 @@
         }
 
         var reads_container = $('#reads-container');
+        var last_scroll     = 0;
+        var navbar_hidden   = false;
+        var preferences = {
+            auto_mark_read_delay:    {% firstof preferences.read.auto_mark_read_delay '4500' %},
+            bookmarked_marks_unread: {% firstof preferences.read.bookmarked_marks_unread 'true' %},
+            starred_marks_read:      {% firstof preferences.read.starred_marks_read 'true' %}
+        };
 
         {% if preferences.home.style|slice:'1' == 'T' %}
 

@@ -71,7 +71,7 @@ function eventually_toggle(event) {
 function read_setup(parent) {
     // this function is run after each ajax call, via setup_everything().
 
-    //console.debug('read setup bindings');
+    // console.debug('read setup bindings');
    //debug_notify('read_setup(' + parent + ')');
 
     $(".article-content p").find('img').parent().addClass('img-legend');
@@ -104,16 +104,21 @@ function read_init(){
 var open_content = null;
 var last_opened  = null;
 var open_actions = null;
+var auto_mark_read_timers = {};
 
 function notice_element(oid) {
 
-    flash_fade($("#" + oid + " .article"), "#ddd", "#bbb");
+    setTimeout(function(){
+        flash_fade($("#" + oid), "#ddd", "#bbb");
+    }, 1000);
 }
 function toggle_content(oid, callback) {
 
-    debug_notify('toggle_content(' + oid + ', ' + callback + ')');
+    //debug_notify('toggle_content(' + oid + ', ' + callback + ')');
+    // console.debug('toggle_content(' + oid + ', ' + callback + ')');
 
     var run_callback = function() {
+        //console.debug('trying to run callback ' + callback + '(' + oid + ')');
         typeof callback === 'function' && callback(oid);
     };
 
@@ -123,59 +128,119 @@ function toggle_content(oid, callback) {
 
         open_auxilliary = function ($on_what) {
 
+            //console.debug('open_aux on ' + oid + ', '+ auto_mark_read_timers[oid]);
+
             // no need bothering testing !is(':visible'). It costs
             // a lot, and if it's not, slideDown() will do nothing.
             //$on_what.find('.clicker-muted').first().slideDown();
+
+            if ($on_what.hasClass('not_is_read')) {
+
+                auto_mark_read_timers[oid] = setTimeout(function(){
+
+                    // we need to specify the read_id and not use
+                    // `open_content`, because in rare conditions
+                    // we have a race where opening next article
+                    // marks it as read immediately, whereas the
+                    // previous should have been marked instead.
+
+                    mark_something(oid, 'is_read', false, true);
+                    delete auto_mark_read_timers[oid];
+
+                }, preferences.auto_mark_read_delay);
+
+                //console.debug('mark read timer set at ' + oid + ', '+ auto_mark_read_timers[oid]);
+            }
         },
 
         open_me = function(scrollTo) {
+
+            //console.debug('open_me on ' + me);
 
             if(typeof scrollTo == 'undefined') {
                 var scrollTo = true;
             }
 
-            // set everything open before the animation starts,
-            // else potential parallely executed function could
+            // set all 'open' related variables before the animation
+            // starts, else potential parallely executed function could
             // fail or get the "old" (previous) values.
             last_opened  = oid;
             open_content = oid;
-            //console.debug('set open to ' + oid + ' and last to ' + oid);
 
-            if (scrollTo) {
-                scrollToElement(me);
-            }
+            // console.debug('set open to ' + oid + ' and last to ' + oid);
 
-            // bindable_hovered NOT USED YET
-            //bindable_hovered = content;
+            $('.navbar').each(function(index) {
+                if (index == 0) {
+                    $(this).slideUp(function() {
 
-            $me.addClass('open_content');
-            open_auxilliary($me);
-            $content.slideDown(scroll_speed, "swing", run_callback);
+                        if (scrollTo) {
+                            scrollToElement(me, scroll_speed, -50);
+                        }
+
+                        // bindable_hovered NOT USED YET
+                        //bindable_hovered = content;
+
+                        $me.addClass('open_content');
+                        open_auxilliary($me);
+                        $content.slideDown(scroll_speed, "swing", run_callback);
+                    });
+                } else {
+                    $(this).slideUp();
+                }
+            });
         },
 
         close_auxilliary = function ($on_what) {
+
+            //console.debug('close_aux ' + $on_what);
+
+            try {
+                var myid = $on_what.attr('id');
+                //console.debug('mark read timer cancel ' + myid + ', '+ auto_mark_read_timers[myid]);
+
+                clearTimeout(auto_mark_read_timers[myid]);
+                delete auto_mark_read_timers[myid];
+
+            } catch (err) {
+                console.log(err);
+            }
 
             $on_what.find('.clicker-muted').each(function() {
                 // no need bothering testing is(':visible'). It costs
                 // a lot, and if it's not, slideUp() will do nothing.
                 $(this).slideUp();
             });
+
         };
 
     if ($content.is(':visible')) {
-        // put the current item to top of window
-        scrollToElement(me, scroll_speed, 50);
 
-        // set everything open before the animation starts,
-        // else potential parallely executed function could
-        // fail or get the "old" (previous) values.
-        open_content = null;
-        last_opened  = oid;
-        //console.debug('set open to null and last to ' + oid);
+        $('.navbar').each(function(index){
+            if (index == 0) {
 
-        $content.slideUp(scroll_speed, "swing", run_callback);
-        close_auxilliary($me);
-        $me.removeClass('open_content');
+                $(this).slideDown(function() {
+
+                    // set everything open before the animation starts,
+                    // else potential parallely executed function could
+                    // fail or get the "old" (previous) values.
+                    open_content = null;
+                    last_opened  = oid;
+                    // console.debug('set open to null and last to ' + oid);
+
+                    $content.slideUp(scroll_speed, "swing", run_callback);
+
+                    // put the current item to top of window
+                    scrollToElement(me, scroll_speed, 100);
+
+                    close_auxilliary($me);
+                    $me.removeClass('open_content');
+                });
+
+            } else {
+                $(this).slideDown();
+            }
+        });
+
         // bindable_hovered NOT USED YET
         //
         // This is not mandatory, but doesn't hurt.
@@ -188,7 +253,7 @@ function toggle_content(oid, callback) {
 
         if(open_content != null) {
 
-            //console.debug('open_content: ' + open_content);
+            // console.debug('open_content: ' + open_content);
 
             var to_close   = open_content,
                 $current   = $("#" + open_content),
@@ -198,7 +263,7 @@ function toggle_content(oid, callback) {
             // element if it's located before us, else the
             // movement in not visually fluent.
             if ($current.data('index') < $(me).data('index')) {
-                scrollToElement(me, scroll_speed, cur_height);
+                scrollToElement(me, scroll_speed, cur_height - 25);
                 open_me(false);
 
             } else {
@@ -303,12 +368,12 @@ function open_last_opened() {
         return toggle_content(last_opened);
     }
 }
-function mark_current_read_as(what) {
+function mark_current_read_as(what, send_notify) {
     if (open_content) {
         var read = $("#" + open_content);
 
         if (read.hasClass('not_' + what)) {
-            return mark_something(open_content, what);
+            return mark_something(open_content, what, false, send_notify);
         }
     }
 }
@@ -537,7 +602,7 @@ Mousetrap.bind(['shift+l'], function() {
 
 if (Modernizr.touch) {
 
-    //console.debug('touch events start…');
+    // console.debug('touch events start…');
 
     hammertime.on("swipeleft", ".read-list-item", function(ev) {
 
