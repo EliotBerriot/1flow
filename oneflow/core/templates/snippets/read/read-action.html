@@ -1,38 +1,37 @@
+<span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-not_{{ action_name }} {{ undo_start_hidden }}"
+    title="{{ action_data.undo_title }}">
+    {% spaceless %}
+    <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
+      {% if action_data.undo_icon_stack %}
 
-  <span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-not_{{ action_name }} {{ undo_start_hidden }}"
-      title="{{ action_data.undo_title }}">
-      {% spaceless %}
-      <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
-        {% if action_data.undo_icon_stack %}
+        <span class="icon-stack">
+            <i class="icon-sign-blank icon-stack-base"></i>
+            <i class="icon-{{ action_data.undo_icon }}"></i>
+        </span>
 
-          <span class="icon-stack">
-              <i class="icon-sign-blank icon-stack-base"></i>
-              <i class="icon-{{ action_data.undo_icon }}"></i>
-          </span>
-
-        {% else %}
-          <i class="icon-{{ action_data.undo_icon }}"></i>
-
-        {% endif %}{% if with_text %}<span
-            class="hidden-phone"> {{ action_data.undo_label }}</span>{% endif %}</a>
-      {% endspaceless %}
-  </span>
-  <span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-{{ action_name }} {{ do_start_hidden }}"
-      title="{{ action_data.do_title }}">
-      {% spaceless %}
-      <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
-
-        {% if action_data.do_icon_stack %}
-          <span class="icon-stack">
-              <i class="icon-sign-blank icon-stack-base"></i>
-              <i class="icon-{{ action_data.do_icon }} icon-light"></i>
-          </span>
-
-        {% else %}
-            <i class="icon-{{ action_data.do_icon }}"></i>
+      {% else %}
+        <i class="icon-{{ action_data.undo_icon }}"></i>
 
       {% endif %}{% if with_text %}<span
-            class="hidden-phone"> {{ action_data.do_label }}</span>{% endif %}</a>
-      {% endspaceless %}
+          class="hidden-phone"> {{ action_data.undo_label }}</span>{% endif %}</a>
+    {% endspaceless %}
+</span>
+<span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-{{ action_name }} {{ do_start_hidden }}"
+    title="{{ action_data.do_title }}">
+    {% spaceless %}
+    <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
 
-  </span>
+      {% if action_data.do_icon_stack %}
+        <span class="icon-stack">
+            <i class="icon-sign-blank icon-stack-base"></i>
+            <i class="icon-{{ action_data.do_icon }} icon-light"></i>
+        </span>
+
+      {% else %}
+          <i class="icon-{{ action_data.do_icon }}"></i>
+
+    {% endif %}{% if with_text %}<span
+          class="hidden-phone"> {{ action_data.do_label }}</span>{% endif %}</a>
+    {% endspaceless %}
+
+</span>
