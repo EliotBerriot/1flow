@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-26 18:35+0200\n"
-"PO-Revision-Date: 2013-09-26 18:55+0009\n"
+"PO-Revision-Date: 2013-09-26 19:27+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -1353,19 +1353,16 @@ msgid "Preferences"
 msgstr "Préférences"
 
 #: templates/preferences.html:25
-#, fuzzy
 msgid "Reading"
-msgstr "Liste de lecture"
+msgstr "Lecture"
 
 #: templates/preferences.html:31
-#, fuzzy
 msgid "Keeping for later"
-msgstr "gardé pour plus tard"
+msgstr "Lecture différée"
 
 #: templates/preferences.html:37
-#, fuzzy
 msgid "Starring articles"
-msgstr "articles"
+msgstr "Articles sélectionnés"
 
 #: templates/preferences.html:44
 msgid "Important notice:"
