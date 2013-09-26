@@ -440,8 +440,15 @@ class User(Document, DocumentHelperMixin):
     first_name  = StringField()
     last_name   = StringField()
     avatar_url  = URLField()
-    preferences = ReferenceField('Preferences', reverse_delete_rule=NULLIFY,
-                                 default=new_user_preferences)
+    preferences_data = ReferenceField('Preferences', reverse_delete_rule=NULLIFY)
+
+    @property
+    def preferences(self):
+        if self.preferences_data is None:
+            self.preferences_data = Preferences().save()
+            self.save()
+
+        return self.preferences_data
 
     def __unicode__(self):
         return u'%s #%s (Django ID: %s)' % (self.username or u'<UNKNOWN>',
