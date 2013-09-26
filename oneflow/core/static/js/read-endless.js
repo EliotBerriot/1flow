@@ -134,7 +134,8 @@ function toggle_content(oid, callback) {
             // a lot, and if it's not, slideDown() will do nothing.
             //$on_what.find('.clicker-muted').first().slideDown();
 
-            if ($on_what.hasClass('not_is_read')) {
+            if ($on_what.hasClass('not_is_read')
+                    && preferences.auto_mark_read_delay > 0) {
 
                 auto_mark_read_timers[oid] = setTimeout(function(){
 
@@ -194,15 +195,17 @@ function toggle_content(oid, callback) {
 
             //console.debug('close_aux ' + $on_what);
 
-            try {
-                var myid = $on_what.attr('id');
-                //console.debug('mark read timer cancel ' + myid + ', '+ auto_mark_read_timers[myid]);
+            if(preferences.auto_mark_read_delay > 0) {
+                try {
+                    var myid = $on_what.attr('id');
+                    //console.debug('mark read timer cancel ' + myid + ', '+ auto_mark_read_timers[myid]);
 
-                clearTimeout(auto_mark_read_timers[myid]);
-                delete auto_mark_read_timers[myid];
+                    clearTimeout(auto_mark_read_timers[myid]);
+                    delete auto_mark_read_timers[myid];
 
-            } catch (err) {
-                console.log(err);
+                } catch (err) {
+                    console.log(err);
+                }
             }
 
             $on_what.find('.clicker-muted').each(function() {

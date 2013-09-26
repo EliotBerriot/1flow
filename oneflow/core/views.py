@@ -25,14 +25,13 @@ from django.template import add_to_builtins
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import ugettext_lazy as _
 
-from oneflow.core.forms import UserProfileEditForm
-
 #from infinite_pagination.paginator import InfinitePaginator
 from endless_pagination.utils import get_page_number_from_request
 
 from sparks.django.utils import HttpResponseTemporaryServerError
 
-from .forms import FullUserCreationForm
+from .forms import (FullUserCreationForm,
+                    UserProfileEditForm, ReadPreferencesForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Read
 from .models.reldb import HelpContent
@@ -49,6 +48,7 @@ add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
 add_to_builtins('absolute.templatetags.absolute_future')
 add_to_builtins('markdown_deux.templatetags.markdown_deux_tags')
+add_to_builtins('widget_tweaks.templatetags.widget_tweaks')
 add_to_builtins('oneflow.base.templatetags.base_utils')
 add_to_builtins('oneflow.core.templatetags.coretags')
 
@@ -67,6 +67,31 @@ def home(request):
     return render(request, 'home.html', {
         'gr_import': GoogleReaderImport(request.user.id),
     })
+
+
+def preferences(request):
+
+    if request.POST:
+        form = ReadPreferencesForm(request.POST,
+                                   instance=request.user.mongo.preferences.read)
+
+        if form.is_valid():
+
+            LOGGER.info(request.user.mongo.preferences.read.auto_mark_read_delay)
+
+            LOGGER.info(form.cleaned_data['auto_mark_read_delay'])
+
+            # Embedded documents needs to be saved from the container.
+            request.user.mongo.preferences.read = form.save()
+            request.user.mongo.preferences.save()
+
+            LOGGER.info(request.user.mongo.preferences.read.auto_mark_read_delay)
+
+            return HttpResponseRedirect(reverse('preferences'))
+    else:
+        form = ReadPreferencesForm(instance=request.user.mongo.preferences.read)
+
+    return render(request, 'preferences.html', {'form': form})
 
 
 def read_with_endless_pagination(request, **kwargs):

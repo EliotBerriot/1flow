@@ -70,7 +70,7 @@
 
           {# nowrap is necessary, else the username gets to next line on Safari+iPad@portrait #}
           <li class="dropdown nowrap">
-            <a class="dropdown-toggle {% reverse_active 'profile' %}"
+            <a class="dropdown-toggle {% reverse_active 'profile' %} {% reverse_active 'preferences' %}"
                 data-toggle="dropdown" href="#">
 
               {% if mongodb_user.avatar_url %}
@@ -88,7 +88,12 @@
               </span>
             </a>
             <ul class="dropdown-menu">
-              <li><a href="{% url 'profile' %}">{% trans 'Profile' %}</a></li>
+              <li class=" {% reverse_active 'preferences' %}">
+                <a href="{% url 'preferences' %}">{% trans 'Preferences' %}</a>
+              </li>
+              <li class=" {% reverse_active 'profile' %}">
+                <a href="{% url 'profile' %}">{% trans 'Account' %}</a>
+              </li>
 
             {% if user.is_superuser %}
               <li class="divider"></li>

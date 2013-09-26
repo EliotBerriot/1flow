@@ -1,0 +1,57 @@
+{% extends 'home.html' %}
+
+{% block body_id %}preferences{% endblock body_id %}
+
+{% block title %}{% trans 'Preferences' %}{% endblock title %}
+
+{% block application_content %}
+  <div class="spacer25"></div>
+  <div class="container-fluid">
+    <div class="row-fluid">
+      <div class="span6 offset3">
+
+        <div class="row-fluid">
+          <div class="span12">
+            <h1>{% trans "Preferences" %}</h1>
+          </div>
+        </div>
+
+        <div class="row-fluid">
+          <div class="span12">
+            <form class="form" method="POST">
+              {% csrf_token %}
+
+              <fieldset>
+                <legend>{% trans "Reading" %}</legend>
+
+                {% include "widgets/forms/field-generic.html" with field=form.auto_mark_read_delay %}
+              </fieldset>
+
+              <fieldset>
+                <legend>{% trans "Keeping for later" %}</legend>
+
+                {% include "widgets/forms/field-checkbox.html" with field=form.bookmarked_marks_unread %}
+              </fieldset>
+
+              <fieldset>
+                <legend>{% trans "Starring articles" %}</legend>
+
+                {% include "widgets/forms/field-checkbox.html" with field=form.starred_marks_read %}
+                {% include "widgets/forms/field-checkbox.html" with field=form.starred_removes_bookmarked %}
+              </fieldset>
+
+            <fieldset class="form-end-notice">
+              <p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}
+If you have any reading list open in another browser tab, you will have to reload it for the changes you make here to take effect.
+{% endblocktrans %}</p></div>
+            </fieldset>
+
+              {% include "widgets/forms/form-actions.html" %}
+            </form>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+{% endblock application_content %}

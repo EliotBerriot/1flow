@@ -11,7 +11,7 @@ from .models.nonrel import Read
 
 from .views import (home, read_with_endless_pagination,
                     help, toggle, read_one,
-                    register, profile,
+                    register, profile, preferences,
                     set_preference,
                     feed_closed_toggle,
                     google_reader_import,
@@ -35,11 +35,15 @@ urlpatterns = patterns(
     'oneflow.core.views',
     url(_(r'^home/$'), login_required(never_cache(home)), name='home'),
 
+    # This is the individual preference toggling.
     url(_(r'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
         login_required(never_cache(set_preference)), name='set_preference'),
 
-    url(_(r'^profile/$'), login_required(never_cache(profile)), name='profile'),
+    # This is the user preferences view, where he can change them graphically.
+    url(_(r'^preferences/$'), login_required(never_cache(preferences)),
+        name='preferences'),
 
+    url(_(r'^profile/$'), login_required(never_cache(profile)), name='profile'),
 
     # This one is not activated to the public yet.
     url(_(r'^read/all/$'), staff_member_required(never_cache(

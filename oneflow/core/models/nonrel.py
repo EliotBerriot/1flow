@@ -305,6 +305,43 @@ class NotificationPreferences(EmbeddedDocument):
     pass
 
 
+AUTO_MARK_READ_DELAY_CHOICES = (
+    (150, _(u'Immediately')),
+    (1000, _(u'After one second')),
+    (2000, _(u'After two seconds')),
+    (4500, _(u'After 4.5 seconds (default)')),
+    (10000, _(u'After 10 seconds')),
+    (30000, _(u'After 30 seconds')),
+    (-1, _(u'Never (do not auto mark as read)')),
+)
+
+
+class ReadPreferences(EmbeddedDocument):
+    """ Reading list preferences. """
+
+    starred_marks_read = BooleanField(
+        verbose_name=_(u'Star marks read'),
+        help_text=_(u'When you mark an article starred, this will '
+                    u'automatically mark it as read (default: true).'),
+        default=True)
+
+    starred_removes_bookmarked = BooleanField(
+        verbose_name=_(u'Star unmarks “read later”'),
+        help_text=_(u'When you mark an article starred, this will '
+                    u'automatically remove it from the “read later” '
+                    u'list. (default: true).'), default=True)
+
+    bookmarked_marks_unread = BooleanField(
+        verbose_name=_(u'Reading later marks unread'),
+        help_text=_(u'Marking an article to read later marks it as unread '
+                    u'(default: true).'), default=True)
+
+    auto_mark_read_delay = IntField(
+        verbose_name=_(u'Auto mark-read delay'),
+        help_text=_(u'The delay after which an open article in any reading '
+                    u'list will be automatically marked as read if it is not.'),
+                    default=4500, choices=AUTO_MARK_READ_DELAY_CHOICES)
+
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
@@ -345,6 +382,8 @@ class Preferences(Document, DocumentHelperMixin):
                                          default=NotificationPreferences)
     home         = EmbeddedDocumentField(u'HomePreferences',
                                          default=HomePreferences)
+    read         = EmbeddedDocumentField(u'ReadPreferences',
+                                         default=ReadPreferences)
     wizards      = EmbeddedDocumentField(u'HelpWizards',
                                          default=HelpWizards)
 
@@ -401,8 +440,15 @@ class User(Document, DocumentHelperMixin):
     first_name  = StringField()
     last_name   = StringField()
     avatar_url  = URLField()
-    preferences = ReferenceField('Preferences', reverse_delete_rule=NULLIFY,
-                                 default=new_user_preferences)
+    preferences_data = ReferenceField('Preferences', reverse_delete_rule=NULLIFY)
+
+    @property
+    def preferences(self):
+        if self.preferences_data is None:
+            self.preferences_data = Preferences().save()
+            self.save()
+
+        return self.preferences_data
 
     def __unicode__(self):
         return u'%s #%s (Django ID: %s)' % (self.username or u'<UNKNOWN>',
