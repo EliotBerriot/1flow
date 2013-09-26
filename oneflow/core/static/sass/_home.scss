@@ -151,6 +151,34 @@ header {
     }
 }
 
+/* ------------------------------------------------------------------ Preferences */
+
+#preferences {
+    fieldset {
+        margin-top: 3em;
+
+        legend {
+            margin-bottom: 0;
+        }
+    }
+
+    .form-end-notice {
+        margin-top: 4em;
+
+        // Make the end-notice fieldset stick closer to the form actions.
+        margin-bottom: -0.5em;
+
+        p {
+            margin-bottom: 0;
+        }
+    }
+
+    select {
+        height: 2.2em;
+    }
+}
+
+
 
 /* --------------------------------------------------------------------- Help */
 
