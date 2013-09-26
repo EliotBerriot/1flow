@@ -1,6 +1,6 @@
-<main id="{{ read.id }}" class="read-individual-item row-fluid {% read_status_css read %}"
+<main id="{{ read.id }}" class="read-individual-item open_content row-fluid {% read_status_css read %}"
     {% read_action_toggle_url read %}>
 
-  {% include "snippets/read/article-body.html" with article=read.article read_only_one=1 %}
+  {% include "snippets/read/article-body.html" with article=read.article %}
 
 </main>

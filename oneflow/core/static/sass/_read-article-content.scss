@@ -8,7 +8,7 @@
     font-family: georgia, times, serif;
     text-align: justify;
 
-    padding: 5em;
+    padding: 0 4em 5em;
 
     a {
         color: inherit;
@@ -123,11 +123,12 @@
     }
 }
 
-
 /* NOTE: .no-content must come AFTER .article-content
         for proper CSS overriding. */
 .no-content {
     text-align: left;
+
+    margin-top: 2em;
 
     /* Oh my bad… the image has transparent content at the bottom.
         As I didn't find a way to crop it (animated GIFs…), I
@@ -145,68 +146,6 @@
 
     img {
         box-shadow: none;
-    }
-}
-
-#article-container {
-    padding-top: 5em;
-    margin-bottom: 10em;
-
-    background-color: white;
-
-
-    .article-meta {
-        padding-left: 5em;
-        padding-right: 5em;
-
-        .article-title {
-            /* font-family: Bitter, georgia, times, serif; */
-            font-family: georgia, times, serif;
-            margin-top: 0.5em;
-            padding-bottom: 0.5em;
-            border-bottom: 1px dotted #ddd;
-            /*
-            padding-left: 10%;
-            padding-right: 10%;
-            */
-        }
-
-        .meta {
-            font-size: 130%;
-
-            .date,
-            .source {
-                float: left;
-                clear: left;
-                margin-bottom: 0.5em;
-            }
-
-            .author {
-                float: right;
-            }
-
-            .tags, .rating {
-                display: none;
-            }
-
-            .status-icons {
-                float: right;
-
-                span {
-                    margin-left: 10px;
-                }
-            }
-        }
-    }
-
-    .article-content {
-        padding: 5em;
-        /* font-family: Bitter, georgia, times, serif; */
-    }
-
-    .end-meta {
-        margin-left: 0;
-        margin-right: 0;
     }
 }
 

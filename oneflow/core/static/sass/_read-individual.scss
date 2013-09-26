@@ -1,0 +1,39 @@
+
+.read-individual-item {
+    padding-top: 4em;
+    margin-bottom: 10em;
+
+    background-color: white;
+
+    .article-meta,
+    .article-content {
+        // Make the white space around the text be the same as in the list.
+        // The list has 1em from <li> and 4em from .article-*. Thus here we
+        // need 5em for the same comfortable reading effect.
+        padding-left: 5em;
+        padding-right: 5em;
+    }
+
+    .article-meta-top {
+        display: none;
+    }
+
+    .article-meta-bottom {
+        .article-title {
+            margin-top: 1em;
+        }
+    }
+
+    .end-meta {
+        margin-left: 0;
+        margin-right: 0;
+    }
+}
+
+.read-individual-item.open_content {
+    // cancel the .open_content margin, I want the article to stick to the
+    // navbar in individual mode.
+    margin-top: 0;
+
+
+}

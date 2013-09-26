@@ -51,25 +51,19 @@
     {% if reads %}
         {% if preferences.home.style == 'RL' %}
             <ul id="reads-container" class="media-list span8 offset2">
-                {% with read_item_template='snippets/read/read-list-row.html' %}
                     {% include 'snippets/read/read-endless-page.html' %}
-                {% endwith %}
             </ul>
 
         {% elif preferences.home.style == 'T1' %}
             <div id="reads-container" class="span8 offset2">
-                {% with read_item_template='snippets/read/read-tiles-experimental-tile.html' %}
                     {% include 'snippets/read/read-endless-page.html' %}
-                {% endwith %}
             </div>
 
         {% else %}
             {# by default, with no preference, we use the TILING mode #}
 
             <div id="reads-container" class="span8 offset2">
-                {% with read_item_template='snippets/read/read-tiles-tile.html' %}
                     {% include 'snippets/read/read-endless-page.html' %}
-                {% endwith %}
             </div>
         {% endif %}
 
@@ -108,9 +102,14 @@
             try {
                 $(".initial-loading").stop(true, true).slideUp(function(){
                     if (show_number) {
-                        $.get(document.location + '?count=1', function(data){
-                            $('#reads-number').html(data).slideDown();
-                        });
+                        // WARNING: do not use sole document.location.
+                        // In case of a '#' inside it will loop all the
+                        // articles in the counter span!!
+                        $.get(document.location.pathname + '?count=1',
+                            function(data){
+                                $('#reads-number').html(data).slideDown();
+                            }
+                        );
                     }
                 }).delete();
 
@@ -120,10 +119,12 @@
         }
 
         function show_initial_loading() {
+
             $(".initial-loading").stop(true, true).fadeIn();
         }
 
         function show_no_items() {
+
             $("#no-items").fadeIn();
         }
 
@@ -219,6 +220,14 @@
         }
 
         var reads_container = $('#reads-container');
+        var last_scroll     = 0;
+        var navbar_hidden   = false;
+        var preferences = {
+            auto_mark_read_delay:       {% firstof preferences.read.auto_mark_read_delay '4500' %},
+            bookmarked_marks_unread:    {% firstof preferences.read.bookmarked_marks_unread 'true' %},
+            starred_marks_read:         {% firstof preferences.read.starred_marks_read 'true' %},
+            starred_removes_bookmarked: {% firstof preferences.read.starred_removes_bookmarked 'true' %}
+        };
 
         {% if preferences.home.style|slice:'1' == 'T' %}
 
@@ -232,7 +241,7 @@
 
             {% if config.READ_INFINITE_AUTOSCROLL_ENABLED %}
                 paginateOnScroll: true,
-                paginateOnScrollMargin: 1500,
+                paginateOnScrollMargin: 800,
 
             {% endif %}
 

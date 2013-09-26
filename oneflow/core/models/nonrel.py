@@ -316,16 +316,17 @@ HOME_STYLE_CHOICES = (
 class HomePreferences(EmbeddedDocument):
     """ Various HOME settings. """
 
+    style_templates = {
+        u'RL': 'snippets/read/read-list-item.html',
+        u'TL': 'snippets/read/read-tiles-tile.html',
+        u'T1': 'snippets/read/read-tiles-experimental-tile.html',
+    }
     style = StringField(verbose_name=_(u'How the user wants his 1flow '
                         u'home to appear'), max_length=2,
                         choices=HOME_STYLE_CHOICES, default=u'RL')
 
     def get_template(self):
-        return {
-            u'RL': 'snippets/read/read-list-row.html',
-            u'TL': 'snippets/read/read-tiles-tile.html',
-            u'T1': 'snippets/read/read-tiles-experimental-tile.html',
-        }.get(self.style)
+        return HomePreferences.style_templates.get(self.style)
 
 
 class HelpWizards(EmbeddedDocument):

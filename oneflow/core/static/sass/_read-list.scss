@@ -1,0 +1,198 @@
+
+.read-list-item {
+    position: relative;
+    padding: 15px 10px;
+    border-bottom: 1px solid #ddd;
+
+    /*
+        START flash_fade():
+        bring the body color here
+        for the flash_fade() to work.
+
+        Thus, we need to reset the H* colors.
+    */
+
+    color: #29323d;
+
+    h1, h2, h3 {
+        color: inherit;
+    }
+
+    /* END flash_fade() */
+
+    &:hover {
+        background-color: #fff;
+
+        .article-meta .start-actions {
+            // http://www.colorzilla.com/gradient-editor/#ffffff+0,ffffff+20&0+0,1+20;Custom
+            //@include filter-gradient(#00ffffff, #ffffff, horizontal); // IE6-8
+            // IE9 SVG, needs conditional override of 'filter' to 'none'
+            @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 15%));
+        }
+    }
+
+    p {
+        /* cancel Bootstrap's media margin. */
+        margin-bottom: 0;
+    }
+
+    .list-item-number {
+        font-size: 500%;
+        line-height: 100%;
+        vertical-align: center;
+        text-align: right;
+    }
+
+    &:last-child {
+        margin-bottom: 8em;
+        border-bottom: none;
+    }
+
+    .start-actions {
+        position: absolute;
+        top: -15px;
+        right: -10px;
+        text-align: right;
+
+        // Make a little room for the gradient
+        // for 5 icons: width: 325px;
+        // for 2 icons:
+        width: 125px;
+
+        @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(247,247,247,1) 15%));
+
+        /* Keep the icons over the title. */
+        z-index: 20;
+    }
+
+    .article-meta-bottom {
+        padding-top: 2em;
+
+        // this one starts hidden and
+        // will be shown by .open_content.
+        display: none;
+    }
+}
+
+.top-marker {
+    // this one starts hidden and
+    // will be shown by .open_content.
+    display: none;
+
+    position: absolute;
+    // -1px to overlap the <li> border.
+    top: -1px;
+    left: 0;
+    right: 0;
+
+    // get over everything in the <li>
+    z-index: 30;
+
+    background-color: white;
+    min-height: 5px;
+
+    .top-horizontal-rule {
+        min-height: 5px;
+        background-color: #ddd;
+
+        // This matches the .article-content margin
+        // to align with the article's text.
+        margin: 0 60px;
+    }
+}
+
+.top-closer {
+    position: absolute;
+
+    // 9px because the .top-marker adds +1 to the side of the whole <li>.
+    top: 19px;
+    right: 20px;
+
+    font-size: 32px;
+
+    a {
+        color: #586a7f;
+        text-decoration: none;
+
+        &:visited, &:active {
+            color: #ccc;
+        }
+
+        &:hover {
+            color: black;
+        }
+    }
+
+    // over the .top-marker.
+    z-index: 40;
+}
+
+.only_when_open {
+    // this one starts hidden and
+    // will be shown by .open_content.
+    display: none;
+}
+
+.open_content {
+    // Make the content white, like the hover. this avoids
+    // disgracefull flip/flaps on mouse out while we read.
+    background-color: #fff;
+
+    // make the previous list item be far when positioning
+    // the current open one to the top of the window.
+    margin-top: 60px;
+
+    .article-meta .start-actions {
+        // http://www.colorzilla.com/gradient-editor/#ffffff+0,ffffff+20&0+0,1+20;Custom
+        // @include filter-gradient(#00ffffff, #ffffff, horizontal); // IE6-8
+        // IE9 SVG, needs conditional override of 'filter' to 'none'
+        @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 15%));
+    }
+
+    .only_when_open {
+        display: block;
+    }
+
+    .only_when_collapsed {
+        display: none;
+    }
+}
+
+// .not_is_bookmarked.not_is_starred
+.read-list-item.not_is_read {
+    .article-title {
+        /* #a2b1c3 #29323d #29313c #586a7f */
+        text-shadow: 0 0 2px #bbb;
+        /* @include text-full-outline(#ccc);*/
+
+    }
+}
+
+.read-list-item.is_read.not_is_bookmarked.not_is_starred {
+    .article-title,
+    .article-meta .meta {
+        opacity: 0.9;
+    }
+}
+
+#reads-list-header {
+    /*  Don't let the reads-number slide the whole
+        list when appearing, this is disgratious. */
+    min-height: 80px;
+
+    /* Align text on the list content (not edge). */
+    padding-left: 10px;
+    padding-right: 10px;
+}
+
+.initial-loading .loading {
+    margin: 15px 0 25px;
+}
+
+#no-items {
+    margin: 15% 0 0;
+
+    .title {
+        margin-bottom: 20px;
+    }
+}

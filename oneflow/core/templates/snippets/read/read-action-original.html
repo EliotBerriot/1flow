@@ -1,0 +1,7 @@
+<span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+  title="{% trans "Display on the original website" %}">
+<a href="{{ article.url }}" target="_blank" class="nowrap">
+  {% if with_text %}<span
+      class="hidden-phone">{% trans "Read original" %}&nbsp;</span>{% endif %}<i class="icon-double-angle-right"></i>
+</a>
+</span>

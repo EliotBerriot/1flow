@@ -3,42 +3,29 @@
   <div class="read-actions actions end-actions">
 
 {% else %}
-  <div class="read-actions actions pull-right hover-muted hide hidden-phone"
+  <div class="read-actions actions start-actions hover-muted hide hidden-phone"
     data-hover-muter-block="actions-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
 
 {% endif %}
 
-
-  {% if with_admin_actions and user.is_superuser %}
-  <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
-      title="{% trans "Informations for administrators/staff" %}">
-    <a href="#" class="action-admin-informations nowrap"
-        onclick="javascript: $('#admin-{{read.id}}').slideToggle(); return false;">
-      <i class="icon-cog"></i>{% if with_text %}<span
-          class="hidden-phone">&nbsp;{% trans "Admin. informations" %}</span>{% endif %}</a>
-  </span>
-  {% endif %}
-
   {% read_action read 'is_bookmarked' with_text %}
-  {% read_action read 'is_starred' with_text %}
-
-  <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
-      title="{% trans "Assign or remove watch-related attributes" %}">
-    <a class="clicker-muter-toggle nowrap" href="#"
-        data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
-      <i class="icon-eye-open"></i>{% if with_text %}<span
-          class="hidden-phone">&nbsp;{% trans "Watch attributes" %}</span>{% endif %}
-    </a>
-  </span>
-
   {% read_action read 'is_read' with_text %}
 
-  <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
-      title="{% trans "Display on the original website" %}">
-    <a href="{{ article.url }}" target="_blank" class="nowrap">
-      {% if with_text %}<span
-          class="hidden-phone">{% trans "Read original" %}&nbsp;</span>{% endif %}<i class="icon-double-angle-right"></i>
-    </a>
-  </span>
+  {% if end_actions %}
+
+    {% read_action read 'is_starred' with_text %}
+
+    <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+        title="{% trans "Assign or remove watch-related attributes" %}">
+      <a class="clicker-muter-toggle nowrap" href="#"
+          data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
+        <i class="icon-eye-open"></i>{% if with_text %}<span
+            class="hidden-phone">&nbsp;{% trans "Watch attributes" %}</span>{% endif %}
+      </a>
+    </span>
+
+    {% include 'snippets/read/read-action-original.html' %}
+
+  {% endif %}
 
 </div>

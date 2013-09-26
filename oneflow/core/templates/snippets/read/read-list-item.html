@@ -1,0 +1,22 @@
+<li id="{{ read.id }}" class="read-list-item row-fluid hover-unmute-children {% read_status_css read %}"
+    {% read_action_toggle_url read %} data-index="{{ tenths_counter|add:forloop.counter }}">
+
+  <div class="top-marker only_when_open">
+    <div class="top-horizontal-rule"></div>
+  </div>
+
+  <div class="top-closer only_when_open">
+    <a href="#" class="content-toggle"
+      data-toggle-id="{{ read.id }}"
+      data-toggle-function="toggle_content"
+      data-toggle-callback="notice_element"
+        >
+      <i class="icon-level-up"></i>
+    </a>
+  </div>
+
+  {% with article=read.article with_index=1 read_in_list=1 %}
+    {% include "snippets/read/article-body.html" %}
+  {% endwith %}
+
+</li>

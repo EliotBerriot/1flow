@@ -1,4 +1,5 @@
-<div class="article-meta clicker-muter-constrainer" data-toggle-id="{{ read.id }}">
+<div class="article-meta article-meta-{% firstof meta_class 'UNSET' %} {{ read_in_list|yesno:'article-meta-row,article-meta-individual' }} clicker-muter-constrainer"
+    data-toggle-id="{{ read.id }}">
 
   {% if with_actions %}
       {% with with_text=0 %}
@@ -17,15 +18,18 @@
   {% if with_title_first %}
 
     <{% firstof meta_hX "h2" %}
-        class="heading article-title content-toggle"
-        data-toggle-id="{{ read.id }}"
-        data-toggle-function="toggle_content"
-        data-toggle-callback="notice_element">
+        class="article-title"
+        {% comment %}
+          data-toggle-id="{{ read.id }}"
+          data-toggle-function="toggle_content"
+          data-toggle-callback="notice_element">
+        {% endcomment %}
+        >
       {{ article.title }}
     </{% firstof meta_hX "h2" %}>
   {% endif %}
 
-    <div class="meta">
+    <div class="meta-sub">
 
       <span class="source muted">
         {{ article.get_source_unicode }}
@@ -73,20 +77,34 @@
     {% endspaceless %}
   </div>
 
-  {% if with_actions %}
-      {% with with_text=0 %}
-        {% include "snippets/read/watch-actions.html" %}
-      {% endwith %}
-  {% endif %}
+  {% comment %}
+
+      Disabled on 20130926. We don't need them here anymore, they don't
+      fit in the workflow.
+
+      User must read content before setting watch attributes, for quality
+      reasons. Setting a watch attribute without having read — or at least
+      rapidly looked over — makes the operation prone to setting false
+      attributes.
+
+      Only in rare case the user can pre-set attributes without reading
+      the content. For this, he has keyboard shortcuts, which makes the
+      operation very fast and aleviate the need to have the first of icons.
+
+
+      {% if with_actions %}
+          {% with with_text=0 %}
+            {% include "snippets/read/watch-actions.html" %}
+          {% endwith %}
+      {% endif %}
+
+  {% endcomment %}
 
   {% if not with_title_first %}
     <div class="clearfix"></div>
 
     <{% firstof meta_hX "h1" %}
-        class="heading article-title content-toggle"
-        data-toggle-id="{{ read.id }}"
-        data-toggle-function="toggle_content"
-        data-toggle-callback="notice_element">
+        class="article-title">
       {{ article.title }}
     </{% firstof meta_hX "h1" %}>
   {% endif %}
