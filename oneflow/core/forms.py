@@ -5,6 +5,9 @@ import logging
 from django import forms
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
+from mongodbforms import DocumentForm
+
+from .models import ReadPreferences
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -64,4 +67,10 @@ class UserProfileEditForm(forms.ModelForm):
 
     class Meta:
         model  = User
-        fields = ['first_name', 'last_name',]
+        fields = ['first_name', 'last_name', ]
+
+
+class ReadPreferencesForm(DocumentForm):
+
+    class Meta:
+        model = ReadPreferences
