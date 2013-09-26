@@ -49,6 +49,7 @@ add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
 add_to_builtins('absolute.templatetags.absolute_future')
 add_to_builtins('markdown_deux.templatetags.markdown_deux_tags')
+add_to_builtins('widget_tweaks.templatetags.widget_tweaks')
 add_to_builtins('oneflow.base.templatetags.base_utils')
 add_to_builtins('oneflow.core.templatetags.coretags')
 
