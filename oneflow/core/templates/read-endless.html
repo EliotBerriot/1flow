@@ -223,10 +223,12 @@
         var last_scroll     = 0;
         var navbar_hidden   = false;
         var preferences = {
-            auto_mark_read_delay:       {% firstof preferences.read.auto_mark_read_delay '4500' %},
-            bookmarked_marks_unread:    {% firstof preferences.read.bookmarked_marks_unread 'true' %},
-            starred_marks_read:         {% firstof preferences.read.starred_marks_read 'true' %},
-            starred_removes_bookmarked: {% firstof preferences.read.starred_removes_bookmarked 'true' %}
+            auto_mark_read_delay:       {{ preferences.read.auto_mark_read_delay }},
+
+            {# |lower because JS doesn't like Python's booleans at all. #}
+            bookmarked_marks_unread:    {{ preferences.read.bookmarked_marks_unread|lower }},
+            starred_marks_read:         {{ preferences.read.starred_marks_read|lower }},
+            starred_removes_bookmarked: {{ preferences.read.starred_removes_bookmarked|lower }}
         };
 
         {% if preferences.home.style|slice:'1' == 'T' %}
