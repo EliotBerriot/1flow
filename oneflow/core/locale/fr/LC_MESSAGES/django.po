@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-09-26 18:35+0200\n"
-"PO-Revision-Date: 2013-09-26 19:27+0009\n"
+"PO-Revision-Date: 2013-09-27 13:54+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -415,7 +415,7 @@ msgstr ""
 
 #: models/nonrel.py:340
 msgid "Auto mark-read delay"
-msgstr "Délai automatique de marquage lu"
+msgstr "Délai de marquage lu automatique"
 
 #: models/nonrel.py:341
 msgid ""
