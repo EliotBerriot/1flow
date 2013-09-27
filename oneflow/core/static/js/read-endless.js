@@ -334,14 +334,27 @@ function open_next_read() {
             open_next_internal(last_opened);
 
         } else {
-            notify({
-                text: read_actions_messages.open_first,
-                type: 'info',
-                icon: false,
-                sticker: false
-            });
 
-            toggle_content($('.read-list-item').first().attr('id'));
+            $items = $('.read-list-item');
+
+            if ($items.length) {
+                notify({
+                    text: read_actions_messages.open_first,
+                    type: 'info',
+                    icon: false,
+                    sticker: false
+                });
+
+                toggle_content($items.first().attr('id'));
+
+            } else {
+                notify({
+                    text: read_actions_messages.nothing_to_open,
+                    type: 'info',
+                    icon: false,
+                    sticker: false
+                });
+            }
         }
     }
 }
