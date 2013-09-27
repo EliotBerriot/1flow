@@ -342,6 +342,11 @@ class ReadPreferences(EmbeddedDocument):
                     u'list will be automatically marked as read if it is not.'),
                     default=4500, choices=AUTO_MARK_READ_DELAY_CHOICES)
 
+    read_switches_to_fullscreen = BooleanField(
+        verbose_name=_(u'Switch to full-screen while reading'),
+        help_text=_(u'Automatically hide navigation bars when opening an '
+                    u'article for reading (default: true).'), default=True)
+
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
