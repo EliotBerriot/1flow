@@ -13,7 +13,7 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message, 
 
     var read = $("#" + read_id);
 
-    console.debug('mark_something(' + read_id + ', ' + mark_what + ', ' + mark_inverse + ');');
+    // console.debug('mark_something(' + read_id + ', ' + mark_what + ', ' + mark_inverse + ');');
 
     //
     // CSS classes are defined in a template-tag.
@@ -94,13 +94,13 @@ function post_mark_triggers(read_id, attr_name, send_notify) {
                 // 'true' means mark 'inverse' of is_read.
                 mark_something(read_id, 'is_read', true, send_notify);
 
-                console.log('item ' + read_id + ' bookmarked; marked as unread too.');
+                // console.log('item ' + read_id + ' bookmarked; marked as unread too.');
             }
         }
 
     } else if (attr_name == 'is_starred') {
 
-        console.debug('item ' + read_id + ' starred.');
+        // console.debug('item ' + read_id + ' starred.');
 
         if (preferences.starred_marks_read) {
 
@@ -109,7 +109,7 @@ function post_mark_triggers(read_id, attr_name, send_notify) {
 
                 mark_something(read_id, 'is_read', false, send_notify);
 
-                console.log('item ' + read_id + ' starred; marked as read too.');
+                // console.log('item ' + read_id + ' starred; marked as read too.');
             }
         }
 
@@ -120,7 +120,7 @@ function post_mark_triggers(read_id, attr_name, send_notify) {
 
                 mark_something(read_id, 'is_bookmarked', true, send_notify);
 
-                console.log('item ' + read_id + ' starred; unbookmarked too.');
+                // console.log('item ' + read_id + ' starred; unbookmarked too.');
             }
         }
     }
