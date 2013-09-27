@@ -1,0 +1,14 @@
+
+{# This template must be included inside a <script> block, it's javascript. #}
+
+{% if user.is_superuser %}
+
+// NOTE: this feature is hidden for now because it's complex to handle properly
+// the scrolling locations when mixing auto-fullscreen and manual switch.
+
+Mousetrap.bind(['shift+f'], function() {
+    toggle_fullscreen();
+    return false;
+});
+
+{% endif %}

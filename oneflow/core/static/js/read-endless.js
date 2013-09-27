@@ -105,6 +105,7 @@ var open_content = null;
 var last_opened  = null;
 var open_actions = null;
 var auto_mark_read_timers = {};
+var navbars_visible = true;
 
 function notice_element(oid) {
 
@@ -154,6 +155,46 @@ function toggle_content(oid, callback) {
             }
         },
 
+        close_me_real = function () {
+
+            // assign every open-related variable before the
+            // animation starts, else potential parallely
+            // executed function could fail or get the "old"
+            // (previous) values.
+            open_content = null;
+            last_opened  = oid;
+
+            // console.debug('set open to null and last to ' + oid);
+
+            $content.slideUp(scroll_speed, "swing", run_callback);
+
+            // Put the current item to top of window.
+            scrollToElement(me, scroll_speed, 100);
+
+            close_auxilliary($me);
+            $me.removeClass('open_content');
+        },
+
+        open_me_real = function () {
+
+            if (scrollTo) {
+                if (preferences.read_switches_to_fullscreen) {
+                    scrollToElement(me, scroll_speed, -50);
+
+                } else {
+                    scrollToElement(me, scroll_speed, 0);
+                }
+            }
+
+            // bindable_hovered NOT USED YET
+            //bindable_hovered = content;
+
+            $me.addClass('open_content');
+            open_auxilliary($me);
+            $content.slideDown(scroll_speed, "swing", run_callback);
+
+        },
+
         open_me = function(scrollTo) {
 
             //console.debug('open_me on ' + me);
@@ -170,25 +211,17 @@ function toggle_content(oid, callback) {
 
             // console.debug('set open to ' + oid + ' and last to ' + oid);
 
-            $('.navbar').each(function(index) {
-                if (index == 0) {
-                    $(this).slideUp(function() {
-
-                        if (scrollTo) {
-                            scrollToElement(me, scroll_speed, -50);
-                        }
-
-                        // bindable_hovered NOT USED YET
-                        //bindable_hovered = content;
-
-                        $me.addClass('open_content');
-                        open_auxilliary($me);
-                        $content.slideDown(scroll_speed, "swing", run_callback);
-                    });
-                } else {
-                    $(this).slideUp();
-                }
-            });
+            if (preferences.read_switches_to_fullscreen) {
+                $('.navbar').each(function(index) {
+                    if (index == 0) {
+                        $(this).slideUp(open_me_real);
+                    } else {
+                        $(this).slideUp();
+                    }
+                });
+            } else {
+                open_me_real();
+            }
         },
 
         close_auxilliary = function ($on_what) {
@@ -217,32 +250,18 @@ function toggle_content(oid, callback) {
         };
 
     if ($content.is(':visible')) {
+        if (preferences.read_switches_to_fullscreen) {
+            $('.navbar').each(function(index){
+                if (index == 0) {
+                    $(this).slideDown(close_me_real);
 
-        $('.navbar').each(function(index){
-            if (index == 0) {
-
-                $(this).slideDown(function() {
-
-                    // set everything open before the animation starts,
-                    // else potential parallely executed function could
-                    // fail or get the "old" (previous) values.
-                    open_content = null;
-                    last_opened  = oid;
-                    // console.debug('set open to null and last to ' + oid);
-
-                    $content.slideUp(scroll_speed, "swing", run_callback);
-
-                    // put the current item to top of window
-                    scrollToElement(me, scroll_speed, 100);
-
-                    close_auxilliary($me);
-                    $me.removeClass('open_content');
-                });
-
-            } else {
-                $(this).slideDown();
-            }
-        });
+                } else {
+                    $(this).slideDown();
+                }
+            });
+        } else {
+            close_me_real();
+        }
 
         // bindable_hovered NOT USED YET
         //
@@ -266,7 +285,9 @@ function toggle_content(oid, callback) {
             // element if it's located before us, else the
             // movement in not visually fluent.
             if ($current.data('index') < $(me).data('index')) {
-                scrollToElement(me, scroll_speed, cur_height - 25);
+                scrollToElement(me, scroll_speed,
+                                preferences.read_switches_to_fullscreen ?
+                                    cur_height - 30 : cur_height + 20);
                 open_me(false);
 
             } else {
@@ -294,6 +315,7 @@ function open_next_read() {
 
         if (next.length) {
             toggle_content(next.attr('id'));
+
         } else {
             notify({
                 text: read_actions_messages.already_at_end,
@@ -455,6 +477,11 @@ function handle_tap(ev) {
     }
     return false;
 }
+function toggle_fullscreen() {
+    $('.navbar').slideToggle(function() {
+        navbars_visible = $('.navbar').first().is(':visible');
+    });
+}
 
 // ——————————————————————————————————————————————————— open first/next/previous
 
@@ -600,6 +627,7 @@ Mousetrap.bind(['shift+l'], function() {
     open_next_read();
     return false;
 });
+
 
 // ——————————————————————————————————————————————————————————————— touch events
 
