@@ -451,7 +451,8 @@ class User(Document, DocumentHelperMixin):
     first_name  = StringField()
     last_name   = StringField()
     avatar_url  = URLField()
-    preferences_data = ReferenceField('Preferences', reverse_delete_rule=NULLIFY)
+    preferences_data = ReferenceField('Preferences',
+                                      reverse_delete_rule=NULLIFY)
 
     @property
     def preferences(self):
@@ -1067,7 +1068,7 @@ class Feed(Document, DocumentHelperMixin):
     @property
     def subscriptions(self):
 
-        return Subscription.objects.filter(feed=self)
+        return Subscription.objects(feed=self)
 
     def update_subscriptions_count(self):
 
