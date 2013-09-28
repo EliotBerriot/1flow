@@ -289,6 +289,13 @@ class DocumentHelperMixin(object):
         if remove:
             delattr(self, attribute_name)
 
+    def safe_reload(self):
+        try:
+            self.reload()
+
+        except:
+            pass
+
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User preferences
 
@@ -395,7 +402,6 @@ class Preferences(Document, DocumentHelperMixin):
     def __unicode__(self):
         return u'Preferences #%s' % self.id
 
-
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User & Group
 
 
@@ -445,7 +451,8 @@ class User(Document, DocumentHelperMixin):
     first_name  = StringField()
     last_name   = StringField()
     avatar_url  = URLField()
-    preferences_data = ReferenceField('Preferences', reverse_delete_rule=NULLIFY)
+    preferences_data = ReferenceField('Preferences',
+                                      reverse_delete_rule=NULLIFY)
 
     @property
     def preferences(self):
@@ -461,13 +468,6 @@ class User(Document, DocumentHelperMixin):
 
     def get_full_name(self):
         return '%s %s' % (self.first_name, self.last_name)
-
-    def safe_reload(self):
-        try:
-            self.reload()
-
-        except:
-            pass
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -780,15 +780,6 @@ class Tag(Document, DocumentHelperMixin):
         # TODO: do the same for feeds, reads (, subscriptions?) …
         #
 
-    def safe_reload(self):
-        """ Because it fails if no object present. """
-
-        try:
-            self.reload()
-
-        except:
-            pass
-
     def save(self, *args, **kwargs):
         """ This method will simply add the missing children/parents reverse
             links of the current Tag. This is needed when modifying tags from
@@ -1077,7 +1068,7 @@ class Feed(Document, DocumentHelperMixin):
     @property
     def subscriptions(self):
 
-        return Subscription.objects.filter(feed=self)
+        return Subscription.objects(feed=self)
 
     def update_subscriptions_count(self):
 
@@ -1092,14 +1083,6 @@ class Feed(Document, DocumentHelperMixin):
         self.all_articles_count = self.all_articles.count()
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
-
-    def safe_reload(self):
-        """ Because it fails if no object present. """
-
-        try:
-            self.reload()
-        except:
-            pass
 
     # Doesn't seem to work, because Grappelli doesn't pick up Mongo classes.
     #
@@ -1761,13 +1744,6 @@ class Author(Document, DocumentHelperMixin):
                                              if self.is_unsure else u'',
                                              self.id, self.website)
 
-    def safe_reload(self):
-        try:
-            self.reload()
-
-        except:
-            pass
-
     @classmethod
     def signal_post_save_handler(cls, sender, document,
                                  created=False, **kwargs):
@@ -2074,14 +2050,6 @@ class Article(Document, DocumentHelperMixin):
 
     def __unicode__(self):
         return _(u'{0} (#{1}) from {2}').format(self.title, self.id, self.url)
-
-    def safe_reload(self):
-        """ Because it fails if no object present. """
-
-        try:
-            self.reload()
-        except:
-            pass
 
     def validate(self, *args, **kwargs):
         try:
