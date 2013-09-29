@@ -509,7 +509,14 @@ def mongo_user(self):
             self.__mongo_user_cache__ = User.objects.get(django_user=self.id)
 
         except User.DoesNotExist:
-            self.__mongo_user_cache__ = User(django_user=self.id).save()
+            try:
+                self.__mongo_user_cache__ = User(django_user=self.id).save()
+
+            except (NotUniqueError, DuplicateKeyError):
+                # Woops. Race condition? On a user?? Weird.
+
+                self.__mongo_user_cache__ = User.objects.get(
+                                                django_user=self.id)
 
         return self.__mongo_user_cache__
 
