@@ -79,7 +79,6 @@ pylibmc==1.2.3
 pylint==1.0.0
 pymongo==2.6.2
 pyScss==1.1.5
-raven==3.4.0
 pytz==2013d
 recordtype==1.1
 redis==2.7.6
