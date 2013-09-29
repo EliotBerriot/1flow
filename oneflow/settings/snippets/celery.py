@@ -11,8 +11,19 @@ djcelery.setup_loader()
 from celery.schedules import crontab
 from kombu import Exchange, Queue
 
+# Avoid sharing the same celery states file
+# when multiple workers run on the same machine.
+try:
+    index = sys.argv.index('--hostname')
+except:
+    CELERYD_STATE_DB = 'celery.states'
+else:
+    # get 'medium' from 'medium.worker-03.1flow.io'
+    CELERYD_STATE_DB = 'celery.states.{0}'.format(
+                            sys.argv[index + 1].split('.', 1)[0])
+    del index
+
 CELERYD_PREFETCH_MULTIPLIER = 64
-CELERYD_STATE_DB = 'celery.states'
 
 CELERY_DEFAULT_QUEUE = 'medium'
 
