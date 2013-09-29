@@ -6,6 +6,9 @@
 
 /MAINTENANCE_MODE
 /celerybeat-schedule
+/celerybeat.pid
+/celery.states*
+
 
 # PIP local installs
 /src
