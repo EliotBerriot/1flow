@@ -7,12 +7,12 @@
 -e git+https://github.com/platypus-creation/django-rosetta-grappelli.git@83eff3890b6881460f105b6ecd63ff055f51dba4#egg=django_rosetta_grappelli-dev
 coverage==3.6
 django-devserver==0.6.2
-django-nose==1.1
+django-nose==1.2
 flake8==2.0
 guppy==0.1.10
-ipython==0.13.2
+ipython==1.1.0
 line-profiler==1.0b3
 pip-tools==0.3.4
 pyzmq==13.1.0
-sqlparse==0.1.8
-Werkzeug==0.9.1
+sqlparse==0.1.9
+Werkzeug==0.9.4
