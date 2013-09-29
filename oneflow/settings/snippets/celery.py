@@ -12,6 +12,7 @@ from celery.schedules import crontab
 from kombu import Exchange, Queue
 
 CELERYD_PREFETCH_MULTIPLIER = 64
+CELERYD_STATE_DB = 'celery.states'
 
 CELERY_DEFAULT_QUEUE = 'medium'
 
