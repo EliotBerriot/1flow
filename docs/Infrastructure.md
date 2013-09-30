@@ -13,6 +13,7 @@ On the `10.0.3.0` network:
 - 113    worker-01 (production worker, high queue, flower)
 - 114    worker-03 (production worker, medium+celery queues, iPython shell)
 - 115    worker-05 (production worker, low+celery queues)
+- 90     archive.1flow.io (MongoDB archive database, on port 27018 (host) and 27017 (LXC))
 
 ## On Gurney.licorn.org
 
