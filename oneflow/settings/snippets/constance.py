@@ -13,6 +13,14 @@ CONSTANCE_CONFIG = {
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
 
+    'DOCUMENTS_ARCHIVING_DISABLED': (False, ugettext(u'Set this to True to '
+                            u'disable maintenance archiving operations. '
+                            u'Useful for archive database migrations (BUT '
+                            u'NOT SUFFICIENT, because of `original_data` that '
+                            u'must be disabled too, via `*_FETCH_DISABLED`).')),
+
+    # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
+
     'READ_INFINITE_AUTOSCROLL_ENABLED': (True, ugettext(u'Make the read view '
                                          u'(either list or tiles) '
                                          u'automatically load new content '
@@ -133,6 +141,12 @@ CONSTANCE_CONFIG = {
     'ARTICLE_ARCHIVE_BATCH_SIZE': (100 if DEBUG else 50000,
                                    ugettext(u'how much articles will be '
                                    u'archived at each archive task run.')),
+
+    'ARTICLE_ARCHIVE_OLDER_THAN': (62, ugettext(u'Only articles older than '
+                                   u'that will be archived, regarding their '
+                                   u'`date_published` field. This delta is '
+                                   u'expressed in days. Set to 0 to archive '
+                                   u'everything without mercy.')),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
 
