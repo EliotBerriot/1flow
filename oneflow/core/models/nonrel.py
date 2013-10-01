@@ -2052,6 +2052,9 @@ class Article(Document, DocumentHelperMixin):
             'content_error',
             'url_error',
             'date_published',
+            {'fields': ('duplicate_of', ), 'sparse': True},
+            {'fields': ('source', ), 'sparse': True}
+
         ]
     }
 
