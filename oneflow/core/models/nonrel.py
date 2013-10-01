@@ -1603,7 +1603,6 @@ class Feed(Document, DocumentHelperMixin):
 
             with statsd.pipeline() as spipe:
                 spipe.incr('feeds.refresh.fetch.global.unchanged')
-                spipe.incr('feeds.refresh.fetch.byId.%s.unchanged' % self.id)
 
         else:
             tags = Tag.get_tags_set(getattr(parsed_feed, 'tags', []),
@@ -1625,7 +1624,6 @@ class Feed(Document, DocumentHelperMixin):
 
             with statsd.pipeline() as spipe:
                 spipe.incr('feeds.refresh.fetch.global.updated')
-                spipe.incr('feeds.refresh.fetch.byId.%s.updated' % self.id)
 
             for article in parsed_feed.entries:
                 created = self.create_article_and_reads(article,
@@ -1673,12 +1671,6 @@ class Feed(Document, DocumentHelperMixin):
                 spipe.incr('feeds.refresh.global.duplicates', duplicates)
                 spipe.incr('feeds.refresh.global.mutualized', mutualized)
 
-                sid = str(self.id)
-
-                spipe.incr('feeds.refresh.byId.%s.fetched' % sid, new_articles)
-                spipe.incr('feeds.refresh.byId.%s.duplicates' % sid, duplicates)
-                spipe.incr('feeds.refresh.byId.%s.mutualized' % sid, mutualized)
-
         # Everything went fine, be sure to reset the "error counter".
         self.errors[:]  = []
         self.last_fetch = now()
@@ -1686,7 +1678,6 @@ class Feed(Document, DocumentHelperMixin):
 
         with statsd.pipeline() as spipe:
             spipe.incr('feeds.refresh.fetch.global.done')
-            spipe.incr('feeds.refresh.fetch.byId.%s.done' % self.id)
 
         # As the last_fetch is now up-to-date, we can release the fetch lock.
         # If any other refresh job comes, it will check last_fetch and will
