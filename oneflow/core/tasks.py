@@ -609,6 +609,11 @@ def refresh_all_feeds(limit=None):
         mynow = now()
 
         for feed in feeds:
+
+            if feed.refresh_lock.is_locked():
+                LOGGER.info(u'Feed %s already locked, skipped.', feed)
+                continue
+
             interval = timedelta(seconds=feed.fetch_interval)
 
             if feed.last_fetch is None:
