@@ -23,7 +23,7 @@ else:
                             sys.argv[index + 1].split('.', 1)[0])
     del index
 
-CELERYD_PREFETCH_MULTIPLIER = 64
+CELERYD_PREFETCH_MULTIPLIER = 1
 
 CELERY_DEFAULT_QUEUE = 'medium'
 
