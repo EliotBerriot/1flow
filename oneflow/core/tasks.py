@@ -766,9 +766,24 @@ def archive_articles(limit=None):
         limit = config.ARTICLE_ARCHIVE_BATCH_SIZE
 
     with no_dereference(Article) as ArticleOnly:
-        duplicates = ArticleOnly.objects(duplicate_of__ne=None
-                                         ).limit(limit).no_cache()
-        orphaned   = ArticleOnly.objects(orphaned=True).limit(limit).no_cache()
+        if config.ARTICLE_ARCHIVE_OLDER_THAN > 0:
+            older_than = now() - timedelta(
+                            days=config.ARTICLE_ARCHIVE_OLDER_THAN)
+
+            duplicates = ArticleOnly.objects(
+                            duplicate_of__ne=None,
+                            date_published__lt=older_than).limit(limit)
+            orphaned   = ArticleOnly.objects(
+                            orphaned=True,
+                            date_published__lt=older_than).limit(limit)
+
+        else:
+            duplicates = ArticleOnly.objects(duplicate_of__ne=None
+                                             ).limit(limit)
+            orphaned   = ArticleOnly.objects(orphaned=True).limit(limit)
+
+    duplicates.no_cache()
+    orphaned.no_cache()
 
     counts['duplicates'] = duplicates.count()
     counts['orphaned']   = orphaned.count()
@@ -812,9 +827,32 @@ def archive_articles(limit=None):
         LOGGER.info(u'No article to archive.')
 
 
-@task(queue='medium')
-def archive_documents(limit=None):
+@task(queue='background')
+def archive_documents(limit=None, force=False):
+
+    if config.DOCUMENTS_ARCHIVING_DISABLED:
+        # Do not raise any .retry(), this is a scheduled task.
+        LOGGER.warning(u'Document archiving disabled in configuration.')
+        return
+
+    # Be sure two archiving operations don't overlap, this is a very costly
+    # operation for the database, and it can make the system very slugish.
+    # The whole operation can be very long, we lock for a long time.
+    my_lock = RedisExpiringLock('archive_documents', expire_time=86400)
+
+    if not my_lock.acquire():
+        if force:
+            my_lock.release()
+            my_lock.acquire()
+            LOGGER.warning(u'archive_documents() force unlock/re-acquire, '
+                           u'be careful with that.')
+
+        else:
+            LOGGER.warning(u'archive_documents() is already locked, aborting.')
+            return
 
     # these are tasks, but we run them sequentially in this global archive job
     # to avoid hammering the production database with multiple archive jobs.
     archive_articles(limit=limit)
+
+    my_lock.release()
