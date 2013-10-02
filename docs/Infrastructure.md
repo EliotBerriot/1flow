@@ -1,7 +1,7 @@
 
 # Hosts
 
-## On Duncan.licorn.org
+## On Orni.licorn.org
 
 On the `10.0.3.0` network:
 
@@ -10,10 +10,10 @@ On the `10.0.3.0` network:
 - 110    dev.1flow.net (production, sentry)
 - 111    obi (preview, web instance)
 - 112    1flow.io (production, web instance)
+
 - 113    worker-01 (production worker, high queue, flower)
-- 114    worker-03 (production worker, medium+celery queues, iPython shell)
-- 115    worker-05 (production worker, low+celery queues)
-- 90     archive.1flow.io (MongoDB archive database, on port 27018 (host) and 27017 (LXC))
+- 114    worker-03 (production worker, medium queues, iPython shell)
+- 115    worker-05 (production worker, low queues)
 
 ## On Gurney.licorn.org
 
@@ -23,15 +23,19 @@ On the `10.0.3.0` network:
 - 10    worbi (preview worker)
 - 11    zero (scratch tests, single node web+worker+flower)
 - 12    twenty (idem)
-- 113    worker-02 (aux. production worker, low+medium+celery queues)
+- [disabled] 113    worker-02 (aux. production worker, low + medium queues)
 
-## On Harvest.licorn.org
+## On Heighliner.licorn.org
 
 On the `10.0.3.0` network:
 
 - 1     host, physical machine
 - ??    dev (sentry, has its own PG/redis/memcache)
-- 114    worker-04 (aux. production worker, low+medium+celery queues)
+- 90     archive.1flow.io (MongoDB archive database, on port 27018 (host) and 27017 (LXC))
+
+- 113    worker-02 (aux. production worker, high + swarm queues)
+- 114    worker-04 (aux. production worker, medium + fetch queues)
+- 115    worker-06 (aux. production worker, low + background queues)
 
 # Databases
 

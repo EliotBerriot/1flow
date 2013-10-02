@@ -201,18 +201,24 @@ def production():
         'beat': ['worker-01.1flow.io', ],
         'shell': ['worker-03.1flow.io', ],
         'flower': ['worker-01.1flow.io', ],
-        'worker_high':   ['worker-01.1flow.io', ],
-        'worker_medium': ['worker-03.1flow.io', ],
-        'worker_low':    ['worker-05.1flow.io', ],
-        'worker_fetch':  [#'worker-02.1flow.io',
-                          'worker-04.1flow.io', ],
-        'worker_swarm':  [#'worker-02.1flow.io',
-                          'worker-04.1flow.io', ],
+        'worker_high':       ['worker-01.1flow.io',
+                              'worker-02.1flow.io', ],
+        'worker_medium':     ['worker-03.1flow.io',
+                              'worker-04.1flow.io', ],
+        'worker_low':        ['worker-05.1flow.io',
+                              'worker-06.1flow.io', ],
+        'worker_fetch':      ['worker-04.1flow.io',
+                              'worker-06.1flow.io', ],
+        'worker_swarm':      ['worker-02.1flow.io',
+                              'worker-05.1flow.io', ],
+        'worker_clean':      ['worker-02.1flow.io', ],
+        'worker_background': ['worker-06.1flow.io', ],
     })
     env.sparks_options = {
         'nice_arguments': {
             'worker_low': '-n 5',
             'worker_fetch': '-n 4',
+            'worker_background': '-n 3',
             'worker_swarm': '-n 2',
             'worker_medium': '-n 1',
             'worker_high': '-n -3',
@@ -227,37 +233,46 @@ def production():
             # We need to patch this because worker-04 is an LXC on the same
             # physical host than dev.1flow.net, and getting from it directly
             # doesn't work because of my NAT configuration.
+            'worker-02.1flow.io': 'git@10.0.3.110:1flow.git',
             'worker-04.1flow.io': 'git@10.0.3.110:1flow.git',
+            'worker-06.1flow.io': 'git@10.0.3.110:1flow.git',
         },
 
         'worker_concurrency': {
-            # setting only 'worker-02.1flow.io'
-            # would override worker_swarm setting.
-            'worker_fetch@worker-02.1flow.io': 12,
-            'worker_fetch@worker-04.1flow.io': 6,
+            # Setting only 'worker-xx.1flow.io' would override
+            # 'worker_xxxxx'. Thus we specify the most precise one.
+            'worker_high@worker-02.1flow.io': 8,
+            'worker_medium@worker-04.1flow.io': 6,
+            'worker_swarm@worker-05.1flow.io': 12,
+            'worker_low@worker-06.1flow.io': 4,
+            'worker_fetch@worker-06.1flow.io': 12,
 
-            'worker_swarm@worker-04.1flow.io': 12,
-            'worker_swarm': 16,
-            'worker_high': 12,
-            '__all__': 8,
+            'worker_swarm': 48,
+            'worker_fetch': 24,
+
+            # These must not hammer the database, in *any*way
+            'worker_background': 2,
+            'worker_clean': 1,
+
+            '__all__': 12,
         },
 
-        'worker_queues': {
-            # The fetchers help on main queues, except 'low' which is… low.
-            # Fetchers and swarmers share the background queue, which has
-            # no dedicated workers.
-            'worker_fetch@worker-02.1flow.io': 'fetch,medium,background',
-            'worker_fetch@worker-04.1flow.io': 'fetch,high,background',
-            'worker_swarm':  'swarm,background',
-            'worker_medium': 'medium,fetch',
-            'worker_low':    'low,fetch,background',
-        },
+        # 'worker_queues': {
+        #     # The fetchers help on main queues, except 'low' which is… low.
+        #     # Fetchers and swarmers share the background queue, which has
+        #     # no dedicated workers.
+        #     'worker_fetch@worker-02.1flow.io': 'fetch,medium,background',
+        #     'worker_fetch@worker-04.1flow.io': 'fetch,high,background',
+        #     'worker_swarm':  'swarm,background',
+        #     'worker_medium': 'medium,fetch',
+        #     'worker_low':    'low,fetch,background',
+        # },
 
-        'max_tasks_per_child': {
-            'worker_swarm': '50',
-            'worker_fetch': '20',
-            '__all__': '100',
-        },
+        # 'max_tasks_per_child': {
+        #     'worker_swarm': '50',
+        #     'worker_fetch': '20',
+        #     '__all__': '100',
+        # },
 
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
