@@ -558,7 +558,7 @@ def clean_gri_keys():
         REDIS.delete(*names)
 
 
-@task(queue='medium')
+@task(queue='clean')
 def clean_obsolete_redis_keys():
     """ Call in turn all redis-related cleaners. """
 
@@ -651,7 +651,7 @@ def refresh_all_feeds(limit=None):
     my_lock.release()
 
 
-@task(queue='high')
+@task(queue='background')
 def global_feeds_checker():
 
     def pretty_print_feed(feed):
@@ -757,7 +757,7 @@ def archive_article_one_internal(article, counts):
         article.delete()
 
 
-@task(queue='medium')
+@task(queue='clean')
 def archive_articles(limit=None):
 
     counts = {
@@ -832,7 +832,7 @@ def archive_articles(limit=None):
         LOGGER.info(u'No article to archive.')
 
 
-@task(queue='background')
+@task(queue='clean')
 def archive_documents(limit=None, force=False):
 
     if config.DOCUMENTS_ARCHIVING_DISABLED:
