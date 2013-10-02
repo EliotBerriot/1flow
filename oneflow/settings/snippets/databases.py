@@ -13,11 +13,11 @@ DATABASES['default']['OPTIONS'] = {
 
 MONGODB_NAME = os.environ.get('MONGODB_NAME')
 MONGODB_HOST = os.environ.get('MONGODB_HOST')
-MONGODB_PORT = int(os.environ.get('MONGODB_PORT'))
+MONGODB_PORT = int(os.environ.get('MONGODB_PORT', 27017))
 
 MONGODB_NAME_ARCHIVE = os.environ.get('MONGODB_NAME_ARCHIVE')
 MONGODB_HOST_ARCHIVE = os.environ.get('MONGODB_HOST_ARCHIVE')
-MONGODB_PORT_ARCHIVE = int(os.environ.get('MONGODB_PORT_ARCHIVE'))
+MONGODB_PORT_ARCHIVE = int(os.environ.get('MONGODB_PORT_ARCHIVE', 27017))
 
 mongoengine.connect(MONGODB_NAME,
                     host=MONGODB_HOST,
