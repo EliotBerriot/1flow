@@ -651,7 +651,7 @@ def refresh_all_feeds(limit=None):
     my_lock.release()
 
 
-@task(queue='background')
+@task(queue='low')
 def global_feeds_checker():
 
     def pretty_print_feed(feed):
