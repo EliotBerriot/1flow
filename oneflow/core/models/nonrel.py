@@ -683,7 +683,7 @@ def tag_post_create_task(tag_id, *args, **kwargs):
     return tag.post_create_task(*args, **kwargs)
 
 
-@task(name='Tag.replace_duplicate_everywhere')
+@task(name='Tag.replace_duplicate_everywhere', queue='background')
 def tag_replace_duplicate_everywhere(tag_id, dupe_id, *args, **kwargs):
 
     tag  = Tag.objects.get(id=tag_id)
@@ -1897,7 +1897,7 @@ def article_postprocess_original_data(article_id, *args, **kwargs):
     return article.postprocess_original_data(*args, **kwargs)
 
 
-@task(name='Article.replace_duplicate_everywhere')
+@task(name='Article.replace_duplicate_everywhere', queue='background')
 def article_replace_duplicate_everywhere(article_id, dupe_id, *args, **kwargs):
 
     article = Article.objects.get(id=article_id)
