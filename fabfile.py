@@ -201,17 +201,25 @@ def production():
         'beat': ['worker-01.1flow.io', ],
         'shell': ['worker-03.1flow.io', ],
         'flower': ['worker-01.1flow.io', ],
+
         'worker_high':       ['worker-01.1flow.io',
                               'worker-02.1flow.io', ],
+
         'worker_medium':     ['worker-03.1flow.io',
                               'worker-04.1flow.io', ],
+
         'worker_low':        ['worker-05.1flow.io',
                               'worker-06.1flow.io', ],
-        'worker_fetch':      ['worker-04.1flow.io',
+
+        'worker_fetch':      ['worker-03.1flow.io',
+                              'worker-04.1flow.io',
                               'worker-06.1flow.io', ],
+
         'worker_swarm':      ['worker-02.1flow.io',
                               'worker-05.1flow.io', ],
+
         'worker_clean':      ['worker-02.1flow.io', ],
+
         'worker_background': ['worker-06.1flow.io', ],
     })
     env.sparks_options = {
@@ -245,13 +253,15 @@ def production():
             'worker_medium@worker-04.1flow.io': 6,
             'worker_swarm@worker-05.1flow.io': 12,
             'worker_low@worker-06.1flow.io': 4,
+            'worker_fetch@worker-03.1flow.io': 6,
             'worker_fetch@worker-06.1flow.io': 12,
 
             'worker_swarm': 48,
             'worker_fetch': 24,
 
-            # These must not hammer the database, in *any*way
-            'worker_background': 2,
+            'worker_background': 18,
+
+            # This one must not hammer the database, in *any*way
             'worker_clean': 1,
 
             '__all__': 12,
