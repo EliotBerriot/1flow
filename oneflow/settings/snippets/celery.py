@@ -38,6 +38,10 @@ CELERY_QUEUES = (
 
 BROKER_URL = os.environ.get('BROKER_URL')
 
+# Disabling the heartbeat because workers seems often disabled in flower,
+# thanks to http://stackoverflow.com/a/14831904/654755
+BROKER_HEARTBEAT=0
+
 CELERY_RESULT_BACKEND = BROKER_URL
 CELERY_RESULT_PERSISTENT = True
 
