@@ -34,6 +34,7 @@
 
 import os
 import re
+import gc
 import ast
 import sys
 import uuid
@@ -130,9 +131,6 @@ ORIGIN_TYPE_TWITTER       = 4
 
 ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
                         settings.SITE_DOMAIN)
-
-# These classes will be re-used inside every worker; we instanciate only once.
-STRAINER_EXTRACTOR  = strainer.Strainer(parser='lxml', add_score=True)
 
 if config.FEED_FETCH_GHOST_ENABLED:
     try:
@@ -2895,7 +2893,11 @@ class Article(Document, DocumentHelperMixin):
                 LOGGER.exception(u'Could not log source HTML content of '
                                  u'article %s.', self)
 
+        STRAINER_EXTRACTOR = strainer.Strainer(parser='lxml', add_score=True)
         content = STRAINER_EXTRACTOR.feed(content, encoding=encoding)
+
+        del STRAINER_EXTRACTOR
+        gc.collect()
 
         # TODO: remove noscript blocks ?
         #
