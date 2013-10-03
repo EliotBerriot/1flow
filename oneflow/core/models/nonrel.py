@@ -423,7 +423,7 @@ def user_django_user_random_default():
         else:
             count += 1
             if count == 10:
-                LOGGER.warning(u'user_django_user_random_default() is trying '
+                LOGGER.warning(u'user_django_user_random_default() is starting '
                                u'to slow down things (more than 10 cycles to '
                                u' generate a not-taken random ID)…')
 
@@ -1341,8 +1341,8 @@ class Feed(Document, DocumentHelperMixin):
 
         except (NotUniqueError, DuplicateKeyError):
             if not force:
-                LOGGER.warning(u'User %s already subscribed to feed %s, '
-                               u'aborting.', user, self)
+                LOGGER.info(u'User %s already subscribed to feed %s.',
+                            user, self)
                 return
 
         yesterday = combine(today() - timedelta(days=1), time(0, 0, 0))
@@ -1419,7 +1419,7 @@ class Feed(Document, DocumentHelperMixin):
         if config.FEED_FETCH_DISABLED:
             # we do not raise .retry() because the global refresh
             # task will call us again anyway at next global check.
-            LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
+            LOGGER.info(u'Feed %s refresh disabled by configuration.', self)
             return True
 
         if not self.refresh_lock.acquire():
@@ -1585,6 +1585,8 @@ class Feed(Document, DocumentHelperMixin):
         except IndexError, e:
             # The website could not be reached? Network
             # unavailable? on my production server???
+
+            # self.refresh_lock.release() ???
             raise feed_refresh.retry((self.id, ), exc=e)
 
         # Stop on HTTP errors before stopping on feedparser errors,
@@ -2183,11 +2185,11 @@ class Article(Document, DocumentHelperMixin):
     def absolutize_url_must_abort(self, force=False, commit=True):
 
         if config.ARTICLE_ABSOLUTIZING_DISABLED:
-            LOGGER.warning(u'Absolutizing disabled by configuration, aborting.')
+            LOGGER.info(u'Absolutizing disabled by configuration, aborting.')
             return True
 
         if self.url_absolute and not force:
-            LOGGER.warning(u'URL of article %s is already absolute!', self)
+            LOGGER.info(u'URL of article %s is already absolute!', self)
             return True
 
         if self.orphaned and not force:
@@ -2588,7 +2590,7 @@ class Article(Document, DocumentHelperMixin):
 
             except (NotUniqueError, DuplicateKeyError):
                 if verbose:
-                    LOGGER.warning(u'Duplicate read %s!', new_read)
+                    LOGGER.info(u'Duplicate read %s!', new_read)
 
             except:
                 LOGGER.exception(u'Could not save read %s!', new_read)
@@ -2615,8 +2617,8 @@ class Article(Document, DocumentHelperMixin):
             new_article.save()
 
         except (DuplicateKeyError, NotUniqueError):
-            LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
-                           title, url, u', '.join(unicode(f) for f in feeds))
+            LOGGER.info(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
+                        title, url, u', '.join(unicode(f) for f in feeds))
 
             cur_article = cls.objects.get(url=url)
 
@@ -2677,11 +2679,11 @@ class Article(Document, DocumentHelperMixin):
     def fetch_content_must_abort(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_DISABLED:
-            LOGGER.warning(u'Article fetching disabled in configuration.')
+            LOGGER.info(u'Article fetching disabled in configuration.')
             return True
 
         if self.content_type in CONTENT_TYPES_FINAL and not force:
-            LOGGER.warning(u'Article %s has already been fetched.', self)
+            LOGGER.info(u'Article %s has already been fetched.', self)
             return True
 
         if self.content_error:
@@ -2761,7 +2763,7 @@ class Article(Document, DocumentHelperMixin):
     def find_image_must_abort(self, force=False, commit=True):
 
         if self.image_url and not force:
-            LOGGER.warning(u'Article %s image already found.', self)
+            LOGGER.info(u'Article %s image already found.', self)
             return True
 
         if not self.content_type in (CONTENT_TYPE_MARKDOWN, ):
@@ -2771,7 +2773,7 @@ class Article(Document, DocumentHelperMixin):
 
     def find_image(self, force=False, commit=True):
 
-        LOGGER.warning(u'Article.find_image() needs love, disabled for now.')
+        LOGGER.info(u'Article.find_image() needs love, disabled for now.')
         return
 
         if self.find_image_must_abort(force=force, commit=commit):
@@ -2801,13 +2803,13 @@ class Article(Document, DocumentHelperMixin):
     def fetch_content_image(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_IMAGE_DISABLED:
-            LOGGER.warning(u'Article video fetching disabled in configuration.')
+            LOGGER.info(u'Article video fetching disabled in configuration.')
             return
 
     def fetch_content_video(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_VIDEO_DISABLED:
-            LOGGER.warning(u'Article video fetching disabled in configuration.')
+            LOGGER.info(u'Article video fetching disabled in configuration.')
             return
 
     def needs_ghost_preparser(self):
@@ -2924,7 +2926,7 @@ class Article(Document, DocumentHelperMixin):
     def fetch_content_text(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_TEXT_DISABLED:
-            LOGGER.warning(u'Article text fetching disabled in configuration.')
+            LOGGER.info(u'Article text fetching disabled in configuration.')
             return
 
         if self.content_type == CONTENT_TYPE_NONE:
@@ -3001,14 +3003,13 @@ class Article(Document, DocumentHelperMixin):
     def convert_to_markdown(self, force=False, commit=True):
 
         if config.ARTICLE_MARKDOWN_DISABLED:
-            LOGGER.warning(u'Article markdown convert disabled in '
-                           u'configuration.')
+            LOGGER.info(u'Article markdown convert disabled in '
+                        u'configuration.')
             return
 
         if self.content_type == CONTENT_TYPE_MARKDOWN:
             if not force:
-                LOGGER.warning(u'Article %s already converted to Markdown.',
-                               self)
+                LOGGER.info(u'Article %s already converted to Markdown.', self)
                 return
 
             else:
