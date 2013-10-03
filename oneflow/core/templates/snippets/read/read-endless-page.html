@@ -21,8 +21,8 @@
 
     <div class="endless_container">
         <a class="endless_more" href="{{ request.path }}?page=1"
-            rel="page">Charger plus d'articles</a>
-        <div class="endless_loading" style="display: none;">Chargement…</div>
+            rel="page"> {% trans "Load more entries" %}"</a>
+        <div class="endless_loading" style="display: none;">{% trans "Loading…" %}</div>
     </div>
 
 {% else %}
