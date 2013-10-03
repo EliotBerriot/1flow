@@ -6,6 +6,9 @@ from django import template
 from django.core.urlresolvers import reverse
 #from django.utils.translation import ugettext_lazy as _
 
+
+from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
+
 from ..models.nonrel import Read
 
 LOGGER = logging.getLogger(__name__)
@@ -13,7 +16,13 @@ LOGGER = logging.getLogger(__name__)
 register = template.Library()
 
 
-@register.simple_tag()
+@register.filter
+def naturaldelta(the_datetime):
+
+    return onef_naturaldelta(now() - the_datetime)
+
+
+@register.simple_tag
 def read_status_css(read):
 
     css = []
