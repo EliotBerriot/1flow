@@ -383,8 +383,10 @@ class SelectorPreferences(EmbeddedDocument):
                     u'but to which you are still subscribed. As there will '
                     u'never be new content in them, it is safe to hide them '
                     u'in the selector. Unread articles from closed streams '
-                    u'still show in <a href="{0}">the unread list</a>.').format(
-                    u'<SET_URL_HERE>'),  # reverse_lazy('read')
+                    u'still show in the unread list.'),
+                    # TODO: use reverse_lazy('read') and make a link.
+                    # 20131004: it just crashes because of a circular
+                    # import loop in mongoadmin, to change.
         default=False)
 
 
