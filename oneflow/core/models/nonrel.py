@@ -163,6 +163,15 @@ feedparser.registerDateHandler(dateutilDateHandler)
 global_ghost_lock = RedisExpiringLock('__ghost.py__')
 
 
+class NotTextHtmlException(Exception):
+    """ Raised when the content of an article is not text/html, to switch to
+        other parsers, without re-requesting the actual content. """
+    def __init__(self, message, response):
+        # Call the base class constructor with the parameters it needs
+        Exception.__init__(self, message)
+        self.response = response
+
+
 class DocumentHelperMixin(object):
     """ Because, as of MongoEngine 0.8.3,
         subclassing `Document` is not possible o_O
@@ -2731,20 +2740,28 @@ class Article(Document, DocumentHelperMixin):
                         u'an internal caller: %s.', self, e)
             return
 
-        except requests.ConnectionError, e:
-            statsd.gauge('articles.counts.content_errors', 1, delta=True)
-            self.content_error = str(e)
-            self.save()
-
-            LOGGER.error(u'Connection failed while fetching article %s.', self)
-            return
-
         except SoftTimeLimitExceeded, e:
             statsd.gauge('articles.counts.content_errors', 1, delta=True)
             self.content_error = str(e)
             self.save()
 
             LOGGER.error(u'Extraction took too long for article %s.', self)
+            return
+
+        except NotTextHtmlException, e:
+            statsd.gauge('articles.counts.content_errors', 1, delta=True)
+            self.content_error = str(e)
+            self.save()
+
+            LOGGER.error(u'No text/html to extract in article %s.', self)
+            return
+
+        except requests.ConnectionError, e:
+            statsd.gauge('articles.counts.content_errors', 1, delta=True)
+            self.content_error = str(e)
+            self.save()
+
+            LOGGER.error(u'Connection failed while fetching article %s.', self)
             return
 
         except Exception, e:
@@ -2865,9 +2882,17 @@ class Article(Document, DocumentHelperMixin):
                     return page
 
         response = requests.get(fetch_url, headers=REQUEST_BASE_HEADERS)
-        encoding = detect_encoding_from_requests_response(response)
 
-        return response.content, encoding
+        content_type = response.headers.get('content-type', u'unspecified')
+
+        if content_type.startswith(u'text/html'):
+            encoding = detect_encoding_from_requests_response(response)
+
+            return response.content, encoding
+
+        raise NotTextHtmlException(u"Content is not text/html "
+                                   u"but %s." % content_type,
+                                   response=response)
 
     def fetch_content_text_one_page(self, url=None):
         """ Internal function. Please do not call.
