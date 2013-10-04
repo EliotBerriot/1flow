@@ -301,10 +301,14 @@ def production():
             # problem.
             'worker_fetch':      '180',
         },
-        # Eventlet is definitively broken, the worker halts every now and then.
-        'worker_pool': {
-            'worker_swarm': 'eventlet',
-        },
+
+        # Eventlet works, but sometimes breaks with "RuntimeError(simultaneous
+        # write on socket…)" and it's just anoying because we already have
+        # other problems to solve.
+        #
+        #'worker_pool': {
+        #    'worker_swarm': 'eventlet',
+        #},
     }
     env.env_was_set = True
 
