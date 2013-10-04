@@ -34,6 +34,13 @@
             {% for read in reads %}
                 {% if read.article.url_absolute and not read.article.duplicate_of %}
                     {% include preferences.home.get_template %}
+
+                {% elif user.is_superuser %}
+                    <li class="read-list-item">
+                        <div>{{ read }}</div>
+                        <div>— absolute: <code>{{ read.article.url_absolute }}</code></div>
+                        <div>— duplicate: {{ read.article.duplicate_of }}</div>
+                    <li>
                 {% endif %}
             {% endfor %}
 
