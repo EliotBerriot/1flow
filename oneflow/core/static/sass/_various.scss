@@ -162,6 +162,18 @@ img.centered {
     margin-right: auto;
 }
 
+.tab-content {
+  // 20131004, Olive. Without this override, we hit
+  // https://github.com/twbs/bootstrap/issues/6962
+  overflow: inherit;
+}
+
+.nav-tabs .secondary-nav {
+  float: right;
+  margin-left: 10px;
+  margin-right: 0;
+}
+
 /* Thanks https://github.com/twitter/bootstrap/issues/4286 */
 
 .spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
