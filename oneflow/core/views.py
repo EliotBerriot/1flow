@@ -31,7 +31,8 @@ from endless_pagination.utils import get_page_number_from_request
 from sparks.django.utils import HttpResponseTemporaryServerError
 
 from .forms import (FullUserCreationForm,
-                    UserProfileEditForm, ReadPreferencesForm)
+                    UserProfileEditForm,
+                    ReadPreferencesForm, SelectorPreferencesForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Read
 from .models.reldb import HelpContent
