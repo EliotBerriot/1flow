@@ -610,6 +610,14 @@ Mousetrap.bind(['o m g', 'l o l', 'l m a o', 'f u n'], function() {
     return false;
 });
 
+/*
+
+    NOTE: there are some other shortcuts to merge
+            in the staff/superuser included files
+
+*/
+
+
 // —————————————————————————————————————————————————————————— read-flow actions
 
 // “Mark Read” + “Next”, “Goto Next”, “Open Next”
