@@ -572,6 +572,42 @@ function launch_faders(parent) {
 
     parent.find('.new-fade').each(flash_fade);
 }
+function launch_async_gets(parent) {
+
+    console.debug('async_gets');
+
+    find_start(parent, 'async-get')
+        .each(function(){
+
+            var $this     = $(this);
+            var get_name  = $this.data('async-get');
+            var get_value = $this.data('async-get-value');
+            var get_url   = $this.attr('href') + '?'
+                            + get_name + "=" + get_value;
+
+            console.log('Setup on ' + $this);
+
+            if (get_value == 'undefined') {
+                get_value = "1";
+            }
+
+            $.get(get_url,
+                function(data){
+                    how_much = parseInt(data);
+
+                    console.log('Got ' + how_much + ' for ' + get_url);
+
+                    if(how_much == 0) {
+                        $this.fadeOut();
+                    } else {
+                        $this.find('.count').html('&nbsp;(' + how_much + ')');
+                    }
+                }
+            );
+
+        });
+}
+
 
 // bindable_hovered NOT USED YET
 function setup_hover_notifiers(parent) {
@@ -621,6 +657,9 @@ function setup_everything(parent) {
     setup_clickovers(parent);
     setup_delayed_loaders(parent);
     launch_faders(parent);
+
+    // not fully tested, and not needed yet.
+    //launch_async_gets(parent);
 
     try {
         // if we are in body#home, try to run home_setup(), and so on.
