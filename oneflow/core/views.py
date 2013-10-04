@@ -72,26 +72,50 @@ def home(request):
 def preferences(request):
 
     if request.POST:
-        form = ReadPreferencesForm(request.POST,
-                                   instance=request.user.mongo.preferences.read)
+        reading_form = ReadPreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.read)
 
-        if form.is_valid():
+        sources_form = SelectorPreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.selector)
 
-            LOGGER.info(request.user.mongo.preferences.read.auto_mark_read_delay)
-
-            LOGGER.info(form.cleaned_data['auto_mark_read_delay'])
-
-            # Embedded documents needs to be saved from the container.
-            request.user.mongo.preferences.read = form.save()
+        if reading_form.is_valid() and sources_form.is_valid:
+            # form.save() does nothing on an embedded document,
+            # which needs to be saved from the container.
+            request.user.mongo.preferences.read = reading_form.save()
+            request.user.mongo.preferences.selector = sources_form.save()
             request.user.mongo.preferences.save()
-
-            LOGGER.info(request.user.mongo.preferences.read.auto_mark_read_delay)
 
             return HttpResponseRedirect(reverse('preferences'))
     else:
-        form = ReadPreferencesForm(instance=request.user.mongo.preferences.read)
+        reading_form = ReadPreferencesForm(
+                instance=request.user.mongo.preferences.read)
+        sources_form = SelectorPreferencesForm(
+                instance=request.user.mongo.preferences.selector)
 
-    return render(request, 'preferences.html', {'form': form})
+    return render(request, 'preferences.html', {
+                  'reading_form': reading_form,
+                  'sources_form': sources_form
+                  })
+
+
+def source_selector(request, **kwargs):
+
+    if request.is_ajax():
+        template = u'snippets/selector/selector.html'
+
+    else:
+        template = u'selector.html'
+
+    mongodb_user   = request.user.mongo
+    selector_prefs = mongodb_user.preferences.selector
+
+    return render(request, template, {
+        'subscriptions':             mongodb_user.subscriptions,
+        'closed_subscriptions':      mongodb_user.nofolder_closed_subscriptions,
+        'show_closed_streams':       selector_prefs.show_closed_streams,
+        'titles_show_unread_count':  selector_prefs.titles_show_unread_count,
+        'folders_show_unread_count': selector_prefs.folders_show_unread_count,
+        })
 
 
 def read_with_endless_pagination(request, **kwargs):

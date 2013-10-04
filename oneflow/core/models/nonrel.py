@@ -361,6 +361,33 @@ class ReadPreferences(EmbeddedDocument):
         help_text=_(u'Automatically hide navigation bars when opening an '
                     u'article for reading (default: true).'), default=True)
 
+
+class SelectorPreferences(EmbeddedDocument):
+    """ Source selector preferences. """
+
+    titles_show_unread_count = BooleanField(
+        verbose_name=_(u'Feed names show unread count'),
+        help_text=_(u'Activate this if you want to see the articles '
+                    u'unread count in parenthesis near the feed titles.'),
+        default=False)
+
+    folders_show_unread_count = BooleanField(
+        verbose_name=_(u'Folders show unread count'),
+        help_text=_(u'Each folder is appended the sum of unread articles '
+                    u'of each of its subfolders and subscriptions.'),
+        default=False)
+
+    show_closed_streams = BooleanField(
+        verbose_name=_(u'Show closed streams'),
+        help_text=_(u'Display streams that have been closed by the system '
+                    u'but to which you are still subscribed. As there will '
+                    u'never be new content in them, it is safe to hide them '
+                    u'in the selector. Unread articles from closed streams '
+                    u'still show in <a href="{0}">the unread list</a>.').format(
+                    u'<SET_URL_HERE>'),  # reverse_lazy('read')
+        default=False)
+
+
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
@@ -403,6 +430,8 @@ class Preferences(Document, DocumentHelperMixin):
                                          default=HomePreferences)
     read         = EmbeddedDocumentField(u'ReadPreferences',
                                          default=ReadPreferences)
+    selector     = EmbeddedDocumentField(u'SelectorPreferences',
+                                         default=SelectorPreferences)
     wizards      = EmbeddedDocumentField(u'HelpWizards',
                                          default=HelpWizards)
 

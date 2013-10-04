@@ -1,0 +1,19 @@
+<fieldset>
+  <legend>{% trans "Unread display" %}</legend>
+
+  {% include "widgets/forms/field-checkbox.html" with field=sources_form.titles_show_unread_count %}
+  {% include "widgets/forms/field-checkbox.html" with field=sources_form.folders_show_unread_count %}
+</fieldset>
+
+<fieldset>
+  <legend>{% trans "Closed streams" %}</legend>
+
+  {% include "widgets/forms/field-checkbox.html" with field=sources_form.show_closed_streams %}
+</fieldset>
+
+
+<fieldset class="form-end-notice">
+<p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}
+If you have the sources selector open in another browser tab, you need to reload it for changes to take effect.
+{% endblocktrans %}</p>
+</fieldset>

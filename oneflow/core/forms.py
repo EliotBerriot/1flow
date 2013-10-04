@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 from mongodbforms import DocumentForm
 
-from .models import ReadPreferences
+from .models import ReadPreferences, SelectorPreferences
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -74,3 +74,9 @@ class ReadPreferencesForm(DocumentForm):
 
     class Meta:
         model = ReadPreferences
+
+
+class SelectorPreferencesForm(DocumentForm):
+
+    class Meta:
+        model = SelectorPreferences
