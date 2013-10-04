@@ -278,21 +278,33 @@ def production():
         #     'worker_low':    'low,fetch,background',
         # },
 
-        # 'max_tasks_per_child': {
-        #     'worker_swarm': '50',
-        #     'worker_fetch': '20',
-        #     '__all__': '100',
-        # },
+        'max_tasks_per_child': {
+            'worker_swarm': '8',
+
+            # Fetchers can exhaust memory very quickly. 1 article suffice to
+            # go up to 1Gb and stay there. Thus we need to clean very often.
+            'worker_fetch': '1',
+
+            '__all__': '64',
+        },
 
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
-        #'worker_soft_time_limit': {
-        #    'worker_swarm': '30',
-        #},
+        'worker_soft_time_limit': {
+            'worker_swarm':      '120',
+
+            # Huge article usually consume memory (up to 1gb, se earlier), and
+            # never seem to want to give it back. Sometimes they eat 3-4% CPU,
+            # sometimes they do nothing. I consider that 3 minutes is enough
+            # to convert an article to markdown. If it doesn't acheive the
+            # conversion in tis time frame, there is probably a more serious
+            # problem.
+            'worker_fetch':      '180',
+        },
         # Eventlet is definitively broken, the worker halts every now and then.
-        # 'worker_pool': {
-        #     'worker_swarm': 'eventlet',
-        # },
+        'worker_pool': {
+            'worker_swarm': 'eventlet',
+        },
     }
     env.env_was_set = True
 
