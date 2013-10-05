@@ -1790,6 +1790,13 @@ def subscription_post_create_task(subscription_id, *args, **kwargs):
     return subscription.post_create_task(*args, **kwargs)
 
 
+@task(name='Subscription.mark_all_read_in_database', queue='low')
+def subscription_mark_all_read_in_database(subscription_id, *args, **kwargs):
+
+    subscription = Subscription.objects.get(id=subscription_id)
+    return subscription.mark_all_read_in_database(*args, **kwargs)
+
+
 class Subscription(Document, DocumentHelperMixin):
     feed = ReferenceField('Feed', reverse_delete_rule=CASCADE)
     user = ReferenceField('User', unique_with='feed',
@@ -1845,6 +1852,37 @@ class Subscription(Document, DocumentHelperMixin):
     @property
     def reads(self):
         return Read.objects.filter(user=self.user, subscriptions__contains=self)
+
+    def mark_all_read(self):
+
+        if self.unread_articles_count == 0:
+            return
+
+        count = self.unread_articles_count
+        self.unread_articles_count = 0
+
+        for folder in self.folders:
+            folder.unread_articles_count -= count
+
+        # TODO: update global if no folders.
+
+        # Marking all read is not a database-friendly operation,
+        # thus it's run via a task to be able to return now immediately,
+        # with cache numbers updated.
+        subscription_mark_all_read_in_database.delay(self.id, now())
+
+    def mark_all_read_in_database(self, prior_datetime):
+        """ To avoid marking read the reads that could have been created
+            between the task call and the moment it is effectively run,
+            we define what to exactly mark as read with the datetime when
+            the operation was done by the user.
+        """
+
+        currently_unread = self.reads.filter(is_read__ne=True,
+                                             date_created__lt=prior_datetime)
+
+        currently_unread.update(set__is_read=True,
+                                set__date_read=prior_datetime)
 
     def check_reads(self, force=False, articles=None):
 

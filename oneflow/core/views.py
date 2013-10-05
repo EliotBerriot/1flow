@@ -230,6 +230,17 @@ def read_with_endless_pagination(request, **kwargs):
             template = u'snippets/read/read-endless-count.html'
             context[u'reads_count'] = reads.count()
 
+        elif request.GET.get('mark_all_read', False):
+
+            if feed:
+                query_kwargs[u'subscriptions__contains'].mark_all_read()
+
+            else:
+                for sub in request.user.mongo.subscriptions:
+                    sub.mark_all_read()
+
+            return HttpResponse('DONE')
+
         else:
             template = u'snippets/read/read-endless-page.html'
 
