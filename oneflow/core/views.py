@@ -58,6 +58,44 @@ add_to_builtins('oneflow.core.templatetags.coretags')
 if settings.TEMPLATE_DEBUG:
     add_to_builtins('template_debug.templatetags.debug_tags')
 
+# ———————————————————————————————————————————————————————————————————— Wrappers
+# I couldn't find any way to create an URL patterns with a (?P<…>) that
+# would be merged with a default `kwargs={…}` in the same URL pattern.
+#
+# Thus, these small view wrappers that just do the merge.
+#
+
+
+def read_all_feed_with_endless_pagination(request, **kwargs):
+
+    kwargs[u'all'] = True
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def read_feed_with_endless_pagination(request, **kwargs):
+
+    kwargs.update({'is_read': False})  # , 'is_bookmarked': False})
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def make_read_wrapper(attrkey, view_name):
+    """ See http://stackoverflow.com/a/3431699/654755 for why."""
+
+    def func(request, **kwargs):
+        kwargs[attrkey] = True
+        return read_with_endless_pagination(request, **kwargs)
+
+    globals()['read_{0}_feed_with_endless_pagination'.format(view_name)] = func
+
+
+# This builds "read_later_feed_with_endless_pagination" and so on.
+for attrkey, attrval in Read.status_data.items():
+    if 'list_url_feed' in attrval:
+        make_read_wrapper(attrkey, attrval.get('view_name'))
+
+
+# —————————————————————————————————————————————————————————————————— Real views
+
 
 def home(request):
     """ root of the application. """
@@ -165,7 +203,7 @@ def read_with_endless_pagination(request, **kwargs):
                     # - all Reads (old and new) can have `.is_starred` == None
                     #   because False and True mean "I don't like" and "I like",
                     #   None meaning "like status not set".
-                    query_kwargs[attrname + '__ne'] = True
+                    query_kwargs[attrname + u'__ne'] = True
 
                 if request.user.is_superuser or request.user.is_staff:
                     combinations.union(set(
@@ -189,7 +227,7 @@ def read_with_endless_pagination(request, **kwargs):
 
         if checker == bool and not checked_value:
             # See before, in the for loop.
-            query_kwargs[parameter + '__ne'] = True
+            query_kwargs[parameter + u'__ne'] = True
 
         else:
             query_kwargs[parameter] = checked_value
@@ -209,10 +247,26 @@ def read_with_endless_pagination(request, **kwargs):
                          order_by)
         order_by = u'-id'
 
-    #LOGGER.info(query_kwargs)
+    # ——————————————————————————————————————————————————————— start filter more
+
+    feed = kwargs.get('feed', None)
+
+    if feed:
+        #LOGGER.info(u'Refining reads by %s', feed)
+        query_kwargs[u'subscriptions__contains'] = \
+            Subscription.objects.get(id=feed)
+
+    # ————————————————————————————————————————————————————————— end filter more
+
+    #LOGGER.info(u'query_kwargs: %s', query_kwargs)
 
     reads = Read.objects(user=request.user.mongo,
                          **query_kwargs).order_by(order_by).no_cache()
+
+    #LOGGER.info(u'%s\n%s > %s, %s, %s', reads[0], reads[0].article,
+    #            reads[0].article.url_absolute,
+    #            reads[0].article.duplicate_of,
+    #            reads[0].article.orphaned)
 
     context = {
         u'reads': reads,
@@ -250,6 +304,8 @@ def read_with_endless_pagination(request, **kwargs):
             context[u'tenths_counter'] = \
                 (get_page_number_from_request(request) - 1) \
                 * config.READ_INFINITE_ITEMS_PER_FETCH
+
+        #LOGGER.info(u'Ajax with %s', context.get('tenths_counter'))
 
     else:
         template = u'read-endless.html'
