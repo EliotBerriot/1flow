@@ -1,7 +1,7 @@
 <div class="control-group">
 
     <label class="checkbox">
-        {% render_field field %} {{ field.label }}
+        {% render_field field %} {{ field.label|safe }}
     </label>
 
     <span class="help-block">{{ field.help_text|safe }}</span>

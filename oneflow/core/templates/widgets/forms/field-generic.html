@@ -1,5 +1,5 @@
 <div class="control-group">
-    <label class="control-label" for="{{ field.auto_id }}">{{ field.label }}</label>
+    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
 
     <div class="controls">
         {% render_field field class+="input-large" %}
@@ -9,5 +9,5 @@
         <span class="help-block">{{ field.errors|join:", " }}</span>
     {% endif %}
 
-    <span class="help-block">{{ field.help_text }}</span>
+    <span class="help-block">{{ field.help_text|safe }}</span>
 </div>
