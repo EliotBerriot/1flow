@@ -37,9 +37,28 @@
 
                 {% elif user.is_superuser %}
                     <li class="read-list-item">
-                        <div>{{ read }}</div>
-                        <div>— absolute: <code>{{ read.article.url_absolute }}</code></div>
-                        <div>— duplicate: {{ read.article.duplicate_of }}</div>
+                        {% with read.article as article %}
+
+                            {% include "snippets/read/read-admin-informations.html" with nohide=1 %}
+
+                            <div style="text-align: center">
+
+                                {% if article.url_absolute %}
+                                    <code style="color: green">absolute</code>
+                                {% endif %}
+
+                                {% if article.orphaned %}
+                                    <code style="color: red">orphaned</code>
+                                {% endif %}
+
+                                {% if article.duplicate_of %}
+                                    duplicate of: <a
+                                    href="/admin/models/article/{{ article.duplicate_of.id }}/"
+                                    target="_blank">{{ article.duplicate_of.id }}</a>
+                                {% endif %}
+
+                            </div>
+                        {% endwith %}
                     <li>
                 {% endif %}
             {% endfor %}
