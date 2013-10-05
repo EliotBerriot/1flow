@@ -2,6 +2,16 @@
   <div class="navbar-inner">
     <div class="container">
       <ul class="nav">
+
+          <li class="nowrap hidden-phone">
+            <a href="{% url 'source_selector' %}"
+                class="{% reverse_active 'source_selector' %}">
+              <i class="icon-home"></i>
+              {% trans 'Sources' %}
+            </a>
+          </li>
+
+
           {# nowrap is necessary, else things woe on Safari+iPad@portrait #}
           <li class="dropup nowrap">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
