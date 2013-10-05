@@ -607,6 +607,43 @@ class User(Document, DocumentHelperMixin):
     has_content = IntRedisDescriptor(
         attr_name='u.h_c', default=user_has_content, set_default=True)
 
+    def check_subscriptions(self, force=False):
+        """
+            .. note:: running this method from the feeds is more database
+                friendly because the feeds will compute their articles
+                QuerySet once and for all the subscriptions.
+        """
+
+        if not force:
+            LOGGER.info(u'This method is very costy and should not be needed '
+                        u'in normal conditions. Please call it with '
+                        u'`force=True` if you are sure you want to run it.')
+            return
+
+        reads = 0
+        failed = 0
+        unreads = 0
+        missing = 0
+        unregistered = 0
+
+        for subscription in self.subscriptions:
+            smissing, sunreg, sreads, sunreads, sfailed = \
+                subscription.check_reads(force)
+
+            reads += sreads
+            failed += sfailed
+            missing += smissing
+            unreads += sunreads
+            unregistered += sunreg
+
+            subscription.pre_compute_cached_descriptors()
+
+        LOGGER.info(u'Checked user #%s with %s subscriptions. '
+                    u'Totals: %s/%s non-existing/unregistered reads, '
+                    u'%s/%s read/unread and %s not created.', self.id,
+                    self.subscriptions.count(),
+                    missing, unregistered, reads, unreads, failed)
+
     @property
     def subscriptions(self):
         return Subscription.objects(user=self)
@@ -1981,6 +2018,16 @@ class Subscription(Document, DocumentHelperMixin):
         default=subscription_bookmarked_articles_count_default,
         set_default=True)
 
+    def pre_compute_cached_descriptors(self):
+
+        # TODO: move this into the DocumentHelperMixin and detect all
+        #       descriptors automatically by examining the __class__.
+
+        self.all_articles_count
+        self.unread_articles_count
+        self.starred_articles_count
+        self.bookmarked_articles_count
+
     def __unicode__(self):
         return _(u'{0}+{1} (#{2})').format(
             self.user.username, self.feed.name, self.id)
@@ -2997,6 +3044,8 @@ class Article(Document, DocumentHelperMixin):
 
     def create_reads(self, subscriptions, verbose=True, **kwargs):
 
+        return_now = len(subscriptions) == 1
+
         for subscription in subscriptions:
             new_read = Read(article=self, user=subscription.user)
 
@@ -3011,7 +3060,9 @@ class Article(Document, DocumentHelperMixin):
                 # If another feed has already created the read, be sure the
                 # current one is registered in the read via the subscriptions.
                 cur_read.update(add_to_set__subscriptions=subscription)
-                return False
+
+                if return_now:
+                    return False
 
             except:
                 LOGGER.exception(u'Could not save read %s!', new_read)
@@ -3026,7 +3077,8 @@ class Article(Document, DocumentHelperMixin):
 
                 new_read.update(set__tags=tags, **params)
 
-                return True
+                if return_now:
+                    return True
 
     @classmethod
     def create_article(cls, title, url, feeds, **kwargs):
