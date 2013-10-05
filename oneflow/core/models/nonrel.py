@@ -620,29 +620,29 @@ class User(Document, DocumentHelperMixin):
                         u'`force=True` if you are sure you want to run it.')
             return
 
-        reads = 0
-        failed = 0
-        unreads = 0
-        missing = 0
-        unregistered = 0
+        reads     = 0
+        failed    = 0
+        unreads   = 0
+        missing   = 0
+        rechecked = 0
 
         for subscription in self.subscriptions:
-            smissing, sunreg, sreads, sunreads, sfailed = \
+            smissing, srecheck, sreads, sunreads, sfailed = \
                 subscription.check_reads(force)
 
-            reads += sreads
-            failed += sfailed
-            missing += smissing
-            unreads += sunreads
-            unregistered += sunreg
+            reads     += sreads
+            failed    += sfailed
+            missing   += smissing
+            unreads   += sunreads
+            rechecked += srecheck
 
             subscription.pre_compute_cached_descriptors()
 
         LOGGER.info(u'Checked user #%s with %s subscriptions. '
-                    u'Totals: %s/%s non-existing/unregistered reads, '
+                    u'Totals: %s/%s non-existing/re-checked reads, '
                     u'%s/%s read/unread and %s not created.', self.id,
                     self.subscriptions.count(),
-                    missing, unregistered, reads, unreads, failed)
+                    missing, rechecked, reads, unreads, failed)
 
     @property
     def subscriptions(self):
@@ -1292,29 +1292,29 @@ class Feed(Document, DocumentHelperMixin):
                         u'`force=True` if you are sure you want to run it.')
             return
 
-        reads = 0
-        failed = 0
-        unreads = 0
-        missing = 0
-        unregistered = 0
+        reads     = 0
+        failed    = 0
+        unreads   = 0
+        missing   = 0
+        rechecked = 0
 
         articles = self.good_articles.order_by('-id')
 
         for subscription in self.subscriptions:
-            smissing, sunreg, sreads, sunreads, sfailed = \
+            smissing, srecheck, sreads, sunreads, sfailed = \
                 subscription.check_reads(force, articles)
 
-            reads += sreads
-            failed += sfailed
-            missing += smissing
-            unreads += sunreads
-            unregistered += sunreg
+            reads     += sreads
+            failed    += sfailed
+            missing   += smissing
+            unreads   += sunreads
+            rechecked += srecheck
 
         LOGGER.info(u'Checked feed #%s with %s subscriptions and %s articles. '
-                    u'Totals: %s/%s non-existing/unregistered reads, '
+                    u'Totals: %s/%s non-existing/re-checked reads, '
                     u'%s/%s read/unread and %s not created.', self.id,
                     self.subscriptions.count(), articles.count(),
-                    missing, unregistered, reads, unreads, failed)
+                    missing, rechecked, reads, unreads, failed)
 
     def update_latest_article_date_published(self):
         """ This seems simple, but this operations costs a lot in MongoDB. """
@@ -2092,14 +2092,14 @@ class Subscription(Document, DocumentHelperMixin):
                         u'if you are really sure you want to run it.')
             return
 
-        yesterday    = combine(today() - timedelta(days=1), time(0, 0, 0))
-        is_older     = False
-        my_now       = now()
-        reads        = 0
-        unreads      = 0
-        failed       = 0
-        missing      = 0
-        unregistered = 0
+        yesterday = combine(today() - timedelta(days=1), time(0, 0, 0))
+        is_older  = False
+        my_now    = now()
+        reads     = 0
+        unreads   = 0
+        failed    = 0
+        missing   = 0
+        rechecked = 0
 
         # When checking the subscription from its feed, allow optimising
         # the whole story by not querying the articles again for each
@@ -2115,9 +2115,9 @@ class Subscription(Document, DocumentHelperMixin):
 
             if is_older or article.date_published is None:
                 params = {
-                    'is_read': True,
-                    'is_auto_read': True,
-                    'date_read': my_now,
+                    'is_read':        True,
+                    'is_auto_read':   True,
+                    'date_read':      my_now,
                     'date_auto_read': my_now,
                 }
 
@@ -2129,9 +2129,9 @@ class Subscription(Document, DocumentHelperMixin):
                     is_older = True
 
                     params = {
-                        'is_read': True,
-                        'is_auto_read': True,
-                        'date_read': my_now,
+                        'is_read':        True,
+                        'is_auto_read':   True,
+                        'date_read':      my_now,
                         'date_auto_read': my_now,
                     }
 
@@ -2147,12 +2147,12 @@ class Subscription(Document, DocumentHelperMixin):
                     unreads += 1
 
             elif created is False:
-                unregistered += 1
+                rechecked += 1
 
             else:
                 failed += 1
 
-        if missing or unregistered:
+        if missing or rechecked:
             self.all_articles_count = \
                 subscription_all_articles_count_default(self)
             self.unread_articles_count = \
@@ -2165,12 +2165,12 @@ class Subscription(Document, DocumentHelperMixin):
                     folder_unread_articles_count_default(folder)
 
         LOGGER.info(u'Checked subscription #%s. '
-                    u'%s/%s non-existing/unregistered, '
+                    u'%s/%s non-existing/re-checked, '
                     u'%s/%s read/unread and %s not created.',
-                    self.id, missing, unregistered,
+                    self.id, missing, rechecked,
                     reads, unreads, failed)
 
-        return missing, unregistered, reads, unreads, failed
+        return missing, rechecked, reads, unreads, failed
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Authors
@@ -3078,7 +3078,8 @@ class Article(Document, DocumentHelperMixin):
                 params = dict(('set__' + key, value)
                               for key, value in kwargs.items())
 
-                new_read.update(set__tags=tags, **params)
+                new_read.update(set__tags=tags,
+                                set__subscriptions=[subscription], **params)
 
                 if return_now:
                     return True
