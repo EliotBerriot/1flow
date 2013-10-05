@@ -1372,9 +1372,15 @@ class Feed(Document, DocumentHelperMixin):
             real numbers.
         """
 
-        return self.articles.filter(duplicate_of=None,
-                                    url_absolute=True,
-                                    orphaned__ne=True)
+        return self.articles.filter(
+                                    (
+                                        Q(duplicate_of__exists=False)
+                                        | Q(duplicate_of=None)
+                                    ) & (
+                                        Q(url_absolute=True)
+                                        & Q(orphaned__ne=True)
+                                    )
+                                )
 
     def update_all_articles_count(self):
 
