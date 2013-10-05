@@ -2140,13 +2140,16 @@ class Subscription(Document, DocumentHelperMixin):
                         'date_read':      my_now,
                         'date_auto_read': my_now,
                     }
+                else:
+                    # No params == all by default == is_read is False
+                    pass
 
             created = article.create_reads([self], False, **params)
 
             if created:
                 missing += 1
 
-                if params['is_read']:
+                if params.get('is_read', False):
                     reads += 1
 
                 else:
