@@ -2,6 +2,28 @@
 {# This template must be included inside a <script> block, it's javascript. #}
 
 {% if user.is_superuser %}
+
+    // ———————————————————————————————————————————————————————————————— testing
+
+    // “Mark All Read”
+    Mousetrap.bind(['shift+m shift+a shift+r'], function() {
+        $.get(document.location.pathname + '?mark_all_read=1', function(data) {
+            notify(read_actions_messages.all_marked_read);
+        });
+
+        $('.read-list-item.not_is_read').each(function() {
+            $this = $(this);
+            $this.removeClass('not_is_read').addClass('is_read');
+            $this.find('.action-mark-is_read').hide();
+            $this.find('.action-mark-not_is_read').show();
+        });
+
+        return false;
+    });
+
+    // ———————————————————————————————————————————————————————————— end testing
+
+
     {% if read_id %}
         var admin_informations = $("#admin-{{ read.id }}");
 
@@ -28,4 +50,5 @@
             });
         }
     });
+
 {% endif %}
