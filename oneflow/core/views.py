@@ -384,6 +384,17 @@ def toggle(request, klass, oid, key):
             if hasattr(obj, date_attr):
                 setattr(obj, date_attr, now())
 
+        try:
+            getattr(obj, key + '_changed')()
+
+        except AttributeError:
+            pass
+
+        except:
+            LOGGER.exception(u'Unhandled exception while running '
+                             u', %s.%s_changed() on %s.',
+                             obj.__class__.__name__, key, obj)
+
         obj.save()
 
     if request.is_ajax():
