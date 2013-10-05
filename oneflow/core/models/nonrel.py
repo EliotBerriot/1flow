@@ -472,13 +472,13 @@ class HomePreferences(EmbeddedDocument):
 
     read_shows = IntField(verbose_name=_(u'Clicking <code>Read</code> '
                           u'displays:'),
-                          choices=READ_SHOWS_CHOICES, default=1,
+                          choices=READ_SHOWS_CHOICES, default=2,
                           help_text=_(u'Define what 1flow will display when '
                                       u'you click on the <code>Read</code> '
                                       u'link in the top navbar of the '
                                       u'interface. <br /><span class="muted">'
-                                      u'Default: shows the <strong>all '
-                                      u'unread</strong> reading list.</span>'))
+                                      u'Default: shows the <strong>sources '
+                                      u'selector</strong>.</span>'))
 
     def get_template(self):
         return HomePreferences.style_templates.get(self.style)
@@ -1372,9 +1372,15 @@ class Feed(Document, DocumentHelperMixin):
             real numbers.
         """
 
-        return self.articles.filter(duplicate_of=None,
-                                    url_absolute=True,
-                                    orphaned__ne=True)
+        return self.articles.filter(
+                                    (
+                                        Q(duplicate_of__exists=False)
+                                        | Q(duplicate_of=None)
+                                    ) & (
+                                        Q(url_absolute=True)
+                                        & Q(orphaned__ne=True)
+                                    )
+                                )
 
     def update_all_articles_count(self):
 
