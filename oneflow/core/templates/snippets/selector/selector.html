@@ -1,0 +1,84 @@
+<div class="spacer25"></div>
+<form>
+    <fieldset id="reading-lists">
+        <legend>{% trans "Lists" %}</legend>
+        <div class="row-fluid">
+            <div class="span3">
+                <ul>
+                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Inbox" %}</li>
+                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Web snaps" %}</li>
+                    <li>{% reading_list_with_count 'read_later' _("Read later") %}</li>
+                    <li>{% reading_list_with_count 'read' _("All unread") %}</li>
+                </ul>
+            </div>
+            <div class="span3">
+                <ul>
+                    <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</a></li>
+                    <li>{% reading_list_with_count 'read_starred' _('Starred') %}</li>
+
+                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Sent Articles" %}</li>
+
+                    <li>{% reading_list_with_count 'read_all' _('All articles') %}</li>
+                </ul>
+            </div>
+            <div class="span3">
+                <ul>
+                  <li><a href="{% url 'read_facts' %}">{% trans 'Facts' %}</a></li>
+                  <li><a href="{% url 'read_numbers' %}">{% trans 'Numbers' %}</a></li>
+                  <li><a href="{% url 'read_analysis' %}">{% trans 'Analysis' %}</a></li>
+                  <li><a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
+                </ul>
+            </div>
+            <div class="span3">
+                <ul>
+                  <li><a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>
+                  <li><a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
+                  <li><a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
+                  <li><a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
+                </ul>
+            </div>
+        </div>
+    </fieldset>
+
+    <fieldset id="subscriptions">
+        <legend>{% trans "Information streams" %} ({{ subscriptions|length }})
+            <div class="global-links pull-right">
+                <span class="unread">{% reading_list_with_count 'read' _('unread') %}</span>
+
+                <span class="hot muted not-ready" {% feature_not_ready %}>{% trans "hot" %}</span>
+
+                <span class="all">{% reading_list_with_count 'read_all' _('all') %}</span>
+            </div>
+
+        </legend>
+
+        <div>
+            {% for folder in user.top_folders %}
+                {% include "snippets/selector/folder.html" with folder=folder level=0 %}
+            {% endfor %}
+        </div>
+        <div class="clearfix"></div>
+
+        <div>
+            {% for subscription in user.mongo.nofolder_open_subscriptions %}
+                {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
+            {% endfor %}
+        </div>
+        <div class="clearfix"></div>
+    </fieldset>
+
+    {% if show_closed_streams %}
+
+        <fieldset id="closed-subscriptions">
+                <legend>{% trans "Closed streams" %} ({{ subscriptions|length }})</legend>
+
+                <div>
+                    {% for subscription in closed_subscriptions %}
+                        {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
+                    {% endfor %}
+                </div>
+        </fieldset>
+
+    {% endif %}
+
+</form>

@@ -1,0 +1,18 @@
+<div id="{{ folder.id }}" class="folder level-{{ level }}">
+    <div class="folder-name">
+        {{ folder.name }}
+    </div>
+    <div class="children">
+        {% comment %}
+
+        {% for child in folder.children %}
+            {% include "snippets/selector/folder.html" with folder=child level=level|add:'1' %}
+        {% endfor %}
+        {% endcomment %}
+    </div>
+    <div class="subscriptions">
+        {% for subscription in folder.subscriptions %}
+            {% include "snippets/selector/subscription.html" %}
+        {% endfor %}
+    </div>
+</div>

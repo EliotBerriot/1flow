@@ -1,0 +1,17 @@
+{% extends 'home.html' %}
+
+{% block title %}{% trans "Sources" %}{% endblock title %}
+{% block body_id %}selector{% endblock body_id %}
+
+{% block application_content %}
+<div class="row-fluid">
+    <div class="span8 offset2">
+        {% include 'snippets/selector/selector.html' %}
+    </div>
+</div>
+{% endblock application_content %}
+
+{% block extrajs_footer %}
+    {{ block.super }}
+    {% compressed_js 'feed-selector' %}
+{% endblock extrajs_footer %}
