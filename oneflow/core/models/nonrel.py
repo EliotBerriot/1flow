@@ -398,6 +398,12 @@ HOME_STYLE_CHOICES = (
 )
 
 
+READ_SHOWS_CHOICES = (
+    (1, _(u'Unread articles')),
+    (2, _(u'Source selector')),
+)
+
+
 class HomePreferences(EmbeddedDocument):
     """ Various HOME settings. """
 
@@ -409,6 +415,16 @@ class HomePreferences(EmbeddedDocument):
     style = StringField(verbose_name=_(u'How the user wants his 1flow '
                         u'home to appear'), max_length=2,
                         choices=HOME_STYLE_CHOICES, default=u'RL')
+
+    read_shows = IntField(verbose_name=_(u'Clicking <code>Read</code> '
+                          u'displays:'),
+                          choices=READ_SHOWS_CHOICES, default=1,
+                          help_text=_(u'Define what 1flow will display when '
+                                      u'you click on the <code>Read</code> '
+                                      u'link in the top navbar of the '
+                                      u'interface. <br /><span class="muted">'
+                                      u'Default: shows the <strong>all '
+                                      u'unread</strong> reading list.</span>'))
 
     def get_template(self):
         return HomePreferences.style_templates.get(self.style)
