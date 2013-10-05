@@ -4,7 +4,8 @@ import logging
 
 from django import template
 from django.core.urlresolvers import reverse
-#from django.utils.translation import ugettext_lazy as _
+from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext_lazy as _
 
 
 from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
@@ -23,6 +24,15 @@ def naturaldelta(the_datetime):
 
 
 @register.simple_tag
+def feature_not_ready():
+
+    return mark_safe(u' title="{0}" data-toggle="tooltip" '.format(
+                     _(u'Feature coming soon. More information on the '
+                       u'1flow blog http://blog.1flow.io/ or Twitter '
+                       u'@1flow_io.')))
+
+
+@register.simple_tag
 def read_status_css(read):
 
     css = []
@@ -33,7 +43,38 @@ def read_status_css(read):
     return u' '.join(css)
 
 
-@register.simple_tag()
+@register.simple_tag
+def reading_list_with_count(view_name, translation, css_classes=None):
+
+    return mark_safe((
+        u'<a href="{0}" class="{1}">{2}'
+        u'<span data-async-get="count"></span></a>'
+    ).format(
+        reverse(view_name), css_classes or u'nowrap', translation))
+
+
+@register.simple_tag
+def feed_reading_list_with_count(view_name, subscription, attrname,
+                                 translation, css_classes=None):
+
+    # u'<a href="{0}" class="{1} {2} async-get" data-async-get="count">{3}'
+    # u'<span class="count"></span></a>'
+
+    count = getattr(subscription, attrname + '_articles_count')
+
+    if count:
+        return mark_safe((
+            # last space at end of second line is needed.
+            u'<a href="{0}" class="{1} {2}">{3}'
+            u'&nbsp;(<span class="count">{4}</span>)</a> '
+        ).format(
+            reverse(view_name, kwargs={'feed': subscription.id}),
+            view_name, css_classes or u'nowrap', translation, count))
+
+    return u''
+
+
+@register.simple_tag
 def read_action_toggle_url(read):
 
     any_key = Read.get_status_attributes()[0]
