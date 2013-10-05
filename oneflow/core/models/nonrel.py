@@ -2113,18 +2113,18 @@ class Subscription(Document, DocumentHelperMixin):
 
             params = {}
 
-            if is_older:
+            if is_older or article.date_published is None:
                 params = {
                     'is_read': True,
                     'is_auto_read': True,
                     'date_read': my_now,
                     'date_auto_read': my_now,
                 }
-                reads += 1
 
             else:
-                if article.date_published is None \
-                        or article.date_published < yesterday:
+                # As they are ordered by date, switching is_older to True will
+                # avoid more date comparisons. MongoDB already did the job.
+                if article.date_published < yesterday:
 
                     is_older = True
 
