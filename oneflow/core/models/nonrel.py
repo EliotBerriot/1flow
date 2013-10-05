@@ -2997,6 +2997,8 @@ class Article(Document, DocumentHelperMixin):
 
     def create_reads(self, subscriptions, verbose=True, **kwargs):
 
+        return_now = len(subscriptions) == 1
+
         for subscription in subscriptions:
             new_read = Read(article=self, user=subscription.user)
 
@@ -3011,7 +3013,9 @@ class Article(Document, DocumentHelperMixin):
                 # If another feed has already created the read, be sure the
                 # current one is registered in the read via the subscriptions.
                 cur_read.update(add_to_set__subscriptions=subscription)
-                return False
+
+                if return_now:
+                    return False
 
             except:
                 LOGGER.exception(u'Could not save read %s!', new_read)
@@ -3026,7 +3030,8 @@ class Article(Document, DocumentHelperMixin):
 
                 new_read.update(set__tags=tags, **params)
 
-                return True
+                if return_now:
+                    return True
 
     @classmethod
     def create_article(cls, title, url, feeds, **kwargs):
