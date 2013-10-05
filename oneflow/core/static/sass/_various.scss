@@ -175,6 +175,13 @@ img.centered {
   margin-right: 0;
 }
 
+.not-ready {
+  // http://demosthenes.info/blog/534/Cross-browser-Image-Blur-with-CSS
+  @include filter(blur(5px));
+  /* Firefox current versions */
+  filter: url("data:image/svg+xml;utf8,<svg version=\'1.1\' xmlns=\'http://www.w3.org/2000/svg\'><filter id=\'blur\'><feGaussianBlur stdDeviation=\'3\' /></filter></svg>#blur");
+}
+
 /* Thanks https://github.com/twitter/bootstrap/issues/4286 */
 
 .spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
