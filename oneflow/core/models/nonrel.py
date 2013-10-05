@@ -305,6 +305,59 @@ class DocumentHelperMixin(object):
             pass
 
 
+class DocumentTreeMixin(object):
+    """ WARNING: currently I have no obvious way to add the required
+        fields to the class this mixin is added to. The two fields
+        ``.parent`` and ``.children`` must exist.
+
+        See the :class:`UserFolder` class for an example. The basics are::
+
+            parent = ReferenceField('self', reverse_delete_rule=NULLIFY)
+            children = ListField(ReferenceField('self',
+                                 reverse_delete_rule=PULL), default=list)
+
+    """
+
+    def set_parent(self, parent, update_reverse_link=True, full_reload=True):
+
+        self.update(set__parent=parent)
+
+        if full_reload:
+            self.safe_reload()
+
+        if update_reverse_link:
+            parent.add_child(self, update_reverse_link=False)
+
+    def unset_parent(self, update_reverse_link=True, full_reload=True):
+
+        if update_reverse_link:
+            self.parent.remove_child(self, update_reverse_link=False)
+
+        self.update(unset__parent=True)
+
+        if full_reload:
+            self.safe_reload()
+
+    def add_child(self, child, update_reverse_link=True, full_reload=True):
+        self.update(add_to_set__children=child)
+
+        if full_reload:
+            self.safe_reload()
+
+        if update_reverse_link:
+            child.set_parent(self, update_reverse_link=False)
+
+    def remove_child(self, child, update_reverse_link=True, full_reload=True):
+
+        if update_reverse_link:
+            child.unset_parent(self, update_reverse_link=False)
+
+        self.update(pull__children=child)
+
+        if full_reload:
+            self.safe_reload()
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User preferences
 
 
@@ -559,9 +612,46 @@ class User(Document, DocumentHelperMixin):
         return Subscription.objects(user=self)
 
     @property
+    def subscriptions_by_folders(self):
+
+        subscriptions = Subscription.objects(user=self)
+        by_folders    = {}
+
+        for subscription in subscriptions:
+            for folder in subscription.folders:
+                if folder in by_folders:
+                    by_folders[folder].append(subscription)
+
+                else:
+                    by_folders[folder] = [subscription]
+
+        return by_folders
+
+    @property
+    def top_folders(self):
+
+        return UserFolder.objects(owner=self, parent=None)
+
+    @property
+    def nofolder_subscriptions(self):
+
+        return self.subscriptions.filter(
+            Q(folders__exists=False) | Q(folders__size=0))
+
+    @property
     def open_subscriptions(self):
 
         return [s for s in self.subscriptions if not s.feed.closed]
+
+    @property
+    def nofolder_open_subscriptions(self):
+
+        return [s for s in self.nofolder_subscriptions if not s.feed.closed]
+
+    @property
+    def nofolder_closed_subscriptions(self):
+
+        return [s for s in self.nofolder_subscriptions if s.feed.closed]
 
 
 def mongo_user(self):
@@ -598,6 +688,65 @@ class Group(Document, DocumentHelperMixin):
     guests = ListField(ReferenceField('User',
                        reverse_delete_rule=PULL))
 
+
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User folders
+
+
+def folder_all_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads.count()
+
+
+def folder_starred_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads(is_starred=True).count()
+
+
+def folder_unread_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads(is_read=False).count()
+
+
+def folder_bookmarked_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads(is_bookmarked=True).count()
+
+
+class UserFolder(Document, DocumentHelperMixin, DocumentTreeMixin):
+    name = StringField(unique_with=['owner', 'parent'])
+    owner = ReferenceField('User', reverse_delete_rule=CASCADE)
+
+    parent = ReferenceField('self', reverse_delete_rule=NULLIFY)
+    children = ListField(ReferenceField('self',
+                         reverse_delete_rule=PULL), default=list)
+
+    all_articles_count = IntRedisDescriptor(
+        attr_name='uf.aa_c', default=folder_all_articles_count_default,
+        set_default=True)
+
+    unread_articles_count = IntRedisDescriptor(
+        attr_name='uf.ua_c', default=folder_unread_articles_count_default,
+        set_default=True)
+
+    starred_articles_count = IntRedisDescriptor(
+        attr_name='uf.sa_c', default=folder_starred_articles_count_default,
+        set_default=True)
+
+    bookmarked_articles_count = IntRedisDescriptor(
+        attr_name='uf.ba_c', default=folder_bookmarked_articles_count_default,
+        set_default=True)
+
+    @property
+    def subscriptions(self):
+
+        # No need to query on the user, it's already common to folder and
+        # subscription. The "duplicate folder name" problem doesn't exist.
+        return Subscription.objects(folders=self)
+
+    @property
+    def reads(self):
+
+        return Read.objects(subscriptions__in=self.subscriptions)
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
 
@@ -1810,6 +1959,10 @@ class Subscription(Document, DocumentHelperMixin):
                      default=list, verbose_name=_(u'tags'),
                      help_text=_(u'Tags that will be applied to new reads in '
                                  u'this subscription.'))
+
+    folders = ListField(ReferenceField(UserFolder), default=list,
+                        help_text=_(u'Folders in which this subscription '
+                                    u'appears (can be more than one).'))
 
     all_articles_count = IntRedisDescriptor(
         attr_name='s.aa_c', default=subscription_all_articles_count_default,
@@ -3973,9 +4126,15 @@ class Read(Document, DocumentHelperMixin):
             for subscription in self.subscriptions:
                 subscription.unread_articles_count -= 1
 
+                for folder in subscription.folders:
+                    folder.unread_articles_count -= 1
+
         else:
             for subscription in self.subscriptions:
                 subscription.unread_articles_count += 1
+
+                for folder in subscription.folders:
+                    folder.unread_articles_count += 1
 
     def is_starred_changed(self):
 
@@ -3983,9 +4142,15 @@ class Read(Document, DocumentHelperMixin):
             for subscription in self.subscriptions:
                 subscription.starred_articles_count += 1
 
+                for folder in subscription.folders:
+                    folder.starred_articles_count += 1
+
         else:
             for subscription in self.subscriptions:
                 subscription.starred_articles_count -= 1
+
+                for folder in subscription.folders:
+                    folder.starred_articles_count -= 1
 
     def is_bookmarked_changed(self):
 
@@ -3993,9 +4158,15 @@ class Read(Document, DocumentHelperMixin):
             for subscription in self.subscriptions:
                 subscription.bookmarked_articles_count += 1
 
+                for folder in subscription.folders:
+                    folder.bookmarked_articles_count += 1
+
         else:
             for subscription in self.subscriptions:
                 subscription.bookmarked_articles_count -= 1
+
+                for folder in subscription.folders:
+                    folder.bookmarked_articles_count -= 1
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Comment
