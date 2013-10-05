@@ -270,3 +270,167 @@
     padding-left: 4em;
     padding-right: 4em;
 }
+
+// —————————————————————————————————————————————————————————————— Feed selector
+
+#selector {
+    #reading-lists {
+        font-size: 125%;
+
+        ul {
+            margin-bottom: 20px;
+
+            li {
+                list-style-type: none;
+                padding: 5px;
+
+                /*
+                &:before {
+                    content: '\226B';
+                    padding-right: 5px;
+                    font-size: 110%;
+                    color:
+                }
+                */
+
+                a {
+                    color: $subscription-link-color;
+                }
+            }
+
+        }
+    }
+}
+
+#subscriptions,
+#closed-subscriptions {
+
+    .global-links {
+        font-size: 80%;
+
+        span {
+            padding-left: 10px;
+
+            span {
+                padding-left: 0;
+            }
+        }
+    }
+
+    .subscription {
+        position: relative;
+        float: left;
+        width: 45%;
+
+        a {
+            color: $subscription-link-color;
+        }
+
+        min-height: $subscription-image-size;
+
+        padding-top: $subscription-padding;
+        padding-bottom: $subscription-padding;
+        padding-right: 4.9%;
+
+        .thumbnail {
+            position: absolute;
+            top: $subscription-padding;
+            left: $subscription-padding;
+
+            border: 0;
+            padding: 0;
+            margin: 0;
+
+            opacity: $subscription-opacity-default;
+            @include black-and-white();
+
+            img {
+                max-width: $subscription-image-size;
+                max-height: $subscription-image-size;
+                @include border-radius(3px);
+            }
+        }
+
+        .name {
+            position: absolute;
+            top: $subscription-padding;
+            left: $subscription-image-size + $subscription-padding * 2;
+            right: $subscription-padding;
+
+            font-size: 140%;
+            line-height: $subscription-name-height;
+            max-height: $subscription-name-height;
+
+            overflow: hidden;
+            text-overflow: ellipsis;
+
+            opacity: $subscription-opacity-default;
+        }
+
+        .links {
+            position: absolute;
+            top: $subscription-name-height + $subscription-padding;
+            left: $subscription-image-size + $subscription-padding * 2;
+
+            a {
+                padding-right: 10px;
+            }
+        }
+
+        .last-updated {
+            position: absolute;
+            bottom: $subscription-padding - $baseline-difference;
+            right: $subscription-padding;
+        }
+
+        .css-hover-muted {
+            @include single-transition(opacity, 0.5s, ease-out, 0.3s);
+            opacity: 0;
+            height: 0;
+            overflow: hidden;
+        }
+
+        &:hover {
+            background: #fff;
+            @include border-radius(3px);
+
+            .css-hover-muted {
+                opacity: 1;
+                height: auto;
+            }
+
+            .thumbnail {
+                opacity: 1;
+                @include black-and-white(none);
+            }
+
+            .name {
+                opacity: 1;
+            }
+        }
+
+        .tags {
+            position: absolute;
+            bottom: 20px;
+            left: 10px;
+        }
+    }
+
+    .has-unread {
+
+        .thumbnail {
+            @include black-and-white(none);
+            opacity: 1;
+        }
+
+        .name {
+            opacity: 1;
+            font-weight: bold;
+            //text-shadow: 0 0 2px 5bbb;
+
+            .unread-count {
+                opacity: 0.33;
+            }
+        }
+    }
+}

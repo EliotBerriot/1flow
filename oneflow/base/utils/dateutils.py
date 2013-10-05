@@ -5,6 +5,7 @@ import logging
 
 import time as pytime
 import datetime as pydatetime
+from humanize.i18n import django_language
 import humanize.time as humanize_time
 
 from django.conf import settings
@@ -27,8 +28,16 @@ dt_fromtimestamp = pydatetime.datetime.fromtimestamp
 today     = pydatetime.date.today
 timedelta = pydatetime.timedelta
 
-naturaltime  = humanize_time.naturaltime
-naturaldelta = humanize_time.naturaldelta
+
+def naturaltime(*args, **kwargs):
+    with django_language():
+        return humanize_time.naturaltime(*args, **kwargs)
+
+
+def naturaldelta(*args, **kwargs):
+
+    with django_language():
+        return humanize_time.naturaldelta(*args, **kwargs)
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Aware aliases

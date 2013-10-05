@@ -1,5 +1,5 @@
 {% if user.is_superuser %}
-  <div class="admin-informations hide" id="admin-{{ read.id }}">
+  <div class="admin-informations {{ nohide|yesno:',hide' }}" id="admin-{{ read.id }}">
     <table class='table table-hover table-stripped table-condensed'>
       <tbody>
         <tr>

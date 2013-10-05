@@ -30,12 +30,15 @@ for app_name in settings.INSTALLED_APPS:
                 try:
                     if issubclass(objekt, MongoEngineResource) \
                             or issubclass(objekt, ModelResource):
+
                         v1_api.register(objekt())
-                        LOGGER.info('Automatically registered '
-                                    '%(module_name)s.%(class_name)s '
-                                    'in the global API.'
-                                    % {'module_name': module_name,
-                                       'class_name': objekt_name})
+
+                        if settings.DEBUG:
+                            LOGGER.info('Automatically registered '
+                                        '%(module_name)s.%(class_name)s '
+                                        'in the global API.'
+                                        % {'module_name': module_name,
+                                           'class_name': objekt_name})
 
                 except TypeError, e:
                     if not 'issubclass() arg 1 must be a class' in str(e):

@@ -274,6 +274,15 @@ PIPELINE_JS = {
         'output_filename': 'js/min/utils.js',
     },
 
+    'feed-selector': {
+        'source_filenames': (
+            'js/utils/*.js',
+            'js/common.js',
+            'js/feed-selector.js',
+        ),
+        'output_filename': 'js/min/feed-selector.js',
+    },
+
     'read-endless': {
         'source_filenames': (
             'js/utils/*.js',

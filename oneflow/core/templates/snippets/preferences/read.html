@@ -1,0 +1,25 @@
+<fieldset>
+  <legend>{% trans "Reading" %}</legend>
+
+  {% include "widgets/forms/field-generic.html" with field=reading_form.auto_mark_read_delay %}
+  {% include "widgets/forms/field-checkbox.html" with field=reading_form.read_switches_to_fullscreen %}
+</fieldset>
+
+<fieldset>
+  <legend>{% trans "Keeping for later" %}</legend>
+
+  {% include "widgets/forms/field-checkbox.html" with field=reading_form.bookmarked_marks_unread %}
+</fieldset>
+
+<fieldset>
+  <legend>{% trans "Starring articles" %}</legend>
+
+  {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_marks_read %}
+  {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_removes_bookmarked %}
+</fieldset>
+
+<fieldset class="form-end-notice">
+<p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}
+If you have any reading list open in another browser tab, you need to reload them for changes to take effect.
+{% endblocktrans %}</p>
+</fieldset>

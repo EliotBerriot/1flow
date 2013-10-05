@@ -31,9 +31,12 @@ from endless_pagination.utils import get_page_number_from_request
 from sparks.django.utils import HttpResponseTemporaryServerError
 
 from .forms import (FullUserCreationForm,
-                    UserProfileEditForm, ReadPreferencesForm)
+                    UserProfileEditForm,
+                    HomePreferencesForm,
+                    ReadPreferencesForm,
+                    SelectorPreferencesForm)
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed, Read
+from .models.nonrel import Feed, Subscription, Read
 from .models.reldb import HelpContent
 from ..base.utils.dateutils import now
 
@@ -55,6 +58,44 @@ add_to_builtins('oneflow.core.templatetags.coretags')
 if settings.TEMPLATE_DEBUG:
     add_to_builtins('template_debug.templatetags.debug_tags')
 
+# ———————————————————————————————————————————————————————————————————— Wrappers
+# I couldn't find any way to create an URL patterns with a (?P<…>) that
+# would be merged with a default `kwargs={…}` in the same URL pattern.
+#
+# Thus, these small view wrappers that just do the merge.
+#
+
+
+def read_all_feed_with_endless_pagination(request, **kwargs):
+
+    kwargs[u'all'] = True
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def read_feed_with_endless_pagination(request, **kwargs):
+
+    kwargs.update({'is_read': False})  # , 'is_bookmarked': False})
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def make_read_wrapper(attrkey, view_name):
+    """ See http://stackoverflow.com/a/3431699/654755 for why."""
+
+    def func(request, **kwargs):
+        kwargs[attrkey] = True
+        return read_with_endless_pagination(request, **kwargs)
+
+    globals()['read_{0}_feed_with_endless_pagination'.format(view_name)] = func
+
+
+# This builds "read_later_feed_with_endless_pagination" and so on.
+for attrkey, attrval in Read.status_data.items():
+    if 'list_url_feed' in attrval:
+        make_read_wrapper(attrkey, attrval.get('view_name'))
+
+
+# —————————————————————————————————————————————————————————————————— Real views
+
 
 def home(request):
     """ root of the application. """
@@ -72,26 +113,57 @@ def home(request):
 def preferences(request):
 
     if request.POST:
-        form = ReadPreferencesForm(request.POST,
-                                   instance=request.user.mongo.preferences.read)
+        home_form = HomePreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.home)
 
-        if form.is_valid():
+        reading_form = ReadPreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.read)
 
-            LOGGER.info(request.user.mongo.preferences.read.auto_mark_read_delay)
+        sources_form = SelectorPreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.selector)
 
-            LOGGER.info(form.cleaned_data['auto_mark_read_delay'])
-
-            # Embedded documents needs to be saved from the container.
-            request.user.mongo.preferences.read = form.save()
+        if reading_form.is_valid() and sources_form.is_valid:
+            # form.save() does nothing on an embedded document,
+            # which needs to be saved from the container.
+            request.user.mongo.preferences.home = home_form.save()
+            request.user.mongo.preferences.read = reading_form.save()
+            request.user.mongo.preferences.selector = sources_form.save()
             request.user.mongo.preferences.save()
-
-            LOGGER.info(request.user.mongo.preferences.read.auto_mark_read_delay)
 
             return HttpResponseRedirect(reverse('preferences'))
     else:
-        form = ReadPreferencesForm(instance=request.user.mongo.preferences.read)
+        home_form = HomePreferencesForm(
+                instance=request.user.mongo.preferences.home)
+        reading_form = ReadPreferencesForm(
+                instance=request.user.mongo.preferences.read)
+        sources_form = SelectorPreferencesForm(
+                instance=request.user.mongo.preferences.selector)
 
-    return render(request, 'preferences.html', {'form': form})
+    return render(request, 'preferences.html', {
+                  'home_form': home_form,
+                  'reading_form': reading_form,
+                  'sources_form': sources_form
+                  })
+
+
+def source_selector(request, **kwargs):
+
+    if request.is_ajax():
+        template = u'snippets/selector/selector.html'
+
+    else:
+        template = u'selector.html'
+
+    mongodb_user   = request.user.mongo
+    selector_prefs = mongodb_user.preferences.selector
+
+    return render(request, template, {
+        'subscriptions':             mongodb_user.subscriptions,
+        'closed_subscriptions':      mongodb_user.nofolder_closed_subscriptions,
+        'show_closed_streams':       selector_prefs.show_closed_streams,
+        'titles_show_unread_count':  selector_prefs.titles_show_unread_count,
+        'folders_show_unread_count': selector_prefs.folders_show_unread_count,
+        })
 
 
 def read_with_endless_pagination(request, **kwargs):
@@ -131,7 +203,7 @@ def read_with_endless_pagination(request, **kwargs):
                     # - all Reads (old and new) can have `.is_starred` == None
                     #   because False and True mean "I don't like" and "I like",
                     #   None meaning "like status not set".
-                    query_kwargs[attrname + '__ne'] = True
+                    query_kwargs[attrname + u'__ne'] = True
 
                 if request.user.is_superuser or request.user.is_staff:
                     combinations.union(set(
@@ -155,7 +227,7 @@ def read_with_endless_pagination(request, **kwargs):
 
         if checker == bool and not checked_value:
             # See before, in the for loop.
-            query_kwargs[parameter + '__ne'] = True
+            query_kwargs[parameter + u'__ne'] = True
 
         else:
             query_kwargs[parameter] = checked_value
@@ -175,10 +247,26 @@ def read_with_endless_pagination(request, **kwargs):
                          order_by)
         order_by = u'-id'
 
-    #LOGGER.info(query_kwargs)
+    # ——————————————————————————————————————————————————————— start filter more
+
+    feed = kwargs.get('feed', None)
+
+    if feed:
+        #LOGGER.info(u'Refining reads by %s', feed)
+        query_kwargs[u'subscriptions__contains'] = \
+            Subscription.objects.get(id=feed)
+
+    # ————————————————————————————————————————————————————————— end filter more
+
+    #LOGGER.info(u'query_kwargs: %s', query_kwargs)
 
     reads = Read.objects(user=request.user.mongo,
                          **query_kwargs).order_by(order_by).no_cache()
+
+    #LOGGER.info(u'%s\n%s > %s, %s, %s', reads[0], reads[0].article,
+    #            reads[0].article.url_absolute,
+    #            reads[0].article.duplicate_of,
+    #            reads[0].article.orphaned)
 
     context = {
         u'reads': reads,
@@ -196,6 +284,17 @@ def read_with_endless_pagination(request, **kwargs):
             template = u'snippets/read/read-endless-count.html'
             context[u'reads_count'] = reads.count()
 
+        elif request.GET.get('mark_all_read', False):
+
+            if feed:
+                query_kwargs[u'subscriptions__contains'].mark_all_read()
+
+            else:
+                for sub in request.user.mongo.subscriptions:
+                    sub.mark_all_read()
+
+            return HttpResponse('DONE')
+
         else:
             template = u'snippets/read/read-endless-page.html'
 
@@ -205,6 +304,8 @@ def read_with_endless_pagination(request, **kwargs):
             context[u'tenths_counter'] = \
                 (get_page_number_from_request(request) - 1) \
                 * config.READ_INFINITE_ITEMS_PER_FETCH
+
+        #LOGGER.info(u'Ajax with %s', context.get('tenths_counter'))
 
     else:
         template = u'read-endless.html'
@@ -282,6 +383,17 @@ def toggle(request, klass, oid, key):
 
             if hasattr(obj, date_attr):
                 setattr(obj, date_attr, now())
+
+        try:
+            getattr(obj, key + '_changed')()
+
+        except AttributeError:
+            pass
+
+        except:
+            LOGGER.exception(u'Unhandled exception while running '
+                             u', %s.%s_changed() on %s.',
+                             obj.__class__.__name__, key, obj)
 
         obj.save()
 

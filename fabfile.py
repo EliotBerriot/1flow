@@ -201,17 +201,25 @@ def production():
         'beat': ['worker-01.1flow.io', ],
         'shell': ['worker-03.1flow.io', ],
         'flower': ['worker-01.1flow.io', ],
+
         'worker_high':       ['worker-01.1flow.io',
                               'worker-02.1flow.io', ],
+
         'worker_medium':     ['worker-03.1flow.io',
                               'worker-04.1flow.io', ],
+
         'worker_low':        ['worker-05.1flow.io',
                               'worker-06.1flow.io', ],
-        'worker_fetch':      ['worker-04.1flow.io',
+
+        'worker_fetch':      ['worker-03.1flow.io',
+                              'worker-04.1flow.io',
                               'worker-06.1flow.io', ],
+
         'worker_swarm':      ['worker-02.1flow.io',
                               'worker-05.1flow.io', ],
+
         'worker_clean':      ['worker-02.1flow.io', ],
+
         'worker_background': ['worker-06.1flow.io', ],
     })
     env.sparks_options = {
@@ -245,13 +253,15 @@ def production():
             'worker_medium@worker-04.1flow.io': 6,
             'worker_swarm@worker-05.1flow.io': 12,
             'worker_low@worker-06.1flow.io': 4,
+            'worker_fetch@worker-03.1flow.io': 6,
             'worker_fetch@worker-06.1flow.io': 12,
 
             'worker_swarm': 48,
             'worker_fetch': 24,
 
-            # These must not hammer the database, in *any*way
-            'worker_background': 2,
+            'worker_background': 18,
+
+            # This one must not hammer the database, in *any*way
             'worker_clean': 1,
 
             '__all__': 12,
@@ -268,21 +278,37 @@ def production():
         #     'worker_low':    'low,fetch,background',
         # },
 
-        # 'max_tasks_per_child': {
-        #     'worker_swarm': '50',
-        #     'worker_fetch': '20',
-        #     '__all__': '100',
-        # },
+        'max_tasks_per_child': {
+            'worker_swarm': '8',
+
+            # Fetchers can exhaust memory very quickly. 1 article suffice to
+            # go up to 1Gb and stay there. Thus we need to clean very often.
+            'worker_fetch': '1',
+
+            '__all__': '64',
+        },
 
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
-        #'worker_soft_time_limit': {
-        #    'worker_swarm': '30',
+        'worker_soft_time_limit': {
+            'worker_swarm':      '120',
+
+            # Huge article usually consume memory (up to 1gb, se earlier), and
+            # never seem to want to give it back. Sometimes they eat 3-4% CPU,
+            # sometimes they do nothing. I consider that 3 minutes is enough
+            # to convert an article to markdown. If it doesn't acheive the
+            # conversion in tis time frame, there is probably a more serious
+            # problem.
+            'worker_fetch':      '180',
+        },
+
+        # Eventlet works, but sometimes breaks with "RuntimeError(simultaneous
+        # write on socket…)" and it's just anoying because we already have
+        # other problems to solve.
+        #
+        #'worker_pool': {
+        #    'worker_swarm': 'eventlet',
         #},
-        # Eventlet is definitively broken, the worker halts every now and then.
-        # 'worker_pool': {
-        #     'worker_swarm': 'eventlet',
-        # },
     }
     env.env_was_set = True
 

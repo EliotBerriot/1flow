@@ -120,7 +120,11 @@
         {% if user.is_authenticated %}
 
           <li class="nowrap hidden-phone">
-            <a href="{% url 'read' %}"
+            {% if preferences.home.read_shows == 1 %}
+                <a href="{% url 'read' %}"
+            {% else %}
+                <a href="{% url 'source_selector' %}"
+            {% endif %}
                 {% captureas read_url_i18n %}/{% trans "read" context "verb" %}/{% endcaptureas %}
                 class="{% active read_url_i18n %}">
               {% trans 'Read' %}

@@ -21,8 +21,8 @@
 
     <div class="endless_container">
         <a class="endless_more" href="{{ request.path }}?page=1"
-            rel="page">Charger plus d'articles</a>
-        <div class="endless_loading" style="display: none;">Chargement…</div>
+            rel="page"> {% trans "Load more entries" %}"</a>
+        <div class="endless_loading" style="display: none;">{% trans "Loading…" %}</div>
     </div>
 
 {% else %}
@@ -34,6 +34,32 @@
             {% for read in reads %}
                 {% if read.article.url_absolute and not read.article.duplicate_of %}
                     {% include preferences.home.get_template %}
+
+                {% elif user.is_superuser %}
+                    <li class="read-list-item">
+                        {% with read.article as article %}
+
+                            {% include "snippets/read/read-admin-informations.html" with nohide=1 %}
+
+                            <div style="text-align: center">
+
+                                {% if article.url_absolute %}
+                                    <code style="color: green">absolute</code>
+                                {% endif %}
+
+                                {% if article.orphaned %}
+                                    <code style="color: red">orphaned</code>
+                                {% endif %}
+
+                                {% if article.duplicate_of %}
+                                    duplicate of: <a
+                                    href="/admin/models/article/{{ article.duplicate_of.id }}/"
+                                    target="_blank">{{ article.duplicate_of.id }}</a>
+                                {% endif %}
+
+                            </div>
+                        {% endwith %}
+                    <li>
                 {% endif %}
             {% endfor %}
 

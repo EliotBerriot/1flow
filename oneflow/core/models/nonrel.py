@@ -60,7 +60,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import (Document, EmbeddedDocument,
+from mongoengine import (Document, EmbeddedDocument, Q,
                          ValidationError, NULLIFY, PULL, CASCADE)
 from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (IntField, FloatField, BooleanField,
@@ -72,6 +72,7 @@ from mongoengine.fields import (IntField, FloatField, BooleanField,
 
 from django.http import Http404
 from django.conf import settings
+#from django.core.urlresolvers import reverse_lazy
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
 from django.utils.text import slugify
 from django.contrib.auth import get_user_model
@@ -304,6 +305,59 @@ class DocumentHelperMixin(object):
             pass
 
 
+class DocumentTreeMixin(object):
+    """ WARNING: currently I have no obvious way to add the required
+        fields to the class this mixin is added to. The two fields
+        ``.parent`` and ``.children`` must exist.
+
+        See the :class:`UserFolder` class for an example. The basics are::
+
+            parent = ReferenceField('self', reverse_delete_rule=NULLIFY)
+            children = ListField(ReferenceField('self',
+                                 reverse_delete_rule=PULL), default=list)
+
+    """
+
+    def set_parent(self, parent, update_reverse_link=True, full_reload=True):
+
+        self.update(set__parent=parent)
+
+        if full_reload:
+            self.safe_reload()
+
+        if update_reverse_link:
+            parent.add_child(self, update_reverse_link=False)
+
+    def unset_parent(self, update_reverse_link=True, full_reload=True):
+
+        if update_reverse_link:
+            self.parent.remove_child(self, update_reverse_link=False)
+
+        self.update(unset__parent=True)
+
+        if full_reload:
+            self.safe_reload()
+
+    def add_child(self, child, update_reverse_link=True, full_reload=True):
+        self.update(add_to_set__children=child)
+
+        if full_reload:
+            self.safe_reload()
+
+        if update_reverse_link:
+            child.set_parent(self, update_reverse_link=False)
+
+    def remove_child(self, child, update_reverse_link=True, full_reload=True):
+
+        if update_reverse_link:
+            child.unset_parent(self, update_reverse_link=False)
+
+        self.update(pull__children=child)
+
+        if full_reload:
+            self.safe_reload()
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User preferences
 
 
@@ -361,11 +415,46 @@ class ReadPreferences(EmbeddedDocument):
         help_text=_(u'Automatically hide navigation bars when opening an '
                     u'article for reading (default: true).'), default=True)
 
+
+class SelectorPreferences(EmbeddedDocument):
+    """ Source selector preferences. """
+
+    titles_show_unread_count = BooleanField(
+        verbose_name=_(u'Feed names show unread count'),
+        help_text=_(u'Activate this if you want to see the articles '
+                    u'unread count in parenthesis near the feed titles.'),
+        default=False)
+
+    folders_show_unread_count = BooleanField(
+        verbose_name=_(u'Folders show unread count'),
+        help_text=_(u'Each folder is appended the sum of unread articles '
+                    u'of each of its subfolders and subscriptions.'),
+        default=False)
+
+    show_closed_streams = BooleanField(
+        verbose_name=_(u'Show closed streams'),
+        help_text=_(u'Display streams that have been closed by the system '
+                    u'but to which you are still subscribed. As there will '
+                    u'never be new content in them, it is safe to hide them '
+                    u'in the selector. Unread articles from closed streams '
+                    u'still show in the unread list.'),
+                    # TODO: use reverse_lazy('read') and make a link.
+                    # 20131004: it just crashes because of a circular
+                    # import loop in mongoadmin, to change.
+        default=False)
+
+
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
     (u'T1', _(u'Tiled experiment #1')),
     (u'DB', _(u'Dashboard')),
+)
+
+
+READ_SHOWS_CHOICES = (
+    (1, _(u'Unread articles')),
+    (2, _(u'Source selector')),
 )
 
 
@@ -380,6 +469,16 @@ class HomePreferences(EmbeddedDocument):
     style = StringField(verbose_name=_(u'How the user wants his 1flow '
                         u'home to appear'), max_length=2,
                         choices=HOME_STYLE_CHOICES, default=u'RL')
+
+    read_shows = IntField(verbose_name=_(u'Clicking <code>Read</code> '
+                          u'displays:'),
+                          choices=READ_SHOWS_CHOICES, default=1,
+                          help_text=_(u'Define what 1flow will display when '
+                                      u'you click on the <code>Read</code> '
+                                      u'link in the top navbar of the '
+                                      u'interface. <br /><span class="muted">'
+                                      u'Default: shows the <strong>all '
+                                      u'unread</strong> reading list.</span>'))
 
     def get_template(self):
         return HomePreferences.style_templates.get(self.style)
@@ -403,6 +502,8 @@ class Preferences(Document, DocumentHelperMixin):
                                          default=HomePreferences)
     read         = EmbeddedDocumentField(u'ReadPreferences',
                                          default=ReadPreferences)
+    selector     = EmbeddedDocumentField(u'SelectorPreferences',
+                                         default=SelectorPreferences)
     wizards      = EmbeddedDocumentField(u'HelpWizards',
                                          default=HelpWizards)
 
@@ -430,7 +531,7 @@ def user_django_user_random_default():
         else:
             count += 1
             if count == 10:
-                LOGGER.warning(u'user_django_user_random_default() is trying '
+                LOGGER.warning(u'user_django_user_random_default() is starting '
                                u'to slow down things (more than 10 cycles to '
                                u' generate a not-taken random ID)…')
 
@@ -506,6 +607,52 @@ class User(Document, DocumentHelperMixin):
     has_content = IntRedisDescriptor(
         attr_name='u.h_c', default=user_has_content, set_default=True)
 
+    @property
+    def subscriptions(self):
+        return Subscription.objects(user=self)
+
+    @property
+    def subscriptions_by_folders(self):
+
+        subscriptions = Subscription.objects(user=self)
+        by_folders    = {}
+
+        for subscription in subscriptions:
+            for folder in subscription.folders:
+                if folder in by_folders:
+                    by_folders[folder].append(subscription)
+
+                else:
+                    by_folders[folder] = [subscription]
+
+        return by_folders
+
+    @property
+    def top_folders(self):
+
+        return UserFolder.objects(owner=self, parent=None)
+
+    @property
+    def nofolder_subscriptions(self):
+
+        return self.subscriptions.filter(
+            Q(folders__exists=False) | Q(folders__size=0))
+
+    @property
+    def open_subscriptions(self):
+
+        return [s for s in self.subscriptions if not s.feed.closed]
+
+    @property
+    def nofolder_open_subscriptions(self):
+
+        return [s for s in self.nofolder_subscriptions if not s.feed.closed]
+
+    @property
+    def nofolder_closed_subscriptions(self):
+
+        return [s for s in self.nofolder_subscriptions if s.feed.closed]
+
 
 def mongo_user(self):
     try:
@@ -542,7 +689,67 @@ class Group(Document, DocumentHelperMixin):
                        reverse_delete_rule=PULL))
 
 
+# •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• User folders
+
+
+def folder_all_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads.count()
+
+
+def folder_starred_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads(is_starred=True).count()
+
+
+def folder_unread_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads(is_read=False).count()
+
+
+def folder_bookmarked_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads(is_bookmarked=True).count()
+
+
+class UserFolder(Document, DocumentHelperMixin, DocumentTreeMixin):
+    name = StringField(unique_with=['owner', 'parent'])
+    owner = ReferenceField('User', reverse_delete_rule=CASCADE)
+
+    parent = ReferenceField('self', reverse_delete_rule=NULLIFY)
+    children = ListField(ReferenceField('self',
+                         reverse_delete_rule=PULL), default=list)
+
+    all_articles_count = IntRedisDescriptor(
+        attr_name='uf.aa_c', default=folder_all_articles_count_default,
+        set_default=True)
+
+    unread_articles_count = IntRedisDescriptor(
+        attr_name='uf.ua_c', default=folder_unread_articles_count_default,
+        set_default=True)
+
+    starred_articles_count = IntRedisDescriptor(
+        attr_name='uf.sa_c', default=folder_starred_articles_count_default,
+        set_default=True)
+
+    bookmarked_articles_count = IntRedisDescriptor(
+        attr_name='uf.ba_c', default=folder_bookmarked_articles_count_default,
+        set_default=True)
+
+    @property
+    def subscriptions(self):
+
+        # No need to query on the user, it's already common to folder and
+        # subscription. The "duplicate folder name" problem doesn't exist.
+        return Subscription.objects(folders=self)
+
+    @property
+    def reads(self):
+
+        return Read.objects(subscriptions__in=self.subscriptions)
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Websites
+
 
 @task(name='WebSite.post_create', queue='high')
 def website_post_create_task(website_id):
@@ -1040,6 +1247,38 @@ class Feed(Document, DocumentHelperMixin):
         except:
             return None
 
+    def check_subscriptions(self, force=False):
+
+        if not force:
+            LOGGER.info(u'This method is very costy and should not be needed '
+                        u'in normal conditions. Please call it with '
+                        u'`force=True` if you are sure you want to run it.')
+            return
+
+        reads = 0
+        failed = 0
+        unreads = 0
+        missing = 0
+        unregistered = 0
+
+        articles = self.good_articles.order_by('-id')
+
+        for subscription in self.subscriptions:
+            smissing, sunreg, sreads, sunreads, sfailed = \
+                subscription.check_reads(force, articles)
+
+            reads += sreads
+            failed += sfailed
+            missing += smissing
+            unreads += sunreads
+            unregistered += sunreg
+
+        LOGGER.info(u'Checked feed #%s with %s subscriptions and %s articles. '
+                    u'Totals: %s/%s non-existing/unregistered reads, '
+                    u'%s/%s read/unread and %s not created.', self.id,
+                    self.subscriptions.count(), articles.count(),
+                    missing, unregistered, reads, unreads, failed)
+
     def update_latest_article_date_published(self):
         """ This seems simple, but this operations costs a lot in MongoDB. """
 
@@ -1089,12 +1328,20 @@ class Feed(Document, DocumentHelperMixin):
         self.subscriptions_count = self.subscriptions.count()
 
     @property
-    def all_articles(self):
-        return Article.objects.filter(feeds__contains=self)
+    def good_articles(self):
+        """ Subscriptions should always use :attr:`good_articles` to give
+            to users only useful content for them, whereas :class:`Feed`
+            will use :attr:`articles` or :attr:`all_articles` to reflect
+            real numbers.
+        """
+
+        return self.articles.filter(duplicate_of=None,
+                                    url_absolute=True,
+                                    orphaned__ne=True)
 
     def update_all_articles_count(self):
 
-        self.all_articles_count = self.all_articles.count()
+        self.all_articles_count = self.articles.count()
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
@@ -1177,7 +1424,14 @@ class Feed(Document, DocumentHelperMixin):
 
         self.safe_reload()
 
+    @property
+    def articles(self):
+        """ A simple version of :meth:`get_articles`. """
+
+        return Article.objects(feeds__contains=self)
+
     def get_articles(self, limit=None):
+        """ A parameter-able version of the :attr:`articles` property. """
 
         if limit:
             return Article.objects.filter(
@@ -1268,7 +1522,7 @@ class Feed(Document, DocumentHelperMixin):
 
         return retval
 
-    def create_article_and_reads(self, article, subscribers, feed_tags):
+    def create_article_and_reads(self, article, feed_tags):
         """ Take a feedparser item and a list of Feed subscribers and
             feed tags, and create the corresponding Article and Read(s). """
 
@@ -1335,7 +1589,7 @@ class Feed(Document, DocumentHelperMixin):
         # In the case of a mutualized article, it will be fetched only
         # once, but all subscribers of all feeds must be connected to
         # it to be able to read it.
-        new_article.create_reads(subscribers, verbose=created)
+        new_article.create_reads(self.subscriptions, verbose=created)
 
         # Don't forget the parenthesis else we return ``False`` everytime.
         return created or (None if mutualized else False)
@@ -1343,54 +1597,18 @@ class Feed(Document, DocumentHelperMixin):
     def subscribe_user(self, user, force=False):
 
         try:
-            Subscription(user=user, feed=self,
-                         name=self.name, tags=self.tags).save()
+            sub = Subscription(user=user, feed=self,
+                               name=self.name, tags=self.tags).save()
 
         except (NotUniqueError, DuplicateKeyError):
             if not force:
-                LOGGER.warning(u'User %s already subscribed to feed %s, '
-                               u'aborting.', user, self)
+                LOGGER.info(u'User %s already subscribed to feed %s.',
+                            user, self)
                 return
 
-        yesterday = combine(today() - timedelta(days=1), time(0, 0, 0))
-        is_older  = False
-        my_now    = now()
-        reads     = 0
-        unreads   = 0
+        sub.check_reads(True)
 
-        for article in self.all_articles().order_by('-id'):
-
-            params = {}
-
-            if is_older:
-                params = {
-                    'is_read': True,
-                    'is_auto_read': True,
-                    'date_read': my_now,
-                    'date_auto_read': my_now,
-                }
-            else:
-                if article.date_published < yesterday:
-                    is_older = True
-                    params = {
-                        'is_read': True,
-                        'is_auto_read': True,
-                        'date_read': my_now,
-                        'date_auto_read': my_now,
-                    }
-                else:
-                    unreads += 1
-            try:
-                Read(article=article, user=user, **params).save()
-
-            except (NotUniqueError, DuplicateKeyError):
-                continue
-
-            else:
-                reads += 1
-
-        LOGGER.info(u'Subscribed %s to %s (%s/%s un/reads created).',
-                    user, self, unreads, reads)
+        LOGGER.info(u'Subscribed %s to %s.', user, self)
 
     def build_refresh_kwargs(self):
 
@@ -1426,7 +1644,7 @@ class Feed(Document, DocumentHelperMixin):
         if config.FEED_FETCH_DISABLED:
             # we do not raise .retry() because the global refresh
             # task will call us again anyway at next global check.
-            LOGGER.warning(u'Feed %s refresh disabled by configuration.', self)
+            LOGGER.info(u'Feed %s refresh disabled by configuration.', self)
             return True
 
         if not self.refresh_lock.acquire():
@@ -1592,6 +1810,8 @@ class Feed(Document, DocumentHelperMixin):
         except IndexError, e:
             # The website could not be reached? Network
             # unavailable? on my production server???
+
+            # self.refresh_lock.release() ???
             raise feed_refresh.retry((self.id, ), exc=e)
 
         # Stop on HTTP errors before stopping on feedparser errors,
@@ -1624,7 +1844,6 @@ class Feed(Document, DocumentHelperMixin):
                             self.tags, tags)
                 self.tags = list(tags)
 
-            subscribers   = [s.user for s in self.subscriptions]
             new_articles  = 0
             duplicates    = 0
             mutualized    = 0
@@ -1633,9 +1852,7 @@ class Feed(Document, DocumentHelperMixin):
                 spipe.incr('feeds.refresh.fetch.global.updated')
 
             for article in parsed_feed.entries:
-                created = self.create_article_and_reads(article,
-                                                        subscribers,
-                                                        tags)
+                created = self.create_article_and_reads(article, tags)
                 if created:
                     new_articles += 1
 
@@ -1695,6 +1912,40 @@ class Feed(Document, DocumentHelperMixin):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed Subscriptions
 
 
+def subscription_all_articles_count_default(subscription):
+
+    return subscription.reads.count()
+
+
+def subscription_unread_articles_count_default(subscription):
+
+    return subscription.reads.filter(is_read__ne=True).count()
+
+
+def subscription_starred_articles_count_default(subscription):
+
+    return subscription.reads.filter(is_starred=True).count()
+
+
+def subscription_bookmarked_articles_count_default(subscription):
+
+    return subscription.reads.filter(is_bookmarked=True).count()
+
+
+@task(name='Subscription.post_create', queue='high')
+def subscription_post_create_task(subscription_id, *args, **kwargs):
+
+    subscription = Subscription.objects.get(id=subscription_id)
+    return subscription.post_create_task(*args, **kwargs)
+
+
+@task(name='Subscription.mark_all_read_in_database', queue='low')
+def subscription_mark_all_read_in_database(subscription_id, *args, **kwargs):
+
+    subscription = Subscription.objects.get(id=subscription_id)
+    return subscription.mark_all_read_in_database(*args, **kwargs)
+
+
 class Subscription(Document, DocumentHelperMixin):
     feed = ReferenceField('Feed', reverse_delete_rule=CASCADE)
     user = ReferenceField('User', unique_with='feed',
@@ -1706,9 +1957,171 @@ class Subscription(Document, DocumentHelperMixin):
     # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
     tags = ListField(GenericReferenceField(),
                      default=list, verbose_name=_(u'tags'),
-                     help_text=_(u'Subscription tags, which can also be '
-                                 u'seen as folders from the user point '
-                                 u'of view.'))
+                     help_text=_(u'Tags that will be applied to new reads in '
+                                 u'this subscription.'))
+
+    folders = ListField(ReferenceField(UserFolder), default=list,
+                        help_text=_(u'Folders in which this subscription '
+                                    u'appears (can be more than one).'))
+
+    all_articles_count = IntRedisDescriptor(
+        attr_name='s.aa_c', default=subscription_all_articles_count_default,
+        set_default=True)
+
+    unread_articles_count = IntRedisDescriptor(
+        attr_name='s.ua_c', default=subscription_unread_articles_count_default,
+        set_default=True)
+
+    starred_articles_count = IntRedisDescriptor(
+        attr_name='s.sa_c', default=subscription_starred_articles_count_default,
+        set_default=True)
+
+    bookmarked_articles_count = IntRedisDescriptor(
+        attr_name='s.ba_c',
+        default=subscription_bookmarked_articles_count_default,
+        set_default=True)
+
+    def __unicode__(self):
+        return _(u'{0}+{1} (#{2})').format(
+            self.user.username, self.feed.name, self.id)
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        subscription = document
+
+        if created:
+            if subscription._db_name != settings.MONGODB_NAME_ARCHIVE:
+                subscription_post_create_task.delay(subscription.id)
+
+    def post_create_task(self):
+        """ Method meant to be run from a celery task. """
+
+        self.name = self.feed.name
+
+        self.save()
+
+    @property
+    def reads(self):
+        return Read.objects.filter(user=self.user, subscriptions__contains=self)
+
+    def mark_all_read(self):
+
+        if self.unread_articles_count == 0:
+            return
+
+        count = self.unread_articles_count
+        self.unread_articles_count = 0
+
+        for folder in self.folders:
+            folder.unread_articles_count -= count
+
+        # TODO: update global if no folders.
+
+        # Marking all read is not a database-friendly operation,
+        # thus it's run via a task to be able to return now immediately,
+        # with cache numbers updated.
+        subscription_mark_all_read_in_database.delay(self.id, now())
+
+    def mark_all_read_in_database(self, prior_datetime):
+        """ To avoid marking read the reads that could have been created
+            between the task call and the moment it is effectively run,
+            we define what to exactly mark as read with the datetime when
+            the operation was done by the user.
+        """
+
+        currently_unread = self.reads.filter(is_read__ne=True,
+                                             date_created__lt=prior_datetime)
+
+        currently_unread.update(set__is_read=True,
+                                set__date_read=prior_datetime)
+
+    def check_reads(self, force=False, articles=None):
+
+        if not force:
+            LOGGER.info(u'This method is very costy and should not be needed '
+                        u'in normal conditions, please call with `force=True` '
+                        u'if you are really sure you want to run it.')
+            return
+
+        yesterday    = combine(today() - timedelta(days=1), time(0, 0, 0))
+        is_older     = False
+        my_now       = now()
+        reads        = 0
+        unreads      = 0
+        failed       = 0
+        missing      = 0
+        unregistered = 0
+
+        # When checking the subscription from its feed, allow optimising
+        # the whole story by not querying the articles again for each
+        # subscription. The feed will do the query once, and forward the
+        # QuerySet to all subscriptions to be checked.
+
+        if articles is None:
+            articles = self.feed.good_articles.order_by('-id')
+
+        for article in articles:
+
+            params = {}
+
+            if is_older:
+                params = {
+                    'is_read': True,
+                    'is_auto_read': True,
+                    'date_read': my_now,
+                    'date_auto_read': my_now,
+                }
+                reads += 1
+
+            else:
+                if article.date_published is None \
+                        or article.date_published < yesterday:
+
+                    is_older = True
+
+                    params = {
+                        'is_read': True,
+                        'is_auto_read': True,
+                        'date_read': my_now,
+                        'date_auto_read': my_now,
+                    }
+                    reads += 1
+
+                else:
+                    unreads += 1
+
+            created = article.create_reads([self], False, **params)
+
+            if created:
+                missing += 1
+
+            elif created is False:
+                unregistered += 1
+
+            else:
+                failed += 1
+
+        if missing or unregistered:
+            self.all_articles_count = \
+                subscription_all_articles_count_default(self)
+            self.unread_articles_count = \
+                subscription_unread_articles_count_default(self)
+
+            for folder in self.folders:
+                folder.all_articles_count = \
+                    folder_all_articles_count_default(folder)
+                folder.unread_articles_count = \
+                    folder_unread_articles_count_default(folder)
+
+        LOGGER.info(u'Checked subscription #%s. '
+                    u'%s/%s non-existing/unregistered, '
+                    u'%s/%s read/unread and %s not created.',
+                    self.id, missing, unregistered,
+                    reads, unreads, failed)
+
+        return missing, unregistered, reads, unreads, failed
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Authors
@@ -2190,11 +2603,11 @@ class Article(Document, DocumentHelperMixin):
     def absolutize_url_must_abort(self, force=False, commit=True):
 
         if config.ARTICLE_ABSOLUTIZING_DISABLED:
-            LOGGER.warning(u'Absolutizing disabled by configuration, aborting.')
+            LOGGER.info(u'Absolutizing disabled by configuration, aborting.')
             return True
 
         if self.url_absolute and not force:
-            LOGGER.warning(u'URL of article %s is already absolute!', self)
+            LOGGER.info(u'URL of article %s is already absolute!', self)
             return True
 
         if self.orphaned and not force:
@@ -2582,23 +2995,38 @@ class Article(Document, DocumentHelperMixin):
         LOGGER.info(u'Article %s successfully registered as duplicate '
                     u'of %s and can be deleted if wanted.', duplicate, self)
 
-    def create_reads(self, users, verbose=True):
+    def create_reads(self, subscriptions, verbose=True, **kwargs):
 
-        # XXX: todo remove this, when globally fixed.
-        tags = [t for t in self.tags if t is not None]
-
-        for user in users:
-            new_read = Read(article=self, user=user, tags=tags)
+        for subscription in subscriptions:
+            new_read = Read(article=self, user=subscription.user)
 
             try:
                 new_read.save()
 
             except (NotUniqueError, DuplicateKeyError):
                 if verbose:
-                    LOGGER.warning(u'Duplicate read %s!', new_read)
+                    LOGGER.info(u'Duplicate read %s!', new_read)
+
+                cur_read = Read.objects(article=self, user=subscription.user)
+                # If another feed has already created the read, be sure the
+                # current one is registered in the read via the subscriptions.
+                cur_read.update(add_to_set__subscriptions=subscription)
+                return False
 
             except:
                 LOGGER.exception(u'Could not save read %s!', new_read)
+
+            else:
+
+                # XXX: todo remove this, when globally fixed.
+                tags = [t for t in self.tags if t is not None]
+
+                params = dict(('set__' + key, value)
+                              for key, value in kwargs.items())
+
+                new_read.update(set__tags=tags, **params)
+
+                return True
 
     @classmethod
     def create_article(cls, title, url, feeds, **kwargs):
@@ -2622,8 +3050,8 @@ class Article(Document, DocumentHelperMixin):
             new_article.save()
 
         except (DuplicateKeyError, NotUniqueError):
-            LOGGER.warning(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
-                           title, url, u', '.join(unicode(f) for f in feeds))
+            LOGGER.info(u'Duplicate article “%s” (url: %s) in feed(s) %s.',
+                        title, url, u', '.join(unicode(f) for f in feeds))
 
             cur_article = cls.objects.get(url=url)
 
@@ -2684,11 +3112,11 @@ class Article(Document, DocumentHelperMixin):
     def fetch_content_must_abort(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_DISABLED:
-            LOGGER.warning(u'Article fetching disabled in configuration.')
+            LOGGER.info(u'Article fetching disabled in configuration.')
             return True
 
         if self.content_type in CONTENT_TYPES_FINAL and not force:
-            LOGGER.warning(u'Article %s has already been fetched.', self)
+            LOGGER.info(u'Article %s has already been fetched.', self)
             return True
 
         if self.content_error:
@@ -2776,7 +3204,7 @@ class Article(Document, DocumentHelperMixin):
     def find_image_must_abort(self, force=False, commit=True):
 
         if self.image_url and not force:
-            LOGGER.warning(u'Article %s image already found.', self)
+            LOGGER.info(u'Article %s image already found.', self)
             return True
 
         if not self.content_type in (CONTENT_TYPE_MARKDOWN, ):
@@ -2786,7 +3214,7 @@ class Article(Document, DocumentHelperMixin):
 
     def find_image(self, force=False, commit=True):
 
-        LOGGER.warning(u'Article.find_image() needs love, disabled for now.')
+        LOGGER.info(u'Article.find_image() needs love, disabled for now.')
         return
 
         if self.find_image_must_abort(force=force, commit=commit):
@@ -2816,13 +3244,13 @@ class Article(Document, DocumentHelperMixin):
     def fetch_content_image(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_IMAGE_DISABLED:
-            LOGGER.warning(u'Article video fetching disabled in configuration.')
+            LOGGER.info(u'Article video fetching disabled in configuration.')
             return
 
     def fetch_content_video(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_VIDEO_DISABLED:
-            LOGGER.warning(u'Article video fetching disabled in configuration.')
+            LOGGER.info(u'Article video fetching disabled in configuration.')
             return
 
     def needs_ghost_preparser(self):
@@ -2951,7 +3379,7 @@ class Article(Document, DocumentHelperMixin):
     def fetch_content_text(self, force=False, commit=True):
 
         if config.ARTICLE_FETCHING_TEXT_DISABLED:
-            LOGGER.warning(u'Article text fetching disabled in configuration.')
+            LOGGER.info(u'Article text fetching disabled in configuration.')
             return
 
         if self.content_type == CONTENT_TYPE_NONE:
@@ -3028,14 +3456,13 @@ class Article(Document, DocumentHelperMixin):
     def convert_to_markdown(self, force=False, commit=True):
 
         if config.ARTICLE_MARKDOWN_DISABLED:
-            LOGGER.warning(u'Article markdown convert disabled in '
-                           u'configuration.')
+            LOGGER.info(u'Article markdown convert disabled in '
+                        u'configuration.')
             return
 
         if self.content_type == CONTENT_TYPE_MARKDOWN:
             if not force:
-                LOGGER.warning(u'Article %s already converted to Markdown.',
-                               self)
+                LOGGER.info(u'Article %s already converted to Markdown.', self)
                 return
 
             else:
@@ -3291,10 +3718,19 @@ READ_BOOKMARK_TYPE_CHOICES = (
 )
 
 
+@task(name='Read.post_create', queue='high')
+def read_post_create_task(read_id, *args, **kwargs):
+
+    read = Read.objects.get(id=read_id)
+    return read.post_create_task(*args, **kwargs)
+
+
 class Read(Document, DocumentHelperMixin):
     user = ReferenceField('User', reverse_delete_rule=CASCADE)
     article = ReferenceField('Article', unique_with='user',
                              reverse_delete_rule=CASCADE)
+
+    subscriptions = ListField(ReferenceField(Subscription))
 
     date_created = DateTimeField(default=now)
 
@@ -3380,204 +3816,215 @@ class Read(Document, DocumentHelperMixin):
     status_data = {
 
         'is_read': {
-            'list_name':    _p(u'past participle, plural', u'read'),
-            'view_name':    u'read',
-            'list_url':     _(ur'^read/read/$'),
-            'do_title':     _(u'Mark as read'),
-            'undo_title':   _(u'Mark as unread'),
-            'do_label' :    _(u'Mark read'),
-            'undo_label':   _(u'Mark unread'),
-            'status_label': _p(u'adjective', u'read'),
-            'do_icon':      _p(u'awesome-font icon name', u'check-empty'),
-            'undo_icon':    _p(u'awesome-font icon name', u'check'),
+            'list_name':     _p(u'past participle, plural', u'read'),
+            'view_name':     u'read',
+            'list_url':      _(ur'^read/read/$'),
+            'list_url_feed': _(ur'^read/read/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as read'),
+            'undo_title':    _(u'Mark as unread'),
+            'do_label' :     _(u'Mark read'),
+            'undo_label':    _(u'Mark unread'),
+            'status_label':  _p(u'adjective', u'read'),
+            'do_icon':       _p(u'awesome-font icon name', u'check-empty'),
+            'undo_icon':     _p(u'awesome-font icon name', u'check'),
         },
 
         'is_starred': {
-            'list_name':    _(u'starred'),
-            'view_name':    u'starred',
-            'list_url':     _(ur'^read/starred/$'),
-            'do_title':     _(u'Star (add to favorites)'),
-            'undo_title':   _(u'Remove from starred/favorites'),
-            'do_label' :    _p(u'verb', u'Star'),
-            'undo_label':   _(u'Unstar'),
-            'status_label': _(u'starred'),
-            'do_icon':      _p(u'awesome-font icon name', u'star-empty'),
-            'undo_icon':    _p(u'awesome-font icon name', u'star'),
+            'list_name':     _(u'starred'),
+            'view_name':     u'starred',
+            'list_url':      _(ur'^read/starred/$'),
+            'list_url_feed': _(ur'^read/starred/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Star (add to favorites)'),
+            'undo_title':    _(u'Remove from starred/favorites'),
+            'do_label' :     _p(u'verb', u'Star'),
+            'undo_label':    _(u'Unstar'),
+            'status_label':  _(u'starred'),
+            'do_icon':       _p(u'awesome-font icon name', u'star-empty'),
+            'undo_icon':     _p(u'awesome-font icon name', u'star'),
         },
 
         'is_bookmarked': {
-            'list_name':    _(u'later'),
-            'view_name':    u'later',
-            'list_url':     _(ur'^read/later/$'),
-            'do_title':     _(u'Keep for reading later'),
-            'undo_title':   _(u'Remove from reading list'),
-            'do_label':     _(u'Read later'),
-            'undo_label':   _(u'Do not read later'),
-            'status_label': _(u'kept for later'),
-            'do_icon':      _p(u'awesome-font icon name', u'bookmark-empty'),
-            'undo_icon':    _p(u'awesome-font icon name', u'bookmark'),
+            'list_name':     _(u'later'),
+            'view_name':     u'later',
+            'list_url':      _(ur'^read/later/$'),
+            'list_url_feed': _(ur'^read/later/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Keep for reading later'),
+            'undo_title':    _(u'Remove from reading list'),
+            'do_label':      _(u'Read later'),
+            'undo_label':    _(u'Do not read later'),
+            'status_label':  _(u'kept for later'),
+            'do_icon':       _p(u'awesome-font icon name', u'bookmark-empty'),
+            'undo_icon':     _p(u'awesome-font icon name', u'bookmark'),
         },
 
         'is_fact': {
-            'list_name':    _(u'facts'),
-            'view_name':    u'facts',
-            'list_url':     _(ur'^read/facts/$'),
-            'do_title':     _(u'Mark as fact / important event'),
-            'undo_title':   _(u'Remove from facts / important events'),
-            'status_title': _(u'This article contains one or '
-                              u'more important facts'),
-            'do_label' :    _(u'Mark as fact'),
-            'undo_label':   _(u'Unmark fact'),
-            'status_label': _(u'fact'),
-            'do_icon':      _p(u'awesome-font icon name', u'circle-blank'),
-            'undo_icon':    _p(u'awesome-font icon name', u'bullseye'),
+            'list_name':     _(u'facts'),
+            'view_name':     u'facts',
+            'list_url':      _(ur'^read/facts/$'),
+            'list_url_feed': _(ur'^read/facts/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as fact / important event'),
+            'undo_title':    _(u'Remove from facts / important events'),
+            'status_title':  _(u'This article contains one or '
+                               u'more important facts'),
+            'do_label' :     _(u'Mark as fact'),
+            'undo_label':    _(u'Unmark fact'),
+            'status_label':  _(u'fact'),
+            'do_icon':       _p(u'awesome-font icon name', u'circle-blank'),
+            'undo_icon':     _p(u'awesome-font icon name', u'bullseye'),
         },
 
         'is_number': {
-            'list_name':    _(u'numbers'),
-            'view_name':    u'numbers',
-            'list_url':     _(ur'^read/numbers/$'),
-            'do_title':     _(u'Mark as valuable number'),
-            'undo_title':   _(u'Remove from valuable numbers'),
-            'status_title': _(u'This article contains quantified '
-                              u'numbers for a watch.'),
-            'do_label' :    _(u'Mark as number'),
-            'undo_label':   _(u'Unmark number'),
-            'status_label': _(u'number'),
-            'do_icon':      _p(u'awesome-font icon name', u'bar-chart'),
-            'undo_icon':    _p(u'awesome-font icon name',
+            'list_name':     _(u'numbers'),
+            'view_name':     u'numbers',
+            'list_url':      _(ur'^read/numbers/$'),
+            'list_url_feed': _(ur'^read/numbers/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as valuable number'),
+            'undo_title':    _(u'Remove from valuable numbers'),
+            'status_title':  _(u'This article contains quantified '
+                               u'numbers for a watch.'),
+            'do_label' :     _(u'Mark as number'),
+            'undo_label':    _(u'Unmark number'),
+            'status_label':  _(u'number'),
+            'do_icon':       _p(u'awesome-font icon name', u'bar-chart'),
+            'undo_icon':     _p(u'awesome-font icon name',
                                u'bar-chart icon-flip-horizontal'),
-            'status_icon':  _p(u'awesome-font icon name', u'bar-chart'),
+            'status_icon':   _p(u'awesome-font icon name', u'bar-chart'),
             #'undo_icon_stack': True,
         },
 
         'is_analysis': {
-            'list_name':    _(u'analysis'),
-            'view_name':    u'analysis',
-            'list_url':     _(ur'^read/analysis/$'),
-            'do_title':     _(u'Mark as analysis / study / research'),
-            'undo_title':   _(u'Unmark analysis / study / research'),
-            'status_title': _(u'This article contains an analysis, '
-                              u'an in-depth study or a research '
-                              u'publication.'),
-            'do_label' :    _(u'Mark as analysis'),
-            'undo_label':   _(u'Unmark analysis'),
-            'status_label': _(u'analysis'),
-            'do_icon':      _p(u'awesome-font icon name', u'beaker'),
-            'undo_icon':    _p(u'awesome-font icon name',
-                               u'beaker icon-rotate-90'),
-            'status_icon':  _p(u'awesome-font icon name', u'beaker'),
+            'list_name':     _(u'analysis'),
+            'view_name':     u'analysis',
+            'list_url':      _(ur'^read/analysis/$'),
+            'list_url_feed': _(ur'^read/analysis/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as analysis / study / research'),
+            'undo_title':    _(u'Unmark analysis / study / research'),
+            'status_title':  _(u'This article contains an analysis, '
+                               u'an in-depth study or a research '
+                               u'publication.'),
+            'do_label' :     _(u'Mark as analysis'),
+            'undo_label':    _(u'Unmark analysis'),
+            'status_label':  _(u'analysis'),
+            'do_icon':       _p(u'awesome-font icon name', u'beaker'),
+            'undo_icon':     _p(u'awesome-font icon name',
+                                u'beaker icon-rotate-90'),
+            'status_icon':   _p(u'awesome-font icon name', u'beaker'),
         },
 
         'is_quote': {
-            'list_name':    _(u'quotes'),
-            'view_name':    u'quotes',
-            'list_url':     _(ur'^read/quotes/$'),
-            'do_title':     _(u'Mark as containing quote(s) from people '
-                              u'you consider important'),
-            'undo_title':   _(u'Unmark as containing quotes '
-                              u'(people are not famous anymore?)'),
-            'status_title': _(u'This article contains one or more quote '
-                              u'from people you care about.'),
-            'do_label' :    _(u'Mark as quote'),
-            'undo_label':   _(u'Unmark quote'),
-            'status_label': _p(u'noun', u'quote'),
-            'do_icon':      _p(u'awesome-font icon name',
-                               u'quote-left icon-flip-vertical'),
-            'undo_icon':    _p(u'awesome-font icon name', u'quote-right'),
-            'status_icon':  _p(u'awesome-font icon name',
-                               u'quote-left icon-flip-vertical'),
+            'list_name':     _(u'quotes'),
+            'view_name':     u'quotes',
+            'list_url':      _(ur'^read/quotes/$'),
+            'list_url_feed': _(ur'^read/quotes/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as containing quote(s) from people '
+                               u'you consider important'),
+            'undo_title':    _(u'Unmark as containing quotes '
+                               u'(people are not famous anymore?)'),
+            'status_title':  _(u'This article contains one or more quote '
+                               u'from people you care about.'),
+            'do_label' :     _(u'Mark as quote'),
+            'undo_label':    _(u'Unmark quote'),
+            'status_label':  _p(u'noun', u'quote'),
+            'do_icon':       _p(u'awesome-font icon name',
+                                u'quote-left icon-flip-vertical'),
+            'undo_icon':     _p(u'awesome-font icon name', u'quote-right'),
+            'status_icon':   _p(u'awesome-font icon name',
+                                u'quote-left icon-flip-vertical'),
         },
 
         'is_prospective': {
-            'list_name':    _(u'prospective'),
-            'view_name':    u'prospective',
-            'list_url':     _(ur'^read/prospective/$'),
-            'do_title':     _(u'Mark as prospective-related content'),
-            'undo_title':   _(u'Unmark as prospective-related content'),
-            'status_title': _(u'This article contains prospective element(s) '
-                              u'or must-remember hypothesis.'),
-            'do_label' :    _(u'Mark as prospective'),
-            'undo_label':   _(u'Unmark prospective'),
-            'status_label': _(u'prospective'),
-            'do_icon':      _p(u'awesome-font icon name', u'lightbulb'),
-            'undo_icon':    _p(u'awesome-font icon name',
+            'list_name':     _(u'prospective'),
+            'view_name':     u'prospective',
+            'list_url':      _(ur'^read/prospective/$'),
+            'list_url_feed': _(ur'^read/prospective/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as prospective-related content'),
+            'undo_title':    _(u'Unmark as prospective-related content'),
+            'status_title':  _(u'This article contains prospective element(s) '
+                               u'or must-remember hypothesis.'),
+            'do_label' :     _(u'Mark as prospective'),
+            'undo_label':    _(u'Unmark prospective'),
+            'status_label':  _(u'prospective'),
+            'do_icon':       _p(u'awesome-font icon name', u'lightbulb'),
+            'undo_icon':     _p(u'awesome-font icon name',
                                u'lightbulb icon-rotate-180'),
-            'status_icon':  _p(u'awesome-font icon name', u'lightbulb'),
-            #'undo_icon_stack': True,
+            'status_icon':   _p(u'awesome-font icon name', u'lightbulb'),
         },
 
         'is_rules': {
-            'list_name':    _(u'rules'),
-            'view_name':    u'rules',
-            'list_url':     _(ur'^read/rules/$'),
-            'do_title':     _(u'Mark as legal/regulations-related content'),
-            'undo_title':   _(u'Unmark as legal content (overriden laws?)'),
-            'status_title': _(u'This article contains regulations/'
-                              u'law/rules element(s)'),
-            'do_label' :    _(u'Mark as law/regul.'),
-            'undo_label':   _(u'Unmark law/regul.'),
-            'status_label': _(u'regulations'),
-            'do_icon':      _p(u'awesome-font icon name',
-                               u'legal icon-flip-horizontal'),
-            'undo_icon':    _p(u'awesome-font icon name',
-                               u'legal icon-rotate-180'),
-            'status_icon':  _p(u'awesome-font icon name',
-                               u'legal icon-flip-horizontal'),
+            'list_name':     _(u'rules'),
+            'view_name':     u'rules',
+            'list_url':      _(ur'^read/rules/$'),
+            'list_url_feed': _(ur'^read/rules/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as legal/regulations-related content'),
+            'undo_title':    _(u'Unmark as legal content (overriden laws?)'),
+            'status_title':  _(u'This article contains regulations/'
+                               u'law/rules element(s)'),
+            'do_label' :     _(u'Mark as law/regul.'),
+            'undo_label':    _(u'Unmark law/regul.'),
+            'status_label':  _(u'regulations'),
+            'do_icon':       _p(u'awesome-font icon name',
+                                u'legal icon-flip-horizontal'),
+            'undo_icon':     _p(u'awesome-font icon name',
+                                u'legal icon-rotate-180'),
+            'status_icon':   _p(u'awesome-font icon name',
+                                u'legal icon-flip-horizontal'),
         },
 
         'is_knowhow': {
             'list_name':    _(u'best-practices'),
-            # WARNING: there is a '_' in the view name, and a '-' in the URL.
-            'view_name':    u'best_practices',
-            'list_url':     _(ur'^read/best-practices/$'),
-            'do_title':     _(u'Mark as best-practices / state of art '
-                              u'content'),
-            'undo_title':   _(u'Unmark as best-practices / state of art '
-                              u'(has it become obsolete?)'),
-            'status_title': _(u'This article contains best-practices / '
-                              u' state of art element(s).'),
-            'do_label' :    _(u'Mark as best-practice'),
-            'undo_label':   _(u'Unmark best-practice'),
-            'status_label': _p(u'noun', u'know-how'),
-            'do_icon':      _p(u'awesome-font icon name', u'trophy'),
-            'undo_icon':    _p(u'awesome-font icon name',
-                               u'trophy icon-flip-vertical'),
-            'status_icon':  _p(u'awesome-font icon name', u'trophy'),
+            # WARNING: there  is a '_' in the view name, and a '-' in the URL.
+            'view_name':     u'best_practices',
+            'list_url':      _(ur'^read/best-practices/$'),
+            'list_url_feed': _(ur'^read/best-practices/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as best-practices / state of art '
+                               u'content'),
+            'undo_title':    _(u'Unmark as best-practices / state of art '
+                               u'(has it become obsolete?)'),
+            'status_title':  _(u'This article contains best-practices / '
+                               u' state of art element(s).'),
+            'do_label' :     _(u'Mark as best-practice'),
+            'undo_label':    _(u'Unmark best-practice'),
+            'status_label':  _p(u'noun', u'know-how'),
+            'do_icon':       _p(u'awesome-font icon name', u'trophy'),
+            'undo_icon':     _p(u'awesome-font icon name',
+                                u'trophy icon-flip-vertical'),
+            'status_icon':   _p(u'awesome-font icon name', u'trophy'),
         },
 
         'is_knowledge': {
-            'list_name':    _(u'knowlegde'),
-            'view_name':    u'knowledge',
-            'list_url':     _(ur'^read/knowledge/$'),
-            'do_title':     _(u'Mark as a valuable piece of '
-                              u'knowlegde for your brain or life'),
-            'undo_title':   _(u'Unmark as neuronal-exciting '
-                              u'element(s)'),
-            'status_title': _(u'This article contains a valuable '
-                              u'piece of knowlegde.'),
-            'do_label' :    _(u'Mark as Knowledge'),
-            'undo_label':   _(u'Unmark knowlegde'),
-            'status_label': _(u'knowledge'),
-            'do_icon':      _p(u'awesome-font icon name', u'globe'),
-            'undo_icon':    _p(u'awesome-font icon name',
-                               u'globe icon-rotate-180'),
-            'status_icon':  _p(u'awesome-font icon name', u'globe'),
+            'list_name':     _(u'knowlegde'),
+            'view_name':     u'knowledge',
+            'list_url':      _(ur'^read/knowledge/$'),
+            'list_url_feed': _(ur'^read/knowledge/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as a valuable piece of '
+                               u'knowlegde for your brain or life'),
+            'undo_title':    _(u'Unmark as neuronal-exciting '
+                               u'element(s)'),
+            'status_title':  _(u'This article contains a valuable '
+                               u'piece of knowlegde.'),
+            'do_label' :     _(u'Mark as Knowledge'),
+            'undo_label':    _(u'Unmark knowlegde'),
+            'status_label':  _(u'knowledge'),
+            'do_icon':       _p(u'awesome-font icon name', u'globe'),
+            'undo_icon':     _p(u'awesome-font icon name',
+                                u'globe icon-rotate-180'),
+            'status_icon':   _p(u'awesome-font icon name', u'globe'),
         },
 
         'is_fun': {
-            'list_name':    _(u'funbox'),
-            'view_name':    u'fun',
-            'list_url':     _(ur'^read/fun/$'),
-            'do_title':     _(u'Mark as being fun. Are you sure?'),
-            'undo_title':   _(u'Not fun anymore, sadly.'),
-            'status_title': _(u'OMG, this thing is sooooooooo fun! LMAO!'),
-            'do_label' :    _(u'Mark as fun'),
-            'undo_label':   _(u'Mark as boring'),
-            'status_label': _(u'fun'),
-            'do_icon':      _p(u'awesome-font icon name', u'smile'),
-            'undo_icon':    _p(u'awesome-font icon name', u'frown'),
-            'status_icon':  _p(u'awesome-font icon name', u'smile'),
+            'list_name':     _(u'funbox'),
+            'view_name':     u'fun',
+            'list_url':      _(ur'^read/fun/$'),
+            'list_url_feed': _(ur'^read/fun/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
+            'do_title':      _(u'Mark as being fun. Are you sure?'),
+            'undo_title':    _(u'Not fun anymore, sadly.'),
+            'status_title':  _(u'OMG, this thing is sooooooooo fun! LMAO!'),
+            'do_label' :     _(u'Mark as fun'),
+            'undo_label':    _(u'Mark as boring'),
+            'status_label':  _(u'fun'),
+            'do_icon':       _p(u'awesome-font icon name', u'smile'),
+            'undo_icon':     _p(u'awesome-font icon name', u'frown'),
+            'status_icon':   _p(u'awesome-font icon name', u'smile'),
         },
     }
 
@@ -3600,25 +4047,40 @@ class Read(Document, DocumentHelperMixin):
             return cls._status_attributes_cache
 
     @classmethod
-    def signal_pre_save_handler(cls, sender, document, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
 
         read = document
 
-        if not read.rating:
-            read.rating = read.article.default_rating
+        if created:
+            if read._db_name != settings.MONGODB_NAME_ARCHIVE:
+                read_post_create_task.delay(read.id)
 
-    def safe_reload(self):
-        try:
-            self.reload()
+    def post_create_task(self):
+        """ Method meant to be run from a celery task. """
 
-        except:
-            pass
+        self.rating = self.article.default_rating
+
+        self.set_subscriptions(commit=False)
+
+        self.save()
 
     def __unicode__(self):
         return _(u'{0}∞{1} (#{2}) {3} {4}').format(
             self.user, self.article, self.id,
             _p(u'adjective', u'read')
                 if self.is_read else _p(u'adjective', u'unread'), self.rating)
+
+    def set_subscriptions(self, commit=True):
+        user_feeds    = [sub.feed for sub in self.user.subscriptions]
+        article_feeds = [feed for feed in self.article.feeds
+                         if feed in user_feeds]
+        self.subscriptions = list(Subscription.objects(feed__in=article_feeds))
+
+        if commit:
+            self.save()
+
+        return self.subscriptions
 
     @property
     def title(self):
@@ -3656,8 +4118,59 @@ class Read(Document, DocumentHelperMixin):
 
         self.safe_reload()
 
+    # ————————————————————————————————————————————— update subscriptions caches
+
+    def is_read_changed(self):
+
+        if self.is_read:
+            for subscription in self.subscriptions:
+                subscription.unread_articles_count -= 1
+
+                for folder in subscription.folders:
+                    folder.unread_articles_count -= 1
+
+        else:
+            for subscription in self.subscriptions:
+                subscription.unread_articles_count += 1
+
+                for folder in subscription.folders:
+                    folder.unread_articles_count += 1
+
+    def is_starred_changed(self):
+
+        if self.is_starred:
+            for subscription in self.subscriptions:
+                subscription.starred_articles_count += 1
+
+                for folder in subscription.folders:
+                    folder.starred_articles_count += 1
+
+        else:
+            for subscription in self.subscriptions:
+                subscription.starred_articles_count -= 1
+
+                for folder in subscription.folders:
+                    folder.starred_articles_count -= 1
+
+    def is_bookmarked_changed(self):
+
+        if self.is_bookmarked:
+            for subscription in self.subscriptions:
+                subscription.bookmarked_articles_count += 1
+
+                for folder in subscription.folders:
+                    folder.bookmarked_articles_count += 1
+
+        else:
+            for subscription in self.subscriptions:
+                subscription.bookmarked_articles_count -= 1
+
+                for folder in subscription.folders:
+                    folder.bookmarked_articles_count -= 1
+
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Comment
+
 
 class Comment(Document, DocumentHelperMixin):
     TYPE_COMMENT = 1
