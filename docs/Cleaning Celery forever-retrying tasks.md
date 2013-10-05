@@ -67,7 +67,7 @@ The solution involves finding tasks to revoke (cf. IPython notebook):
         f.write(u'\n'.join(all_revoked) + u'\n')
 
 
-## Definitive removing from broker
+## Definitive removal from broker
 
 If we don't do this, the revocation is not sufficient. Some of the tasks come back over and over again after the retry-delay.
 
@@ -78,3 +78,18 @@ If we don't do this, the revocation is not sufficient. Some of the tasks come ba
 
     # doesn't work, probably redis-cli mixes stdout and stderr
     # | grep ' 1' | wc -l
+
+
+## Hard cleaning
+
+After having done the previous operation (remove `celery-task-meta-*` from the brker backend), tasks are still reserved for the workers. Celery doesn't seem to notice the task meta diseappered, and the worker stalls, waiting for reserved tasks that never come.
+
+The easiest way to make things back to normal is to purge the queue. But `./manage.py celery purge` doesn't allow purging one queue alone. Bummer.
+
+It is always better to have always-retriable designed tasks. For example, the `Article.fetch_content()` one. You can launch it over and over again, it will do its job only if not already done and no errors are registered, and will re-do it until it's done. You can relaunch the pending articles from the shell, everything is ready in the celery notebook.
+
+
+- (NOTE: revoking the reserved tasks doesn't suffice; tested 20131005; workers still stall)
+- In redis, delete the queue key (eg. “`fetch`”)
+- restart the workers to purge the ghost reserved tasks
+- relaunch all pending fetches via the shell.
