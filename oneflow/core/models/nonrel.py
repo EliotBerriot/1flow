@@ -60,7 +60,7 @@ from celery.exceptions import SoftTimeLimitExceeded
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import (Document, EmbeddedDocument,
+from mongoengine import (Document, EmbeddedDocument, Q,
                          ValidationError, NULLIFY, PULL, CASCADE)
 from mongoengine.errors import NotUniqueError
 from mongoengine.fields import (IntField, FloatField, BooleanField,
@@ -536,6 +536,10 @@ class User(Document, DocumentHelperMixin):
 
     has_content = IntRedisDescriptor(
         attr_name='u.h_c', default=user_has_content, set_default=True)
+
+    @property
+    def subscriptions(self):
+        return Subscription.objects(user=self)
 
 
 def mongo_user(self):
@@ -1071,6 +1075,38 @@ class Feed(Document, DocumentHelperMixin):
         except:
             return None
 
+    def check_subscriptions(self, force=False):
+
+        if not force:
+            LOGGER.info(u'This method is very costy and should not be needed '
+                        u'in normal conditions. Please call it with '
+                        u'`force=True` if you are sure you want to run it.')
+            return
+
+        reads = 0
+        failed = 0
+        unreads = 0
+        missing = 0
+        unregistered = 0
+
+        articles = self.good_articles.order_by('-id')
+
+        for subscription in self.subscriptions:
+            smissing, sunreg, sreads, sunreads, sfailed = \
+                subscription.check_reads(force, articles)
+
+            reads += sreads
+            failed += sfailed
+            missing += smissing
+            unreads += sunreads
+            unregistered += sunreg
+
+        LOGGER.info(u'Checked feed #%s with %s subscriptions and %s articles. '
+                    u'Totals: %s/%s non-existing/unregistered reads, '
+                    u'%s/%s read/unread and %s not created.', self.id,
+                    self.subscriptions.count(), articles.count(),
+                    missing, unregistered, reads, unreads, failed)
+
     def update_latest_article_date_published(self):
         """ This seems simple, but this operations costs a lot in MongoDB. """
 
@@ -1120,12 +1156,20 @@ class Feed(Document, DocumentHelperMixin):
         self.subscriptions_count = self.subscriptions.count()
 
     @property
-    def all_articles(self):
-        return Article.objects.filter(feeds__contains=self)
+    def good_articles(self):
+        """ Subscriptions should always use :attr:`good_articles` to give
+            to users only useful content for them, whereas :class:`Feed`
+            will use :attr:`articles` or :attr:`all_articles` to reflect
+            real numbers.
+        """
+
+        return self.articles.filter(duplicate_of=None,
+                                    url_absolute=True,
+                                    orphaned__ne=True)
 
     def update_all_articles_count(self):
 
-        self.all_articles_count = self.all_articles.count()
+        self.all_articles_count = self.articles.count()
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
@@ -1208,7 +1252,14 @@ class Feed(Document, DocumentHelperMixin):
 
         self.safe_reload()
 
+    @property
+    def articles(self):
+        """ A simple version of :meth:`get_articles`. """
+
+        return Article.objects(feeds__contains=self)
+
     def get_articles(self, limit=None):
+        """ A parameter-able version of the :attr:`articles` property. """
 
         if limit:
             return Article.objects.filter(
@@ -1299,7 +1350,7 @@ class Feed(Document, DocumentHelperMixin):
 
         return retval
 
-    def create_article_and_reads(self, article, subscribers, feed_tags):
+    def create_article_and_reads(self, article, feed_tags):
         """ Take a feedparser item and a list of Feed subscribers and
             feed tags, and create the corresponding Article and Read(s). """
 
@@ -1366,7 +1417,7 @@ class Feed(Document, DocumentHelperMixin):
         # In the case of a mutualized article, it will be fetched only
         # once, but all subscribers of all feeds must be connected to
         # it to be able to read it.
-        new_article.create_reads(subscribers, verbose=created)
+        new_article.create_reads(self.subscriptions, verbose=created)
 
         # Don't forget the parenthesis else we return ``False`` everytime.
         return created or (None if mutualized else False)
@@ -1374,8 +1425,8 @@ class Feed(Document, DocumentHelperMixin):
     def subscribe_user(self, user, force=False):
 
         try:
-            Subscription(user=user, feed=self,
-                         name=self.name, tags=self.tags).save()
+            sub = Subscription(user=user, feed=self,
+                               name=self.name, tags=self.tags).save()
 
         except (NotUniqueError, DuplicateKeyError):
             if not force:
@@ -1383,45 +1434,9 @@ class Feed(Document, DocumentHelperMixin):
                             user, self)
                 return
 
-        yesterday = combine(today() - timedelta(days=1), time(0, 0, 0))
-        is_older  = False
-        my_now    = now()
-        reads     = 0
-        unreads   = 0
+        sub.check_reads(True)
 
-        for article in self.all_articles().order_by('-id'):
-
-            params = {}
-
-            if is_older:
-                params = {
-                    'is_read': True,
-                    'is_auto_read': True,
-                    'date_read': my_now,
-                    'date_auto_read': my_now,
-                }
-            else:
-                if article.date_published < yesterday:
-                    is_older = True
-                    params = {
-                        'is_read': True,
-                        'is_auto_read': True,
-                        'date_read': my_now,
-                        'date_auto_read': my_now,
-                    }
-                else:
-                    unreads += 1
-            try:
-                Read(article=article, user=user, **params).save()
-
-            except (NotUniqueError, DuplicateKeyError):
-                continue
-
-            else:
-                reads += 1
-
-        LOGGER.info(u'Subscribed %s to %s (%s/%s un/reads created).',
-                    user, self, unreads, reads)
+        LOGGER.info(u'Subscribed %s to %s.', user, self)
 
     def build_refresh_kwargs(self):
 
@@ -1657,7 +1672,6 @@ class Feed(Document, DocumentHelperMixin):
                             self.tags, tags)
                 self.tags = list(tags)
 
-            subscribers   = [s.user for s in self.subscriptions]
             new_articles  = 0
             duplicates    = 0
             mutualized    = 0
@@ -1666,9 +1680,7 @@ class Feed(Document, DocumentHelperMixin):
                 spipe.incr('feeds.refresh.fetch.global.updated')
 
             for article in parsed_feed.entries:
-                created = self.create_article_and_reads(article,
-                                                        subscribers,
-                                                        tags)
+                created = self.create_article_and_reads(article, tags)
                 if created:
                     new_articles += 1
 
@@ -1728,6 +1740,13 @@ class Feed(Document, DocumentHelperMixin):
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Feed Subscriptions
 
 
+@task(name='Subscription.post_create', queue='high')
+def subscription_post_create_task(subscription_id, *args, **kwargs):
+
+    subscription = Subscription.objects.get(id=subscription_id)
+    return subscription.post_create_task(*args, **kwargs)
+
+
 class Subscription(Document, DocumentHelperMixin):
     feed = ReferenceField('Feed', reverse_delete_rule=CASCADE)
     user = ReferenceField('User', unique_with='feed',
@@ -1739,9 +1758,119 @@ class Subscription(Document, DocumentHelperMixin):
     # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
     tags = ListField(GenericReferenceField(),
                      default=list, verbose_name=_(u'tags'),
-                     help_text=_(u'Subscription tags, which can also be '
-                                 u'seen as folders from the user point '
-                                 u'of view.'))
+                     help_text=_(u'Tags that will be applied to new reads in '
+                                 u'this subscription.'))
+
+    def __unicode__(self):
+        return _(u'{0}+{1} (#{2})').format(
+            self.user.username, self.feed.name, self.id)
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        subscription = document
+
+        if created:
+            if subscription._db_name != settings.MONGODB_NAME_ARCHIVE:
+                subscription_post_create_task.delay(subscription.id)
+
+    def post_create_task(self):
+        """ Method meant to be run from a celery task. """
+
+        self.name = self.feed.name
+
+        self.save()
+
+    @property
+    def reads(self):
+        return Read.objects.filter(user=self.user, subscriptions__contains=self)
+
+    def check_reads(self, force=False, articles=None):
+
+        if not force:
+            LOGGER.info(u'This method is very costy and should not be needed '
+                        u'in normal conditions, please call with `force=True` '
+                        u'if you are really sure you want to run it.')
+            return
+
+        yesterday    = combine(today() - timedelta(days=1), time(0, 0, 0))
+        is_older     = False
+        my_now       = now()
+        reads        = 0
+        unreads      = 0
+        failed       = 0
+        missing      = 0
+        unregistered = 0
+
+        # When checking the subscription from its feed, allow optimising
+        # the whole story by not querying the articles again for each
+        # subscription. The feed will do the query once, and forward the
+        # QuerySet to all subscriptions to be checked.
+
+        if articles is None:
+            articles = self.feed.good_articles.order_by('-id')
+
+        for article in articles:
+
+            params = {}
+
+            if is_older:
+                params = {
+                    'is_read': True,
+                    'is_auto_read': True,
+                    'date_read': my_now,
+                    'date_auto_read': my_now,
+                }
+                reads += 1
+
+            else:
+                if article.date_published is None \
+                        or article.date_published < yesterday:
+
+                    is_older = True
+
+                    params = {
+                        'is_read': True,
+                        'is_auto_read': True,
+                        'date_read': my_now,
+                        'date_auto_read': my_now,
+                    }
+                    reads += 1
+
+                else:
+                    unreads += 1
+
+            created = article.create_reads([self], False, **params)
+
+            if created:
+                missing += 1
+
+            elif created is False:
+                unregistered += 1
+
+            else:
+                failed += 1
+
+        if missing or unregistered:
+            self.all_articles_count = \
+                subscription_all_articles_count_default(self)
+            self.unread_articles_count = \
+                subscription_unread_articles_count_default(self)
+
+            for folder in self.folders:
+                folder.all_articles_count = \
+                    folder_all_articles_count_default(folder)
+                folder.unread_articles_count = \
+                    folder_unread_articles_count_default(folder)
+
+        LOGGER.info(u'Checked subscription #%s. '
+                    u'%s/%s non-existing/unregistered, '
+                    u'%s/%s read/unread and %s not created.',
+                    self.id, missing, unregistered,
+                    reads, unreads, failed)
+
+        return missing, unregistered, reads, unreads, failed
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Authors
@@ -2615,13 +2744,10 @@ class Article(Document, DocumentHelperMixin):
         LOGGER.info(u'Article %s successfully registered as duplicate '
                     u'of %s and can be deleted if wanted.', duplicate, self)
 
-    def create_reads(self, users, verbose=True):
+    def create_reads(self, subscriptions, verbose=True, **kwargs):
 
-        # XXX: todo remove this, when globally fixed.
-        tags = [t for t in self.tags if t is not None]
-
-        for user in users:
-            new_read = Read(article=self, user=user, tags=tags)
+        for subscription in subscriptions:
+            new_read = Read(article=self, user=subscription.user)
 
             try:
                 new_read.save()
@@ -2630,8 +2756,26 @@ class Article(Document, DocumentHelperMixin):
                 if verbose:
                     LOGGER.info(u'Duplicate read %s!', new_read)
 
+                cur_read = Read.objects(article=self, user=subscription.user)
+                # If another feed has already created the read, be sure the
+                # current one is registered in the read via the subscriptions.
+                cur_read.update(add_to_set__subscriptions=subscription)
+                return False
+
             except:
                 LOGGER.exception(u'Could not save read %s!', new_read)
+
+            else:
+
+                # XXX: todo remove this, when globally fixed.
+                tags = [t for t in self.tags if t is not None]
+
+                params = dict(('set__' + key, value)
+                              for key, value in kwargs.items())
+
+                new_read.update(set__tags=tags, **params)
+
+                return True
 
     @classmethod
     def create_article(cls, title, url, feeds, **kwargs):
@@ -3323,10 +3467,19 @@ READ_BOOKMARK_TYPE_CHOICES = (
 )
 
 
+@task(name='Read.post_create', queue='high')
+def read_post_create_task(read_id, *args, **kwargs):
+
+    read = Read.objects.get(id=read_id)
+    return read.post_create_task(*args, **kwargs)
+
+
 class Read(Document, DocumentHelperMixin):
     user = ReferenceField('User', reverse_delete_rule=CASCADE)
     article = ReferenceField('Article', unique_with='user',
                              reverse_delete_rule=CASCADE)
+
+    subscriptions = ListField(ReferenceField(Subscription))
 
     date_created = DateTimeField(default=now)
 
@@ -3632,25 +3785,40 @@ class Read(Document, DocumentHelperMixin):
             return cls._status_attributes_cache
 
     @classmethod
-    def signal_pre_save_handler(cls, sender, document, **kwargs):
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
 
         read = document
 
-        if not read.rating:
-            read.rating = read.article.default_rating
+        if created:
+            if read._db_name != settings.MONGODB_NAME_ARCHIVE:
+                read_post_create_task.delay(read.id)
 
-    def safe_reload(self):
-        try:
-            self.reload()
+    def post_create_task(self):
+        """ Method meant to be run from a celery task. """
 
-        except:
-            pass
+        self.rating = self.article.default_rating
+
+        self.set_subscriptions(commit=False)
+
+        self.save()
 
     def __unicode__(self):
         return _(u'{0}∞{1} (#{2}) {3} {4}').format(
             self.user, self.article, self.id,
             _p(u'adjective', u'read')
                 if self.is_read else _p(u'adjective', u'unread'), self.rating)
+
+    def set_subscriptions(self, commit=True):
+        user_feeds    = [sub.feed for sub in self.user.subscriptions]
+        article_feeds = [feed for feed in self.article.feeds
+                         if feed in user_feeds]
+        self.subscriptions = list(Subscription.objects(feed__in=article_feeds))
+
+        if commit:
+            self.save()
+
+        return self.subscriptions
 
     @property
     def title(self):
@@ -3690,6 +3858,7 @@ class Read(Document, DocumentHelperMixin):
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Comment
+
 
 class Comment(Document, DocumentHelperMixin):
     TYPE_COMMENT = 1
