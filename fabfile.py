@@ -29,12 +29,13 @@ from sparks.fabric import (with_remote_configuration,
                            worker_roles)
 import sparks.django.fabfile as sdf
 
-# Make the main deployment tasks immediately accessible
+# Make the main deployment tasks and my other favorites immediately accessible
 runable, deploy, fast_deploy = sdf.runable, sdf.deploy, sdf.fast_deploy
 maintenance_mode, operational_mode = sdf.maintenance_mode, sdf.operational_mode
 run_command, restart_services = sdf.run_command, sdf.restart_services
 stop, start, status = sdf.stop_services, sdf.start_services, sdf.status_services
 remove, pick, role = sdf.remove_services, sdf.pick, sdf.role
+push_environment = sdf.push_environment
 
 USE_JENKINS  = pwd.getpwuid(os.getuid()).pw_name == 'jenkins'
 JENKINS_JOB  = os.environ.get('JOB_NAME', '1flow')

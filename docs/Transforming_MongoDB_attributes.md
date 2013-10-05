@@ -85,3 +85,31 @@
 
     db.article.update({ "feed": { $exists: true }}, { $unset: { "feed": 1 }}, false, true);
     db.article.find({ "feed": { $exists: true }}).count(true);
+
+
+
+
+
+## Removing old (unused) attributes
+
+These attributes are present in the database, but not in the python code anymore.
+They produce: http://dev.1flow.net/webapps/1flow/group/6892/
+
+They must be resolved directly in MongoDB. In MongoHub:
+
+Action: {"$unset": {"comments": ""} }
+Query: {"comments": {"$exists": true} }
+
+Resulting MongoDB command:
+
+db.oneflow.article.update({
+    "full_content_type": {"$exists": true} },
+    {"$unset": {"full_content_type": ""} },
+    false, true);
+
+On 20131005, I cleaned:
+
+"comments"          957xxx rows
+"full_content_type" 95768 rows
+"full_content"      95xx rows
+"duplicates"        162291 rows
