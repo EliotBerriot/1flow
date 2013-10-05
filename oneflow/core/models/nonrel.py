@@ -3078,7 +3078,8 @@ class Article(Document, DocumentHelperMixin):
                 params = dict(('set__' + key, value)
                               for key, value in kwargs.items())
 
-                new_read.update(set__tags=tags, **params)
+                new_read.update(set__tags=tags,
+                                set__subscriptions=[subscription], **params)
 
                 if return_now:
                     return True
