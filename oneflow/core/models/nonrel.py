@@ -1981,6 +1981,16 @@ class Subscription(Document, DocumentHelperMixin):
         default=subscription_bookmarked_articles_count_default,
         set_default=True)
 
+    def pre_compute_cached_descriptors(self):
+
+        # TODO: move this into the DocumentHelperMixin and detect all
+        #       descriptors automatically by examining the __class__.
+
+        self.all_articles_count
+        self.unread_articles_count
+        self.starred_articles_count
+        self.bookmarked_articles_count
+
     def __unicode__(self):
         return _(u'{0}+{1} (#{2})').format(
             self.user.username, self.feed.name, self.id)
