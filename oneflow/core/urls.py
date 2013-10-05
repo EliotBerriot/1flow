@@ -74,7 +74,7 @@ urlpatterns = patterns(
         name='read_one'),
 
     url(_(r'^selector/$'),
-        login_required(views.source_selector),
+        login_required(never_cache(views.source_selector)),
         name='source_selector'),
 
     url(_(r'^(?P<klass>\w+)/(?P<oid>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
