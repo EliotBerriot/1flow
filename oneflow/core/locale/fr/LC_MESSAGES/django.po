@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-05 13:58+0200\n"
-"PO-Revision-Date: 2013-10-05 14:35+0009\n"
+"POT-Creation-Date: 2013-10-05 16:46+0200\n"
+"PO-Revision-Date: 2013-10-05 16:47+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -35,7 +35,7 @@ msgstr "articles"
 msgid "feeds"
 msgstr "flux"
 
-#: admin.py:109 models/nonrel.py:3833 models/nonrel.py:3841
+#: admin.py:109 models/nonrel.py:3889 models/nonrel.py:3897
 #: templates/snippets/selector/subscription.html:12
 msgid "starred"
 msgstr "favoris"
@@ -88,15 +88,15 @@ msgstr "Parents"
 msgid "Children"
 msgstr "Enfants"
 
-#: admin.py:269 models/nonrel.py:2388 models/nonrel.py:3806
+#: admin.py:269 models/nonrel.py:2437 models/nonrel.py:3862
 msgid "Tags"
 msgstr "Tags"
 
-#: admin.py:282 admin.py:435 models/nonrel.py:923 models/nonrel.py:2450
+#: admin.py:282 admin.py:435 models/nonrel.py:960 models/nonrel.py:2499
 msgid "Duplicate of"
 msgstr "Duplicata de"
 
-#: admin.py:293 models/nonrel.py:2410
+#: admin.py:293 models/nonrel.py:2459
 msgid "Content"
 msgstr "Contenu"
 
@@ -314,36 +314,36 @@ msgstr "^connexion/$"
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:477
+#: views.py:478
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:481
+#: views.py:482
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:485
+#: views.py:486
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:492
+#: views.py:493
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:496
+#: views.py:497
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:502
+#: views.py:503
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:505
+#: views.py:506
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -530,57 +530,57 @@ msgstr ""
 "/><span class=\"muted\">Le comportement standard est d'afficher la liste de "
 "<strong>tous les articles non-lus</strong>.</span>"
 
-#: models/nonrel.py:771 models/nonrel.py:910 models/nonrel.py:1137
+#: models/nonrel.py:808 models/nonrel.py:947 models/nonrel.py:1174
 msgid "slug"
 msgstr "slug"
 
-#: models/nonrel.py:778
+#: models/nonrel.py:815
 #, python-format
 msgid "(dupe of #%s)"
 msgstr "(duplicata de #%s)"
 
-#: models/nonrel.py:909 models/nonrel.py:1134
+#: models/nonrel.py:946 models/nonrel.py:1171
 msgid "name"
 msgstr "nom"
 
-#: models/nonrel.py:911
+#: models/nonrel.py:948
 msgid "language"
 msgstr "langue"
 
-#: models/nonrel.py:917
+#: models/nonrel.py:954
 msgid "Origin"
 msgstr "Origine"
 
-#: models/nonrel.py:918
+#: models/nonrel.py:955
 msgid ""
 "Initial origin from where the tag was created from, to eventually help "
 "defining other attributes."
 msgstr ""
 
-#: models/nonrel.py:924
+#: models/nonrel.py:961
 msgid ""
 "Put a \"master\" tag here to help avoiding too much different tags (eg. "
 "singular and plurals) with the same meaning and loss of information."
 msgstr ""
 
-#: models/nonrel.py:942
+#: models/nonrel.py:979
 #, python-brace-format
 msgid "{0} {1}⚐ (#{2})"
 msgstr "{0} {1}⚐ (#{2})"
 
-#: models/nonrel.py:1135
+#: models/nonrel.py:1172
 msgid "url"
 msgstr "url"
 
-#: models/nonrel.py:1136
+#: models/nonrel.py:1173
 msgid "web site"
 msgstr "site web"
 
-#: models/nonrel.py:1139 models/nonrel.py:1959
+#: models/nonrel.py:1176 models/nonrel.py:1996
 msgid "tags"
 msgstr "tags"
 
-#: models/nonrel.py:1140
+#: models/nonrel.py:1177
 msgid ""
 "This tags are used only when articles from this feed have no tags already. "
 "They are assigned to new subscriptions too."
@@ -588,11 +588,11 @@ msgstr ""
 "Ces tags sont assignés aux nouveaux articles quand ils n'en ont pas eux-"
 "mêmes. Aux nouveaux abonnements aussi."
 
-#: models/nonrel.py:1146
+#: models/nonrel.py:1183
 msgid "Languages"
 msgstr "Langues"
 
-#: models/nonrel.py:1148
+#: models/nonrel.py:1185
 msgid ""
 "Set this to more than one language to help article language detection if "
 "none is set in articles."
@@ -600,26 +600,26 @@ msgstr ""
 "Activez une ou plusieurs langues qui aideront à détecter la langue des "
 "articles s'ils n'en ont pas."
 
-#: models/nonrel.py:1153
+#: models/nonrel.py:1190
 msgid "date added"
 msgstr "date d'ajout"
 
-#: models/nonrel.py:1154
+#: models/nonrel.py:1191
 msgid "restricted"
 msgstr "restreint"
 
-#: models/nonrel.py:1155
+#: models/nonrel.py:1192
 msgid ""
 "Is this feed available only to paid subscribers on its publisher's web site?"
 msgstr ""
 "Le flux est-il accessible seulement aux abonnés payants sur le site "
 "d'origine qui le propose ?"
 
-#: models/nonrel.py:1158
+#: models/nonrel.py:1195
 msgid "closed"
 msgstr "fermé"
 
-#: models/nonrel.py:1159
+#: models/nonrel.py:1196
 msgid ""
 "Indicate that the feed is not fetched anymore (see “closed_reason” for why)."
 " /!\\ WARNING: do not just tick the checkbox; there is a programmatic "
@@ -629,27 +629,27 @@ msgstr ""
 " /!\\ ATTENTION : ne cochez pas simplement la case, il y a une procédure "
 "programmée pour fermer proprement un flux."
 
-#: models/nonrel.py:1166
+#: models/nonrel.py:1203
 msgid "date closed"
 msgstr "date de fermeture"
 
-#: models/nonrel.py:1167
+#: models/nonrel.py:1204
 msgid "closed reason"
 msgstr "raison de la fermeture"
 
-#: models/nonrel.py:1170
+#: models/nonrel.py:1207
 msgid "fetch interval"
 msgstr "intervalle de récupération"
 
-#: models/nonrel.py:1171
+#: models/nonrel.py:1208
 msgid "last fetch"
 msgstr "dernière récupération"
 
-#: models/nonrel.py:1176
+#: models/nonrel.py:1213
 msgid "fetch limit"
 msgstr "limite de récupération"
 
-#: models/nonrel.py:1177
+#: models/nonrel.py:1214
 #, python-format
 msgid ""
 "The maximum number of articles that can be fetched from the feed in "
@@ -657,27 +657,27 @@ msgid ""
 "from real-life results."
 msgstr ""
 
-#: models/nonrel.py:1185
+#: models/nonrel.py:1222
 msgid "last etag"
 msgstr "dernier Etag"
 
-#: models/nonrel.py:1186
+#: models/nonrel.py:1223
 msgid "modified"
 msgstr "modifié"
 
-#: models/nonrel.py:1192
+#: models/nonrel.py:1229
 msgid "Notes"
 msgstr "Notes"
 
-#: models/nonrel.py:1193
+#: models/nonrel.py:1230
 msgid "Internal notes for 1flow staff related to this feed."
 msgstr "Notes internes au personnel de 1flow, à propos de ce flux."
 
-#: models/nonrel.py:1196
+#: models/nonrel.py:1233
 msgid "Shown in selector"
 msgstr "Affiché dans le sélecteur"
 
-#: models/nonrel.py:1198
+#: models/nonrel.py:1235
 msgid ""
 "Make this feed available to new subscribers in the selector wizard. Without "
 "this, the user can still subscribe but he must know it and manually enter "
@@ -687,11 +687,11 @@ msgstr ""
 "recherche. Sans celà, les utilisateurs peuvent toujours s'abonner, mais il "
 "leur faut connaître et saisir l'adresse exacte du flux. "
 
-#: models/nonrel.py:1204
+#: models/nonrel.py:1241
 msgid "Thumbnail URL"
 msgstr "URL de vignette"
 
-#: models/nonrel.py:1205
+#: models/nonrel.py:1242
 msgid ""
 "Full URL of the thumbnail displayed in the feed selector. Can be hosted "
 "outside of 1flow."
@@ -699,475 +699,475 @@ msgstr ""
 "URL complète de la vignette affichée dans le sélecteur. Peut être hébergée "
 "en dehors de 1flow."
 
-#: models/nonrel.py:1208
+#: models/nonrel.py:1245
 msgid "Description (FR)"
 msgstr "Description (FR)"
 
-#: models/nonrel.py:1209
+#: models/nonrel.py:1246
 msgid "Public description of the feed in French language. As Markdown."
 msgstr ""
 "Description publique du flux en langue française. Apparaîtra dans le "
 "sélecteur. En Markdown."
 
-#: models/nonrel.py:1212
+#: models/nonrel.py:1249
 msgid "Description (EN)"
 msgstr "Description (EN)"
 
-#: models/nonrel.py:1213
+#: models/nonrel.py:1250
 msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
-#: models/nonrel.py:1355
+#: models/nonrel.py:1392
 #, python-brace-format
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel.py:1960
+#: models/nonrel.py:1997
 msgid "Tags that will be applied to new reads in this subscription."
 msgstr ""
 "Tags qui seront appliqués automatiquement à toute nouvelle lecture de cet "
 "abonnement."
 
-#: models/nonrel.py:1964
+#: models/nonrel.py:2001
 msgid "Folders in which this subscription appears (can be more than one)."
 msgstr ""
 
-#: models/nonrel.py:1985
+#: models/nonrel.py:2032
 #, python-brace-format
 msgid "{0}+{1} (#{2})"
 msgstr "{0}+{1} (#{2})"
 
-#: models/nonrel.py:2141
+#: models/nonrel.py:2190
 msgid ""
 "When trying to guess authors, we have only a \"fullname\" equivalent. We "
 "need to store it for future comparisons in case firstname and lastname get "
 "manually modified after author creation."
 msgstr ""
 
-#: models/nonrel.py:2147
+#: models/nonrel.py:2196
 msgid ""
 "Set to True when the author has been found from its origin_name and not via "
 "email; because origin_name can be duplicated, but not emails."
 msgstr ""
 
-#: models/nonrel.py:2153
+#: models/nonrel.py:2202
 msgid "Link an internet author to a 1flow user."
 msgstr "Lier un auteur internet à un utilisateur 1flow."
 
-#: models/nonrel.py:2161
+#: models/nonrel.py:2210
 msgid " (unsure)"
 msgstr "(non confirmé)"
 
-#: models/nonrel.py:2352
+#: models/nonrel.py:2401
 msgid "Title"
 msgstr "Titre"
 
-#: models/nonrel.py:2354
+#: models/nonrel.py:2403
 msgid "Public URL"
 msgstr "URL publique"
 
-#: models/nonrel.py:2355
+#: models/nonrel.py:2404
 msgid "Absolute URL"
 msgstr "URL absolue"
 
-#: models/nonrel.py:2356
+#: models/nonrel.py:2405
 msgid ""
 "The article URL has been successfully absolutized to its unique and final "
 "location."
 msgstr ""
 
-#: models/nonrel.py:2360
+#: models/nonrel.py:2409
 msgid "URL fetch error"
 msgstr "Erreur de récupération de l'URL"
 
-#: models/nonrel.py:2361
+#: models/nonrel.py:2410
 msgid "Error when absolutizing the URL"
 msgstr "Erreur pendant l'absolutisation de l'URL"
 
-#: models/nonrel.py:2362
+#: models/nonrel.py:2411
 msgid "Next pages URLs"
 msgstr "URLs des pages suivantes"
 
-#: models/nonrel.py:2363
+#: models/nonrel.py:2412
 msgid "In case of a multi-pages article, other pages URLs will be here."
 msgstr ""
 
-#: models/nonrel.py:2368
+#: models/nonrel.py:2417
 msgid "Orphaned"
 msgstr "Orphelin"
 
-#: models/nonrel.py:2369
+#: models/nonrel.py:2418
 msgid ""
 "This article has no public URL anymore, or is unfetchable for some reason."
 msgstr ""
 "Cet article n'a plus d'URL publique, ou son contenu n'est plus récupérable "
 "pour un autre raison."
 
-#: models/nonrel.py:2373
+#: models/nonrel.py:2422
 msgid "Word count"
 msgstr "Nombre de mots"
 
-#: models/nonrel.py:2378
+#: models/nonrel.py:2427
 msgid "date published"
 msgstr "date de publication"
 
-#: models/nonrel.py:2379
+#: models/nonrel.py:2428
 msgid "When the article first appeared on the publisher's website."
 msgstr "Quand l'article est apparu la première fois sur le site de l'éditeur."
 
-#: models/nonrel.py:2383
+#: models/nonrel.py:2432
 msgid "Date added"
 msgstr "Date d'ajout"
 
-#: models/nonrel.py:2384
+#: models/nonrel.py:2433
 msgid "When the article was added to the 1flow database."
 msgstr "Date à laquelle le flux a été ajouté dans la base 1flow."
 
-#: models/nonrel.py:2389
+#: models/nonrel.py:2438
 msgid "Default tags that will be applied to new reads of this article."
 msgstr ""
 "Tags qui seront appliqués automatiquement à toute nouvelle lecture liée à "
 "cet article."
 
-#: models/nonrel.py:2391
+#: models/nonrel.py:2440
 msgid "default rating"
 msgstr "score de référence"
 
-#: models/nonrel.py:2392
+#: models/nonrel.py:2441
 msgid "Rating used as a base when a user has not already rated the content."
 msgstr ""
 "Score qui sera utilisé comme base tant que l'utilisateur n'a pas encore "
 "noté/starré/reblogué le contenu."
 
-#: models/nonrel.py:2395
+#: models/nonrel.py:2444
 msgid "Article language"
 msgstr "Langue de l'article"
 
-#: models/nonrel.py:2397
+#: models/nonrel.py:2446
 msgid "2 letters or 5 characters language code (eg “en”, “fr-FR”…)."
 msgstr "Code de langue sur 2 ou 5 caractères."
 
-#: models/nonrel.py:2400
+#: models/nonrel.py:2449
 msgid "Text direction"
 msgstr "Direction du texte"
 
-#: models/nonrel.py:2401
+#: models/nonrel.py:2450
 msgid "Left-to-Right"
 msgstr "gauche-à-droite"
 
-#: models/nonrel.py:2402
+#: models/nonrel.py:2451
 msgid "Right-to-Left"
 msgstr "droite-à-gauche"
 
-#: models/nonrel.py:2405
+#: models/nonrel.py:2454
 msgid "image URL"
 msgstr "URL de l'image"
 
-#: models/nonrel.py:2406
+#: models/nonrel.py:2455
 msgid "abstract"
 msgstr "extrait"
 
-#: models/nonrel.py:2407
+#: models/nonrel.py:2456
 msgid "Small exerpt of content, if applicable."
 msgstr "Court résumé de l'article, s'il existe."
 
-#: models/nonrel.py:2411
+#: models/nonrel.py:2460
 msgid "Article content"
 msgstr "Contenu de l'article"
 
-#: models/nonrel.py:2413
+#: models/nonrel.py:2462
 msgid "Content type"
 msgstr "Type de contenu"
 
-#: models/nonrel.py:2414
+#: models/nonrel.py:2463
 msgid "Type of article content (text, image…)"
 msgstr "Type de contenu d'article (texte, image…)"
 
-#: models/nonrel.py:2416
+#: models/nonrel.py:2465
 msgid "Error"
 msgstr "Erreur"
 
-#: models/nonrel.py:2417
+#: models/nonrel.py:2466
 msgid "Error when fetching content"
 msgstr "Erreur pendant la récupération du contenu"
 
-#: models/nonrel.py:2424
+#: models/nonrel.py:2473
 msgid "Origin type"
 msgstr "Type d'origine"
 
-#: models/nonrel.py:2425
+#: models/nonrel.py:2474
 msgid ""
 "Origin of article (feedparser, twitter, websnap…). Can be 0 (none/unknown)."
 msgstr ""
 
-#: models/nonrel.py:2451
+#: models/nonrel.py:2500
 msgid ""
 "This article is a duplicate of another, which is referenced here. Even if "
 "they have different URLs (eg. one can be shortened, the other not), they "
 "lead to the same final destination on the web."
 msgstr ""
 
-#: models/nonrel.py:2473
+#: models/nonrel.py:2522
 #, python-brace-format
 msgid "{0} (#{1}) from {2}"
 msgstr "{0} (#{1}) from {2}"
 
-#: models/nonrel.py:2528
+#: models/nonrel.py:2577
 msgid "Unknown source"
 msgstr "Source inconnue"
 
-#: models/nonrel.py:2541
+#: models/nonrel.py:2590
 #, python-brace-format
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
 
-#: models/nonrel.py:3715
+#: models/nonrel.py:3771
 msgid "Undefined"
 msgstr "Indéfini"
 
-#: models/nonrel.py:3716
+#: models/nonrel.py:3772
 msgid "This afternoon"
 msgstr ""
 
-#: models/nonrel.py:3717
+#: models/nonrel.py:3773
 msgid "This week-end"
 msgstr ""
 
-#: models/nonrel.py:3737
+#: models/nonrel.py:3793
 msgid "The Owner has read the content or has manually marked it as such."
 msgstr ""
 
-#: models/nonrel.py:3742
+#: models/nonrel.py:3798
 msgid ""
 "The system has automatically marked it as read, in respect of a system rule "
 "or a user preference."
 msgstr ""
 
-#: models/nonrel.py:3749
+#: models/nonrel.py:3805
 msgid ""
 "The owner has starred the content, signifying he/she loves it or that it is "
 "much of interest for him/her."
 msgstr ""
 
-#: models/nonrel.py:3754
+#: models/nonrel.py:3810
 msgid ""
 "This content is marked to be read later. When, depends on the "
 "`.bookmark_type` attribute."
 msgstr ""
 
-#: models/nonrel.py:3762
+#: models/nonrel.py:3818
 msgid "Qualifies a time-dependant fact."
 msgstr ""
 
-#: models/nonrel.py:3766
+#: models/nonrel.py:3822
 msgid "Qualifies someone’s words, thoughts or intentions."
 msgstr ""
 
-#: models/nonrel.py:3770
+#: models/nonrel.py:3826
 msgid "Qualifies explicitely quantized data."
 msgstr ""
 
-#: models/nonrel.py:3774
+#: models/nonrel.py:3830
 msgid "Qualifies in-depth analysis, studies or research publications."
 msgstr ""
 
-#: models/nonrel.py:3779
+#: models/nonrel.py:3835
 msgid "Qualifies things that want to watch, that will happen or not."
 msgstr ""
 
-#: models/nonrel.py:3784
+#: models/nonrel.py:3840
 msgid ""
 "Qualifies anything about How-to-do things and profession best-practices."
 msgstr ""
 
-#: models/nonrel.py:3789
+#: models/nonrel.py:3845
 msgid "Qualifies anything about laws, governments/public regulations."
 msgstr ""
 
-#: models/nonrel.py:3794
+#: models/nonrel.py:3850
 msgid ""
 "Qualifies anything that the owner wants to retain as a “must know”, whatever"
 " the context."
 msgstr ""
 
-#: models/nonrel.py:3800
+#: models/nonrel.py:3856
 msgid "Qualifies anything that makes you laugh out loud."
 msgstr ""
 
-#: models/nonrel.py:3807
+#: models/nonrel.py:3863
 msgid "User set of tags for this read."
 msgstr "Ensemble des tags de l'utilisateur pour cette lecture."
 
-#: models/nonrel.py:3821
+#: models/nonrel.py:3877
 msgid "^read/read/$"
 msgstr "^lire/lus/$"
 
-#: models/nonrel.py:3822
+#: models/nonrel.py:3878
 msgid "^read/read/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/lus/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3823
+#: models/nonrel.py:3879
 msgid "Mark as read"
 msgstr "Marquer lu"
 
-#: models/nonrel.py:3824
+#: models/nonrel.py:3880
 msgid "Mark as unread"
 msgstr "Marquer non-lu"
 
-#: models/nonrel.py:3825
+#: models/nonrel.py:3881
 msgid "Mark read"
 msgstr "Marquer lu"
 
-#: models/nonrel.py:3826
+#: models/nonrel.py:3882
 msgid "Mark unread"
 msgstr "Marquer non-lu"
 
-#: models/nonrel.py:3835
+#: models/nonrel.py:3891
 msgid "^read/starred/$"
 msgstr "^lire/selectionnes/$"
 
-#: models/nonrel.py:3836
+#: models/nonrel.py:3892
 msgid "^read/starred/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/selectionnes/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3837
+#: models/nonrel.py:3893
 msgid "Star (add to favorites)"
 msgstr "Sélectionner (ajouter aux favoris)"
 
-#: models/nonrel.py:3838
+#: models/nonrel.py:3894
 msgid "Remove from starred/favorites"
 msgstr "Supprimer des favoris"
 
-#: models/nonrel.py:3840
+#: models/nonrel.py:3896
 msgid "Unstar"
 msgstr "Désélectionner"
 
-#: models/nonrel.py:3847
+#: models/nonrel.py:3903
 msgid "later"
 msgstr "plus tard"
 
-#: models/nonrel.py:3849
+#: models/nonrel.py:3905
 msgid "^read/later/$"
 msgstr "^lire/plus-tard/$"
 
-#: models/nonrel.py:3850
+#: models/nonrel.py:3906
 msgid "^read/later/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/plus-tard/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3851
+#: models/nonrel.py:3907
 msgid "Keep for reading later"
 msgstr "Garder pour lire plus tard"
 
-#: models/nonrel.py:3852
+#: models/nonrel.py:3908
 msgid "Remove from reading list"
 msgstr "Supprimer de la liste de lecture"
 
-#: models/nonrel.py:3853 templates/navbars/read-endless.html:37
+#: models/nonrel.py:3909 templates/navbars/read-endless.html:37
 #: templates/snippets/selector/selector.html:10
 msgid "Read later"
 msgstr "Lire plus tard"
 
-#: models/nonrel.py:3854
+#: models/nonrel.py:3910
 msgid "Do not read later"
 msgstr "Ne pas lire plus tard"
 
-#: models/nonrel.py:3855
+#: models/nonrel.py:3911
 msgid "kept for later"
 msgstr "gardé pour plus tard"
 
-#: models/nonrel.py:3861
+#: models/nonrel.py:3917
 msgid "facts"
 msgstr "faits"
 
-#: models/nonrel.py:3863
+#: models/nonrel.py:3919
 msgid "^read/facts/$"
 msgstr "^lire/faits/$"
 
-#: models/nonrel.py:3864
+#: models/nonrel.py:3920
 msgid "^read/facts/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/faits/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3865
+#: models/nonrel.py:3921
 msgid "Mark as fact / important event"
 msgstr "Marquer comme évènement ou fait marquant"
 
-#: models/nonrel.py:3866
+#: models/nonrel.py:3922
 msgid "Remove from facts / important events"
 msgstr "Supprimer des faits marquants"
 
-#: models/nonrel.py:3867
+#: models/nonrel.py:3923
 msgid "This article contains one or more important facts"
 msgstr "Cet article contient un ou plusieurs faits marquants"
 
-#: models/nonrel.py:3869
+#: models/nonrel.py:3925
 msgid "Mark as fact"
 msgstr "Ajouter aux faits"
 
-#: models/nonrel.py:3870
+#: models/nonrel.py:3926
 msgid "Unmark fact"
 msgstr "Enlever des faits"
 
-#: models/nonrel.py:3871
+#: models/nonrel.py:3927
 msgid "fact"
 msgstr "fait"
 
-#: models/nonrel.py:3877
+#: models/nonrel.py:3933
 msgid "numbers"
 msgstr "chiffres"
 
-#: models/nonrel.py:3879
+#: models/nonrel.py:3935
 msgid "^read/numbers/$"
 msgstr "^lire/chiffres/$"
 
-#: models/nonrel.py:3880
+#: models/nonrel.py:3936
 msgid "^read/numbers/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/chiffres/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3881
+#: models/nonrel.py:3937
 msgid "Mark as valuable number"
 msgstr "Marquer comme chiffre clef"
 
-#: models/nonrel.py:3882
+#: models/nonrel.py:3938
 msgid "Remove from valuable numbers"
 msgstr "Supprimer des chiffres clefs"
 
-#: models/nonrel.py:3883
+#: models/nonrel.py:3939
 msgid "This article contains quantified numbers for a watch."
 msgstr "Cet article contient des chiffres clefs ou des données quantifiées."
 
-#: models/nonrel.py:3885
+#: models/nonrel.py:3941
 msgid "Mark as number"
 msgstr "Ajouter aux chiffres"
 
-#: models/nonrel.py:3886
+#: models/nonrel.py:3942
 msgid "Unmark number"
 msgstr "Enlever des chiffres"
 
-#: models/nonrel.py:3887
+#: models/nonrel.py:3943
 msgid "number"
 msgstr "chiffre clef"
 
-#: models/nonrel.py:3896 models/nonrel.py:3907
+#: models/nonrel.py:3952 models/nonrel.py:3963
 msgid "analysis"
 msgstr "analyse"
 
-#: models/nonrel.py:3898
+#: models/nonrel.py:3954
 msgid "^read/analysis/$"
 msgstr "^lire/analyses/$"
 
-#: models/nonrel.py:3899
+#: models/nonrel.py:3955
 msgid "^read/analysis/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/analyses/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3900
+#: models/nonrel.py:3956
 msgid "Mark as analysis / study / research"
 msgstr "Ajouter aux analyses / études / travaux de recherches"
 
-#: models/nonrel.py:3901
+#: models/nonrel.py:3957
 msgid "Unmark analysis / study / research"
 msgstr "Supprimer des analyses / études / travaux de recherches"
 
-#: models/nonrel.py:3902
+#: models/nonrel.py:3958
 msgid ""
 "This article contains an analysis, an in-depth study or a research "
 "publication."
@@ -1175,239 +1175,239 @@ msgstr ""
 "Cet article contient une analyse, une étude de cas ou une publication de "
 "travaux de recherches."
 
-#: models/nonrel.py:3905
+#: models/nonrel.py:3961
 msgid "Mark as analysis"
 msgstr "Ajouter aux analyses"
 
-#: models/nonrel.py:3906
+#: models/nonrel.py:3962
 msgid "Unmark analysis"
 msgstr "Enlever des analyses"
 
-#: models/nonrel.py:3915
+#: models/nonrel.py:3971
 msgid "quotes"
 msgstr "citations"
 
-#: models/nonrel.py:3917
+#: models/nonrel.py:3973
 msgid "^read/quotes/$"
 msgstr "^lire/citations/$"
 
-#: models/nonrel.py:3918
+#: models/nonrel.py:3974
 msgid "^read/quotes/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/citations/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3919
+#: models/nonrel.py:3975
 msgid "Mark as containing quote(s) from people you consider important"
 msgstr ""
 "Marquer comme conteneur de citation(s) de personne(s) considérée(s) "
 "importante(s)"
 
-#: models/nonrel.py:3921
+#: models/nonrel.py:3977
 msgid "Unmark as containing quotes (people are not famous anymore?)"
 msgstr "Supprimer des citations"
 
-#: models/nonrel.py:3923
+#: models/nonrel.py:3979
 msgid "This article contains one or more quote from people you care about."
 msgstr ""
 "Cet article contient une ou plusieurs citations de personnes auxquelles vous"
 " tenez."
 
-#: models/nonrel.py:3925
+#: models/nonrel.py:3981
 msgid "Mark as quote"
 msgstr "Ajouter aux citations"
 
-#: models/nonrel.py:3926
+#: models/nonrel.py:3982
 msgid "Unmark quote"
 msgstr "Enlever des citations"
 
-#: models/nonrel.py:3936 models/nonrel.py:3946
+#: models/nonrel.py:3992 models/nonrel.py:4002
 msgid "prospective"
 msgstr "prospective"
 
-#: models/nonrel.py:3938
+#: models/nonrel.py:3994
 msgid "^read/prospective/$"
 msgstr "^read/prospectives/$"
 
-#: models/nonrel.py:3939
+#: models/nonrel.py:3995
 msgid "^read/prospective/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/prospective/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3940
+#: models/nonrel.py:3996
 msgid "Mark as prospective-related content"
 msgstr "Marquer comme élément de prospective"
 
-#: models/nonrel.py:3941
+#: models/nonrel.py:3997
 msgid "Unmark as prospective-related content"
 msgstr "Supprimer des contenus à teneur prospective"
 
-#: models/nonrel.py:3942
+#: models/nonrel.py:3998
 msgid ""
 "This article contains prospective element(s) or must-remember hypothesis."
 msgstr ""
 "Cet article contient un ou plusieurs éléments de prospective, ou des "
 "hypothèses à retenir."
 
-#: models/nonrel.py:3944
+#: models/nonrel.py:4000
 msgid "Mark as prospective"
 msgstr "Ajouter aux prospectives"
 
-#: models/nonrel.py:3945
+#: models/nonrel.py:4001
 msgid "Unmark prospective"
 msgstr "Enlever des prospectives"
 
-#: models/nonrel.py:3954
+#: models/nonrel.py:4010
 msgid "rules"
 msgstr "règlementations"
 
-#: models/nonrel.py:3956
+#: models/nonrel.py:4012
 msgid "^read/rules/$"
 msgstr "^lire/reglementations/$"
 
-#: models/nonrel.py:3957
+#: models/nonrel.py:4013
 msgid "^read/rules/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/reglementations/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3958
+#: models/nonrel.py:4014
 msgid "Mark as legal/regulations-related content"
 msgstr "Marquer comme point de règlementation ou texte de loi"
 
-#: models/nonrel.py:3959
+#: models/nonrel.py:4015
 msgid "Unmark as legal content (overriden laws?)"
 msgstr "Supprimer des point de règlementation / lois"
 
-#: models/nonrel.py:3960
+#: models/nonrel.py:4016
 msgid "This article contains regulations/law/rules element(s)"
 msgstr ""
 "Cet article contient une règlementation, des textes de loi ou des "
 "informations d'ordre juridique."
 
-#: models/nonrel.py:3962
+#: models/nonrel.py:4018
 msgid "Mark as law/regul."
 msgstr "Ajouter aux règlementations"
 
-#: models/nonrel.py:3963
+#: models/nonrel.py:4019
 msgid "Unmark law/regul."
 msgstr "Enlever des réglementations"
 
-#: models/nonrel.py:3964
+#: models/nonrel.py:4020
 msgid "regulations"
 msgstr "réglementation"
 
-#: models/nonrel.py:3974
+#: models/nonrel.py:4030
 msgid "best-practices"
 msgstr "best-practices"
 
-#: models/nonrel.py:3977
+#: models/nonrel.py:4033
 msgid "^read/best-practices/$"
 msgstr "^lire/best-practices/$"
 
-#: models/nonrel.py:3978
+#: models/nonrel.py:4034
 msgid "^read/best-practices/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/best-practices/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3979
+#: models/nonrel.py:4035
 msgid "Mark as best-practices / state of art content"
 msgstr "Ajouter aux best-practices ou état-de-l'art"
 
-#: models/nonrel.py:3981
+#: models/nonrel.py:4037
 msgid "Unmark as best-practices / state of art (has it become obsolete?)"
 msgstr "Supprimer des best-practices (c'est devenu obsolète ?)"
 
-#: models/nonrel.py:3983
+#: models/nonrel.py:4039
 msgid "This article contains best-practices /  state of art element(s)."
 msgstr "Cet article contient des best-practices ou un état de l'art."
 
-#: models/nonrel.py:3985
+#: models/nonrel.py:4041
 msgid "Mark as best-practice"
 msgstr "Ajouter aux best-practices"
 
-#: models/nonrel.py:3986
+#: models/nonrel.py:4042
 msgid "Unmark best-practice"
 msgstr "Enlever des best-practices"
 
-#: models/nonrel.py:3995
+#: models/nonrel.py:4051
 msgid "knowlegde"
 msgstr "savoirs"
 
-#: models/nonrel.py:3997
+#: models/nonrel.py:4053
 msgid "^read/knowledge/$"
 msgstr "^lire/savoirs/$"
 
-#: models/nonrel.py:3998
+#: models/nonrel.py:4054
 msgid "^read/knowledge/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/savoirs/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:3999
+#: models/nonrel.py:4055
 msgid "Mark as a valuable piece of knowlegde for your brain or life"
 msgstr "Marquer comme une pièce de valeur pour votre cerveau ou votre vie"
 
-#: models/nonrel.py:4001
+#: models/nonrel.py:4057
 msgid "Unmark as neuronal-exciting element(s)"
 msgstr "Supprimer des éléments excitateurs de neurones"
 
-#: models/nonrel.py:4003
+#: models/nonrel.py:4059
 msgid "This article contains a valuable piece of knowlegde."
 msgstr ""
 "Cet article contient un élément de savoir ou une connaissance important(e)"
 
-#: models/nonrel.py:4005
+#: models/nonrel.py:4061
 msgid "Mark as Knowledge"
 msgstr "Ajouter aux savoirs"
 
-#: models/nonrel.py:4006
+#: models/nonrel.py:4062
 msgid "Unmark knowlegde"
 msgstr "Enlever des savoirs"
 
-#: models/nonrel.py:4007
+#: models/nonrel.py:4063
 msgid "knowledge"
 msgstr "savoir"
 
-#: models/nonrel.py:4015
+#: models/nonrel.py:4071
 msgid "funbox"
 msgstr "funbox"
 
-#: models/nonrel.py:4017
+#: models/nonrel.py:4073
 msgid "^read/fun/$"
 msgstr "^lire/drole/$"
 
-#: models/nonrel.py:4018
+#: models/nonrel.py:4074
 msgid "^read/fun/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/drole/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: models/nonrel.py:4019
+#: models/nonrel.py:4075
 msgid "Mark as being fun. Are you sure?"
 msgstr "Marquer comme drôle. Ça l'est vraiment ??"
 
-#: models/nonrel.py:4020
+#: models/nonrel.py:4076
 msgid "Not fun anymore, sadly."
 msgstr "C'est plus drôle du tout. Je vais pleurer."
 
-#: models/nonrel.py:4021
+#: models/nonrel.py:4077
 msgid "OMG, this thing is sooooooooo fun! LMAO!"
 msgstr "Ce truc est trop poilant !!! Je me bidonne comme un dingue !"
 
-#: models/nonrel.py:4022
+#: models/nonrel.py:4078
 msgid "Mark as fun"
 msgstr "Mettre un peu d'humour"
 
-#: models/nonrel.py:4023
+#: models/nonrel.py:4079
 msgid "Mark as boring"
 msgstr "Supprimer des blagues"
 
-#: models/nonrel.py:4024
+#: models/nonrel.py:4080
 msgid "fun"
 msgstr "drôle"
 
-#: models/nonrel.py:4069
+#: models/nonrel.py:4125
 #, python-brace-format
 msgid "{0}∞{1} (#{2}) {3} {4}"
 msgstr "{0}∞{1} (#{2}) {3} {4}"
 
-#: models/nonrel.py:4092
+#: models/nonrel.py:4148
 #, python-brace-format
 msgid " ({feed})"
 msgstr " ({feed}) "
 
-#: models/nonrel.py:4097
+#: models/nonrel.py:4153
 #, python-brace-format
 msgid "{title}{source}"
 msgstr "{title}{source}"
@@ -2447,8 +2447,8 @@ msgid "All articles"
 msgstr "Tous les articles"
 
 #: templates/snippets/selector/selector.html:44
-msgid "Information streams"
-msgstr "Flux d'information"
+msgid "Unclassified information streams"
+msgstr "Flux d'informations non-classés"
 
 #: templates/snippets/selector/selector.html:46
 #: templates/snippets/selector/subscription.html:10
