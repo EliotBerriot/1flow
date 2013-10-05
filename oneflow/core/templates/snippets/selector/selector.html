@@ -41,7 +41,7 @@
     </fieldset>
 
     <fieldset id="subscriptions">
-        <legend>{% trans "Information streams" %} ({{ subscriptions|length }})
+        <legend>{% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
             <div class="global-links pull-right">
                 <span class="unread">{% reading_list_with_count 'read' _('unread') %}</span>
 
@@ -60,7 +60,7 @@
         <div class="clearfix"></div>
 
         <div>
-            {% for subscription in user.mongo.nofolder_open_subscriptions %}
+            {% for subscription in nofolder_open_subscriptions %}
                 {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
             {% endfor %}
         </div>
@@ -70,7 +70,7 @@
     {% if show_closed_streams %}
 
         <fieldset id="closed-subscriptions">
-                <legend>{% trans "Closed streams" %} ({{ subscriptions|length }})</legend>
+                <legend>{% trans "Closed streams" %} ({{ closed_subscriptions|length }})</legend>
 
                 <div>
                     {% for subscription in closed_subscriptions %}
