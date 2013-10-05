@@ -32,9 +32,11 @@ from sparks.django.utils import HttpResponseTemporaryServerError
 
 from .forms import (FullUserCreationForm,
                     UserProfileEditForm,
-                    ReadPreferencesForm, SelectorPreferencesForm)
+                    HomePreferencesForm,
+                    ReadPreferencesForm,
+                    SelectorPreferencesForm)
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed, Read
+from .models.nonrel import Feed, Subscription, Read
 from .models.reldb import HelpContent
 from ..base.utils.dateutils import now
 
@@ -73,6 +75,9 @@ def home(request):
 def preferences(request):
 
     if request.POST:
+        home_form = HomePreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.home)
+
         reading_form = ReadPreferencesForm(
                 request.POST, instance=request.user.mongo.preferences.read)
 
@@ -82,18 +87,22 @@ def preferences(request):
         if reading_form.is_valid() and sources_form.is_valid:
             # form.save() does nothing on an embedded document,
             # which needs to be saved from the container.
+            request.user.mongo.preferences.home = home_form.save()
             request.user.mongo.preferences.read = reading_form.save()
             request.user.mongo.preferences.selector = sources_form.save()
             request.user.mongo.preferences.save()
 
             return HttpResponseRedirect(reverse('preferences'))
     else:
+        home_form = HomePreferencesForm(
+                instance=request.user.mongo.preferences.home)
         reading_form = ReadPreferencesForm(
                 instance=request.user.mongo.preferences.read)
         sources_form = SelectorPreferencesForm(
                 instance=request.user.mongo.preferences.selector)
 
     return render(request, 'preferences.html', {
+                  'home_form': home_form,
                   'reading_form': reading_form,
                   'sources_form': sources_form
                   })
