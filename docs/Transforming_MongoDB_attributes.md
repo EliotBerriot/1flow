@@ -97,19 +97,26 @@ They produce: http://dev.1flow.net/webapps/1flow/group/6892/
 
 They must be resolved directly in MongoDB. In MongoHub:
 
-Action: {"$unset": {"comments": ""} }
-Query: {"comments": {"$exists": true} }
+    Action: {"$unset": {"comments": ""} }
+    Query: {"comments": {"$exists": true} }
 
 Resulting MongoDB command:
 
 db.oneflow.article.update({
+    "comments": {"$exists": true} },
+    {"$unset": {"comments": ""} },
+    false, true);
+
+db.oneflow_archive.article.update({
     "full_content_type": {"$exists": true} },
     {"$unset": {"full_content_type": ""} },
     false, true);
 
+
 On 20131005, I cleaned:
 
-"comments"          957xxx rows
-"full_content_type" 95768 rows
-"full_content"      95xx rows
-"duplicates"        162291 rows
+                    Orni                Heighliner (archive)
+"comments"          957xxx rows         473773 rows
+"full_content_type" 95768 rows          ??? (via CLI)
+"full_content"      95xx rows           idem
+"duplicates"        162291 rows         idem
