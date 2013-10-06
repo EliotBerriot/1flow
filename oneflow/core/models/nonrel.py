@@ -523,8 +523,9 @@ class HomePreferences(EmbeddedDocument):
                           help_text=_(u'Define what 1flow will display when '
                                       u'you click on the <code>Read</code> '
                                       u'link in the top navbar of the '
-                                      u'interface. <br /><span class="muted">'
-                                      u'Default: shows the <strong>sources '
+                                      u'interface. <br />'
+                                      u'<span class="muted">Default: shows '
+                                      u'the <strong>sources '
                                       u'selector</strong>.</span>'))
 
     def get_template(self):
