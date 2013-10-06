@@ -280,11 +280,12 @@ def production():
         # },
 
         'max_tasks_per_child': {
-            'worker_swarm': '8',
+            'worker_swarm': '16',
 
-            # Fetchers can exhaust memory very quickly. 1 article suffice to
-            # go up to 1Gb and stay there. Thus we need to clean very often.
-            'worker_fetch': '1',
+            # Fetchers can exhaust memory very quickly. Sometime 1 article
+            # suffice to go up to 1Gb and stay there, if the content is
+            # faulty. We need to clean often.
+            'worker_fetch': '8',
 
             '__all__': '64',
         },
@@ -294,13 +295,13 @@ def production():
         'worker_soft_time_limit': {
             'worker_swarm':      '120',
 
-            # Huge article usually consume memory (up to 1gb, se earlier), and
-            # never seem to want to give it back. Sometimes they eat 3-4% CPU,
-            # sometimes they do nothing. I consider that 3 minutes is enough
-            # to convert an article to markdown. If it doesn't acheive the
-            # conversion in tis time frame, there is probably a more serious
-            # problem.
-            'worker_fetch':      '180',
+            # I consider that 5 minutes is enough to convert an article to
+            # markdown. If it doesn't acheive the conversion in tis time
+            # frame, there is probably a more serious problem. Note that it
+            # can take time because of high niceness of worker processes,
+            # eg. they run at low priority, and a bunch of them on only a
+            # few cpu cores. So we have to let them a fair amount of time.
+            'worker_fetch': '300',
         },
 
         # Eventlet works, but sometimes breaks with "RuntimeError(simultaneous
