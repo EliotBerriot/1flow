@@ -1,9 +1,19 @@
 {% with unread_count=subscription.unread_articles_count later_count=subscription.bookmarked_articles_count %}
     <div class="subscription {{ unread_count|yesno:'has-unread,' }}">
         <div class="thumbnail">
-            {% with default_url="http://lorempixel.com/64/64/abstract/"|add:subscription.id %}
+            {% if user.is_superuser %}
+                {% if subscription.feed.thumbnail_url %}
+                    <img src="{{ subscription.feed.thumbnail_url }}" />
+
+                {% else %}
+                    <a href="/admin/models/feed/{{ subscription.feed.id }}">
+                        <i class="icon-edit icon-3x muted"></i>
+                    </a>
+
+                {% endif %}
+            {% else %}
                 <img src="{% firstof subscription.feed.thumbnail_url "http://lorempixel.com/64/64/abstract/" %}" />
-            {% endwith %}
+            {% endif %}
         </div>
 
         <div class="links css-hover-muted">
