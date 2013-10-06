@@ -29,10 +29,8 @@
             </a>
             <ul class="dropdown-menu">
 
-              {% if user.is_superuser %}
-                <li class="{% reverse_active 'read_all' %}"><a href="{% url 'read_all' %}">{% trans 'All' %}</a></li>
-                <li class="divider"></li>
-              {% endif %}
+              <li class="{% reverse_active 'read_all' %}"><a href="{% url 'read_all' %}">{% trans 'All' %}</a></li>
+              <li class="divider"></li>
 
               <li class="{% reverse_active 'read_fun' %}"><a href="{% url 'read_fun' %}">{% trans 'Funbox' %}</a></li>
 

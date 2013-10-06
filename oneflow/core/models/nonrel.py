@@ -462,6 +462,35 @@ class SelectorPreferences(EmbeddedDocument):
         default=False)
 
 
+class StaffPreferences(EmbeddedDocument):
+    """ Preferences for staff members / super users. """
+
+    super_powers_enabled = BooleanField(
+        verbose_name=_(u'Super powers enabled'),
+        help_text=_(u'Globaly enable or not every bit of staff/superuser '
+                    u'features in the 1flow interface. If disabled, only the '
+                    u'<strong>MAINTENANCE_MODE</strong> label in the navbar '
+                    u'will visible, and this preference pane to be able to '
+                    u're-enable the features once deactivated.<br />'
+                    u'<span class="muted">Default: enabled.</span>'),
+        default=True)
+
+    reading_lists_show_bad_articles = BooleanField(
+        verbose_name=_(u'Show duplicates, orphaned and other transient data'),
+        help_text=_(u'<strong>Warning</strong>: this breaks keyboard shortcut '
+                    u'navigation whenever the first bad article is '
+                    u'encountered.<br />'
+                    u'<span class="muted">Default: disabled.</span>'),
+        default=False)
+
+    selector_shows_admin_links = BooleanField(
+        verbose_name=_(u'Selector shows admin links'),
+        help_text=_(u'Automatically link to the admin from the selector '
+                    u'whenever folder/subscription has missing data.<br />'
+                    u'<span class="muted">Default: enabled.</span>'),
+        default=True)
+
+
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
@@ -494,8 +523,9 @@ class HomePreferences(EmbeddedDocument):
                           help_text=_(u'Define what 1flow will display when '
                                       u'you click on the <code>Read</code> '
                                       u'link in the top navbar of the '
-                                      u'interface. <br /><span class="muted">'
-                                      u'Default: shows the <strong>sources '
+                                      u'interface. <br />'
+                                      u'<span class="muted">Default: shows '
+                                      u'the <strong>sources '
                                       u'selector</strong>.</span>'))
 
     def get_template(self):
@@ -524,6 +554,8 @@ class Preferences(Document, DocumentHelperMixin):
                                          default=SelectorPreferences)
     wizards      = EmbeddedDocumentField(u'HelpWizards',
                                          default=HelpWizards)
+    staff        = EmbeddedDocumentField(u'StaffPreferences',
+                                         default=StaffPreferences)
 
     def __unicode__(self):
         return u'Preferences #%s' % self.id

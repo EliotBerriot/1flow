@@ -13,6 +13,12 @@
         <h1>{% trans "Preferences" %}</h1>
 
         <ul class="nav nav-tabs" id="preferences-tabs">
+
+          {% if user.is_superuser %}
+            <li class="secondary-nav"><a data-toggle="tab" href="#staff">{% if not preferences.staff.super_powers_enabled %}<i class="icon-warning-sign"></i>{% else %}
+              {% trans "1flow staff" %}{% endif %}</a></li>
+          {% endif %}
+
           <li class="secondary-nav"><a data-toggle="tab" href="#reading">{% trans "Reading" %}</a></li>
           <li class="secondary-nav"><a data-toggle="tab" href="#sources">{% trans "Sources" %}</a></li>
           <li class="secondary-nav active"><a data-toggle="tab" href="#home">{% trans "General" %}</a></li>
@@ -33,6 +39,13 @@
             <div class="tab-pane fade" id="reading">
               {% include "snippets/preferences/read.html" %}
             </div>
+
+            {% if user.is_superuser %}
+              <div class="tab-pane fade" id="staff">
+                {% include "snippets/preferences/staff.html" %}
+              </div>
+            {% endif %}
+
           </div>
 
           {% include "widgets/forms/form-actions.html" %}

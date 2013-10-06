@@ -52,7 +52,7 @@
 
             <p class="muted">{% trans "These data are not stored durably in 1flow. They are offered courtesy of your social account provider (eg. Google, Twitter…). Change any parameter directly there, it will be reflected here next time you sign in." %}</p>
 
-            {% if user.is_superuser %}
+            {% if user.is_superuser and preferences.staff.super_powers_enabled %}
               <h3>{% trans "Super-user access" %}</h3>
               <table class="table table-hover">
                 <tr>

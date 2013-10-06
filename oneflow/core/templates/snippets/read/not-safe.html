@@ -6,7 +6,7 @@ render it here.<br />
 Alternatively, you can <a href="{{ article_url }}" target="_blank">read the article on its original website</a>. Sorry for the inconvenience.
 {% endblocktrans %}{% endwith %}</p>
 
-  {% if user.is_superuser %}
+  {% if user.is_superuser and preferences.staff.super_powers_enabled %}
   <p>Admin stuff: {# {{ article.content|safe }} #}<br /><br />
   —— HTML content: {{ article.content|length }} characters long ——
   </p>
