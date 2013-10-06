@@ -271,6 +271,13 @@
     padding-right: 4em;
 }
 
+#jump-to-label {
+    a:hover {
+        background-color: inherit;
+        color: rgb(170, 170, 170);
+    }
+}
+
 // —————————————————————————————————————————————————————————————— Feed selector
 
 #selector {
