@@ -423,6 +423,16 @@ class ReadPreferences(EmbeddedDocument):
                     u'navbars manually with the `shift`+`f` keyboard '
                     u'shortcut.'), default=False)
 
+    show_bottom_navbar = BooleanField(
+        verbose_name=_(u'Show the bottom “jump to” navbar'),
+        help_text=_(u'When you are in any reading list, either reading '
+                    u'articles or just scrolling the list, you can have '
+                    u'a navigation bar at the bottom of the screen, allowing '
+                    u'you to quickly jump to other reading lists, or back to '
+                    u'the sources selector.<br />'
+                    u'<span class="muted">Default is not to show this '
+                    u'navigation bar.</span>'), default=False)
+
 
 class SelectorPreferences(EmbeddedDocument):
     """ Source selector preferences. """

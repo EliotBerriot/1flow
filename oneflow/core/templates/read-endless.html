@@ -78,7 +78,9 @@
 {% endblock application_content %}
 
 {% block application_footer %}
-    {% include "navbars/read-endless.html" %}
+    {% if preferences.read.show_bottom_navbar %}
+        {% include "navbars/read-endless.html" %}
+    {% endif %}
 {% endblock application_footer %}
 
 {% block extrajs_footer %}
