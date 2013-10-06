@@ -413,7 +413,15 @@ class ReadPreferences(EmbeddedDocument):
     read_switches_to_fullscreen = BooleanField(
         verbose_name=_(u'Switch to full-screen while reading'),
         help_text=_(u'Automatically hide navigation bars when opening an '
-                    u'article for reading (default: true).'), default=True)
+                    u'article for reading (default: false).<br />'
+                    u'When enabled, fullscreen will remain active while you '
+                    u'switch from one open article to another. Navigation bars '
+                    u'will reappear when you close the current opened article '
+                    u'without opening a new one (eg. when you return to the '
+                    u'list view).<br />'
+                    u'Whatever this setting, you can always show or hide '
+                    u'navbars manually with the `shift`+`f` keyboard '
+                    u'shortcut.'), default=False)
 
 
 class SelectorPreferences(EmbeddedDocument):
