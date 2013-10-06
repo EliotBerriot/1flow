@@ -172,6 +172,7 @@ img.centered {
 .not-ready {
   filter: url("/static/img/filters.svg#blur4px");
   @include filter(blur(4px));
+  opacity: 0.5;
   cursor: help;
 }
 
