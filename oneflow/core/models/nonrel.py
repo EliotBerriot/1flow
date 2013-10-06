@@ -2047,10 +2047,13 @@ class Subscription(Document, DocumentHelperMixin):
         # TODO: move this into the DocumentHelperMixin and detect all
         #       descriptors automatically by examining the __class__.
 
-        self.all_articles_count
-        self.unread_articles_count
-        self.starred_articles_count
-        self.bookmarked_articles_count
+        self.all_articles_count = subscription_all_articles_count_default(self)
+        self.unread_articles_count = \
+            subscription_unread_articles_count_default(self)
+        self.starred_articles_count = \
+            subscription_starred_articles_count_default(self)
+        self.bookmarked_articles_count = \
+            subscription_bookmarked_articles_count_default(self)
 
     def __unicode__(self):
         return _(u'{0}+{1} (#{2})').format(
