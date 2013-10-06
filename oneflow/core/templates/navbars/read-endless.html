@@ -3,6 +3,12 @@
     <div class="container">
       <ul class="nav">
 
+          <li class="nowrap hidden-phone disabled" id="jump-to-label">
+            <a href="#" onclick="return false;">
+              {% trans 'Jump to:' %}
+            </a>
+          </li>
+
           <li class="nowrap hidden-phone">
             <a href="{% url 'source_selector' %}"
                 class="{% reverse_active 'source_selector' %}">

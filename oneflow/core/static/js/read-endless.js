@@ -620,6 +620,7 @@ Mousetrap.bind(['o m g', 'l o l', 'l m a o', 'f u n'], function() {
 
 // —————————————————————————————————————————————————————————— read-flow actions
 
+
 // “Mark Read” + “Next”, “Goto Next”, “Open Next”
 Mousetrap.bind(['shift+r', 'shift+n'], function() {
     mark_current_read_as('is_read');
@@ -650,7 +651,17 @@ Mousetrap.bind(['shift+l'], function() {
 });
 
 
+// ————————————————————————————————————————————————————————————— global actions
+
+
+Mousetrap.bind(['shift+f'], function() {
+    toggle_fullscreen();
+    return false;
+});
+
+
 // ——————————————————————————————————————————————————————————————— touch events
+
 
 if (Modernizr.touch) {
 

@@ -271,6 +271,13 @@
     padding-right: 4em;
 }
 
+#jump-to-label {
+    a:hover {
+        background-color: inherit;
+        color: rgb(170, 170, 170);
+    }
+}
+
 // —————————————————————————————————————————————————————————————— Feed selector
 
 #selector {
@@ -342,7 +349,8 @@
             margin: 0;
 
             opacity: $subscription-opacity-default;
-            @include black-and-white();
+            filter: url("/static/img/filters.svg#blur2px");
+            @include filter(blur(2px));
 
             img {
                 max-width: $subscription-image-size;
@@ -401,7 +409,7 @@
 
             .thumbnail {
                 opacity: 1;
-                @include black-and-white(none);
+                @include filter(none);
             }
 
             .name {
@@ -419,8 +427,8 @@
     .has-unread {
 
         .thumbnail {
-            @include black-and-white(none);
             opacity: 1;
+            @include filter(none);
         }
 
         .name {

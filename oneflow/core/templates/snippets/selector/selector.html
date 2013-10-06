@@ -13,7 +13,7 @@
             </div>
             <div class="span3">
                 <ul>
-                    <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</a></li>
+                    <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</li>
                     <li>{% reading_list_with_count 'read_starred' _('Starred') %}</li>
 
                     <li class="muted not-ready" {% feature_not_ready %}>{% trans "Sent Articles" %}</li>
@@ -42,6 +42,7 @@
 
     <fieldset id="subscriptions">
         <legend>{% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
+            {% comment %}
             <div class="global-links pull-right">
                 <span class="unread">{% reading_list_with_count 'read' _('unread') %}</span>
 
@@ -49,6 +50,7 @@
 
                 <span class="all">{% reading_list_with_count 'read_all' _('all') %}</span>
             </div>
+            {% endcomment %}
 
         </legend>
 

@@ -413,7 +413,25 @@ class ReadPreferences(EmbeddedDocument):
     read_switches_to_fullscreen = BooleanField(
         verbose_name=_(u'Switch to full-screen while reading'),
         help_text=_(u'Automatically hide navigation bars when opening an '
-                    u'article for reading (default: true).'), default=True)
+                    u'article for reading (default: false).<br />'
+                    u'When enabled, fullscreen will remain active while you '
+                    u'switch from one open article to another. Navigation bars '
+                    u'will reappear when you close the current opened article '
+                    u'without opening a new one (eg. when you return to the '
+                    u'list view).<br />'
+                    u'Whatever this setting, you can always show or hide '
+                    u'navbars manually with the `shift`+`f` keyboard '
+                    u'shortcut.'), default=False)
+
+    show_bottom_navbar = BooleanField(
+        verbose_name=_(u'Show the bottom “jump to” navbar'),
+        help_text=_(u'When you are in any reading list, either reading '
+                    u'articles or just scrolling the list, you can have '
+                    u'a navigation bar at the bottom of the screen, allowing '
+                    u'you to quickly jump to other reading lists, or back to '
+                    u'the sources selector.<br />'
+                    u'<span class="muted">Default is not to show this '
+                    u'navigation bar.</span>'), default=False)
 
 
 class SelectorPreferences(EmbeddedDocument):

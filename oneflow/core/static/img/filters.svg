@@ -1,0 +1,9 @@
+<svg version='1.1' xmlns='http://www.w3.org/2000/svg'>
+    <filter id='blur1px'><feGaussianBlur stdDeviation='1' /></filter>
+    <filter id='blur2px'><feGaussianBlur stdDeviation='2' /></filter>
+    <filter id='blur3px'><feGaussianBlur stdDeviation='3' /></filter>
+    <filter id='blur4px'><feGaussianBlur stdDeviation='4' /></filter>
+    <filter id='blur5px'><feGaussianBlur stdDeviation='5' /></filter>
+    <filter id='blur10px'><feGaussianBlur stdDeviation='10' /></filter>
+    <filter id='grayscale'><feColorMatrix type='matrix' values='0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0.3333 0.3333 0.3333 0 0 0 0 0 1 0' /></filter>
+</svg>
