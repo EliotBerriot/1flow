@@ -15,6 +15,8 @@
         <ul class="nav pull-right">
 
           {% if user.is_staff or user.is_superuser %}
+            {# Life or Death: do not hide, even if not super_powers_enabled #}
+
             {% if MAINTENANCE_MODE %}
               <li>
                 <a href="#" disabled="disabled">
@@ -25,46 +27,50 @@
 
             {% endif %}
 
-            <li class="visible-desktop"><a id="system-informations" href="#"
-              data-toggle="popover" data-placement="bottom"
-              data-original-title="System Informations" data-html="true"
-              data-content="
-            <table class='table table-hover table-stripped table-condensed'>
-              <!--<thead>
-                <tr>
-                  <th>Setting</th>
-                  <th>Value</th>
-                </tr>
-              </thead>-->
-              <tbody>
-                <tr>
-                  <td>PostgreSQL</td>
-                  <td>{{settings.DATABASES.default.HOST}}
-                    <strong>{{settings.DATABASES.default.NAME}}</strong></td>
-                </tr>
-                <tr>
-                  <td>MongoDB</td>
-                  <td>{{settings.MONGODB_HOST}}
-                    <strong>{{settings.MONGODB_NAME}}</strong></td>
-                </tr>
-                <tr>
-                  <td>Mongo Archive</td>
-                  <td>{{settings.MONGODB_HOST_ARCHIVE}}
-                    <strong>{{settings.MONGODB_NAME_ARCHIVE}}</strong></td>
-                </tr>
-                <tr>
-                  <td></td>
-                  <td></td>
-                </tr>
-              </tbody>
-            </table>"
-              >v{{ VERSION }}</a></li>
+            {% if preferences.staff.super_powers_enabled %}
 
-              <script type="text/javascript">
-              $(document).ready(function(){
-                $("#system-informations").popover();
-              });
-              </script>
+              <li class="visible-desktop"><a id="system-informations" href="#"
+                data-toggle="popover" data-placement="bottom"
+                data-original-title="System Informations" data-html="true"
+                data-content="
+              <table class='table table-hover table-stripped table-condensed'>
+                <!--<thead>
+                  <tr>
+                    <th>Setting</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>-->
+                <tbody>
+                  <tr>
+                    <td>PostgreSQL</td>
+                    <td>{{settings.DATABASES.default.HOST}}
+                      <strong>{{settings.DATABASES.default.NAME}}</strong></td>
+                  </tr>
+                  <tr>
+                    <td>MongoDB</td>
+                    <td>{{settings.MONGODB_HOST}}
+                      <strong>{{settings.MONGODB_NAME}}</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Mongo Archive</td>
+                    <td>{{settings.MONGODB_HOST_ARCHIVE}}
+                      <strong>{{settings.MONGODB_NAME_ARCHIVE}}</strong></td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>"
+                >v{{ VERSION }}</a></li>
+
+                <script type="text/javascript">
+                $(document).ready(function(){
+                  $("#system-informations").popover();
+                });
+                </script>
+
+            {% endif %}
 
           {% endif %}
 
@@ -95,7 +101,8 @@
                 <a href="{% url 'profile' %}">{% trans 'Account' %}</a>
               </li>
 
-            {% if user.is_superuser %}
+            {% if user.is_superuser and preferences.staff.super_powers_enabled %}
+
               <li class="divider"></li>
               <li><a href="/admin/constance/config/"
                     target="_blank">{% trans 'Constance config.' %}</a></li>

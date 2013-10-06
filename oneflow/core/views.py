@@ -34,7 +34,8 @@ from .forms import (FullUserCreationForm,
                     UserProfileEditForm,
                     HomePreferencesForm,
                     ReadPreferencesForm,
-                    SelectorPreferencesForm)
+                    SelectorPreferencesForm,
+                    StaffPreferencesForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Subscription, Read
 from .models.reldb import HelpContent
@@ -122,12 +123,20 @@ def preferences(request):
         sources_form = SelectorPreferencesForm(
                 request.POST, instance=request.user.mongo.preferences.selector)
 
+        if request.user.is_superuser:
+            staff_form = StaffPreferencesForm(
+                    request.POST, instance=request.user.mongo.preferences.staff)
+
         if reading_form.is_valid() and sources_form.is_valid:
             # form.save() does nothing on an embedded document,
             # which needs to be saved from the container.
             request.user.mongo.preferences.home = home_form.save()
             request.user.mongo.preferences.read = reading_form.save()
             request.user.mongo.preferences.selector = sources_form.save()
+
+            if request.user.is_superuser:
+                request.user.mongo.preferences.staff = staff_form.save()
+
             request.user.mongo.preferences.save()
 
             return HttpResponseRedirect(reverse('preferences'))
@@ -139,10 +148,17 @@ def preferences(request):
         sources_form = SelectorPreferencesForm(
                 instance=request.user.mongo.preferences.selector)
 
+        if request.user.is_superuser:
+            staff_form = StaffPreferencesForm(
+                    instance=request.user.mongo.preferences.staff)
+        else:
+            staff_form = None
+
     return render(request, 'preferences.html', {
                   'home_form': home_form,
                   'reading_form': reading_form,
-                  'sources_form': sources_form
+                  'sources_form': sources_form,
+                  'staff_form': staff_form,
                   })
 
 

@@ -1,7 +1,7 @@
 
 {# This template must be included inside a <script> block, it's javascript. #}
 
-{% if user.is_superuser %}
+{% if user.is_superuser and preferences.staff.super_powers_enabled %}
 
     // ———————————————————————————————————————————————————————————————— testing
 
