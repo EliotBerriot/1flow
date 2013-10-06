@@ -3048,10 +3048,7 @@ class Article(Document, DocumentHelperMixin):
                 LOGGER.exception(u'Could not replace current article in '
                                  u'read %s by %s!' % (read, self))
 
-        statsd.gauge('articles.counts.duplicates', 1, delta=True)
-
-        LOGGER.info(u'Article %s successfully registered as duplicate '
-                    u'of %s and can be deleted if wanted.', duplicate, self)
+        LOGGER.info(u'Article %s replaced by %s everywhere.', duplicate, self)
 
     def create_reads(self, subscriptions, verbose=True, **kwargs):
 
