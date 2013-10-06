@@ -379,24 +379,22 @@ class FeedAdmin(admin.DocumentAdmin):
 
     fieldsets = (
         ('Main', {
-            'fields': ('name', 'url',
+            'fields': ('name',
+                       'thumbnail_url',
                        ('good_for_use', 'restricted', ),
-                       'languages', 'notes',
-                       'date_added', ),
-        }),
-        ('Public information', {
-            'classes': ('grp-collapse grp-open', ),
-            'fields' : ('thumbnail_url',
-                        'description_en', 'description_fr', ),
+                       'languages',
+                       'description_en', 'description_fr',
+                       'notes', ),
         }),
         ('Fetch parameters', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : ('fetch_interval', 'last_fetch',
-                        'last_etag', 'last_modified', ),
+            'fields' : ('url', 'fetch_interval', 'last_fetch',
+                        ('last_etag', 'last_modified',), ),
         }),
-        ('Errors and closing procedure', {
+        ('Birth & Death', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : (('closed', 'date_closed', ),
+            'fields' : ('date_added',
+                        ('closed', 'date_closed', ),
                         'closed_reason', 'errors', ),
         }),
     )
