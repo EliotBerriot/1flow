@@ -599,6 +599,12 @@ SOCIAL_AUTH_PIPELINE = (
     'oneflow.core.social_pipeline.get_social_avatar',
 )
 
+# —————————————————————————————————————————————————————————————— 1flow settings
+
+
+DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+
+
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
 
 LOGGING = {
