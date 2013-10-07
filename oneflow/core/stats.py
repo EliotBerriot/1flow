@@ -8,6 +8,8 @@ from constance import config
 #from mongoengine.queryset import Q
 #from mongoengine.context_managers import no_dereference
 
+from celery import task
+
 from oneflow.core.models import (Tag, Feed, Article, Author, WebSite,
                                  CONTENT_TYPE_NONE,
                                  CONTENT_TYPE_HTML,
@@ -511,6 +513,7 @@ def synchronize_statsd_authors_gauges(full=False):
             statsd.gauge('authors.counts.duplicates', duplicates.count())
 
 
+@task(queue='low')
 def synchronize_statsd_gauges(full=False):
     synchronize_statsd_articles_gauges(full=full)
     synchronize_statsd_tags_gauges(full=full)
