@@ -674,7 +674,7 @@ def global_feeds_checker():
                 settings.SITE_DOMAIN,
 
                 reverse('admin:%s_%s_change' % (
-                    feed._meta.get('app_label', 'models'),
+                    feed._meta.get('app_label', 'nonrel'),
                     feed._meta.get('module_name', 'feed')),
                     args=[feed.id]),
 
