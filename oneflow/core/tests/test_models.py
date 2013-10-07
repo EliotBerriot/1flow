@@ -282,7 +282,8 @@ class FeedsTest(TestCase):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
+            # PG post_save() signal already created the MongoDB user.
+            u = du.mongo
             Read(user=u, article=self.article1).save()
             Subscription(user=u, feed=self.feed).save()
 
@@ -290,7 +291,6 @@ class FeedsTest(TestCase):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
 
     def tearDown(self):
         Subscription.drop_collection()
@@ -344,14 +344,16 @@ class ArticleDuplicateTest(TestCase):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
+            # NOTE: the mongoDB user is created automatically. If you
+            # try to create one it will fail with duplicate index error.
+            u = du.mongo
             Read(user=u, article=self.article1).save()
 
         for index in xrange(6, 11):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
+            u = du.mongo
             Read(user=u, article=self.article2).save()
 
         # Feeds creation
@@ -610,8 +612,8 @@ class UsersTest(TestCase):
             username='testuser', password='testpass',
             email='test-ocE3f6VQqFaaAZ@1flow.io')
 
-        self.mongodb_user = User(django_user=self.django_user.id,
-                                 username='test_user').save()
+        # Auto-created on PG's post_save().
+        self.mongodb_user = self.django_user.mongo
 
     def tearDown(self):
         User.drop_collection()

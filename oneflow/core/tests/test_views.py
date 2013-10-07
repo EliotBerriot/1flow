@@ -50,8 +50,8 @@ class HomeAndPreferencesViewTest(TestCase):
             username='testuser', password='testpass',
             email='test-ocE3f6VQqFaaAZ@1flow.io')
 
-        self.mongodb_user = User(django_user=self.django_user.id,
-                                 username='test_user').save()
+        # MongoDB user has been auto created.
+        self.mongodb_user = self.django_user.mongo
 
     def tearDown(self):
         User.drop_collection()
