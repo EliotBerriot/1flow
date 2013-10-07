@@ -7,7 +7,15 @@
 
                 {% else %}
                     <a href="/admin/models/feed/{{ subscription.feed.id }}" target="_blank">
-                        <i class="icon-edit icon-3x muted"></i>
+                      <i class="icon-edit icon-2x muted"></i>
+                    </a>
+                    <a href="https://www.google.com/search?q={{ subscription.feed.name|urlencode }}+logo&tbm=isch"
+                        target="_blank">
+                      <i class="icon-picture icon-2x muted"></i>
+                    </a><br />
+                    <a href="https://play.google.com/store/search?q={{ subscription.feed.name }}&c=apps"
+                        target="_blank">
+                      <i class="icon-android icon-2x muted"></i>
                     </a>
 
                 {% endif %}
