@@ -70,7 +70,7 @@ class RedisCachedDescriptor(object):
                                     '.', '_').replace(':', '_')
                                         + '_') if cls_name else '',
                                     attr_name.replace(
-                                    '.', '_').replace(':', '_'))
+                                        '.', '_').replace(':', '_'))
         self.key_name = '%s%%s' % self.cache_key
 
         # LOGGER.warning('INIT: %s > %s, cache: %s, default: %s',
