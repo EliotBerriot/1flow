@@ -1,44 +1,69 @@
 <div class="spacer25"></div>
-<form>
-    <fieldset id="reading-lists">
-        <legend>{% trans "Lists" %}</legend>
-        <div class="row-fluid">
-            <div class="span3">
-                <ul>
-                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Inbox" %}</li>
-                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Web snaps" %}</li>
-                    <li>{% reading_list_with_count 'read_later' _("Read later") %}</li>
-                    <li>{% reading_list_with_count 'read' _("All unread") %}</li>
-                </ul>
-            </div>
-            <div class="span3">
-                <ul>
-                    <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</li>
-                    <li>{% reading_list_with_count 'read_starred' _('Starred') %}</li>
-
-                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Sent Articles" %}</li>
-
-                    <li>{% reading_list_with_count 'read_all' _('All articles') %}</li>
-                </ul>
-            </div>
-            <div class="span3">
-                <ul>
-                  <li><a href="{% url 'read_facts' %}">{% trans 'Facts' %}</a></li>
-                  <li><a href="{% url 'read_numbers' %}">{% trans 'Numbers' %}</a></li>
-                  <li><a href="{% url 'read_analysis' %}">{% trans 'Analysis' %}</a></li>
-                  <li><a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
-                </ul>
-            </div>
-            <div class="span3">
-                <ul>
-                  <li><a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>
-                  <li><a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
-                  <li><a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
-                  <li><a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
-                </ul>
-            </div>
+<div class="row-fluid">
+    <div class="span12 ctrls">
+        <div class="btn-group pull-right">
+            <button class="btn">{% trans "Add a stream" %}</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="#">{% trans "Add a folder" %}</a></li>
+                <li><a href="#">{% trans "Manage folders" %}</a></li>
+            </ul>
         </div>
-    </fieldset>
+    </div>
+</div>
+<form>
+    <div class="row-fluid">
+        <fieldset id="reading-lists" class="span6">
+            <legend>{% trans "Reading lists" %}</legend>
+            <div class="row-fluid">
+                <div class="span6">
+                    <ul>
+                        <li class="muted not-ready" {% feature_not_ready %}>
+                            {% trans "Inbox" %}</li>
+                        <li class="muted not-ready" {% feature_not_ready %}>
+                            {% trans "Web snaps" %}</li>
+                        <li>{% reading_list_with_count 'read_later' _("Read later") %}</li>
+                        <li>{% reading_list_with_count 'read' _("All unread") %}</li>
+                    </ul>
+                </div>
+                <div class="span6">
+                    <ul>
+                        <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</li>
+                        <li>{% reading_list_with_count 'read_starred' _('Starred') %}</li>
+
+                        <li class="muted not-ready" {% feature_not_ready %}>
+                            {% trans "Sent Articles" %}</li>
+
+                        <li>{% reading_list_with_count 'read_all' _('All articles') %}</li>
+                    </ul>
+                </div>
+            </div>
+        </fieldset>
+
+        <fieldset id="watching-lists" class="span6">
+            <legend>{% trans "Watching lists" %}</legend>
+            <div class="row-fluid">
+                <div class="span6">
+                    <ul>
+                      <li><a href="{% url 'read_facts' %}">{% trans 'Facts' %}</a></li>
+                      <li><a href="{% url 'read_numbers' %}">{% trans 'Numbers' %}</a></li>
+                      <li><a href="{% url 'read_analysis' %}">{% trans 'Analysis' %}</a></li>
+                      <li><a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
+                    </ul>
+                </div>
+                <div class="span6">
+                    <ul>
+                      <li><a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>
+                      <li><a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
+                      <li><a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
+                      <li><a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
+                    </ul>
+                </div>
+            </div>
+        </fieldset>
+    </div>
 
     <fieldset id="subscriptions">
         <legend>{% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
