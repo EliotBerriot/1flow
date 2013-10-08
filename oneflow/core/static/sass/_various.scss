@@ -191,6 +191,16 @@ img.centered {
 .spacer100 { height: 100px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer200 { height: 200px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 
+
+// ——————————————————————————————————————————————————— Any Firefox in the room?
+
+// http://sonspring.com/journal/removing-dotted-links
+:-moz-any-link:focus {
+  outline: none;
+}
+
+// TODO: http://stackoverflow.com/questions/1142819/how-to-remove-dotted-border-around-active-hyperlinks-in-ie8-with-css
+
 /* ------------------------------------------------------- Isotope animations */
 
 .isotope,
