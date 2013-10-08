@@ -61,6 +61,15 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
         attr_name='uf.ba_c', default=folder_bookmarked_articles_count_default,
         set_default=True)
 
+    def __unicode__(self):
+        return _(u'{0} for user {1}{2}{3}').format(
+            self.name, self.owner,
+            _(u', parent: {0} (#{1})').format(self.parent.name, self.parent.id)
+                if self.parent else u'',
+            _(u', children: %s').format(u', '.join(
+                _(u'{0} (#{1})').format(child.name, child.id))
+                    for child in self.children) if self.children else u'')
+
 
 # ————————————————————————————————————————————————————————— external properties
 #                                            Defined here to avoid import loops
