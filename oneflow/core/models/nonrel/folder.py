@@ -13,7 +13,7 @@ from .user import User
 LOGGER = logging.getLogger(__name__)
 
 
-__all__ = ('UserFolder', )
+__all__ = ('Folder', )
 
 
 def folder_all_articles_count_default(folder, *args, **kwargs):
@@ -36,8 +36,8 @@ def folder_bookmarked_articles_count_default(folder, *args, **kwargs):
     return folder.reads(is_bookmarked=True).count()
 
 
-class UserFolder(Document, DocumentHelperMixin, DocumentTreeMixin):
     name = StringField(unique_with=['owner', 'parent'])
+class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
     owner = ReferenceField('User', reverse_delete_rule=CASCADE)
 
     parent = ReferenceField('self', reverse_delete_rule=NULLIFY)
@@ -67,7 +67,7 @@ class UserFolder(Document, DocumentHelperMixin, DocumentTreeMixin):
 
 def User_top_folders_property_get(self):
 
-    return UserFolder.objects(owner=self, parent=None)
+    return Folder.objects(owner=self, parent=None)
 
 
 User.top_folders = property(User_top_folders_property_get)

@@ -238,7 +238,7 @@ class DocumentTreeMixin(object):
         fields to the class this mixin is added to. The two fields
         ``.parent`` and ``.children`` must exist.
 
-        See the :class:`UserFolder` class for an example. The basics are::
+        See the :class:`Folder` class for an example. The basics are::
 
             parent = ReferenceField('self', reverse_delete_rule=NULLIFY)
             children = ListField(ReferenceField('self',

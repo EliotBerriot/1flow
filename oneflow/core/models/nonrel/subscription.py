@@ -18,7 +18,7 @@ from ....base.fields import IntRedisDescriptor
 from ....base.utils.dateutils import now, timedelta, today, combine, time
 
 from .common import DocumentHelperMixin
-from .folder import UserFolder
+from .folder import Folder
 from .user import User
 from .feed import Feed
 
@@ -76,7 +76,7 @@ class Subscription(Document, DocumentHelperMixin):
                      help_text=_(u'Tags that will be applied to new reads in '
                                  u'this subscription.'))
 
-    folders = ListField(ReferenceField(UserFolder), default=list,
+    folders = ListField(ReferenceField(Folder), default=list,
                         help_text=_(u'Folders in which this subscription '
                                     u'appears (can be more than one).'))
 
@@ -278,7 +278,7 @@ def Feed_subscriptions_property_get(self):
     return Subscription.objects(feed=self)
 
 
-def UserFolder_subscriptions_property_get(self):
+def Folder_subscriptions_property_get(self):
 
     # No need to query on the user, it's already common to folder and
     # subscription. The "duplicate folder name" problem doesn't exist.
@@ -305,7 +305,7 @@ def User_subscriptions_by_folders_property_get(self):
     return by_folders
 
 
-UserFolder.subscriptions      = property(UserFolder_subscriptions_property_get)
+Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
 User.subscriptions_by_folders = property(

@@ -20,7 +20,7 @@ from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
 from ....base.utils.dateutils import now
 
 from .common import DocumentHelperMixin
-from .folder import UserFolder
+from .folder import Folder
 from .subscription import Subscription
 from .article import Article
 from .tag import Tag
@@ -508,7 +508,7 @@ def user_has_content_default(user, *args, **kwargs):
 #                                            Defined here to avoid import loops
 
 
-def UserFolder_reads_property_get(self):
+def Folder_reads_property_get(self):
 
     return Read.objects(subscriptions=self.subscriptions)
 
@@ -523,7 +523,7 @@ def Article_reads_property_get(self):
     return Read.objects.filter(article=self)
 
 
-UserFolder.reads   = property(UserFolder_reads_property_get)
+Folder.reads       = property(Folder_reads_property_get)
 Subscription.reads = property(Subscription_reads_property_get)
 Article.reads      = property(Article_reads_property_get)
 
