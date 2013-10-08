@@ -248,6 +248,9 @@ class DocumentTreeMixin(object):
 
     def set_parent(self, parent, update_reverse_link=True, full_reload=True):
 
+        if self.parent:
+            self.unset_parent(full_reload=False)
+
         self.update(set__parent=parent)
 
         if full_reload:
