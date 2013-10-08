@@ -65,6 +65,10 @@
         </fieldset>
     </div>
 
+    {% for folder in user.mongo.top_folders %}
+        {% include "snippets/selector/folder.html" with folder=folder level=0 %}
+    {% endfor %}
+
     <fieldset id="subscriptions">
         <legend>{% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
             {% comment %}
@@ -78,13 +82,6 @@
             {% endcomment %}
 
         </legend>
-
-        <div>
-            {% for folder in user.top_folders %}
-                {% include "snippets/selector/folder.html" with folder=folder level=0 %}
-            {% endfor %}
-        </div>
-        <div class="clearfix"></div>
 
         <div>
             {% for subscription in nofolder_open_subscriptions %}
