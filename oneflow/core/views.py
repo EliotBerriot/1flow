@@ -95,7 +95,7 @@ for attrkey, attrval in Read.status_data.items():
         make_read_wrapper(attrkey, attrval.get('view_name'))
 
 
-# —————————————————————————————————————————————————————————————————— Real views
+# —————————————————————————————————————————————————————————————— Home / Sources
 
 
 def home(request):
@@ -109,57 +109,6 @@ def home(request):
     return render(request, 'home.html', {
         'gr_import': GoogleReaderImport(request.user.id),
     })
-
-
-def preferences(request):
-
-    if request.POST:
-        home_form = HomePreferencesForm(
-                request.POST, instance=request.user.mongo.preferences.home)
-
-        reading_form = ReadPreferencesForm(
-                request.POST, instance=request.user.mongo.preferences.read)
-
-        sources_form = SelectorPreferencesForm(
-                request.POST, instance=request.user.mongo.preferences.selector)
-
-        if request.user.is_superuser:
-            staff_form = StaffPreferencesForm(
-                    request.POST, instance=request.user.mongo.preferences.staff)
-
-        if reading_form.is_valid() and sources_form.is_valid:
-            # form.save() does nothing on an embedded document,
-            # which needs to be saved from the container.
-            request.user.mongo.preferences.home = home_form.save()
-            request.user.mongo.preferences.read = reading_form.save()
-            request.user.mongo.preferences.selector = sources_form.save()
-
-            if request.user.is_superuser:
-                request.user.mongo.preferences.staff = staff_form.save()
-
-            request.user.mongo.preferences.save()
-
-            return HttpResponseRedirect(reverse('preferences'))
-    else:
-        home_form = HomePreferencesForm(
-                instance=request.user.mongo.preferences.home)
-        reading_form = ReadPreferencesForm(
-                instance=request.user.mongo.preferences.read)
-        sources_form = SelectorPreferencesForm(
-                instance=request.user.mongo.preferences.selector)
-
-        if request.user.is_superuser:
-            staff_form = StaffPreferencesForm(
-                    instance=request.user.mongo.preferences.staff)
-        else:
-            staff_form = None
-
-    return render(request, 'preferences.html', {
-                  'home_form': home_form,
-                  'reading_form': reading_form,
-                  'sources_form': sources_form,
-                  'staff_form': staff_form,
-                  })
 
 
 def source_selector(request, **kwargs):
@@ -181,6 +130,9 @@ def source_selector(request, **kwargs):
         'titles_show_unread_count':    selector_prefs.titles_show_unread_count,
         'folders_show_unread_count':   selector_prefs.folders_show_unread_count,
         })
+
+
+# ———————————————————————————————————————————————————————————————————————— Read
 
 
 def read_with_endless_pagination(request, **kwargs):
@@ -348,6 +300,62 @@ def read_one(request, read_id):
     return render(request, template, {'read': read})
 
 
+# ————————————————————————————————————————————————————————————————— Preferences
+
+
+def preferences(request):
+
+    if request.POST:
+        home_form = HomePreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.home)
+
+        reading_form = ReadPreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.read)
+
+        sources_form = SelectorPreferencesForm(
+                request.POST, instance=request.user.mongo.preferences.selector)
+
+        if request.user.is_superuser:
+            staff_form = StaffPreferencesForm(
+                    request.POST, instance=request.user.mongo.preferences.staff)
+
+        if home_form.is_valid() and reading_form.is_valid() \
+                and sources_form.is_valid() and (
+                    request.user.is_superuser and staff_form.is_valid()) or 1:
+            # form.save() does nothing on an embedded document,
+            # which needs to be saved from the container.
+            request.user.mongo.preferences.home = home_form.save()
+            request.user.mongo.preferences.read = reading_form.save()
+            request.user.mongo.preferences.selector = sources_form.save()
+
+            if request.user.is_superuser:
+                request.user.mongo.preferences.staff = staff_form.save()
+
+            request.user.mongo.preferences.save()
+
+            return HttpResponseRedirect(reverse('preferences'))
+    else:
+        home_form = HomePreferencesForm(
+                instance=request.user.mongo.preferences.home)
+        reading_form = ReadPreferencesForm(
+                instance=request.user.mongo.preferences.read)
+        sources_form = SelectorPreferencesForm(
+                instance=request.user.mongo.preferences.selector)
+
+        if request.user.is_superuser:
+            staff_form = StaffPreferencesForm(
+                    instance=request.user.mongo.preferences.staff)
+        else:
+            staff_form = None
+
+    return render(request, 'preferences.html', {
+                  'home_form': home_form,
+                  'reading_form': reading_form,
+                  'sources_form': sources_form,
+                  'staff_form': staff_form,
+                  })
+
+
 def set_preference(request, base, sub, value):
 
     prefs = request.user.mongo.preferences
@@ -422,6 +430,9 @@ def toggle(request, klass, oid, key):
                                     reverse('home')))
 
 
+# ——————————————————————————————————————————————————————————————————————— Other
+
+
 def profile(request):
 
     if request.POST:
@@ -468,6 +479,9 @@ def register(request):
             return HttpResponseRedirect(reverse('home'))
 
     return render(request, 'register.html', {'form': creation_form})
+
+
+# ———————————————————————————————————————————————————————— Google Reader Import
 
 
 def google_reader_import(request, user_id=None):
