@@ -5,12 +5,13 @@
   {% include "widgets/forms/field-checkbox.html" with field=sources_form.folders_show_unread_count %}
 </fieldset>
 
-<fieldset>
-  <legend>{% trans "Closed streams" %}</legend>
+{% if preferences.home.show_advanced_preferences %}
+    <fieldset>
+      <legend>{% trans "Closed streams" %}</legend>
 
-  {% include "widgets/forms/field-checkbox.html" with field=sources_form.show_closed_streams %}
-</fieldset>
-
+      {% include "widgets/forms/field-checkbox.html" with field=sources_form.show_closed_streams %}
+    </fieldset>
+{% endif %}
 
 <fieldset class="form-end-notice">
 <p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}
