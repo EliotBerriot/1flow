@@ -687,11 +687,11 @@ function setup_keyboard() {
         var goto_location = null;
 
         if(ev.which == 37) {
-            goto_location = $('a#previous');
+            goto_location = $('a#previous').attr('href');
         }
 
         if(ev.which == 39) {
-            goto_location = $('a#next');
+            goto_location = $('a#next').attr('href');
         }
 
         if (!!goto_location) {
