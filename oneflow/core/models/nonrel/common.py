@@ -300,3 +300,8 @@ class PseudoQuerySet(list):
 
     def all(self):
         return self
+
+    def clone(self):
+        new_pqs = PseudoQuerySet()
+        new_pqs[:] = self[:]
+        return new_pqs
