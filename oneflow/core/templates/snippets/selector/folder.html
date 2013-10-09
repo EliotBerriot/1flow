@@ -11,7 +11,7 @@
     {% if folder.children %}
         <div class="children row-fluid">
             {# Why this "with template_name …": http://stackoverflow.com/a/11644588/654755 #}
-            {% for child in folder.children %}
+            {% for child in folder.children_by_name %}
                 {% with template_name="snippets/selector/folder.html" folder=child level=level|add:'1' %}
                     {% include template_name %}
                 {% endwith %}
