@@ -6,7 +6,7 @@ from celery import task
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Document, CASCADE
+from mongoengine import Document, CASCADE, PULL
 from mongoengine.fields import (StringField, ListField, ReferenceField,
                                 GenericReferenceField)
 from mongoengine.errors import NotUniqueError
@@ -76,9 +76,10 @@ class Subscription(Document, DocumentHelperMixin):
                      help_text=_(u'Tags that will be applied to new reads in '
                                  u'this subscription.'))
 
-    folders = ListField(ReferenceField(Folder), default=list,
-                        help_text=_(u'Folders in which this subscription '
-                                    u'appears (can be more than one).'))
+    folders = ListField(ReferenceField(Folder, reverse_delete_rule=PULL),
+                        default=list, help_text=_(u'Folders in which this '
+                                                  u'subscription appears (can '
+                                                  u'be more than one).'))
 
     all_articles_count = IntRedisDescriptor(
         attr_name='s.aa_c', default=subscription_all_articles_count_default,
