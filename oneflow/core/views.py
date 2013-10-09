@@ -36,7 +36,8 @@ from .forms import (FullUserCreationForm,
                     ReadPreferencesForm,
                     SelectorPreferencesForm,
                     StaffPreferencesForm,
-                    ManageFolderForm)
+                    ManageFolderForm,
+                    ManageSubscriptionForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Subscription, Read, Folder
 from .models.reldb import HelpContent
@@ -134,6 +135,7 @@ def source_selector(request, **kwargs):
 
 
 def manage_folder(request, **kwargs):
+    """ This view does add/edit functions. """
 
     folder_id = kwargs.pop('folder', None)
     folder    = Folder.get_or_404(folder_id) if folder_id else None
@@ -185,6 +187,42 @@ def delete_folder(request, folder):
         return HttpResponseRedirect(reverse('source_selector'))
 
     return HttpResponseForbidden()
+
+
+def edit_subscription(request, **kwargs):
+
+    subscription_id = kwargs.pop('subscription', None)
+    subscription    = Subscription.get_or_404(subscription_id)
+
+    if request.POST:
+        form = ManageSubscriptionForm(request.POST, instance=subscription)
+
+        if form.is_valid():
+            subscription = form.save()
+
+            messages.add_message(request, messages.INFO,
+                                 _(u'Subscription “{0}” successfully '
+                                   u'created.').format(subscription.name))
+
+        else:
+            messages.add_message(request, messages.WARNING,
+                                 _(u'Could not create subscription: {0}.').format(
+                                     form.errors))
+            LOGGER.error(form.errors)
+
+        return HttpResponseRedirect(reverse('source_selector'))
+
+    else:
+        if not request.is_ajax():
+            return HttpResponseBadRequest('Did you forget to do an Ajax call?')
+
+        form = ManageSubscriptionForm(instance=subscription)
+
+        form.fields['folders'].queryset = request.user.mongo.folders_tree
+
+    return render(request, 'snippets/selector/manage-subscription.html',
+                  {'form': form, 'subscription': subscription})
+
 
 # ———————————————————————————————————————————————————————————————————————— Read
 

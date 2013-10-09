@@ -89,6 +89,10 @@ urlpatterns = patterns(
         login_required(never_cache(views.manage_folder)),
         name='edit_folder'),
 
+    url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$'),
+        login_required(never_cache(views.edit_subscription)),
+        name='edit_subscription'),
+
     url(_(r'^(?P<klass>\w+)/(?P<oid>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
         login_required(never_cache(views.toggle)), name='toggle'),
 

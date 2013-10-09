@@ -11,7 +11,7 @@ from mongodbforms import DocumentForm
 
 from .models import (HomePreferences, ReadPreferences,
                      SelectorPreferences, StaffPreferences,
-                     Folder)
+                     Folder, Subscription)
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -183,3 +183,16 @@ class ManageFolderForm(DocumentForm):
                                     update_reverse_link=False)
 
         return folder
+
+
+class ManageSubscriptionForm(DocumentForm):
+    # folders = OnlyNameChoiceField(queryset=Subscription.objects.all(),
+    #                              empty_label=_(u'(None)'),
+    #                              required=False)
+
+    class Meta:
+        model = Subscription
+        fields = ('name', 'folders', )
+        widgets = {
+            'name': TextInput(),
+        }

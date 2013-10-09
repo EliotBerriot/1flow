@@ -1,0 +1,68 @@
+<div id="manage-subscription" class="modal hide fade" tabindex="-1">
+    <div class="modal-header">
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+        <h3>{% trans "Edit subscription" %}</h3>
+        </div>
+        <form class="form form-horizontal"
+            action="{% url 'edit_subscription' subscription=subscription.id %}" method="POST">
+            {% csrf_token %}
+            <div class="modal-body">
+
+            <div class="control-group">
+                <div class="controls">
+                {% if user.is_superuser and preferences.staff.super_powers_enabled and preferences.staff.selector_shows_admin_links %}
+                        <a href="/admin/models/feed/{{ subscription.feed.id }}" target="_blank">
+                          <i class="icon-edit icon-2x muted"></i>
+                          {% trans "Open in Admin. Interface" %}
+                        </a><br />
+
+                    {% if subscription.feed.thumbnail_url %}
+                        <div class="thumbnail">
+                            <img src="{{ subscription.feed.thumbnail_url }}" />
+                        </div>
+
+                    {% else %}
+                        <a href="https://www.google.com/search?q={{ subscription.feed.name|urlencode }}+logo&tbm=isch"
+                            target="_blank">
+                          <i class="icon-picture icon-2x muted"></i>
+                          {% trans "Search on Google Images" %}
+                        </a><br />
+
+                        <a href="https://play.google.com/store/search?q={{ subscription.feed.name }}&c=apps"
+                            target="_blank">
+                          <i class="icon-android icon-2x muted"></i>
+                          {% trans "Search on Google Play Store" %}
+                        </a>
+
+                    {% endif %}
+
+                {% else %}
+                    <div class="thumbnail">
+                        <img src="{% firstof subscription.feed.thumbnail_url "http://lorempixel.com/192/192/abstract/" %}" />
+                    </div>
+                {% endif %}
+                </div>
+            </div>
+
+
+            {% include "widgets/forms/field-input-text.html" with field=form.name %}
+            {% include "widgets/forms/field-generic.html" with field=form.folders %}
+
+            <p>{% blocktrans %}
+                If you delete this subscription, all articles you read in it will be permanently deleted from your personnal space and your attributes/ratings will be lost.
+            {% endblocktrans %}</p>
+
+            </div>
+            <div class="modal-footer">
+
+            {% if subscription %}
+                <span class="pull-left">
+                <a href="{% url 'delete_subscription' subscription=subscription.id %}" class="btn btn-danger">{% trans "Delete this subscription" %}</a>
+                </span>
+            {% endif %}
+
+            <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+            <button type="submit" class="btn btn-primary">{% trans "Save" %}</a>
+        </form>
+    </div>
+</div>
