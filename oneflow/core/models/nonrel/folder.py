@@ -23,6 +23,11 @@ LOGGER = logging.getLogger(__name__)
 __all__ = ('Folder', )
 
 
+def lowername(objekt):
+
+    return attrgetter('name')(objekt).lower()
+
+
 def folder_all_articles_count_default(folder, *args, **kwargs):
 
     return folder.reads.count()
@@ -78,11 +83,16 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
                     for child in self.children)) if self.children else u'')
 
     @property
+    def children_by_name(self):
+
+        return sorted(self.children, key=lowername)
+
+    @property
     def children_tree(self):
 
         children = PseudoQuerySet(model=Folder)
 
-        for child in sorted(self.children, key=attrgetter('name')):
+        for child in sorted(self.children, key=lowername):
             children.append(child)
             children.extend(child.children_tree)
 
