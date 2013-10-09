@@ -126,6 +126,31 @@ class OnlyNameChoiceField(forms.ModelChoiceField):
         return prefix + obj.name
 
 
+class OnlyNameMultipleChoiceField(forms.ModelMultipleChoiceField):
+    """ In forms, we need something much simpler
+        than the `__unicode__()` output. """
+
+    def label_from_instance(self, obj):
+
+        # OMG. Please don't do this anywhere else. How ugly it is.
+        if obj.parent:
+            if obj.parent.parent:
+                if obj.parent.parent.parent:
+                    if obj.parent.parent.parent.parent:
+                        prefix = u' ' * 16
+
+                    else:
+                        prefix = u' ' * 12
+                else:
+                    prefix = u' ' * 8
+            else:
+                prefix = u' ' * 4
+        else:
+            prefix = u''
+
+        return prefix + obj.name
+
+
 class ManageFolderForm(DocumentForm):
     parent = OnlyNameChoiceField(queryset=Folder.objects.all(),
                                  empty_label=_(u'(None)'),
@@ -186,9 +211,8 @@ class ManageFolderForm(DocumentForm):
 
 
 class ManageSubscriptionForm(DocumentForm):
-    # folders = OnlyNameChoiceField(queryset=Subscription.objects.all(),
-    #                              empty_label=_(u'(None)'),
-    #                              required=False)
+    folders = OnlyNameMultipleChoiceField(queryset=Folder.objects.all(),
+                                          required=False)
 
     class Meta:
         model = Subscription
