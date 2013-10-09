@@ -154,9 +154,13 @@ class ManageFolderForm(DocumentForm):
                 # The form.save() will set the new parent, but
                 # will not unset instance from parent.children.
                 # We need to take care of this.
-                old_folder.parent.remove_child(self.instance,
-                                               full_reload=False,
-                                               update_reverse_link=False)
+                try:
+                    old_folder.parent.remove_child(self.instance,
+                                                   full_reload=False,
+                                                   update_reverse_link=False)
+                except AttributeError:
+                    # A top folder is becoming a sub-folder. It had no parent.
+                    pass
                 parent_changed = True
 
         else:
