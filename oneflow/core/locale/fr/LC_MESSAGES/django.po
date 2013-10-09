@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-09 09:00+0200\n"
-"PO-Revision-Date: 2013-10-09 09:09+0009\n"
+"POT-Creation-Date: 2013-10-09 18:32+0200\n"
+"PO-Revision-Date: 2013-10-09 18:49+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -36,7 +36,7 @@ msgid "feeds"
 msgstr "flux"
 
 #: admin.py:109 models/nonrel/read.py:155 models/nonrel/read.py:163
-#: templates/snippets/selector/subscription.html:30
+#: templates/snippets/selector/subscription.html:10
 msgid "starred"
 msgstr "favoris"
 
@@ -213,7 +213,7 @@ msgstr "Confirmation"
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: forms.py:131
+#: forms.py:156
 msgid "(None)"
 msgstr "(aucun)"
 
@@ -292,89 +292,111 @@ msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 
 #: urls.py:92
+msgid "^subscription/new/$"
+msgstr "^abonnement/nouveau/$"
+
+#: urls.py:96
+msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$"
+msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
+
+#: urls.py:100
+msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
+msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
+
+#: urls.py:105
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:95
+#: urls.py:108
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:97
+#: urls.py:110
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:98
+#: urls.py:111
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:103
+#: urls.py:116
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:106
+#: urls.py:119
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:109
+#: urls.py:122
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:112
+#: urls.py:125
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:117
+#: urls.py:130
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:126
+#: urls.py:139
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:128
+#: urls.py:141
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:152
+#: views.py:154
 #, python-brace-format
 msgid "Folder “{0}” successfully created."
 msgstr "Dossier « {0} » créé avec succès."
 
-#: views.py:157
+#: views.py:159
 #, python-brace-format
 msgid "Could not create folder: {0}."
 msgstr "Impossible de créer le dossier : {0}."
 
-#: views.py:562
+#: views.py:204
+#, python-brace-format
+msgid "Subscription “{0}” successfully created."
+msgstr "Abonnement « {0} » créé avec succès."
+
+#: views.py:209
+#, python-brace-format
+msgid "Could not create subscription: {0}."
+msgstr "Impossible de créer l'abonnement : {0}."
+
+#: views.py:615
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:566
+#: views.py:619
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:570
+#: views.py:623
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:577
+#: views.py:630
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:581
+#: views.py:634
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:587
+#: views.py:640
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:590
+#: views.py:643
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -776,22 +798,22 @@ msgstr "Description (EN)"
 msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
-#: models/nonrel/feed.py:331 models/nonrel/folder.py:77
+#: models/nonrel/feed.py:331 models/nonrel/folder.py:82
 #, python-brace-format
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel/folder.py:72
+#: models/nonrel/folder.py:77
 #, python-brace-format
 msgid "{0} for user {1}{2}{3}"
-msgstr ""
+msgstr "{0} de l'utilisateur {1}{2}{3}"
 
-#: models/nonrel/folder.py:74
+#: models/nonrel/folder.py:79
 #, python-brace-format
 msgid ", parent: {0} (#{1})"
 msgstr ", parent : {0} (#{1})"
 
-#: models/nonrel/folder.py:76
+#: models/nonrel/folder.py:81
 #, python-brace-format
 msgid ", children: {0}"
 msgstr ", enfant(s) : {0}"
@@ -1556,6 +1578,10 @@ msgstr " ({feed}) "
 msgid "{title}{source}"
 msgstr "{title}{source}"
 
+#: models/nonrel/subscription.py:71
+msgid "Name"
+msgstr "Nom"
+
 #: models/nonrel/subscription.py:76
 msgid "Tags that will be applied to new reads in this subscription."
 msgstr ""
@@ -1563,8 +1589,14 @@ msgstr ""
 "abonnement."
 
 #: models/nonrel/subscription.py:80
+msgid "Folders"
+msgstr "Dossiers"
+
+#: models/nonrel/subscription.py:81
 msgid "Folders in which this subscription appears (can be more than one)."
 msgstr ""
+"Dossiers dans lesquels cet abonnement apparaît (vous pouvez en choisir "
+"plusieurs)."
 
 #: models/nonrel/subscription.py:115
 #, python-brace-format
@@ -1714,6 +1746,7 @@ msgid "MongoDB"
 msgstr "MongoDB"
 
 #: templates/profile.html:79 templates/snippets/selector/manage-folder.html:29
+#: templates/snippets/selector/manage-subscription.html:65
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -2189,7 +2222,7 @@ msgstr ""
 msgid "“Read” navbar link"
 msgstr "Lien de navigation « Lecture »"
 
-#: templates/snippets/preferences/read.html:9
+#: templates/snippets/preferences/read.html:10
 msgid "Comfort"
 msgstr "Confort"
 
@@ -2214,7 +2247,7 @@ msgid "Unread display"
 msgstr "Afficher les non-lus"
 
 #: templates/snippets/preferences/selector.html:10
-#: templates/snippets/selector/selector.html:102
+#: templates/snippets/selector/selector.html:110
 msgid "Closed streams"
 msgstr "Flux fermés"
 
@@ -2612,7 +2645,7 @@ msgstr "Ouvrir cet article sur le site web d'origine"
 msgid "By"
 msgstr "Par "
 
-#: templates/snippets/selector/folder.html:32
+#: templates/snippets/selector/folder.html:23
 #, python-format
 msgid "No subscription in “%(folder_name)s”."
 msgstr "Pas d'abonnement dans « %(folder_name)s »."
@@ -2640,12 +2673,42 @@ msgid "Delete this folder"
 msgstr "Supprimer ce dossier"
 
 #: templates/snippets/selector/manage-folder.html:28
+#: templates/snippets/selector/manage-subscription.html:64
 msgid "Cancel"
 msgstr "Annuler"
 
 #: templates/snippets/selector/manage-folder.html:29
 msgid "Create"
 msgstr "Créer"
+
+#: templates/snippets/selector/manage-subscription.html:4
+msgid "Edit subscription"
+msgstr "Modifier l'abonnement"
+
+#: templates/snippets/selector/manage-subscription.html:16
+msgid "Open in Admin. Interface"
+msgstr "Ouvrir dans l'interface d'admin."
+
+#: templates/snippets/selector/manage-subscription.html:28
+msgid "Search on Google Images"
+msgstr "Chercher sur Google Images"
+
+#: templates/snippets/selector/manage-subscription.html:34
+msgid "Search on Google Play Store"
+msgstr "Chercher sur le Google Play Store"
+
+#: templates/snippets/selector/manage-subscription.html:51
+msgid ""
+"\n"
+"                If you delete this subscription, all articles you read in it will be permanently deleted from your personnal space and your attributes/ratings will be lost.\n"
+"            "
+msgstr ""
+"\n"
+"Si vous effacez cet abonnement, tous les articles que vous y avez lus seront effacés de votre espace personnel définitivement, et vos attributs de veille/notes seront perdus."
+
+#: templates/snippets/selector/manage-subscription.html:60
+msgid "Delete this subscription"
+msgstr "Supprimer cet abonnement"
 
 #: templates/snippets/selector/selector.html:5
 msgid "Add a stream"
@@ -2671,28 +2734,28 @@ msgstr "Articles envoyés"
 msgid "All articles"
 msgstr "Tous les articles"
 
-#: templates/snippets/selector/selector.html:77
+#: templates/snippets/selector/selector.html:91
 msgid "Unclassified information streams"
 msgstr "Flux d'informations non-classés"
 
-#: templates/snippets/selector/subscription.html:28
+#: templates/snippets/selector/subscription.html:8
 msgid "unread"
 msgstr "non-lu"
 
-#: templates/snippets/selector/subscription.html:29
+#: templates/snippets/selector/subscription.html:9
 msgid "to read later"
 msgstr "à lire plus tard"
 
-#: templates/snippets/selector/subscription.html:31
+#: templates/snippets/selector/subscription.html:11
 msgid "all"
 msgstr "tous"
 
-#: templates/snippets/selector/subscription.html:39
+#: templates/snippets/selector/subscription.html:22
 #, python-format
 msgid "Click to read the %(unread_count)s new article(s)"
 msgstr "Cliquez pour lire le(s) %(unread_count)s nouveau(x) article(s)"
 
-#: templates/snippets/selector/subscription.html:45
+#: templates/snippets/selector/subscription.html:28
 msgid "Nothing new"
 msgstr "Rien de nouveau"
 
@@ -2994,9 +3057,6 @@ msgstr ""
 
 #~ msgid "1flow has not yet reached BETA status"
 #~ msgstr "1flow n'a pas encore atteint la BETA"
-
-#~ msgid "subscriptions"
-#~ msgstr "abonnements"
 
 #~ msgid "Not implemented"
 #~ msgstr "Non implémenté"
