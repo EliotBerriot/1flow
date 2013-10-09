@@ -1,18 +1,36 @@
-<div id="{{ folder.id }}" class="folder level-{{ level }}">
-    <div class="folder-name">
-        {{ folder.name }}
-    </div>
-    <div class="children">
-        {% comment %}
+<fieldset id="{{ folder.id }}" class="folder level-{{ level }} span{{ level|yesno:'6,12' }}">
+    <legend>
+        <span class="pull-right css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"
+            data-toggle="modal"><i class="icon-cog"></i></a></span>
+        <span class="name">
+            {{ folder.name }}
+            {# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}
+        </span>
+    </legend>
 
-        {% for child in folder.children %}
-            {% include "snippets/selector/folder.html" with folder=child level=level|add:'1' %}
-        {% endfor %}
-        {% endcomment %}
-    </div>
-    <div class="subscriptions">
-        {% for subscription in folder.subscriptions %}
-            {% include "snippets/selector/subscription.html" %}
-        {% endfor %}
-    </div>
-</div>
+    {% if folder.children %}
+        <div class="children row-fluid">
+            {# Why this "with template_name …": http://stackoverflow.com/a/11644588/654755 #}
+            {% for child in folder.children %}
+                {% with template_name="snippets/selector/folder.html" folder=child level=level|add:'1' %}
+                    {% include template_name %}
+                {% endwith %}
+            {% endfor %}
+        </div>
+    {% endif %}
+
+    {% if folder.subscriptions %}
+        <div class="subscriptions">
+            {% for subscription in folder.subscriptions %}
+                {% include "snippets/selector/subscription.html" %}
+            {% endfor %}
+        </div>
+
+    {% else %}
+        {% if not folder.children %}
+            <div class="no-subscriptions">
+                {% blocktrans with folder_name=folder.name %}No subscription in “{{folder_name}}”.{% endblocktrans %}
+            </div>
+        {% endif %}
+    {% endif %}
+</fieldset>

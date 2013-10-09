@@ -7,8 +7,8 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li><a href="#">{% trans "Add a folder" %}</a></li>
-                <li><a href="#">{% trans "Manage folders" %}</a></li>
+                <li><a href="{% url 'add_folder' %}"
+                        data-toggle="modal">{% trans "Add a folder" %}</a></li>
             </ul>
         </div>
     </div>
@@ -65,9 +65,13 @@
         </fieldset>
     </div>
 
+    <div id="folders">
     {% for folder in user.mongo.top_folders %}
-        {% include "snippets/selector/folder.html" with folder=folder level=0 %}
+        <div class="row-fluid">
+            {% include "snippets/selector/folder.html" with folder=folder level=0 %}
+        </div>
     {% endfor %}
+    </div>
 
     <fieldset id="subscriptions">
         <legend>{% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
