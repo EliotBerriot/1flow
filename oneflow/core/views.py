@@ -35,9 +35,10 @@ from .forms import (FullUserCreationForm,
                     HomePreferencesForm,
                     ReadPreferencesForm,
                     SelectorPreferencesForm,
-                    StaffPreferencesForm)
+                    StaffPreferencesForm,
+                    ManageFolderForm)
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed, Subscription, Read
+from .models.nonrel import Feed, Subscription, Read, Folder
 from .models.reldb import HelpContent
 from ..base.utils.dateutils import now
 
@@ -131,6 +132,59 @@ def source_selector(request, **kwargs):
         'folders_show_unread_count':   selector_prefs.folders_show_unread_count,
         })
 
+
+def manage_folder(request, **kwargs):
+
+    folder_id = kwargs.pop('folder', None)
+    folder    = Folder.get_or_404(folder_id) if folder_id else None
+
+    if request.POST:
+        if folder:
+            form = ManageFolderForm(request.POST, instance=folder)
+
+        else:
+            form = ManageFolderForm(request.POST)
+
+        if form.is_valid():
+            folder = form.save(request.user.mongo)
+
+            messages.add_message(request, messages.INFO,
+                                 _(u'Folder “{0}” successfully '
+                                   u'created.').format(folder.name))
+
+        else:
+            messages.add_message(request, messages.WARNING,
+                                 _(u'Could not create folder: {0}.').format(
+                                     form.errors))
+            LOGGER.error(form.errors)
+
+        return HttpResponseRedirect(reverse('source_selector'))
+
+    else:
+        if not request.is_ajax():
+            return HttpResponseBadRequest('Did you forget to do an Ajax call?')
+
+        if folder:
+            form = ManageFolderForm(instance=folder)
+
+        else:
+            form = ManageFolderForm()
+
+        form.fields['parent'].queryset = request.user.mongo.folders_tree
+
+    return render(request, 'snippets/selector/manage-folder.html',
+                  {'form': form, 'folder': folder})
+
+
+def delete_folder(request, folder):
+
+    folder = Folder.get_or_404(folder)
+
+    if request.user.is_superuser or folder.owner == request.user.mongo:
+        folder.delete()
+        return HttpResponseRedirect(reverse('source_selector'))
+
+    return HttpResponseForbidden()
 
 # ———————————————————————————————————————————————————————————————————————— Read
 

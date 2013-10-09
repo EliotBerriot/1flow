@@ -77,6 +77,18 @@ urlpatterns = patterns(
         login_required(never_cache(views.source_selector)),
         name='source_selector'),
 
+    url(_(r'^folder/new/$'),
+        login_required(never_cache(views.manage_folder)),
+        name='add_folder'),
+
+    url(_(r'^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$'),
+        login_required(never_cache(views.delete_folder)),
+        name='delete_folder'),
+
+    url(_(r'^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$'),
+        login_required(never_cache(views.manage_folder)),
+        name='edit_folder'),
+
     url(_(r'^(?P<klass>\w+)/(?P<oid>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
         login_required(never_cache(views.toggle)), name='toggle'),
 
