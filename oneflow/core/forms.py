@@ -3,12 +3,15 @@
 import logging
 
 from django import forms
+from django.forms import TextInput
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
+
 from mongodbforms import DocumentForm
 
 from .models import (HomePreferences, ReadPreferences,
-                     SelectorPreferences, StaffPreferences)
+                     SelectorPreferences, StaffPreferences,
+                     Folder)
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -96,3 +99,83 @@ class StaffPreferencesForm(DocumentForm):
 
     class Meta:
         model = StaffPreferences
+
+
+class OnlyNameChoiceField(forms.ModelChoiceField):
+    """ In forms, we need something much simpler
+        than the `__unicode__()` output. """
+
+    def label_from_instance(self, obj):
+
+        # OMG. Please don't do this anywhere else. How ugly it is.
+        if obj.parent:
+            if obj.parent.parent:
+                if obj.parent.parent.parent:
+                    if obj.parent.parent.parent.parent:
+                        prefix = u' ' * 32
+
+                    else:
+                        prefix = u' ' * 24
+                else:
+                    prefix = u' ' * 16
+            else:
+                prefix = u' ' * 8
+        else:
+            prefix = u''
+
+        return prefix + obj.name
+
+
+class ManageFolderForm(DocumentForm):
+    parent = OnlyNameChoiceField(queryset=Folder.objects.all(),
+                                 empty_label=_(u'(None)'),
+                                 required=False)
+
+    class Meta:
+        model = Folder
+        fields = ('name', 'parent', )
+        widgets = {
+            'name': TextInput(),
+        }
+
+    def save(self, user, commit=True):
+
+        parent_folder  = self.cleaned_data.get('parent', None)
+        parent_changed = False
+
+        # id == None means creation, else we are editing.
+        if self.instance.id:
+
+            # We need to get the previous values; Django doesn't cache
+            # them and self.instance is already updated with new values.
+            old_folder = Folder.objects.get(id=self.instance.id)
+
+            if old_folder.parent != parent_folder:
+                # The form.save() will set the new parent, but
+                # will not unset instance from parent.children.
+                # We need to take care of this.
+                old_folder.parent.remove_child(self.instance,
+                                               full_reload=False,
+                                               update_reverse_link=False)
+                parent_changed = True
+
+        else:
+            # In "add folder" mode, parent has always changed, it's new!
+            parent_changed = True
+
+        folder = super(ManageFolderForm, self).save(commit=False)
+
+        if self.instance.id is None:
+            folder.owner = user
+
+        if commit:
+            folder.save()
+
+        if parent_folder and parent_changed:
+            # In edit or create mode, we need to take care of the other
+            # direction of the double-linked relation. This will imply
+            # a superfluous write in case of an unchanged parent
+            parent_folder.add_child(folder, full_reload=False,
+                                    update_reverse_link=False)
+
+        return folder
