@@ -280,6 +280,13 @@
 
 // —————————————————————————————————————————————————————————————— Feed selector
 
+.css-hover-muted {
+    @include single-transition(opacity, 0.5s, ease-out, 0.3s);
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+
 #selector {
     #reading-lists,
     #watching-lists {
@@ -303,6 +310,52 @@
 
                 a {
                     color: $subscription-link-color;
+                }
+            }
+
+        }
+    }
+
+    .folder {
+        .no-subscriptions {
+            color: grey;
+            font-size: 150%;
+            margin-bottom: 50px;
+        }
+
+        // Just for memories, with a div.clearfix every two folders, we use
+        // &:nth-child(3n+1) to get the next just after the div.clearfix.
+
+        .folder,
+        .folder .folder,
+        .folder .folder .folder {
+            &:nth-child(odd) {
+                // be sure to not dangle on the right…
+                clear: left;
+                margin-left: 0;
+            }
+        }
+
+        legend {
+            a {
+                text-decoration: none;
+                color: grey;
+                opacity: 0.5;
+
+                &:hover,
+                &:active {
+                    opacity: 1;
+                }
+
+                &:visited {
+                    opacity: 0.5;
+                }
+            }
+
+            &:hover {
+                .css-hover-muted {
+                    opacity: 1;
+                    height: auto;
                 }
             }
 
@@ -392,13 +445,6 @@
             right: $subscription-padding;
         }
 
-        .css-hover-muted {
-            @include single-transition(opacity, 0.5s, ease-out, 0.3s);
-            opacity: 0;
-            height: 0;
-            overflow: hidden;
-        }
-
         &:hover {
             background: #fff;
             @include border-radius(3px);
@@ -441,5 +487,23 @@
                 opacity: 0.33;
             }
         }
+    }
+}
+
+#manage-folder.modal {
+    form {
+        margin-bottom: 0;
+    }
+    label,
+    input,
+    select {
+        font-size: 150%;
+    }
+
+    label,
+    input {
+        // `select` is already overriden in globals.
+        height: 30px;
+        line-height: 30px;
     }
 }
