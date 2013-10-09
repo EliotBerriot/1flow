@@ -287,3 +287,16 @@ class DocumentTreeMixin(object):
 
         if full_reload:
             self.safe_reload()
+
+
+class PseudoQuerySet(list):
+    """ Sometimes Django expects a queryset, but we build a complexly
+        sorted list, and we want this list to display nicely in forms. """
+
+    def __init__(self, *args, **kwargs):
+        self.model = kwargs.pop('model', None)
+
+        super(PseudoQuerySet, self).__init__(*args, **kwargs)
+
+    def all(self):
+        return self
