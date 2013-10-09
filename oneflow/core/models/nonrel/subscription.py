@@ -68,7 +68,7 @@ class Subscription(Document, DocumentHelperMixin):
                           reverse_delete_rule=CASCADE)
 
     # allow the user to rename the field in its own subscription
-    name = StringField()
+    name = StringField(verbose_name=_('Name'))
 
     # TODO: convert to UserTag to use ReferenceField and reverse_delete_rule.
     tags = ListField(GenericReferenceField(),
@@ -77,9 +77,9 @@ class Subscription(Document, DocumentHelperMixin):
                                  u'this subscription.'))
 
     folders = ListField(ReferenceField(Folder, reverse_delete_rule=PULL),
-                        default=list, help_text=_(u'Folders in which this '
-                                                  u'subscription appears (can '
-                                                  u'be more than one).'))
+                        verbose_name=_('Folders'), default=list,
+                        help_text=_(u'Folders in which this subscription '
+                                    u'appears (can be more than one).'))
 
     all_articles_count = IntRedisDescriptor(
         attr_name='s.aa_c', default=subscription_all_articles_count_default,
