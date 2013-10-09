@@ -167,6 +167,17 @@ class HomePreferences(EmbeddedDocument):
                         u'home to appear'), max_length=2,
                         choices=HOME_STYLE_CHOICES, default=u'RL')
 
+    show_advanced_preferences = BooleanField(
+        verbose_name=_(u'I want to play with my life'), default=False,
+        help_text=_(u'With this setting, you will be able to tune the 1flow '
+                    u'interface a lot more. <strong>But BEWARE:</strong> you '
+                    u'will gain access to features which are not referenced in '
+                    u'the standard documentation. You assume implicitly being '
+                    u'a “power-user”, completely autonomous to discover hidden '
+                    u'treasures… And traps!<br />'
+                    u'<span class="muted">Default: disabled. We want your '
+                    u'user experience to stay as smooth as possible.</span>'))
+
     read_shows = IntField(verbose_name=_(u'Clicking <code>Read</code> '
                           u'displays:'),
                           choices=READ_SHOWS_CHOICES, default=2,
