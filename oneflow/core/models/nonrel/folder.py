@@ -49,13 +49,15 @@ def folder_bookmarked_articles_count_default(folder, *args, **kwargs):
 
 
 class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
-    name = StringField(unique_with=['owner'])
-    owner = ReferenceField('User', reverse_delete_rule=CASCADE)
+    name = StringField(verbose_name=_(u'Name'), unique_with=['owner'])
+    owner = ReferenceField('User', verbose_name=_(u'Owner'),
+                           reverse_delete_rule=CASCADE)
 
-    parent = ReferenceField('self', reverse_delete_rule=NULLIFY,
+    parent = ReferenceField('self', verbose_name=_(u'Parent'),
+                            reverse_delete_rule=NULLIFY,
                             required=False, default=None)
     children = ListField(ReferenceField('self', reverse_delete_rule=PULL),
-                         default=list)
+                         default=list, verbose_name=_(u'Children'))
 
     all_articles_count = IntRedisDescriptor(
         attr_name='uf.aa_c', default=folder_all_articles_count_default,
