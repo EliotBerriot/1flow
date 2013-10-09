@@ -288,6 +288,22 @@
 }
 
 #selector {
+
+    a.manage {
+        text-decoration: none;
+        color: grey;
+        opacity: 0.5;
+
+        &:hover,
+        &:active {
+            opacity: 1;
+        }
+
+        &:visited {
+            opacity: 0.5;
+        }
+    }
+
     #reading-lists,
     #watching-lists {
         font-size: 125%;
@@ -316,51 +332,106 @@
         }
     }
 
-    .folder {
-        .no-subscriptions {
-            color: grey;
-            font-size: 150%;
-            margin-bottom: 50px;
-        }
 
-        // Just for memories, with a div.clearfix every two folders, we use
-        // &:nth-child(3n+1) to get the next just after the div.clearfix.
+}
 
-        .folder,
-        .folder .folder,
-        .folder .folder .folder {
-            &:nth-child(odd) {
-                // be sure to not dangle on the right…
-                clear: left;
-                margin-left: 0;
+// .folder-wrapper.level-0 {
+//     clear: both;
+// }
+
+.folder .folder-wrapper {
+    float: left;
+    width: 45%;
+
+    // MIRRORED negatively in .children
+    margin: 0 2.5%;
+}
+
+.children {
+    // MIRRORED postitively in .folder-wrapper
+    // don't ask me why we need more negative
+    // margin space than positive, I don't know.
+    margin: 0 -2.65%;
+}
+
+.folder {
+    border-top-left-radius: 2px;
+    border-top-right-radius: 2px;
+
+    //@include filter-gradient(#a6000000, #00000000, vertical); // IE6-8
+    @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0) 100%));
+    min-height: 8em;
+
+    // Just for memories, with a div.clearfix every two folders, we use
+    // &:nth-child(3n+1) to get the next just after the div.clearfix.
+
+    .name-wrapper {
+        margin-top: 1.5em;
+        font-size: 325%;
+        font-family: Georgia, Serif;
+
+        // Replicate padding-{left,right} in .no-subscription, with
+        // compensated negative margins. NOTE: adding 'em' and '%'
+        // obviously does not work, the .no-subscription values are
+        // simply visually approximated with a “pixel-aware” eye.
+        //
+        // The padding-top compensate the negative margin to put
+        // equal space around (top, left) the folder name.
+        //
+        padding: 0.75em 0.5em 1em;
+
+        &:hover {
+            .css-hover-muted {
+                opacity: 1;
+                height: auto;
             }
-        }
-
-        legend {
-            a {
-                text-decoration: none;
-                color: grey;
-                opacity: 0.5;
-
-                &:hover,
-                &:active {
-                    opacity: 1;
-                }
-
-                &:visited {
-                    opacity: 0.5;
-                }
-            }
-
-            &:hover {
-                .css-hover-muted {
-                    opacity: 1;
-                    height: auto;
-                }
-            }
-
         }
     }
+
+    .no-subscription {
+        color: grey;
+        opacity: 0.25;
+        font-size: 150%;
+        margin-bottom: 50px;
+        // Replicate padding-{left,right} in
+        // .name-wrapper, minus negative margin…
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+
+        &:hover {
+            opacity: 1;
+        }
+    }
+
+    .folder {
+        @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0) 100%));
+
+        .name-wrapper {
+            font-size: 250%;
+        }
+    }
+
+    .folder .folder {
+        @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%));
+
+        .name-wrapper {
+            font-size: 200%;
+            color: grey;
+        }
+    }
+
+    .folder .folder .folder {
+        @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.025) 0%, rgba(0, 0, 0, 0) 100%));
+
+        .name-wrapper {
+            font-size: 150%;
+            color: grey;
+        }
+    }
+}
+
+.folder.has_content {
+    min-height: 15em;
 }
 
 #subscriptions,
@@ -377,101 +448,83 @@
             }
         }
     }
+}
 
-    .subscription {
-        position: relative;
-        float: left;
-        width: 45%;
+.subscription {
+    position: relative;
+    float: left;
+    width: 45%;
 
-        a {
-            color: $subscription-link-color;
-        }
+    a {
+        color: $subscription-link-color;
+    }
 
-        min-height: $subscription-image-size;
+    min-height: $subscription-image-size;
 
-        padding-top: $subscription-padding;
-        padding-bottom: $subscription-padding;
-        padding-right: 4.9%;
+    padding-top: $subscription-padding;
+    padding-bottom: $subscription-padding;
+    padding-right: 4.9%;
 
-        .thumbnail {
-            position: absolute;
-            top: $subscription-padding;
-            left: $subscription-padding;
+    .thumbnail {
+        position: absolute;
+        top: $subscription-padding;
+        left: $subscription-padding;
 
-            border: 0;
-            padding: 0;
-            margin: 0;
+        border: 0;
+        padding: 0;
+        margin: 0;
 
-            opacity: $subscription-opacity-default;
-            filter: url("/static/img/filters.svg#blur2px");
-            @include filter(blur(2px));
+        opacity: $subscription-opacity-default;
+        filter: url("/static/img/filters.svg#blur2px");
+        @include filter(blur(2px));
 
-            img {
-                max-width: $subscription-image-size;
-                max-height: $subscription-image-size;
-                @include border-radius(3px);
-            }
-        }
-
-        .name {
-            position: absolute;
-            top: $subscription-padding;
-            left: $subscription-image-size + $subscription-padding * 2;
-            right: $subscription-padding;
-
-            font-size: 140%;
-            line-height: $subscription-name-height;
-            max-height: $subscription-name-height;
-
-            overflow: hidden;
-            text-overflow: ellipsis;
-
-            opacity: $subscription-opacity-default;
-        }
-
-        .links {
-            position: absolute;
-            top: $subscription-name-height + $subscription-padding;
-            left: $subscription-image-size + $subscription-padding * 2;
-
-            a {
-                padding-right: 10px;
-            }
-        }
-
-        .last-updated {
-            position: absolute;
-            bottom: $subscription-padding - $baseline-difference;
-            right: $subscription-padding;
-        }
-
-        &:hover {
-            background: #fff;
+        img {
+            max-width: $subscription-image-size;
+            max-height: $subscription-image-size;
             @include border-radius(3px);
-
-            .css-hover-muted {
-                opacity: 1;
-                height: auto;
-            }
-
-            .thumbnail {
-                opacity: 1;
-                @include filter(none);
-            }
-
-            .name {
-                opacity: 1;
-            }
-        }
-
-        .tags {
-            position: absolute;
-            bottom: 20px;
-            left: 10px;
         }
     }
 
-    .has-unread {
+    .name {
+        position: absolute;
+        top: $subscription-padding;
+        left: $subscription-image-size + $subscription-padding * 2;
+        right: $subscription-padding;
+
+        font-size: 140%;
+        line-height: $subscription-name-height;
+        max-height: $subscription-name-height;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        opacity: $subscription-opacity-default;
+    }
+
+    .links {
+        position: absolute;
+        top: $subscription-name-height + $subscription-padding;
+        left: $subscription-image-size + $subscription-padding * 2;
+
+        a {
+            padding-right: 10px;
+        }
+    }
+
+    .last-updated {
+        position: absolute;
+        bottom: $subscription-padding - $baseline-difference;
+        right: $subscription-padding;
+    }
+
+    &:hover {
+        background: #fff;
+        @include border-radius(3px);
+
+        .css-hover-muted {
+            opacity: 1;
+            height: auto;
+        }
 
         .thumbnail {
             opacity: 1;
@@ -480,24 +533,70 @@
 
         .name {
             opacity: 1;
-            font-weight: bold;
-            //text-shadow: 0 0 2px 5bbb;
+        }
+    }
 
-            .unread-count {
-                opacity: 0.33;
-            }
+    .tags {
+        position: absolute;
+        bottom: 20px;
+        left: 10px;
+    }
+}
+
+.has-unread {
+
+    .thumbnail {
+        opacity: 1;
+        @include filter(none);
+    }
+
+    .name {
+        opacity: 1;
+        font-weight: bold;
+        //text-shadow: 0 0 2px 5bbb;
+
+        .unread-count {
+            opacity: 0.33;
         }
     }
 }
 
-#manage-folder.modal {
+.folder .folder .subscription,
+.folder .folder .folder .subscription,
+.folder .folder .folder .folder .subscription {
+    width: 95%;
+}
+
+#manage-folder.modal,
+#manage-subscription.modal {
+
     form {
         margin-bottom: 0;
     }
+
     label,
     input,
     select {
         font-size: 150%;
+    }
+
+    input {
+        // cancel Bootstrap's padding, but align
+        // label and input content from the top.
+        padding: 5px 0 0;
+
+        // Make the field "Medium"-like
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+
+        // But see it when not focused
+        border-bottom: 1px dotted #ddd;
+
+        &:focus {
+            // when editing, make things clear.
+            border: none;
+        }
     }
 
     label,
@@ -506,4 +605,19 @@
         height: 30px;
         line-height: 30px;
     }
+
+    .thumbnail {
+        float: left;
+
+        border: 0;
+        padding: 0;
+        margin: 0;
+
+        img {
+            max-width: $subscription-image-size*3;
+            max-height: $subscription-image-size*3;
+            @include border-radius(3px);
+        }
+    }
+
 }

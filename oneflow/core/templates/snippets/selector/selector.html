@@ -66,15 +66,11 @@
     </div>
 
     <div id="folders">
-    {% for folder in user.mongo.top_folders %}
-        <div class="row-fluid">
+        {% for folder in user.mongo.top_folders %}
             {% include "snippets/selector/folder.html" with folder=folder level=0 %}
-        </div>
-    {% endfor %}
-    </div>
+        {% endfor %}
 
-    <fieldset id="subscriptions">
-        <legend>{% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
+
             {% comment %}
             <div class="global-links pull-right">
                 <span class="unread">{% reading_list_with_count 'read' _('unread') %}</span>
@@ -85,28 +81,44 @@
             </div>
             {% endcomment %}
 
-        </legend>
+        {% if nofolder_open_subscriptions %}
 
-        <div>
-            {% for subscription in nofolder_open_subscriptions %}
-                {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
-            {% endfor %}
-        </div>
-        <div class="clearfix"></div>
-    </fieldset>
-
-    {% if show_closed_streams %}
-
-        <fieldset id="closed-subscriptions">
-                <legend>{% trans "Closed streams" %} ({{ closed_subscriptions|length }})</legend>
-
-                <div>
-                    {% for subscription in closed_subscriptions %}
-                        {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
-                    {% endfor %}
+            <div class="folder-wrapper clearfix level-{{ level }}">
+                <div id="{{ folder.id }}" class="folder has_content">
+                    <div class="name-wrapper">
+                        <span class="name">
+                            {% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
+                        </span>
+                    </div>
+                    <div class="subscriptions">
+                        {% for subscription in nofolder_open_subscriptions %}
+                            {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
+                        {% endfor %}
+                    </div>
                 </div>
-        </fieldset>
+            </div>
 
-    {% endif %}
+        {% endif %}
+
+        {% if show_closed_streams and closed_subscriptions %}
+
+            <div class="folder-wrapper clearfix level-{{ level }}">
+                <div id="{{ folder.id }}" class="folder has_content">
+                    <div class="name-wrapper">
+                        <span class="name">
+                            {% trans "Closed streams" %} ({{ closed_subscriptions|length }})
+                        </span>
+                    </div>
+                    <div class="subscriptions">
+                        {% for subscription in closed_subscriptions %}
+                            {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+
+        {% endif %}
+
+    </div>
 
 </form>
