@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-09 18:32+0200\n"
-"PO-Revision-Date: 2013-10-09 18:49+0009\n"
+"POT-Creation-Date: 2013-10-09 20:41+0200\n"
+"PO-Revision-Date: 2013-10-09 21:12+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -84,11 +84,12 @@ msgstr "Permission"
 msgid "Parents"
 msgstr "Parents"
 
-#: admin.py:233
+#: admin.py:233 models/nonrel/folder.py:60
 msgid "Children"
 msgstr "Enfants"
 
 #: admin.py:269 models/nonrel/article.py:183 models/nonrel/read.py:128
+#: models/nonrel/subscription.py:75
 msgid "Tags"
 msgstr "Tags"
 
@@ -657,7 +658,7 @@ msgstr "site web"
 msgid "slug"
 msgstr "slug"
 
-#: models/nonrel/feed.py:114 models/nonrel/subscription.py:75
+#: models/nonrel/feed.py:114
 msgid "tags"
 msgstr "tags"
 
@@ -798,22 +799,34 @@ msgstr "Description (EN)"
 msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
-#: models/nonrel/feed.py:331 models/nonrel/folder.py:82
+#: models/nonrel/feed.py:331 models/nonrel/folder.py:84
 #, python-brace-format
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel/folder.py:77
+#: models/nonrel/folder.py:52 models/nonrel/subscription.py:71
+msgid "Name"
+msgstr "Nom"
+
+#: models/nonrel/folder.py:53
+msgid "Owner"
+msgstr "Propriétaire"
+
+#: models/nonrel/folder.py:56
+msgid "Parent"
+msgstr "Parent"
+
+#: models/nonrel/folder.py:79
 #, python-brace-format
 msgid "{0} for user {1}{2}{3}"
 msgstr "{0} de l'utilisateur {1}{2}{3}"
 
-#: models/nonrel/folder.py:79
+#: models/nonrel/folder.py:81
 #, python-brace-format
 msgid ", parent: {0} (#{1})"
 msgstr ", parent : {0} (#{1})"
 
-#: models/nonrel/folder.py:81
+#: models/nonrel/folder.py:83
 #, python-brace-format
 msgid ", children: {0}"
 msgstr ", enfant(s) : {0}"
@@ -1577,10 +1590,6 @@ msgstr " ({feed}) "
 #, python-brace-format
 msgid "{title}{source}"
 msgstr "{title}{source}"
-
-#: models/nonrel/subscription.py:71
-msgid "Name"
-msgstr "Nom"
 
 #: models/nonrel/subscription.py:76
 msgid "Tags that will be applied to new reads in this subscription."
