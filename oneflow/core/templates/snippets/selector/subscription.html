@@ -4,6 +4,12 @@
         <a name="{{ subscription.id }}"></a>
 
         <div class="thumbnail">
+            {% if unread_count %}
+                <a href="{% url 'read_feed' feed=subscription.id %}"
+                    data-toggle="tooltip"
+                    title="{% blocktrans %}Click to read the {{unread_count}} new article(s){% endblocktrans %}">
+            {% endif %}
+
             {% if subscription.feed.thumbnail_url %}
                 <img src="{{ subscription.feed.thumbnail_url }}" />
 
@@ -11,6 +17,11 @@
                 <div class="generic-img"
                     style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
             {% endif %}
+
+            {% if unread_count %}
+                </a>
+            {% endif %}
+
         </div>
 
         <div class="links css-hover-muted">
