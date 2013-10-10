@@ -1,7 +1,13 @@
 {% with unread_count=subscription.unread_articles_count later_count=subscription.bookmarked_articles_count %}
     <div id="{{ subscription.id }}" class="subscription {{ unread_count|yesno:'has-unread,' }}">
         <div class="thumbnail">
-            <img src="{% firstof subscription.feed.thumbnail_url "http://lorempixel.com/64/64/abstract/" %}" />
+            {% if subscription.feed.thumbnail_url %}
+                <img src="{{ subscription.feed.thumbnail_url }}" />
+
+            {% else %}
+                <div class="generic-img"
+                    style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
+            {% endif %}
         </div>
 
         <div class="links css-hover-muted">

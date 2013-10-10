@@ -483,10 +483,19 @@
         filter: url("/static/img/filters.svg#blur2px");
         @include filter(blur(2px));
 
-        img {
+        img, .generic-img {
             max-width: $subscription-image-size;
             max-height: $subscription-image-size;
             @include border-radius(3px);
+        }
+
+        .generic-img {
+            width: $subscription-image-size;
+            height: $subscription-image-size;
+            line-height: $subscription-image-size;
+            font-size: 150%;
+            text-align: center;
+            opacity: 0.75;
         }
     }
 
