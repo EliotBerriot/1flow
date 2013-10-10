@@ -335,9 +335,14 @@
 
 }
 
-// .folder-wrapper.level-0 {
-//     clear: both;
-// }
+.folder-wrapper.level-1,
+.folder-wrapper.level-2,
+.folder-wrapper.level-3,
+.folder-wrapper.level-4 {
+    .name-wrapper {
+        margin-top: 0.5em;
+    }
+}
 
 .folder .folder-wrapper {
     float: left;
@@ -366,7 +371,7 @@
     // &:nth-child(3n+1) to get the next just after the div.clearfix.
 
     .name-wrapper {
-        margin-top: 1.5em;
+        margin-top: 1em;
         font-size: 325%;
         font-family: Georgia, Serif;
 
