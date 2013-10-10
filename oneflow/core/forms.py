@@ -107,21 +107,25 @@ class OnlyNameChoiceField(forms.ModelChoiceField):
 
     def label_from_instance(self, obj):
 
-        # OMG. Please don't do this anywhere else. How ugly it is.
-        if obj.parent:
-            if obj.parent.parent:
-                if obj.parent.parent.parent:
-                    if obj.parent.parent.parent.parent:
-                        prefix = u' ' * 32
+        root = obj.owner.root_folder
 
-                    else:
-                        prefix = u' ' * 24
-                else:
-                    prefix = u' ' * 16
-            else:
-                prefix = u' ' * 8
-        else:
+        # OMG. Please don't do this anywhere else. How ugly it is.
+        if obj.parent == root:
             prefix = u''
+        elif obj.parent.parent == root:
+            prefix = u' ' * 8
+        elif obj.parent.parent.parent == root:
+            prefix = u' ' * 16
+        elif obj.parent.parent.parent.parent == root:
+            prefix = u' ' * 24
+        elif obj.parent.parent.parent.parent.parent == root:
+            prefix = u' ' * 32
+        elif obj.parent.parent.parent.parent.parent.parent == root:
+            prefix = u' ' * 40
+        elif obj.parent.parent.parent.parent.parent.parent.parent == root:
+            prefix = u' ' * 48
+        else:
+            prefix = u' ' * 56
 
         return prefix + obj.name
 
@@ -132,21 +136,25 @@ class OnlyNameMultipleChoiceField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
 
-        # OMG. Please don't do this anywhere else. How ugly it is.
-        if obj.parent:
-            if obj.parent.parent:
-                if obj.parent.parent.parent:
-                    if obj.parent.parent.parent.parent:
-                        prefix = u' ' * 16
+        root = obj.owner.root_folder
 
-                    else:
-                        prefix = u' ' * 12
-                else:
-                    prefix = u' ' * 8
-            else:
-                prefix = u' ' * 4
-        else:
+        # OMG. Please don't do this anywhere else. How ugly it is.
+        if obj.parent == root:
             prefix = u''
+        elif obj.parent.parent == root:
+            prefix = u' ' * 8
+        elif obj.parent.parent.parent == root:
+            prefix = u' ' * 16
+        elif obj.parent.parent.parent.parent == root:
+            prefix = u' ' * 24
+        elif obj.parent.parent.parent.parent.parent == root:
+            prefix = u' ' * 32
+        elif obj.parent.parent.parent.parent.parent.parent == root:
+            prefix = u' ' * 40
+        elif obj.parent.parent.parent.parent.parent.parent.parent == root:
+            prefix = u' ' * 48
+        else:
+            prefix = u' ' * 56
 
         return prefix + obj.name
 

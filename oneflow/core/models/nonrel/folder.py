@@ -8,7 +8,7 @@ from pymongo.errors import DuplicateKeyError
 
 from mongoengine import Document, NULLIFY, CASCADE, PULL
 from mongoengine.fields import StringField, ReferenceField, ListField
-from mongoengine.errors import NotUniqueError  # , ValidationError
+from mongoengine.errors import NotUniqueError, ValidationError, DoesNotExist
 
 from django.utils.translation import ugettext_lazy as _
 
@@ -49,13 +49,13 @@ def folder_bookmarked_articles_count_default(folder, *args, **kwargs):
 
 
 class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
-    name = StringField(verbose_name=_(u'Name'), unique_with=['owner'])
+    name  = StringField(verbose_name=_(u'Name'),
+                        unique_with=['owner', 'parent'])
     owner = ReferenceField('User', verbose_name=_(u'Owner'),
                            reverse_delete_rule=CASCADE)
 
     parent = ReferenceField('self', verbose_name=_(u'Parent'),
-                            reverse_delete_rule=NULLIFY,
-                            required=False, default=None)
+                            reverse_delete_rule=NULLIFY, required=False)
     children = ListField(ReferenceField('self', reverse_delete_rule=PULL),
                          default=list, verbose_name=_(u'Children'))
 
@@ -103,6 +103,32 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
         return children
 
     @classmethod
+    def get_root_for(cls, user):
+
+        try:
+            return cls.objects.get(name=u'__root__', owner=user)
+
+        except DoesNotExist:
+            return cls(name=u'__root__', owner=user).save()
+
+    def validate(self, *args, **kwargs):
+
+        try:
+            super(Folder, self).validate(*args, **kwargs)
+
+        except ValidationError as e:
+            parent_error = e.errors.get('parent', None)
+
+            if parent_error and str(parent_error).startswith('Field is requi'):
+                # Allow the creation of the root folder whatever it costs,
+                # else we cannot create any directory (chicken & egg pbm).
+                if self.name == u'__root__':
+                    e.errors.pop('parent')
+
+            if e.errors:
+                raise e
+
+    @classmethod
     def add_folder(cls, name, user, parent=None, children=None):
 
         assert parent is None or isinstance(parent, cls)
@@ -111,17 +137,17 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
         if children is None:
             children = ()
 
+        if parent is None:
+            parent = cls.get_root_for(user)
+
         try:
-            folder = cls(name=name, owner=user).save()
+            folder = cls(name=name, owner=user, parent=parent).save()
 
         except (NotUniqueError, DuplicateKeyError):
+            folder = cls.objects.get(name=name, owner=user, parent=parent)
 
-            folder = cls.objects.get(name=name, owner=user)
-
-        if parent is not None:
-            assert parent.owner == folder.owner
-
-            folder.set_parent(parent)
+        else:
+            parent.add_child(folder, update_reverse_link=False)
 
         if children:
             for child in children:
@@ -153,12 +179,17 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
 
 def User_folders_property_get(self):
 
-    return Folder.objects(owner=self)
+    return Folder.objects(owner=self, parent__ne=None)
+
+
+def User_root_folder_property_get(self):
+
+    return Folder.objects.get(owner=self, name=u'__root__', parent=None)
 
 
 def User_top_folders_property_get(self):
 
-    return self.folders.filter(parent=None).order_by('name')
+    return self.folders.filter(parent=self.root_folder).order_by('name')
 
 
 def User_folders_tree_property_get(self):
@@ -172,5 +203,6 @@ def User_folders_tree_property_get(self):
     return folders
 
 User.folders      = property(User_folders_property_get)
+User.root_folder  = property(User_root_folder_property_get)
 User.top_folders  = property(User_top_folders_property_get)
 User.folders_tree = property(User_folders_tree_property_get)
