@@ -158,17 +158,43 @@ def read_action_status(read, action_name, with_text=False):
 @register.simple_tag
 def html_first_letters(name, number=1):
 
-    name = html_letters_re.sub(u'', name)
+    try:
+        # Try to get the capitalized letters to make a nice name.
+        capitalized = ''.join(c for c in name if c.isupper() or c.isdigit())
 
-    if number > len(name):
+    except:
+        # If that fails, just start with the full name.
+        cleaned = html_letters_re.sub(u'', name)
+
+    else:
+        caplen = len(capitalized)
+
+        # If it succeeded, make sure we have enough letters
+        if caplen > 0:
+
+            # If we don't have enough letters, take
+            # what's left after the last capital.
+            if caplen < number:
+                capitalized += name[name.index(capitalized[-1]) + 1:]
+
+            cleaned = html_letters_re.sub(u'', capitalized)
+
+        else:
+            cleaned = html_letters_re.sub(u'', name)
+
+    if len(cleaned) == 0:
+        number = 3
+        cleaned   = u';-)'
+
+    if number > len(cleaned):
         number = 1
 
     try:
-        return name[:number].title()
+        return cleaned[:number].title()
 
     except:
         # OMG… Unicode characters everywhere…
-        return name[:number]
+        return cleaned[:number]
 
 
 @register.simple_tag
