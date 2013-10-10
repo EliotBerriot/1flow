@@ -2,11 +2,12 @@
     <div class="modal-header">
         <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
         <h3>{% trans "Edit subscription" %}</h3>
-        </div>
-        <form class="form form-horizontal"
-            action="{% url 'edit_subscription' subscription=subscription.id %}" method="POST">
+    </div>
+    <form class="form form-horizontal" method="POST"
+            action="{% url 'edit_subscription' subscription=subscription.id %}">
             {% csrf_token %}
-            <div class="modal-body">
+
+        <div class="modal-body">
 
             <div class="control-group">
                 <div class="controls">
@@ -48,21 +49,25 @@
             {% include "widgets/forms/field-input-text.html" with field=form.name %}
             {% include "widgets/forms/field-generic.html" with field=form.folders %}
 
-            <p>{% blocktrans %}
-                If you delete this subscription, all articles you read in it will be permanently deleted from your personnal space and your attributes/ratings will be lost.
-            {% endblocktrans %}</p>
+            {% comment %}
+                <p>{% blocktrans %}
+                    If you delete this subscription, all articles you read in it will be permanently deleted from your personnal space and your attributes/ratings will be lost.
+                {% endblocktrans %}</p>
+            {% endcomment %}
 
-            </div>
-            <div class="modal-footer">
+        </div>
+        <div class="modal-footer">
 
-            {% if subscription %}
+            {% comment %}
+                NOT READY YET
+
                 <span class="pull-left">
                 <a href="{% url 'delete_subscription' subscription=subscription.id %}" class="btn btn-danger">{% trans "Delete this subscription" %}</a>
                 </span>
-            {% endif %}
+            {% endcomment %}
 
             <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
             <button type="submit" class="btn btn-primary">{% trans "Save" %}</a>
-        </form>
-    </div>
+        </div>
+    </form>
 </div>
