@@ -1,16 +1,16 @@
 <div class="folder-wrapper clearfix level-{{ level }}"
-    style="border-{{ level|divisibleby:'2'|yesno:'left,right' }}-color: {% html_background_color_for_name folder.name 0.15 %}">
+    style="border-{{ level|divisibleby:'2'|yesno:'left,right' }}-color: {{ folder_color_border }}">
     <div class="folder {% if folder.subscriptions or folder.children %}has_content{% endif %}">
 
         <a name="{{ folder.id }}"></a>
 
-        <div class="name-wrapper">
+        <div class="name-wrapper level-{{ level }}">
             {% if level|divisibleby:'2' %}
-                <span class="name" style="border-top-color: {% html_background_color_for_name folder.name 0.15 %}">{{ folder.name }}{# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}</span>&nbsp;<span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>
+                <span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}{# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}</span>&nbsp;<span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>
 
             {% else %}
                 <span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"
-                    data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>&nbsp;<span class="name" style="border-top-color: {% html_background_color_for_name folder.name 0.15 %}">{{ folder.name }}{# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}</span>
+                    data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>&nbsp;<span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}{# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}</span>
 
             {% endif %}
         </div>

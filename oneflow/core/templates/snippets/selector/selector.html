@@ -67,6 +67,7 @@
 
     <div id="folders">
         {% for folder in user.mongo.top_folders %}
+            {% captureas folder_color_border %}{% html_background_color_for_name folder.name 0.5 %}{% endcaptureas %}
             {% include "snippets/selector/folder.html" with folder=folder level=0 %}
         {% endfor %}
 
