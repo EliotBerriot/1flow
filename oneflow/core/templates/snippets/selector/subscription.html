@@ -1,5 +1,8 @@
 {% with unread_count=subscription.unread_articles_count later_count=subscription.bookmarked_articles_count %}
-    <div id="{{ subscription.id }}" class="subscription {{ unread_count|yesno:'has-unread,' }}">
+    <div class="subscription {{ unread_count|yesno:'has-unread,' }}">
+
+        <a name="{{ subscription.id }}"></a>
+
         <div class="thumbnail">
             {% if subscription.feed.thumbnail_url %}
                 <img src="{{ subscription.feed.thumbnail_url }}" />

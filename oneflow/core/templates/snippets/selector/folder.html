@@ -1,5 +1,8 @@
 <div class="folder-wrapper clearfix level-{{ level }}">
-    <div id="{{ folder.id }}" class="folder {% if folder.subscriptions or folder.children %}has_content{% endif %}">
+    <div class="folder {% if folder.subscriptions or folder.children %}has_content{% endif %}">
+
+        <a name="{{ folder.id }}"></a>
+
         <div class="name-wrapper">
             <span class="pull-right css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"
                 data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>
