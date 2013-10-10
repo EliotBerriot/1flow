@@ -26,32 +26,32 @@ register = template.Library()
 # And then: http://stackoverflow.com/q/3116260/654755
 # http://ux.stackexchange.com/q/8297
 letters_colors = {
-    u'a': ((0, 0, 180), u'rgb(0, 0, 180)', u'blue'),
-    u'b': ((175, 13, 102), u'rgb(175, 13, 102)', u'red-violet'),
-    u'c': ((146, 248, 70), u'rgb(146, 248, 70)', u'green-yellow'),
-    u'd': ((255, 200, 47), u'rgb(255, 200, 47)', u'yellow-orange'),
-    u'e': ((255, 118, 0), u'rgb(255, 118, 0)', u'orange'),
-    u'f': ((185, 185, 185), u'rgb(185, 185, 185)', u'light-gray'),
-    u'g': ((235, 235, 222), u'rgb(235, 235, 222)', u'off-white'),
-    u'h': ((100, 100, 100), u'rgb(100, 100, 100)', u'gray'),
-    u'i': ((255, 255, 0), u'rgb(255, 255, 0)', u'yellow'),
-    u'j': ((55, 19, 112), u'rgb(55, 19, 112)', u'dark-purple'),
-    u'k': ((255, 255, 150), u'rgb(255, 255, 150)', u'light-yellow'),
-    u'l': ((202, 62, 94), u'rgb(202, 62, 94)', u'dark-pink'),
-    u'm': ((205, 145, 63), u'rgb(205, 145, 63)', u'dark-orange'),
-    u'n': ((12, 75, 100), u'rgb(12, 75, 100)', u'teal'),
-    u'o': ((255, 0, 0), u'rgb(255, 0, 0)', u'red'),
-    u'p': ((175, 155, 50), u'rgb(175, 155, 50)', u'dark-yellow'),
-    u'q': ((0, 0, 0), u'rgb(0, 0, 0)', u'black'),
-    u'r': ((37, 70, 25), u'rgb(37, 70, 25)', u'dark-green'),
-    u's': ((121, 33, 135), u'rgb(121, 33, 135)', u'purple'),
-    u't': ((83, 140, 208), u'rgb(83, 140, 208)', u'light-blue'),
-    u'u': ((0, 154, 37), u'rgb(0, 154, 37)', u'green'),
-    u'v': ((178, 220, 205), u'rgb(178, 220, 205)', u'cyan'),
-    u'w': ((255, 152, 213), u'rgb(255, 152, 213)', u'pink'),
-    u'x': ((0, 0, 74), u'rgb(0, 0, 74)', u'dark blue'),
-    u'y': ((175, 200, 74), u'rgb(175, 200, 74)', u'olive-green'),
-    u'z': ((63, 25, 12), u'rgb(63, 25, 12)', u'red-brown'),
+    u'a': ((0, 0, 180), u'rgba(0, 0, 180, 1)', u'blue'),
+    u'b': ((175, 13, 102), u'rgba(175, 13, 102, 1)', u'red-violet'),
+    u'c': ((146, 248, 70), u'rgba(146, 248, 70, 1)', u'green-yellow'),
+    u'd': ((255, 200, 47), u'rgba(255, 200, 47, 1)', u'yellow-orange'),
+    u'e': ((255, 118, 0), u'rgba(255, 118, 0, 1)', u'orange'),
+    u'f': ((185, 185, 185), u'rgba(185, 185, 185, 1)', u'light-gray'),
+    u'g': ((235, 235, 222), u'rgba(235, 235, 222, 1)', u'off-white'),
+    u'h': ((100, 100, 100), u'rgba(100, 100, 100, 1)', u'gray'),
+    u'i': ((255, 255, 0), u'rgba(255, 255, 0, 1)', u'yellow'),
+    u'j': ((55, 19, 112), u'rgba(55, 19, 112, 1)', u'dark-purple'),
+    u'k': ((255, 255, 150), u'rgba(255, 255, 150, 1)', u'light-yellow'),
+    u'l': ((202, 62, 94), u'rgba(202, 62, 94, 1)', u'dark-pink'),
+    u'm': ((205, 145, 63), u'rgba(205, 145, 63, 1)', u'dark-orange'),
+    u'n': ((12, 75, 100), u'rgba(12, 75, 100, 1)', u'teal'),
+    u'o': ((255, 0, 0), u'rgba(255, 0, 0, 1)', u'red'),
+    u'p': ((175, 155, 50), u'rgba(175, 155, 50, 1)', u'dark-yellow'),
+    u'q': ((0, 0, 0), u'rgba(0, 0, 0, 1)', u'black'),
+    u'r': ((37, 70, 25), u'rgba(37, 70, 25, 1)', u'dark-green'),
+    u's': ((121, 33, 135), u'rgba(121, 33, 135, 1)', u'purple'),
+    u't': ((83, 140, 208), u'rgba(83, 140, 208, 1)', u'light-blue'),
+    u'u': ((0, 154, 37), u'rgba(0, 154, 37, 1)', u'green'),
+    u'v': ((178, 220, 205), u'rgba(178, 220, 205, 1)', u'cyan'),
+    u'w': ((255, 152, 213), u'rgba(255, 152, 213, 1)', u'pink'),
+    u'x': ((0, 0, 74), u'rgba(0, 0, 74, 1)', u'dark blue'),
+    u'y': ((175, 200, 74), u'rgba(175, 200, 74, 1)', u'olive-green'),
+    u'z': ((63, 25, 12), u'rgba(63, 25, 12, 1)', u'red-brown'),
 }
 
 html_letters_re = re.compile(ur'[^\w]', re.UNICODE | re.IGNORECASE)
@@ -172,7 +172,7 @@ def html_first_letters(name, number=1):
 
 
 @register.simple_tag
-def html_background_color_for_name(name):
+def html_background_color_for_name(name, opacity=1):
 
     name = html_letters_re.sub(u'', name)
 
@@ -184,12 +184,14 @@ def html_background_color_for_name(name):
         letter = u'a'
 
     try:
-        return letters_colors[letter][1]
+        return letters_colors[letter][1].replace(u', 1)',
+                                                 u', {0})'.format(opacity))
 
     except:
         # Still, some unicode characters can
         # lower() but are not in the table.
-        return letters_colors[u'a'][1]
+        return letters_colors[u'a'][1].replace(u', 1)',
+                                               u', {0})'.format(opacity))
 
 
 @register.simple_tag
