@@ -1,6 +1,9 @@
 # *-* coding: utf-8 -*-
 
+import re
 import logging
+
+from math import pow
 
 from django import template
 from django.core.urlresolvers import reverse
@@ -15,6 +18,43 @@ from ..models.nonrel import Read
 LOGGER = logging.getLogger(__name__)
 
 register = template.Library()
+
+
+# http://www.christianfaur.com/color/
+# http://www.christianfaur.com/color/Site/Picking%20Colors.html
+#
+# And then: http://stackoverflow.com/q/3116260/654755
+# http://ux.stackexchange.com/q/8297
+letters_colors = {
+    u'a': ((0, 0, 180), u'rgb(0, 0, 180)', u'blue'),
+    u'b': ((175, 13, 102), u'rgb(175, 13, 102)', u'red-violet'),
+    u'c': ((146, 248, 70), u'rgb(146, 248, 70)', u'green-yellow'),
+    u'd': ((255, 200, 47), u'rgb(255, 200, 47)', u'yellow-orange'),
+    u'e': ((255, 118, 0), u'rgb(255, 118, 0)', u'orange'),
+    u'f': ((185, 185, 185), u'rgb(185, 185, 185)', u'light-gray'),
+    u'g': ((235, 235, 222), u'rgb(235, 235, 222)', u'off-white'),
+    u'h': ((100, 100, 100), u'rgb(100, 100, 100)', u'gray'),
+    u'i': ((255, 255, 0), u'rgb(255, 255, 0)', u'yellow'),
+    u'j': ((55, 19, 112), u'rgb(55, 19, 112)', u'dark-purple'),
+    u'k': ((255, 255, 150), u'rgb(255, 255, 150)', u'light-yellow'),
+    u'l': ((202, 62, 94), u'rgb(202, 62, 94)', u'dark-pink'),
+    u'm': ((205, 145, 63), u'rgb(205, 145, 63)', u'dark-orange'),
+    u'n': ((12, 75, 100), u'rgb(12, 75, 100)', u'teal'),
+    u'o': ((255, 0, 0), u'rgb(255, 0, 0)', u'red'),
+    u'p': ((175, 155, 50), u'rgb(175, 155, 50)', u'dark-yellow'),
+    u'q': ((0, 0, 0), u'rgb(0, 0, 0)', u'black'),
+    u'r': ((37, 70, 25), u'rgb(37, 70, 25)', u'dark-green'),
+    u's': ((121, 33, 135), u'rgb(121, 33, 135)', u'purple'),
+    u't': ((83, 140, 208), u'rgb(83, 140, 208)', u'light-blue'),
+    u'u': ((0, 154, 37), u'rgb(0, 154, 37)', u'green'),
+    u'v': ((178, 220, 205), u'rgb(178, 220, 205)', u'cyan'),
+    u'w': ((255, 152, 213), u'rgb(255, 152, 213)', u'pink'),
+    u'x': ((0, 0, 74), u'rgb(0, 0, 74)', u'dark blue'),
+    u'y': ((175, 200, 74), u'rgb(175, 200, 74)', u'olive-green'),
+    u'z': ((63, 25, 12), u'rgb(63, 25, 12)', u'red-brown'),
+}
+
+html_letters_re = re.compile(ur'[^\w]', re.UNICODE | re.IGNORECASE)
 
 
 @register.filter
@@ -113,3 +153,68 @@ def read_action_status(read, action_name, with_text=False):
         'action_data' : Read.status_data.get(action_name),
         'status_hidden' : '' if getattr(read, action_name) else 'hide',
     }
+
+
+@register.simple_tag
+def html_first_letters(name, number=1):
+
+    name = html_letters_re.sub(u'', name)
+
+    if number > len(name):
+        number = 1
+
+    try:
+        return name[:number].title()
+
+    except:
+        # OMG… Unicode characters everywhere…
+        return name[:number]
+
+
+@register.simple_tag
+def html_background_color_for_name(name):
+
+    name = html_letters_re.sub(u'', name)
+
+    try:
+        letter = name[0].lower()
+
+    except:
+        # OMG… Unicode characters everywhere…
+        letter = u'a'
+
+    try:
+        return letters_colors[letter][1]
+
+    except:
+        # Still, some unicode characters can
+        # lower() but are not in the table.
+        return letters_colors[u'a'][1]
+
+
+@register.simple_tag
+def html_foreground_color_for_name(name):
+    """ TODO: pre-compute these values for our colors. """
+
+    name = html_letters_re.sub(u'', name)
+
+    try:
+        letter = name[0].lower()
+
+    except:
+        # OMG… Unicode characters everywhere…
+        letter = u'a'
+
+    try:
+        R, G, B = letters_colors[letter][0]
+
+    except:
+        # Still, some unicode characters can
+        # lower() but are not in the table.
+        R, G, B = letters_colors[u'a'][0]
+
+    Y = (0.2126 * pow(R / 255, 2.2)
+         + 0.7151 * pow(G / 255, 2.2)
+         + 0.0721 * pow(B / 255, 2.2))
+
+    return u'white' if Y <= 0.18 else u'black'
