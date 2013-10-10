@@ -161,7 +161,8 @@ def manage_folder(request, **kwargs):
             LOGGER.error(form.errors)
 
         return HttpResponseRedirect(reverse('source_selector')
-                                    + u"#{0}".format(folder.id))
+                                    + (u"#{0}".format(folder.id)
+                                       if folder else u''))
 
     else:
         if not request.is_ajax():
