@@ -31,8 +31,17 @@ letters_colors = {
     u'c': ((146, 248, 70), u'rgba(146, 248, 70, 1)', u'green-yellow'),
     u'd': ((255, 200, 47), u'rgba(255, 200, 47, 1)', u'yellow-orange'),
     u'e': ((255, 118, 0), u'rgba(255, 118, 0, 1)', u'orange'),
-    u'f': ((185, 185, 185), u'rgba(185, 185, 185, 1)', u'light-gray'),
-    u'g': ((235, 235, 222), u'rgba(235, 235, 222, 1)', u'off-white'),
+
+    # Original f & g, not used because grey means "disabled"
+    # and G is not visible enough when opacity < 1.
+    #
+    #    u'f': ((185, 185, 185), u'rgba(185, 185, 185, 1)', u'light-gray'),
+    #    u'g': ((235, 235, 222), u'rgba(235, 235, 222, 1)', u'off-white'),
+    #
+    # Instead, we use w & y colors, which are the most near on the graph.
+
+    u'f': ((255, 152, 213), u'rgba(255, 152, 213, 1)', u'pink'),
+    u'g': ((175, 200, 74), u'rgba(175, 200, 74, 1)', u'olive-green'),
     u'h': ((100, 100, 100), u'rgba(100, 100, 100, 1)', u'gray'),
     u'i': ((255, 255, 0), u'rgba(255, 255, 0, 1)', u'yellow'),
     u'j': ((55, 19, 112), u'rgba(55, 19, 112, 1)', u'dark-purple'),
