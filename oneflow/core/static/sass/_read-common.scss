@@ -288,7 +288,6 @@
 }
 
 #selector {
-
     a.manage {
         text-decoration: none;
         color: grey;
@@ -315,75 +314,154 @@
                 list-style-type: none;
                 padding: 5px;
 
-                /*
-                &:before {
-                    content: '\226B';
-                    padding-right: 5px;
-                    font-size: 110%;
-                    color:
-                }
-                */
-
                 a {
                     color: $subscription-link-color;
                 }
             }
-
         }
     }
+}
 
+.folder-wrapper {
+    // This margin-top must be in sync (or not,
+    // if explicitely wanted) with @@SYNC-MT-FW@@
+    margin-top: 4em;
+    padding-top: 2em;
 
+    .name-wrapper .name {
+        position: relative;
+
+        &:before {
+            position: absolute;
+            content: '';
+            //width: 120%;
+            border-top-color: inherit;
+            border-top-style: solid;
+        }
+    }
 }
 
 .folder-wrapper.level-1,
 .folder-wrapper.level-2,
 .folder-wrapper.level-3,
 .folder-wrapper.level-4 {
+    padding-top: 0;
+
     .name-wrapper {
         margin-top: 0.5em;
     }
 }
 
-.folder .folder-wrapper {
-    float: left;
-    width: 45%;
+// ——————————————————————————————————————————— Order and splitting matter START
+// eg, we can't group *.level-* like we did before,
+// due to CSS-nature-related inheriting consequences.
 
-    // MIRRORED negatively in .children
-    margin: 0 2.5%;
+.folder-wrapper.level-0 {
+    border-left-style: solid;
+    border-left-width: 10px;
+
+    .name-wrapper {
+        text-align: left;
+
+        .name:before {
+            top: -22px;
+            left: -19px;
+            right: 57px;
+            border-top-width: 10px;
+        }
+    }
+}
+.folder-wrapper.level-1 {
+    border-right-style: solid;
+    border-right-width: 7px;
+
+    .name-wrapper {
+        text-align: right;
+
+        .name:before {
+            top: -13px;
+            left: 45px;
+            right: -15px;
+            border-top-width: 7px;
+        }
+    }
+}
+.folder-wrapper.level-2 {
+    border-left-style: solid;
+    border-left-width: 5px;
+
+    .name-wrapper {
+        text-align: left;
+
+        .name:before {
+            top: -10px;
+            left: -12px;
+            right: 36px;
+            border-top-width: 5px;
+        }
+    }
+}
+.folder-wrapper.level-3 {
+    // NOTE: this one is untested, I didn't try
+    // to create more than 3 levels of folders.
+
+    border-right-style: solid;
+    border-right-width: 5px;
+
+    .name-wrapper {
+        text-align: right;
+
+        .name:before {
+            top: -10px;
+            left: 36px;
+            right: -12px;
+            border-top-width: 5px;
+        }
+    }
+}
+.folder-wrapper.level-4 {
+    border-left-style: solid;
+    border-left-width: 5px;
+
+    .name-wrapper {
+        text-align: left;
+
+        .name:before {
+            top: -10px;
+            left: -12px;
+            right: 36px;
+            border-top-width: 5px;
+        }
+    }
 }
 
-.children {
-    // MIRRORED postitively in .folder-wrapper
-    // don't ask me why we need more negative
-    // margin space than positive, I don't know.
-    margin: 0 -2.65%;
+// ————————————————————————————————————————————— Order and splitting matter END
+
+.folder .folder-wrapper {
+    // Second level of folder take only half the screen
+    float: left;
+    width: 44%;
+
+    // The top part of this margin must be in sync (or
+    // not, if explicitely wanted) with @@SYNC-MT-FW@@
+    margin: 2em 2.5% 0;
+}
+
+.folder .folder .folder-wrapper {
+    // Third (and more) level of folder take
+    // back 100% of width, else it gets unreadable.
+    width: 96%;
+
 }
 
 .folder {
-    border-top-left-radius: 2px;
-    border-top-right-radius: 2px;
-
-    //@include filter-gradient(#a6000000, #00000000, vertical); // IE6-8
-    @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.25) 0%, rgba(0, 0, 0, 0) 100%));
-    min-height: 8em;
-
     // Just for memories, with a div.clearfix every two folders, we use
     // &:nth-child(3n+1) to get the next just after the div.clearfix.
 
     .name-wrapper {
-        margin-top: 1em;
         font-size: 325%;
         font-family: Georgia, Serif;
-
-        // Replicate padding-{left,right} in .no-subscription, with
-        // compensated negative margins. NOTE: adding 'em' and '%'
-        // obviously does not work, the .no-subscription values are
-        // simply visually approximated with a “pixel-aware” eye.
-        //
-        // The padding-top compensate the negative margin to put
-        // equal space around (top, left) the folder name.
-        //
-        padding: 0.75em 0.5em 1em;
+        padding: 0 0.5em 0.5em;
 
         &:hover {
             .css-hover-muted {
@@ -408,35 +486,17 @@
         }
     }
 
-    .folder {
-        @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.10) 0%, rgba(0, 0, 0, 0) 100%));
-
-        .name-wrapper {
-            font-size: 250%;
-        }
+    .folder .name-wrapper {
+        font-size: 250%;
     }
 
-    .folder .folder {
-        @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.05) 0%, rgba(0, 0, 0, 0) 100%));
-
-        .name-wrapper {
-            font-size: 200%;
-            color: grey;
-        }
+    .folder .folder .name-wrapper {
+        font-size: 200%;
     }
 
-    .folder .folder .folder {
-        @include background-image(linear-gradient(top, rgba(0, 0, 0, 0.025) 0%, rgba(0, 0, 0, 0) 100%));
-
-        .name-wrapper {
-            font-size: 150%;
-            color: grey;
-        }
+    .folder .folder .folder .name-wrapper {
+        font-size: 150%;
     }
-}
-
-.folder.has_content {
-    min-height: 15em;
 }
 
 #subscriptions,
@@ -533,7 +593,7 @@
 
     &:hover {
         background: #fff;
-        @include border-radius(3px);
+        @include border-radius(2px);
 
         .css-hover-muted {
             opacity: 1;
@@ -567,7 +627,6 @@
     .name {
         opacity: 1;
         font-weight: bold;
-        //text-shadow: 0 0 2px 5bbb;
 
         .unread-count {
             opacity: 0.33;
@@ -575,9 +634,12 @@
     }
 }
 
-.folder .folder .subscription,
-.folder .folder .folder .subscription,
-.folder .folder .folder .folder .subscription {
+// NOTE:
+// .folder .folder .folder .subscription,
+// .folder .folder .folder .folder .subscription
+// are automatically inherited due to CSS nature.
+
+.folder .folder .subscription {
     width: 95%;
 }
 
@@ -633,5 +695,4 @@
             @include border-radius(3px);
         }
     }
-
 }
