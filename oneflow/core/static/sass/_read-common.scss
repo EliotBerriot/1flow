@@ -290,6 +290,7 @@
 #selector {
     a.manage {
         text-decoration: none;
+        background-color: transparent;
         color: grey;
         opacity: 0.5;
 
@@ -322,6 +323,65 @@
     }
 }
 
+.folder .folder-wrapper {
+    // Second level of folder take only half the screen
+    float: left;
+    width: 44%;
+
+    // The top part of this margin must be in sync (or
+    // not, if explicitely wanted) with @@SYNC-MT-FW@@
+    margin: 2em 2.45% 0;
+}
+
+.folder .folder .folder-wrapper {
+    // Third (and more) level of folder take
+    // back 100% of width, else it gets unreadable.
+    width: 92%;
+}
+
+.folder {
+    // Just for memories, with a div.clearfix every two folders, we use
+    // &:nth-child(3n+1) to get the next just after the div.clearfix.
+
+    .name-wrapper {
+        font-size: 325%;
+        font-family: Georgia, Serif;
+        color: rgba(44, 55, 66, $subscription-opacity-default);
+        padding: 0 0.5em 0.5em;
+
+        &:hover {
+            .css-hover-muted {
+                opacity: 1;
+                height: auto;
+            }
+        }
+    }
+
+    .no-subscription {
+        color: $subscription-link-color;
+        opacity: $subscription-opacity-default;
+        font-size: 150%;
+        margin-bottom: 50px;
+
+        // Replicate padding-{left,right} in
+        // .name-wrapper, minus negative margin…
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+    }
+
+    .folder .name-wrapper {
+        font-size: 250%;
+    }
+
+    .folder .folder .name-wrapper {
+        font-size: 200%;
+    }
+
+    .folder .folder .folder .name-wrapper {
+        font-size: 150%;
+    }
+}
+
 .folder-wrapper {
     // This margin-top must be in sync (or not,
     // if explicitely wanted) with @@SYNC-MT-FW@@
@@ -334,7 +394,6 @@
         &:before {
             position: absolute;
             content: '';
-            //width: 120%;
             border-top-color: inherit;
             border-top-style: solid;
         }
@@ -360,144 +419,100 @@
     border-left-style: solid;
     border-left-width: 10px;
 
-    .name-wrapper {
+    .name-wrapper.level-0 {
         text-align: left;
 
         .name:before {
             top: -22px;
             left: -19px;
-            right: 57px;
+            right: 38px;
             border-top-width: 10px;
         }
+    }
+
+    &:hover .name-wrapper.level-0 {
+        color: rgba(44, 55, 66, 1);
     }
 }
 .folder-wrapper.level-1 {
     border-right-style: solid;
     border-right-width: 7px;
 
-    .name-wrapper {
+    .name-wrapper.level-1 {
         text-align: right;
 
         .name:before {
             top: -13px;
-            left: 45px;
+            left: 30px;
             right: -15px;
             border-top-width: 7px;
         }
+    }
+
+    &:hover .name-wrapper.level-1 {
+        color: rgba(44, 55, 66, 1);
     }
 }
 .folder-wrapper.level-2 {
     border-left-style: solid;
     border-left-width: 5px;
 
-    .name-wrapper {
+    .name-wrapper.level-2 {
         text-align: left;
 
         .name:before {
             top: -10px;
             left: -12px;
-            right: 36px;
+            right: 24px;
             border-top-width: 5px;
         }
+    }
+
+    &:hover .name-wrapper.level-2 {
+        color: rgba(44, 55, 66, 1);
     }
 }
 .folder-wrapper.level-3 {
-    // NOTE: this one is untested, I didn't try
-    // to create more than 3 levels of folders.
-
     border-right-style: solid;
     border-right-width: 5px;
 
-    .name-wrapper {
+    .name-wrapper.level-3 {
         text-align: right;
 
         .name:before {
-            top: -10px;
-            left: 36px;
-            right: -12px;
+            top: -8px;
+            left: 18px;
+            right: -9px;
             border-top-width: 5px;
         }
     }
+
+    &:hover .name-wrapper.level-3 {
+        color: rgba(44, 55, 66, 1);
+    }
 }
 .folder-wrapper.level-4 {
+
     border-left-style: solid;
     border-left-width: 5px;
 
-    .name-wrapper {
+    .name-wrapper.level-4 {
         text-align: left;
 
         .name:before {
-            top: -10px;
-            left: -12px;
-            right: 36px;
+            top: -8px;
+            left: -9px;
+            right: 18px;
             border-top-width: 5px;
         }
+    }
+
+    &:hover .name-wrapper.level-4 {
+        color: rgba(44, 55, 66, 1);
     }
 }
 
 // ————————————————————————————————————————————— Order and splitting matter END
-
-.folder .folder-wrapper {
-    // Second level of folder take only half the screen
-    float: left;
-    width: 44%;
-
-    // The top part of this margin must be in sync (or
-    // not, if explicitely wanted) with @@SYNC-MT-FW@@
-    margin: 2em 2.5% 0;
-}
-
-.folder .folder .folder-wrapper {
-    // Third (and more) level of folder take
-    // back 100% of width, else it gets unreadable.
-    width: 96%;
-
-}
-
-.folder {
-    // Just for memories, with a div.clearfix every two folders, we use
-    // &:nth-child(3n+1) to get the next just after the div.clearfix.
-
-    .name-wrapper {
-        font-size: 325%;
-        font-family: Georgia, Serif;
-        padding: 0 0.5em 0.5em;
-
-        &:hover {
-            .css-hover-muted {
-                opacity: 1;
-                height: auto;
-            }
-        }
-    }
-
-    .no-subscription {
-        color: grey;
-        opacity: 0.25;
-        font-size: 150%;
-        margin-bottom: 50px;
-        // Replicate padding-{left,right} in
-        // .name-wrapper, minus negative margin…
-        padding-left: 0.75em;
-        padding-right: 0.75em;
-
-        &:hover {
-            opacity: 1;
-        }
-    }
-
-    .folder .name-wrapper {
-        font-size: 250%;
-    }
-
-    .folder .folder .name-wrapper {
-        font-size: 200%;
-    }
-
-    .folder .folder .folder .name-wrapper {
-        font-size: 150%;
-    }
-}
 
 #subscriptions,
 #closed-subscriptions {
@@ -522,6 +537,12 @@
 
     a {
         color: $subscription-link-color;
+        text-decoration: none;
+        @include border-radius(3px);
+
+        &:hover {
+            background-color: $subscription-link-hover-bg;
+        }
     }
 
     min-height: $subscription-image-size;
@@ -540,8 +561,12 @@
         margin: 0;
 
         opacity: $subscription-opacity-default;
-        filter: url("/static/img/filters.svg#blur2px");
-        @include filter(blur(2px));
+
+        // blurring icon:
+        //filter: url("/static/img/filters.svg#blur2px");
+        //@include filter(blur(2px));
+
+        @include black-and-white(100%);
 
         img, .generic-img {
             max-width: $subscription-image-size;
@@ -573,6 +598,10 @@
         text-overflow: ellipsis;
 
         opacity: $subscription-opacity-default;
+
+        a {
+            padding: 0 6px;
+        }
     }
 
     .links {
@@ -581,7 +610,8 @@
         left: $subscription-image-size + $subscription-padding * 2;
 
         a {
-            padding-right: 10px;
+            padding: 0 4px;
+            margin-right: 10px;
         }
     }
 
@@ -602,7 +632,11 @@
 
         .thumbnail {
             opacity: 1;
-            @include filter(none);
+
+            // unblurring icon:
+            //@include filter(none);
+
+            @include black-and-white(none);
         }
 
         .name {
@@ -638,7 +672,6 @@
 // .folder .folder .folder .subscription,
 // .folder .folder .folder .folder .subscription
 // are automatically inherited due to CSS nature.
-
 .folder .folder .subscription {
     width: 95%;
 }
