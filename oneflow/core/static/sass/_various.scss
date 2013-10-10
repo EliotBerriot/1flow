@@ -176,6 +176,11 @@ img.centered {
   cursor: help;
 }
 
+a[name] {
+  margin-top: -60px;
+  padding-top: 60px;
+}
+
 /* Thanks https://github.com/twitter/bootstrap/issues/4286 */
 
 .spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
