@@ -160,7 +160,8 @@ def manage_folder(request, **kwargs):
                                      form.errors))
             LOGGER.error(form.errors)
 
-        return HttpResponseRedirect(reverse('source_selector'))
+        return HttpResponseRedirect(reverse('source_selector')
+                                    + u"#{0}".format(folder.id))
 
     else:
         if not request.is_ajax():
@@ -206,11 +207,13 @@ def edit_subscription(request, **kwargs):
 
         else:
             messages.add_message(request, messages.WARNING,
-                                 _(u'Could not create subscription: {0}.').format(
+                                 _(u'Could not create '
+                                   u'subscription: {0}.').format(
                                      form.errors))
             LOGGER.error(form.errors)
 
-        return HttpResponseRedirect(reverse('source_selector'))
+        return HttpResponseRedirect(reverse('source_selector')
+                                    + u"#{0}".format(subscription.id))
 
     else:
         if not request.is_ajax():
