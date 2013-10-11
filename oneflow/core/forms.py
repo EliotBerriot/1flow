@@ -171,9 +171,28 @@ class ManageFolderForm(DocumentForm):
             'name': TextInput(),
         }
 
-    def save(self, user, commit=True):
+    def __init__(self, *args, **kwargs):
 
-        parent_folder  = self.cleaned_data.get('parent', None)
+        self.folder_owner = kwargs.pop('owner')
+
+        super(ManageFolderForm, self).__init__(*args, **kwargs)
+
+    def clean_parent(self):
+
+        try:
+            parent = self.cleaned_data['parent']
+
+        except:
+            return self.folder_owner.root_folder
+
+        if parent is None:
+            return self.folder_owner.root_folder
+
+        return parent
+
+    def save(self, commit=True):
+
+        parent_folder  = self.cleaned_data.get('parent')
         parent_changed = False
 
         # id == None means creation, else we are editing.
@@ -203,12 +222,12 @@ class ManageFolderForm(DocumentForm):
         folder = super(ManageFolderForm, self).save(commit=False)
 
         if self.instance.id is None:
-            folder.owner = user
+            folder.owner = self.folder_owner
 
         if commit:
             folder.save()
 
-        if parent_folder and parent_changed:
+        if parent_changed:
             # In edit or create mode, we need to take care of the other
             # direction of the double-linked relation. This will imply
             # a superfluous write in case of an unchanged parent

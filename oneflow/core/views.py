@@ -142,10 +142,11 @@ def manage_folder(request, **kwargs):
 
     if request.POST:
         if folder:
-            form = ManageFolderForm(request.POST, instance=folder)
+            form = ManageFolderForm(request.POST, instance=folder,
+                                    owner=request.user.mongo)
 
         else:
-            form = ManageFolderForm(request.POST)
+            form = ManageFolderForm(request.POST, owner=request.user.mongo)
 
         if form.is_valid():
             folder = form.save(request.user.mongo)
@@ -169,10 +170,10 @@ def manage_folder(request, **kwargs):
             return HttpResponseBadRequest('Did you forget to do an Ajax call?')
 
         if folder:
-            form = ManageFolderForm(instance=folder)
+            form = ManageFolderForm(instance=folder, owner=request.user.mongo)
 
         else:
-            form = ManageFolderForm()
+            form = ManageFolderForm(owner=request.user.mongo)
 
         form.fields['parent'].queryset = request.user.mongo.folders_tree
 
