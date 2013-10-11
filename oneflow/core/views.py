@@ -39,7 +39,7 @@ from .forms import (FullUserCreationForm,
                     ManageFolderForm,
                     ManageSubscriptionForm)
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed, Subscription, Read, Folder
+from .models.nonrel import Feed, Subscription, Read, Folder, TreeCycleException
 from .models.reldb import HelpContent
 from ..base.utils.dateutils import now
 
@@ -149,11 +149,20 @@ def manage_folder(request, **kwargs):
             form = ManageFolderForm(request.POST, owner=request.user.mongo)
 
         if form.is_valid():
-            folder = form.save(request.user.mongo)
 
-            messages.add_message(request, messages.INFO,
-                                 _(u'Folder “{0}” successfully '
-                                   u'created.').format(folder.name))
+            try:
+                folder = form.save(request.user.mongo)
+
+            except TreeCycleException, e:
+                messages.add_message(request, messages.ERROR,
+                                     _(u'Save “{0}” failed: {1}').format(
+                                         folder.name, e))
+
+            else:
+
+                messages.add_message(request, messages.INFO,
+                                     _(u'Folder “{0}” successfully '
+                                       u'created.').format(folder.name))
 
         else:
             messages.add_message(request, messages.WARNING,
