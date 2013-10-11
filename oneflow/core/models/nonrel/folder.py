@@ -2,8 +2,6 @@
 
 import logging
 
-from operator import attrgetter
-
 from pymongo.errors import DuplicateKeyError
 
 from mongoengine import Document, NULLIFY, CASCADE, PULL
@@ -21,11 +19,6 @@ LOGGER = logging.getLogger(__name__)
 
 
 __all__ = ('Folder', )
-
-
-def lowername(objekt):
-
-    return attrgetter('name')(objekt).lower()
 
 
 def folder_all_articles_count_default(folder, *args, **kwargs):
@@ -76,31 +69,14 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
         set_default=True)
 
     def __unicode__(self):
-        return _(u'{0} for user {1}{2}{3}').format(
-            self.name, self.owner,
+        return _(u'{0} (#{1}) for user {2}{3}{4}').format(
+            self.name, self.id, self.owner,
             _(u', parent: {0} (#{1})').format(self.parent.name, self.parent.id)
                 if self.parent else u'',
             _(u', children: {0}').format(u', '.join(
                 _(u'{0} (#{1})').format(child.name, child.id)
-                    for child in self.children)) if self.children else u'')
-
-    @property
-    def children_by_name(self):
-
-        return sorted(self.children, key=lowername)
-
-    @property
-    def children_tree(self):
-
-        children = PseudoQuerySet(model=Folder)
-
-        for child in sorted(self.children, key=lowername):
-            children.append(child)
-            children.extend(child.children_tree)
-
-        #LOGGER.warning('%s children: %s > %s', self, self.children, children)
-
-        return children
+                    for child in self.children))
+                        if self.children != [] else u'')
 
     @classmethod
     def get_root_for(cls, user):
@@ -147,6 +123,8 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
             folder = cls.objects.get(name=name, owner=user, parent=parent)
 
         else:
+            # If the folder exists [with the same parent], no
+            # need to add it as child, it's already the case.
             parent.add_child(folder, update_reverse_link=False)
 
         if children:
@@ -155,9 +133,11 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
 
                 folder.add_child(child, full_reload=False)
 
-            folder.safe_reload()
+            folder.reload()
 
         LOGGER.info(u'Created folder %s.', folder)
+
+        return folder
 
     @classmethod
     def signal_pre_delete_handler(cls, sender, document, **kwargs):
@@ -171,7 +151,6 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
         else:
             for child in folder_to_delete.children:
                 child.unset_parent()
-
 
 # ————————————————————————————————————————————————————————— external properties
 #                                            Defined here to avoid import loops

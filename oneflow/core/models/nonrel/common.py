@@ -38,6 +38,7 @@ import logging
 import requests
 
 from statsd import statsd
+from operator import attrgetter
 from constance import config
 
 from django.conf import settings
@@ -84,6 +85,15 @@ ORIGIN_TYPE_TWITTER       = 4
 
 ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
                         settings.SITE_DOMAIN)
+
+
+def lowername(objekt):
+
+    return attrgetter('name')(objekt).lower()
+
+
+class TreeCycleException(Exception):
+    pass
 
 
 class NotTextHtmlException(Exception):
@@ -248,13 +258,22 @@ class DocumentTreeMixin(object):
 
     def set_parent(self, parent, update_reverse_link=True, full_reload=True):
 
+        if parent == self:
+            raise RuntimeError('Cannot add %s as parent of itself.', self)
+
+        if self.is_parent_of(parent):
+            raise TreeCycleException(u'%s is already in the parent chain of '
+                                     u'%s. Setting the later parent of the '
+                                     u'former would result in a cycle.',
+                                     self, parent)
+
         if self.parent:
             self.unset_parent(full_reload=False)
 
         self.update(set__parent=parent)
 
         if full_reload:
-            self.safe_reload()
+            self.reload()
 
         if update_reverse_link:
             parent.add_child(self, update_reverse_link=False)
@@ -267,13 +286,23 @@ class DocumentTreeMixin(object):
         self.update(unset__parent=True)
 
         if full_reload:
-            self.safe_reload()
+            self.reload()
 
     def add_child(self, child, update_reverse_link=True, full_reload=True):
+
+        if child == self:
+            raise RuntimeError('Cannot add %s as a child of itself.', self)
+
+        if child.is_parent_of(self):
+            raise TreeCycleException(u'%s is already in the parent chain of '
+                                     u'%s. Setting the later parent of the '
+                                     u'former would result in a cycle.',
+                                     child, self)
+
         self.update(add_to_set__children=child)
 
         if full_reload:
-            self.safe_reload()
+            self.reload()
 
         if update_reverse_link:
             child.set_parent(self, update_reverse_link=False)
@@ -286,7 +315,45 @@ class DocumentTreeMixin(object):
         self.update(pull__children=child)
 
         if full_reload:
-            self.safe_reload()
+            self.reload()
+
+    @property
+    def children_by_name(self):
+
+        return sorted(self.children, key=lowername)
+
+    @property
+    def children_tree(self):
+        """ Returns a list of all direct children and their children.
+            Equivalent of flattening the tree recursively. """
+
+        children = PseudoQuerySet(model=self.__class__)
+
+        for child in sorted(self.children, key=lowername):
+            #LOGGER.warning('%s appends %s', self.name, child.name)
+            children.append(child)
+            #LOGGER.warning('%s extends %s', self.name,
+            #               [c.name for c in child.children_tree])
+            children.extend(child.children_tree)
+
+        #LOGGER.warning('%s\'s children:\n    from: %s\n    to: %s',
+        #               self.name,
+        #               [c.name for c in self.children],
+        #               [c.name for c in children])
+
+        return children
+
+    def is_parent_of(self, document):
+        """ Returns ``True`` if the current document is somewhere in the
+            path from :param:`document` to ``__root__``, else ``False``. """
+
+        while document.parent is not None:
+            if document.parent == self:
+                return True
+
+            document = document.parent
+
+        return False
 
 
 class PseudoQuerySet(list):
