@@ -184,7 +184,7 @@ def User_folders_property_get(self):
 
 def User_root_folder_property_get(self):
 
-    return Folder.objects.get(owner=self, name=u'__root__', parent=None)
+    return Folder.get_root_for(self)
 
 
 def User_top_folders_property_get(self):
