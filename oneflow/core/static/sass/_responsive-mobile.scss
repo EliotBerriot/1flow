@@ -1,12 +1,21 @@
-/* --------------------------------------------------------------- Responsive */
+
+
+// ————————————————————————————————————————————————————————— tablets @landscape
+
 
 @media (min-width: 1024px) and (max-width: 1279px) {
-    /* styles for tablets in landscape mode. */
+
+    $application-width: 944px;
+
+    @include selector-factory($application-width);
 
 }
 
+
+// —————————————————————————————————————————————————————————— tablets @portrait
+
+
 @media (min-width: 768px) and (max-width: 1023px) {
-    /* A special style for tablets in portrait mode. */
 
     body {
         /* Navbar is fixed, but bigger. */
@@ -18,6 +27,14 @@
         /* Override bootstrap to get our navbar fixed again. */
         position: fixed;
     }
+
+    // ——————————————————————————————————————————————————————— Selector
+
+    $application-width: 728px;
+
+    @include selector-factory($application-width);
+
+    // ——————————————————————————————————————————————————— Reading list
 
     #read {
         /*  completely reset the .span8.offset2 containers
@@ -72,8 +89,21 @@
     }
 }
 
+
+// —————————————————————————————————————————————————————————————— mobile phones
+
+
+@media(max-width: 767px) {
+    $application-width: 748px;
+    $default-margin: 10px;
+    $columns: 1;
+
+    @include selector-factory($application-width,
+                              $selector-margin: $default-margin,
+                              $selector-columns: $columns);
+}
+
 @media (max-width: 767px) {
-    /* ------------------------------- responsive interface for mobile Phones */
 
     body {
         padding-top: 0;

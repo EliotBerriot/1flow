@@ -29,12 +29,15 @@ $default-transition-duration: 0.5s;
 
 @import "various";
 @import "home";
+@import "selector";
 @import "read-common";
 @import "read-list";
 @import "read-individual";
 @import "read-icons";
 @import "read-article-content";
-@import "responsive";
+
+@import "responsive-desktop";
+@import "responsive-mobile";
 
 //@import "header";
 //@import "footer";
