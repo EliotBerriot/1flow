@@ -262,10 +262,11 @@ class DocumentTreeMixin(object):
             raise RuntimeError('Cannot add %s as parent of itself.', self)
 
         if self.is_parent_of(parent):
-            raise TreeCycleException(u'%s is already in the parent chain of '
-                                     u'%s. Setting the later parent of the '
-                                     u'former would result in a cycle.',
-                                     self, parent)
+            raise TreeCycleException(_(u'{0} is already in the parent chain of '
+                                       u'{1}. Setting the later parent of the '
+                                       u'former would result in a cycle and '
+                                       u'is not allowed.').format(
+                                            self.name, parent.name))
 
         if self.parent:
             self.unset_parent(full_reload=False)
@@ -294,10 +295,11 @@ class DocumentTreeMixin(object):
             raise RuntimeError('Cannot add %s as a child of itself.', self)
 
         if child.is_parent_of(self):
-            raise TreeCycleException(u'%s is already in the parent chain of '
-                                     u'%s. Setting the later parent of the '
-                                     u'former would result in a cycle.',
-                                     child, self)
+            raise TreeCycleException(_(u'{0} is already in the parent chain of '
+                                       u'{1}. Setting the later parent of the '
+                                       u'former would result in a cycle and '
+                                       u'is not allowed.').format(
+                                            child.name, self.name))
 
         self.update(add_to_set__children=child)
 
