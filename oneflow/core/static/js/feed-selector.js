@@ -23,17 +23,18 @@ $('[data-toggle="modal"]').click(function(e) {
 
         $.get(url, function(data) {
             $(data).modal().on("shown", function () {
-                $('input:visible:enabled:first').focus();
-                //$(this).val($(this).val());
 
-                //$first_input = $('input:visible:enabled').first();
-                // $first_input = $('input:visible:enabled:first');
-                // $first_input.select();
-                // console.debug($first_input);
-                // $first_input.focus();
-                // tmpStr = $first_input.val();
-                // $first_input.val('');
-                // $first_input.val(tmpStr);
+                //$('input:visible:enabled:first').focus();
+                //$first_input.select();
+
+                var $first_input = $('input:visible:enabled').first();
+
+                $first_input.focus(function() {
+                    // OMG. Thanks http://stackoverflow.com/a/10576409/654755
+                    this.selectionStart = this.selectionEnd = this.value.length;
+                });
+
+                $first_input.focus();
 
             }).on('hidden', function () {
                 $(this).remove();
