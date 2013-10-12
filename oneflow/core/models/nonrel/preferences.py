@@ -99,6 +99,17 @@ class SelectorPreferences(EmbeddedDocument):
                     u'of each of its subfolders and subscriptions.'),
         default=False)
 
+    extended_folders_depth = BooleanField(
+        verbose_name=_(u'folders can hold 4 levels of subfolders'),
+        help_text=_(u'Folders have two levels of subfolders in normal '
+                    u'conditions. With this setting, you can push the limit '
+                    u'to four (which makes a total classifying depth of five '
+                    u'for your subscriptions).<br />'
+                    u'<span class="muted">NOTE: The interface will become a '
+                    u'little more difficult to read. Having a big and wide '
+                    u'screen could help.</span>'),
+        default=False)
+
     show_closed_streams = BooleanField(
         verbose_name=_(u'Show closed streams'),
         help_text=_(u'Display streams that have been closed by the system '

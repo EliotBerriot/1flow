@@ -6,6 +6,13 @@
 </fieldset>
 
 {% if preferences.home.show_advanced_preferences %}
+
+    <fieldset>
+      <legend>{% trans "Folders and subscriptions" %}</legend>
+
+      {% include "widgets/forms/field-checkbox.html" with field=sources_form.extended_folders_depth %}
+    </fieldset>
+
     <fieldset>
       <legend>{% trans "Closed streams" %}</legend>
 
