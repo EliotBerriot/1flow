@@ -9,11 +9,18 @@
 
 common_init();
 
+start_checking_for_needed_updates();
+
+function update_needed() {
+    console.log('update needed…')
+}
 
 // Support for AJAX loaded modal window.
 // Focuses on first input textbox after it loads the window.
 $('[data-toggle="modal"]').click(function(e) {
+
     e.preventDefault();
+
     var url = $(this).attr('href');
 
     if (url.indexOf('#') == 0) {
