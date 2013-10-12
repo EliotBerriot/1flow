@@ -512,7 +512,7 @@
         margin-bottom: 0;
     }
 
-    .select2-container {
+    .select2-container:not(.select2-container-multi) {
         padding-top: 6px;
     }
 
