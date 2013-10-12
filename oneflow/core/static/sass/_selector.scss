@@ -349,6 +349,24 @@
     }
 }
 
+@mixin thumbnail-img-styles($size) {
+
+    img, .generic-img {
+        max-width: $size;
+        max-height: $size;
+        @include border-radius(3px);
+    }
+
+    .generic-img {
+        width: $size;
+        height: $size;
+        line-height: $size;
+        font-size: $size / 5 * 3;
+        text-align: center;
+        opacity: 0.75;
+    }
+}
+
 .subscription {
     position: relative;
     float: left;
@@ -383,6 +401,8 @@
         //@include filter(blur(2px));
 
         @include black-and-white(100%);
+
+        @include thumbnail-img-styles($subscription-image-size);
 
         img, .generic-img {
             max-width: $subscription-image-size;
@@ -531,10 +551,14 @@
         padding: 0;
         margin: 0;
 
-        img {
-            max-width: $subscription-image-size*3;
-            max-height: $subscription-image-size*3;
-            @include border-radius(3px);
-        }
+        @include thumbnail-img-styles($subscription-image-size * 3);
+    }
+
+    .manage-admin-actions {
+        padding: 10px 20px 0;
+        margin-left: -20px;
+        margin-right: -20px;
+        border-top: 1px solid #bbb;
+        text-align: center;
     }
 }
