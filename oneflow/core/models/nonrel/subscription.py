@@ -290,7 +290,7 @@ def User_subscriptions_property_get(self):
     return Subscription.objects(user=self)
 
 
-def User_subscriptions_by_folders_property_get(self):
+def User_subscriptions_by_folder_property_get(self):
 
     subscriptions = Subscription.objects(user=self)
     by_folders    = {}
@@ -309,5 +309,5 @@ def User_subscriptions_by_folders_property_get(self):
 Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
-User.subscriptions_by_folders = property(
-                                    User_subscriptions_by_folders_property_get)
+User.subscriptions_by_folder = property(
+                                    User_subscriptions_by_folder_property_get)

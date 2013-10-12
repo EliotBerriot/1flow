@@ -139,19 +139,19 @@ def manage_folder(request, **kwargs):
 
     folder_id = kwargs.pop('folder', None)
     folder    = Folder.get_or_404(folder_id) if folder_id else None
-
+    user      = request.user.mongo
     if request.POST:
         if folder:
             form = ManageFolderForm(request.POST, instance=folder,
-                                    owner=request.user.mongo)
+                                    owner=user)
 
         else:
-            form = ManageFolderForm(request.POST, owner=request.user.mongo)
+            form = ManageFolderForm(request.POST, owner=user)
 
         if form.is_valid():
 
             try:
-                folder = form.save(request.user.mongo)
+                folder = form.save(user)
 
             except TreeCycleException, e:
                 messages.add_message(request, messages.ERROR,
@@ -179,12 +179,10 @@ def manage_folder(request, **kwargs):
             return HttpResponseBadRequest('Did you forget to do an Ajax call?')
 
         if folder:
-            form = ManageFolderForm(instance=folder, owner=request.user.mongo)
+            form = ManageFolderForm(instance=folder, owner=user)
 
         else:
-            form = ManageFolderForm(owner=request.user.mongo)
-
-        form.fields['parent'].queryset = request.user.mongo.folders_tree
+            form = ManageFolderForm(owner=user)
 
     return render(request, 'snippets/selector/manage-folder.html',
                   {'form': form, 'folder': folder})

@@ -170,6 +170,10 @@ class ManageFolderForm(DocumentForm):
                                  empty_label=_(u'(None)'),
                                  required=False, widget=Select2Widget())
 
+    subscriptions = OnlyNameMultipleChoiceField(
+        queryset=Subscription.objects.none(), required=False,
+        widget=Select2MultipleWidget())
+
     class Meta:
         model = Folder
         fields = ('name', 'parent', )
@@ -182,6 +186,34 @@ class ManageFolderForm(DocumentForm):
         self.folder_owner = kwargs.pop('owner')
 
         super(ManageFolderForm, self).__init__(*args, **kwargs)
+
+        folders_tree = self.folder_owner.get_folders_tree(for_parent=True)
+
+        if self.instance.id:
+            folders_tree.remove(self.instance)
+
+            for f in self.instance.children_tree:
+                try:
+                    folders_tree.remove(f)
+
+                except ValueError:
+                    # ValueError: list.remove(x): x not in list
+                    # Happens when try to remove a level-N+ folder from a list
+                    # limited to level N-1 folder. No need to continue,
+                    # folders_tree return a depth-aware list.
+                    break
+
+            try:
+                self.fields['subscriptions'].initial = \
+                    self.folder_owner.subscriptions_by_folder[self.instance]
+
+            except KeyError:
+                # No subscriptions in this folder yet.
+                pass
+
+        self.fields['parent'].queryset = folders_tree
+        self.fields['subscriptions'].queryset = \
+            self.folder_owner.subscriptions.order_by('name')
 
     def clean_parent(self):
 
