@@ -438,6 +438,7 @@ INSTALLED_APPS = (
     'memcache_status',
     'markdown_deux',
     'djangojs',
+    'django_select2',
     'pipeline',
     'absolute',
     'endless_pagination',
@@ -463,6 +464,11 @@ ENDLESS_PAGINATION_PER_PAGE = 100
 
 # This is done directly in the templates.
 #ENDLESS_PAGINATION_LOADING  = ugettext_lazy(u'loading more entries…')
+
+AUTO_RENDER_SELECT2_STATICS = False
+#GENERATE_RANDOM_SELECT2_ID = True
+ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
+# See cache.py for Select2 memcache settings.
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 

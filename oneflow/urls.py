@@ -57,6 +57,9 @@ if 'debug_toolbar_user_panel' in settings.INSTALLED_APPS:
 
 urlpatterns += patterns(
     '',
+    # Not automatically enabled.
+    # cf. http://django-select2.readthedocs.org/en/latest/get_started.html#installation # NOQA
+    #url(r'^select2/', include('django_select2.urls')),
     url(r'^grappelli/', include('grappelli.urls')),
     #url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
     url(r'^admin/', include(admin_site.urls)),

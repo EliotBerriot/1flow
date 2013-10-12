@@ -9,6 +9,8 @@ from django.contrib.auth import get_user_model
 
 from mongodbforms import DocumentForm
 
+from django_select2.widgets import Select2Widget, Select2MultipleWidget
+
 from .models import (HomePreferences, ReadPreferences,
                      SelectorPreferences, StaffPreferences,
                      Folder, Subscription)
@@ -136,7 +138,11 @@ class OnlyNameMultipleChoiceField(forms.ModelMultipleChoiceField):
 
     def label_from_instance(self, obj):
 
-        root = obj.owner.root_folder
+        try:
+            root = obj.owner.root_folder
+
+        except AttributeError:
+            return obj.name
 
         # OMG. Please don't do this anywhere else. How ugly it is.
         if obj.parent == root:
@@ -162,7 +168,7 @@ class OnlyNameMultipleChoiceField(forms.ModelMultipleChoiceField):
 class ManageFolderForm(DocumentForm):
     parent = OnlyNameChoiceField(queryset=Folder.objects.all(),
                                  empty_label=_(u'(None)'),
-                                 required=False)
+                                 required=False, widget=Select2Widget())
 
     class Meta:
         model = Folder
@@ -239,7 +245,8 @@ class ManageFolderForm(DocumentForm):
 
 class ManageSubscriptionForm(DocumentForm):
     folders = OnlyNameMultipleChoiceField(queryset=Folder.objects.all(),
-                                          required=False)
+                                          required=False,
+                                          widget=Select2MultipleWidget())
 
     class Meta:
         model = Subscription
