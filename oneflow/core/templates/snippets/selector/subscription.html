@@ -34,7 +34,7 @@
         <div class="name">
             <span class="pull-right css-hover-muted"><a
                 href="{% url 'edit_subscription' subscription=subscription.id %}"
-                data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>
+                data-toggle="modal" data-target="#" class="manage"><i class="icon-cog"></i></a></span>
 
                 {% if unread_count %}
                     <a href="{% url 'read_feed' feed=subscription.id %}"

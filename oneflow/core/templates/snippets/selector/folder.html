@@ -18,11 +18,11 @@
 
         <div class="name-wrapper level-{{ level }}">
             {% if level|divisibleby:'2' %}
-                <span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}</span>&nbsp;<span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>
+                <span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}</span>&nbsp;<span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}" data-toggle="modal" data-target="#" class="manage"><i class="icon-cog"></i></a></span>
 
             {% else %}
                 <span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"
-                    data-toggle="modal" class="manage"><i class="icon-cog"></i></a></span>&nbsp;<span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}</span>
+                    data-toggle="modal" data-target="#" class="manage"><i class="icon-cog"></i></a></span>&nbsp;<span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}</span>
 
             {% endif %}
 

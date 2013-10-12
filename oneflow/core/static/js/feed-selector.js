@@ -22,8 +22,21 @@ $('[data-toggle="modal"]').click(function(e) {
     } else {
 
         $.get(url, function(data) {
-            $(data).modal(function() {
-                $('input:text:visible:first').focus();
+            $(data).modal().on("shown", function () {
+                $('input:visible:enabled:first').focus();
+                //$(this).val($(this).val());
+
+                //$first_input = $('input:visible:enabled').first();
+                // $first_input = $('input:visible:enabled:first');
+                // $first_input.select();
+                // console.debug($first_input);
+                // $first_input.focus();
+                // tmpStr = $first_input.val();
+                // $first_input.val('');
+                // $first_input.val(tmpStr);
+
+            }).on('hidden', function () {
+                $(this).remove();
             });
         });
     }
