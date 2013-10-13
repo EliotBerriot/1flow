@@ -374,3 +374,14 @@ class PseudoQuerySet(list):
         new_pqs = PseudoQuerySet()
         new_pqs[:] = self[:]
         return new_pqs
+
+    def get(self, *args, **kwargs):
+        """ Fake a :meth:`get` method, the easy way. """
+
+        result = self.model.objects.get(*args, **kwargs)
+
+        if result in self:
+            return result
+
+        raise self.model.DoesNotExist(u'No {0} found with query {1}'.format(
+                                      self.model.__class__.__name__, kwargs))
