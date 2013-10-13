@@ -137,18 +137,21 @@ class Subscription(Document, DocumentHelperMixin):
     def subscribe_user_to_feed(cls, user, feed, force=False):
 
         try:
-            sub = cls(user=user, feed=feed,
+            subscription = cls(user=user, feed=feed,
                       name=feed.name, tags=feed.tags).save()
 
         except (NotUniqueError, DuplicateKeyError):
             if not force:
                 LOGGER.info(u'User %s already subscribed to feed %s.',
                             user, feed)
-                return
+                return cls.objects.get(user=user, feed=feed,
+                                       name=feed.name, tags=feed.tags)
 
-        sub.check_reads(True)
+        subscription.check_reads(True)
 
-        LOGGER.info(u'Subscribed %s to %s.', user, feed)
+        LOGGER.info(u'Subscribed %s to %s via %s.', user, feed, subscription)
+
+        return subscription
 
     def mark_all_read(self):
 
