@@ -317,13 +317,54 @@ class ManageFolderForm(DocumentForm):
 
 
 class ManageSubscriptionForm(DocumentForm):
-    folders = OnlyNameMultipleChoiceField(queryset=Folder.objects.all(),
-                                          required=False,
-                                          widget=Select2MultipleWidget())
 
     class Meta:
         model = Subscription
-        fields = ('name', 'folders', )
+
+        # NOTE: as we manage `folders` differently and very specially, given
+        # the value of a user preference, we MUST NOT put `folders` here in
+        # `fields`, because in one of 2 cases, setting the initial value will
+        # not work because of attribute being a list and field being not.
+        fields = ('name', )
         widgets = {
             'name': TextInput(),
         }
+
+    def __init__(self, *args, **kwargs):
+
+        super(ManageSubscriptionForm, self).__init__(*args, **kwargs)
+
+        folders_queryset = self.instance.user.folders_tree
+
+        if self.instance.user.preferences.selector.subscriptions_in_multiple_folders: # NOQA
+            self.fields['folders'] = OnlyNameMultipleChoiceField(
+                queryset=folders_queryset, required=False,
+                widget=Select2MultipleWidget(), empty_label=_(u'(None)'))
+                #initial=self.instance.folders)
+
+        else:
+            self.fields['folders'] = OnlyNameChoiceField(
+                queryset=folders_queryset, required=False,
+                widget=Select2Widget(), label=_(u'Folder'),
+                empty_label=_(u'(None)'))
+
+            try:
+                self.fields['folders'].initial = self.instance.folders[0]
+
+            except KeyError:
+                # Subscription is not in any folder yet.
+                pass
+
+    def save(self, commit=True):
+
+        # Handle `folders` manually, because it's not in form.fields.
+        if self.instance.user.preferences.selector.subscriptions_in_multiple_folders: # NOQA
+            self.instance.folders = self.cleaned_data['folders']
+
+        else:
+            # Avoid the 'folders : Saisissez une liste de valeurs.' error.
+            # in "one folder only", we used a "select" widget which didn't
+            # built a list. We need to reconstruct it for the save() to work.
+            self.instance.folders = [self.cleaned_data['folders']]
+
+        return super(ManageSubscriptionForm, self).save(commit=commit)
