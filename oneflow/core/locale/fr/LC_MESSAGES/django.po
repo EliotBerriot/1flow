@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-13 14:03+0200\n"
-"PO-Revision-Date: 2013-10-13 14:05+0009\n"
+"POT-Creation-Date: 2013-10-13 19:01+0200\n"
+"PO-Revision-Date: 2013-10-13 19:04+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -217,6 +217,10 @@ msgstr "Saisissez le même mot de passe pour vérification."
 #: forms.py:170 forms.py:349
 msgid "(None)"
 msgstr "(aucun)"
+
+#: forms.py:341 models/nonrel/subscription.py:81
+msgid "Folders"
+msgstr "Dossiers"
 
 #: forms.py:348
 msgid "Folder"
@@ -1647,10 +1651,6 @@ msgstr ""
 "Tags qui seront appliqués automatiquement à toute nouvelle lecture de cet "
 "abonnement."
 
-#: models/nonrel/subscription.py:81
-msgid "Folders"
-msgstr "Dossiers"
-
 #: models/nonrel/subscription.py:82
 msgid "Folder(s) in which this subscription appears."
 msgstr "Dossier(s) dans lesquel(s) cet abonnement apparaît."
@@ -1803,7 +1803,7 @@ msgid "MongoDB"
 msgstr "MongoDB"
 
 #: templates/profile.html:79 templates/snippets/selector/manage-folder.html:37
-#: templates/snippets/selector/manage-subscription.html:86
+#: templates/snippets/selector/manage-subscription.html:97
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -2734,7 +2734,7 @@ msgid "Delete this folder"
 msgstr "Supprimer ce dossier"
 
 #: templates/snippets/selector/manage-folder.html:36
-#: templates/snippets/selector/manage-subscription.html:85
+#: templates/snippets/selector/manage-subscription.html:96
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -2746,11 +2746,15 @@ msgstr "Créer"
 msgid "Edit subscription"
 msgstr "Modifier l'abonnement"
 
-#: templates/snippets/selector/manage-subscription.html:29
+#: templates/snippets/selector/manage-subscription.html:17
+msgid "Visit the website"
+msgstr ""
+
+#: templates/snippets/selector/manage-subscription.html:40
 msgid "NOTE:"
 msgstr "NOTE :"
 
-#: templates/snippets/selector/manage-subscription.html:31
+#: templates/snippets/selector/manage-subscription.html:42
 #, python-format
 msgid ""
 "This feed has been closed %(date_closed)s ago, it will not receive any new "
@@ -2759,15 +2763,15 @@ msgstr ""
 "Ce flux d'informations a été fermé il y a %(date_closed)s. Il ne recevra "
 "aucune mise à jour. Raison invoquée : %(closed_reason)s."
 
-#: templates/snippets/selector/manage-subscription.html:52
+#: templates/snippets/selector/manage-subscription.html:63
 msgid "Open in Admin. Interface"
 msgstr "Ouvrir dans l'interface d'admin."
 
-#: templates/snippets/selector/manage-subscription.html:59
+#: templates/snippets/selector/manage-subscription.html:70
 msgid "Search on Google Images"
 msgstr "Chercher sur Google Images"
 
-#: templates/snippets/selector/manage-subscription.html:65
+#: templates/snippets/selector/manage-subscription.html:76
 msgid "Search on Google Play Store"
 msgstr "Chercher sur le Google Play Store"
 
@@ -2810,8 +2814,8 @@ msgid "unread"
 msgstr "non-lu"
 
 #: templates/snippets/selector/subscription.html:29
-msgid "to read later"
-msgstr "à lire plus tard"
+msgid "for later"
+msgstr "plus tard"
 
 #: templates/snippets/selector/subscription.html:31
 msgid "all"
@@ -2891,6 +2895,22 @@ msgid ""
 msgstr ""
 "Fonctionnalité en cours de développement. Plus d'informations sur le blog "
 "1flow http://blog.1flow.io/ ou sur Twitter @1flow_io."
+
+#: templatetags/coretags.py:122
+msgid "M+"
+msgstr ""
+
+#: templatetags/coretags.py:127
+msgid "k+"
+msgstr ""
+
+#: templatetags/coretags.py:141
+#, fuzzy, python-brace-format
+msgid "{0} articles"
+msgstr "articles"
+
+#~ msgid "to read later"
+#~ msgstr "à lire plus tard"
 
 #~ msgid ""
 #~ "\n"
