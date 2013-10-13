@@ -110,6 +110,13 @@ class SelectorPreferences(EmbeddedDocument):
                     u'screen could help.</span>'),
         default=False)
 
+    subscriptions_in_multiple_folders = BooleanField(
+        verbose_name=_(u'Subscriptions can be attached to multiple folders'),
+        help_text=_(u'In normal conditions, a given subscription can be '
+                    u'attached to only one folder. With this settings, you '
+                    u'can make any subscription show in multiple places.'),
+        default=False)
+
     show_closed_streams = BooleanField(
         verbose_name=_(u'Show closed streams'),
         help_text=_(u'Display streams that have been closed by the system '
