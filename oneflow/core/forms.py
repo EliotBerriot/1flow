@@ -339,8 +339,8 @@ class ManageSubscriptionForm(DocumentForm):
         if self.instance.user.preferences.selector.subscriptions_in_multiple_folders: # NOQA
             self.fields['folders'] = OnlyNameMultipleChoiceField(
                 queryset=folders_queryset, required=False,
-                widget=Select2MultipleWidget(), empty_label=_(u'(None)'))
-                #initial=self.instance.folders)
+                widget=Select2MultipleWidget(),  # no empty_label here.
+                initial=self.instance.folders)
 
         else:
             self.fields['folders'] = OnlyNameChoiceField(
