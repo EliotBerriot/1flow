@@ -190,18 +190,23 @@ class ManageFolderForm(DocumentForm):
         folders_tree = self.folder_owner.get_folders_tree(for_parent=True)
 
         if self.instance.id:
-            folders_tree.remove(self.instance)
+            try:
+                folders_tree.remove(self.instance)
+            except ValueError:
+                pass
 
-            for f in self.instance.children_tree:
-                try:
-                    folders_tree.remove(f)
+            else:
+                for f in self.instance.children_tree:
+                    try:
+                        folders_tree.remove(f)
 
-                except ValueError:
-                    # ValueError: list.remove(x): x not in list
-                    # Happens when try to remove a level-N+ folder from a list
-                    # limited to level N-1 folder. No need to continue,
-                    # folders_tree return a depth-aware list.
-                    break
+                    except ValueError:
+                        # ValueError: list.remove(x): x not in list
+                        # Happens when try to remove a level-N+ folder
+                        # from a list limited to level N-1 folder. No
+                        # need to continue, folders_tree return a
+                        # depth-aware list.
+                        break
 
             try:
                 self.fields['subscriptions'].initial = \
@@ -272,7 +277,43 @@ class ManageFolderForm(DocumentForm):
             parent_folder.add_child(folder, full_reload=False,
                                     update_reverse_link=False)
 
+        self.synchronize_subscriptions_folders(folder)
+
         return folder
+
+    def synchronize_subscriptions_folders(self, folder):
+        """ NOTE: `folder` is just self.instance passed
+            through to avoid to look it up again. """
+
+        try:
+            initial_subscriptions = \
+                self.folder_owner.subscriptions_by_folder[self.instance]
+
+        except KeyError:
+            initial_subscriptions = []
+
+        updated_subscriptions = self.cleaned_data['subscriptions']
+
+        for subscription in initial_subscriptions:
+            if subscription not in updated_subscriptions:
+                subscription.update(pull__folders=folder)
+
+        if self.folder_owner.preferences.selector.subscriptions_in_multiple_folders: # NOQA
+            subscr_kwargs = {'add_to_set__folders': folder}
+
+        else:
+            subscr_kwargs = {'set__folders': [folder]}
+
+        for subscription in updated_subscriptions:
+            # This will update more things than needed, but in the case of
+            # a changed preference, this will make the subscription appear
+            # in one folder only again.
+            # TODO: when the preference has a trigger on save() that do
+            # this automatically, uncomment the following line to simply
+            # move new subscriptions to this folder, and not touch others.
+            #
+            # if subscription not in initial_subscriptions:
+            subscription.update(**subscr_kwargs)
 
 
 class ManageSubscriptionForm(DocumentForm):
