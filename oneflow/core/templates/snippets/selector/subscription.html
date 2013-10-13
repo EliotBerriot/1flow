@@ -32,9 +32,17 @@
         </div>
 
         <div class="name">
-            <span class="pull-right css-hover-muted"><a
-                href="{% url 'edit_subscription' subscription=subscription.id %}"
-                data-toggle="modal" data-target="#" class="manage"><i class="icon-cog"></i></a></span>
+            <span class="pull-right css-hover-muted">
+                {% if subscription.feed.site_url %}
+                    <a href="{{ subscription.feed.site_url }}" target="_blank"
+                        title="{% trans "Visit the website of this stream" %}"
+                        data-toggle="tooltip" class="manage"><i class="icon-globe"></i></a>
+                {% endif %}
+
+
+                <a href="{% url 'edit_subscription' subscription=subscription.id %}"
+                data-toggle="modal" data-target="#" class="manage"><i class="icon-cog" title="{% trans "Manage the properties of this stream" %}" data-toggle="tooltip"></i></a>
+            </span>
 
                 {% if unread_count %}
                     <a href="{% url 'read_feed' feed=subscription.id %}"
