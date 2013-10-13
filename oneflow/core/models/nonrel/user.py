@@ -165,6 +165,13 @@ class User(Document, DocumentHelperMixin):
         return [s for s in self.subscriptions if not s.feed.closed]
 
     @property
+    def closed_subscriptions(self):
+
+        # NOTE: self.subscriptions is defined
+        # in nonrel.subscription to avoid import loop.
+        return [s for s in self.subscriptions if s.feed.closed]
+
+    @property
     def nofolder_open_subscriptions(self):
 
         return [s for s in self.nofolder_subscriptions if not s.feed.closed]
