@@ -351,20 +351,25 @@ class ManageSubscriptionForm(DocumentForm):
             try:
                 self.fields['folders'].initial = self.instance.folders[0]
 
-            except KeyError:
+            except IndexError:
                 # Subscription is not in any folder yet.
                 pass
 
     def save(self, commit=True):
 
+        subscription = super(ManageSubscriptionForm, self).save(commit=False)
+
         # Handle `folders` manually, because it's not in form.fields.
-        if self.instance.user.preferences.selector.subscriptions_in_multiple_folders: # NOQA
-            self.instance.folders = self.cleaned_data['folders']
+        if subscription.user.preferences.selector.subscriptions_in_multiple_folders: # NOQA
+            subscription.folders = self.cleaned_data['folders']
 
         else:
             # Avoid the 'folders : Saisissez une liste de valeurs.' error.
             # in "one folder only", we used a "select" widget which didn't
             # built a list. We need to reconstruct it for the save() to work.
-            self.instance.folders = [self.cleaned_data['folders']]
+            subscription.folders = [self.cleaned_data['folders']]
 
-        return super(ManageSubscriptionForm, self).save(commit=commit)
+        if commit:
+            subscription.save()
+
+        return subscription
