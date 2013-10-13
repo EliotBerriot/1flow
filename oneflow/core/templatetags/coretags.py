@@ -112,13 +112,37 @@ def feed_reading_list_with_count(view_name, subscription, attrname,
     count = getattr(subscription, attrname + '_articles_count')
 
     if count:
+        count_as_digits = unicode(count)
+
+        small_class = u''
+        add_title   = False
+
+        if len(count_as_digits) > 6:
+            small_class     = u'small'
+            count_as_digits = count_as_digits[0] + unicode(_(u'M+'))
+            add_title       = True
+
+        elif len(count_as_digits) > 3:
+            small_class     = u'small'
+            count_as_digits = count_as_digits[0] + unicode(_(u'k+'))
+            add_title       = True
+
+        elif len(count_as_digits) > 2:
+            small_class = u'small'
+
         return mark_safe((
-            # last space at end of second line is needed.
-            u'<a href="{0}" class="{1} {2}">{3}'
-            u'&nbsp;(<span class="count">{4}</span>)</a> '
+            u'<a href="{url}" class="{class1} {class2}" {title}>{trans}'
+            u'&nbsp;<span class="count muted {small}">({count})</span></a>'
         ).format(
-            reverse(view_name, kwargs={'feed': subscription.id}),
-            view_name, css_classes or u'nowrap', translation, count))
+            url=reverse(view_name, kwargs={'feed': subscription.id}),
+            class1=view_name,
+            class2=css_classes or u'nowrap',
+            title=(u'title="%s" data-toggle="tooltip"' %
+                   _(u'{0} articles').format(count))
+                    if add_title else u'',
+            trans=translation,
+            small=small_class,
+            count=count_as_digits))
 
     return u''
 
