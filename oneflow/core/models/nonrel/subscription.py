@@ -79,8 +79,8 @@ class Subscription(Document, DocumentHelperMixin):
 
     folders = ListField(ReferenceField(Folder, reverse_delete_rule=PULL),
                         verbose_name=_(u'Folders'), default=list,
-                        help_text=_(u'Folders in which this subscription '
-                                    u'appears (can be more than one).'))
+                        help_text=_(u'Folder(s) in which this subscription '
+                                    u'appears.'))
 
     all_articles_count = IntRedisDescriptor(
         attr_name='s.aa_c', default=subscription_all_articles_count_default,
@@ -138,7 +138,7 @@ class Subscription(Document, DocumentHelperMixin):
 
         try:
             subscription = cls(user=user, feed=feed,
-                      name=feed.name, tags=feed.tags).save()
+                               name=feed.name, tags=feed.tags).save()
 
         except (NotUniqueError, DuplicateKeyError):
             if not force:
