@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-09 20:41+0200\n"
-"PO-Revision-Date: 2013-10-09 21:12+0009\n"
+"POT-Creation-Date: 2013-10-13 12:24+0200\n"
+"PO-Revision-Date: 2013-10-13 12:29+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -36,7 +36,7 @@ msgid "feeds"
 msgstr "flux"
 
 #: admin.py:109 models/nonrel/read.py:155 models/nonrel/read.py:163
-#: templates/snippets/selector/subscription.html:10
+#: templates/snippets/selector/subscription.html:30
 msgid "starred"
 msgstr "favoris"
 
@@ -84,12 +84,12 @@ msgstr "Permission"
 msgid "Parents"
 msgstr "Parents"
 
-#: admin.py:233 models/nonrel/folder.py:60
+#: admin.py:233 models/nonrel/folder.py:54
 msgid "Children"
 msgstr "Enfants"
 
 #: admin.py:269 models/nonrel/article.py:183 models/nonrel/read.py:128
-#: models/nonrel/subscription.py:75
+#: models/nonrel/subscription.py:76
 msgid "Tags"
 msgstr "Tags"
 
@@ -198,29 +198,33 @@ msgstr "Le flux est ouvert"
 msgid "Closed?"
 msgstr "Fermé(e) ?"
 
-#: forms.py:31
+#: forms.py:33
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne correspondent pas."
 
-#: forms.py:35
+#: forms.py:37
 msgid "Password"
 msgstr "Mot de passe"
 
-#: forms.py:37
+#: forms.py:39
 msgid "Password confirmation"
 msgstr "Confirmation"
 
-#: forms.py:39
+#: forms.py:41
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: forms.py:156
+#: forms.py:170 forms.py:342 forms.py:349
 msgid "(None)"
 msgstr "(aucun)"
 
+#: forms.py:348
+msgid "Folder"
+msgstr "Dossier"
+
 #: tasks.py:595
 msgid "Forcing all feed refresh…"
-msgstr ""
+msgstr "Déclenchement forcé du rafraîchissement de tous les flux…"
 
 #: tasks.py:713
 #, python-brace-format
@@ -348,56 +352,61 @@ msgstr "^connexion/$"
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:154
+#: views.py:159
+#, python-brace-format
+msgid "Save “{0}” failed: {1}"
+msgstr "Enregistrement de « {0} » impossible : {1}"
+
+#: views.py:165
 #, python-brace-format
 msgid "Folder “{0}” successfully created."
 msgstr "Dossier « {0} » créé avec succès."
 
-#: views.py:159
+#: views.py:170
 #, python-brace-format
 msgid "Could not create folder: {0}."
 msgstr "Impossible de créer le dossier : {0}."
 
-#: views.py:204
+#: views.py:215
 #, python-brace-format
 msgid "Subscription “{0}” successfully created."
 msgstr "Abonnement « {0} » créé avec succès."
 
-#: views.py:209
+#: views.py:220
 #, python-brace-format
 msgid "Could not create subscription: {0}."
 msgstr "Impossible de créer l'abonnement : {0}."
 
-#: views.py:615
+#: views.py:626
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:619
+#: views.py:630
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:623
+#: views.py:634
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:630
+#: views.py:641
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:634
+#: views.py:645
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:640
+#: views.py:651
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:643
+#: views.py:654
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -636,10 +645,19 @@ msgstr "Lier un auteur internet à un utilisateur 1flow."
 msgid " (unsure)"
 msgstr "(non confirmé)"
 
-#: models/nonrel/common.py:135
+#: models/nonrel/common.py:145
 #, python-brace-format
 msgid "{0} #{1} not found"
 msgstr "{0} #{1} introuvable"
+
+#: models/nonrel/common.py:265 models/nonrel/common.py:298
+#, python-brace-format
+msgid ""
+"{0} is already in the parent chain of {1}. Setting the later parent of the "
+"former would result in a cycle and is not allowed."
+msgstr ""
+"{0} est déjà dans la chaine de parents de {1}. Enregistrer ce dernier comme "
+"parent du premier cité provoquerait un cycle et ce n'est pas autorisé."
 
 #: models/nonrel/feed.py:109 models/nonrel/tag.py:49
 msgid "name"
@@ -799,34 +817,34 @@ msgstr "Description (EN)"
 msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
-#: models/nonrel/feed.py:331 models/nonrel/folder.py:84
+#: models/nonrel/feed.py:331 models/nonrel/folder.py:78
 #, python-brace-format
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel/folder.py:52 models/nonrel/subscription.py:71
+#: models/nonrel/folder.py:46 models/nonrel/subscription.py:72
 msgid "Name"
 msgstr "Nom"
 
-#: models/nonrel/folder.py:53
+#: models/nonrel/folder.py:48
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: models/nonrel/folder.py:56
+#: models/nonrel/folder.py:51
 msgid "Parent"
 msgstr "Parent"
 
-#: models/nonrel/folder.py:79
+#: models/nonrel/folder.py:73
 #, python-brace-format
-msgid "{0} for user {1}{2}{3}"
-msgstr "{0} de l'utilisateur {1}{2}{3}"
+msgid "{0} (#{1}) for user {2}{3}{4}"
+msgstr "{0} (#{1}) de l'utilisateur {2}{3}{4}"
 
-#: models/nonrel/folder.py:81
+#: models/nonrel/folder.py:75
 #, python-brace-format
 msgid ", parent: {0} (#{1})"
 msgstr ", parent : {0} (#{1})"
 
-#: models/nonrel/folder.py:83
+#: models/nonrel/folder.py:77
 #, python-brace-format
 msgid ", children: {0}"
 msgstr ", enfant(s) : {0}"
@@ -970,10 +988,42 @@ msgstr ""
 " sous-dossiers et ses abonnements."
 
 #: models/nonrel/preferences.py:103
+msgid "folders can hold 4 levels of subfolders"
+msgstr "les dossiers peuvent avoir 4 sous-niveaux de sous-dossiers"
+
+#: models/nonrel/preferences.py:104
+msgid ""
+"Folders have two levels of subfolders in normal conditions. With this "
+"setting, you can push the limit to four (which makes a total classifying "
+"depth of five for your subscriptions).<br /><span class=\"muted\">NOTE: The "
+"interface will become a little more difficult to read. Having a big and wide"
+" screen could help.</span>"
+msgstr ""
+"Dans la configuration standard, les dossiers ont deux niveaux de sous-"
+"dossiers. Vous pouvez étendre cette limite à quatre, ce qui vous fera une "
+"profondeur totale de classement de cinq niveaux. <br /><span "
+"class=\"muted\">NOTE : l'interface risque de devenir un peu plus difficile à"
+" lire. Avoir un grand écran peut aider.</span>"
+
+#: models/nonrel/preferences.py:114
+msgid "Subscriptions can be attached to multiple folders"
+msgstr "Les abonnements peuvent être rattachées à plusieurs dossiers"
+
+#: models/nonrel/preferences.py:115
+msgid ""
+"In normal conditions, a given subscription can be attached to only one "
+"folder. With this settings, you can make any subscription show in multiple "
+"places."
+msgstr ""
+"Dans la configuration standard, un abonnement donné n'apparait qu'une seule "
+"fois dans le sélecteur de sources. Avec cette option, vous pouvez le faire "
+"apparaître à plusieurs endroits."
+
+#: models/nonrel/preferences.py:121
 msgid "Show closed streams"
 msgstr "Afficher les flux fermés"
 
-#: models/nonrel/preferences.py:104
+#: models/nonrel/preferences.py:122
 msgid ""
 "Display streams that have been closed by the system but to which you are "
 "still subscribed. As there will never be new content in them, it is safe to "
@@ -987,11 +1037,11 @@ msgstr ""
 "ces flux sont toujours accessibles dans les listes de lectures globales "
 "ainsi que celles des dossiers dans lesquels ces flux sont contenus."
 
-#: models/nonrel/preferences.py:119
+#: models/nonrel/preferences.py:137
 msgid "Super powers enabled"
 msgstr "Super-pouvoirs activés"
 
-#: models/nonrel/preferences.py:120
+#: models/nonrel/preferences.py:138
 msgid ""
 "Globaly enable or not every bit of staff/superuser features in the 1flow "
 "interface. If disabled, only the <strong>MAINTENANCE_MODE</strong> label in "
@@ -1006,12 +1056,12 @@ msgstr ""
 "par la suite.<br /><span class=\"muted\">Valeur par défaut : les super-"
 "pouvoirs sont activés.</span>"
 
-#: models/nonrel/preferences.py:129
+#: models/nonrel/preferences.py:147
 msgid "Show duplicates, orphaned and other transient data"
 msgstr ""
 "Afficher les articles dupliqués/orphelins et les autres données transitoires"
 
-#: models/nonrel/preferences.py:130
+#: models/nonrel/preferences.py:148
 msgid ""
 "<strong>Warning</strong>: this breaks keyboard shortcut navigation whenever "
 "the first bad article is encountered.<br /><span class=\"muted\">Default: "
@@ -1022,11 +1072,11 @@ msgstr ""
 "article rencontré.<br /><span class=\"muted\">Valeur par défaut : "
 "désactivé.</span>"
 
-#: models/nonrel/preferences.py:137
+#: models/nonrel/preferences.py:155
 msgid "Selector shows admin links"
 msgstr "Afficher les liens pour les admins dans le sélecteur"
 
-#: models/nonrel/preferences.py:138
+#: models/nonrel/preferences.py:156
 msgid ""
 "Automatically link to the admin from the selector whenever "
 "folder/subscription has missing data.<br /><span class=\"muted\">Default: "
@@ -1036,39 +1086,39 @@ msgstr ""
 "sélecteur quand un dossier / abonnement est incomplet.<br /><span "
 "class=\"muted\">Valeur par défaut : activé.</span>"
 
-#: models/nonrel/preferences.py:145
+#: models/nonrel/preferences.py:163
 msgid "Reading list"
 msgstr "Liste de lecture"
 
-#: models/nonrel/preferences.py:146
+#: models/nonrel/preferences.py:164
 msgid "Tiled News"
 msgstr ""
 
-#: models/nonrel/preferences.py:147
+#: models/nonrel/preferences.py:165
 msgid "Tiled experiment #1"
 msgstr ""
 
-#: models/nonrel/preferences.py:148
+#: models/nonrel/preferences.py:166
 msgid "Dashboard"
 msgstr ""
 
-#: models/nonrel/preferences.py:153
+#: models/nonrel/preferences.py:171
 msgid "Unread articles"
 msgstr "Articles non-lus"
 
-#: models/nonrel/preferences.py:154
+#: models/nonrel/preferences.py:172
 msgid "Source selector"
 msgstr "Sélecteur de source"
 
-#: models/nonrel/preferences.py:166
+#: models/nonrel/preferences.py:184
 msgid "How the user wants his 1flow home to appear"
 msgstr ""
 
-#: models/nonrel/preferences.py:171
+#: models/nonrel/preferences.py:189
 msgid "I want to play with my life"
 msgstr "Je veux jouer avec ma vie"
 
-#: models/nonrel/preferences.py:172
+#: models/nonrel/preferences.py:190
 msgid ""
 "With this setting, you will be able to tune the 1flow interface a lot more. "
 "<strong>But BEWARE:</strong> you will gain access to features which are not "
@@ -1085,11 +1135,11 @@ msgstr ""
 "défaut, c'est désactivé : nous voulons que votre expérience utilisateur soit"
 " agréable et fluide.</span>"
 
-#: models/nonrel/preferences.py:181
+#: models/nonrel/preferences.py:199
 msgid "Clicking <code>Read</code> displays:"
 msgstr "Cliquer sur <code>Lecture</code> affiche :"
 
-#: models/nonrel/preferences.py:184
+#: models/nonrel/preferences.py:202
 msgid ""
 "Define what 1flow will display when you click on the <code>Read</code> link "
 "in the top navbar of the interface. <br /><span class=\"muted\">Default: "
@@ -1171,7 +1221,7 @@ msgstr ""
 
 #: models/nonrel/read.py:122
 msgid "Qualifies anything that makes you laugh out loud."
-msgstr ""
+msgstr "Qualifie tout ce qui vous fait éclater de rire à pleins poumons."
 
 #: models/nonrel/read.py:129
 msgid "User set of tags for this read."
@@ -1242,7 +1292,7 @@ msgid "Remove from reading list"
 msgstr "Supprimer de la liste de lecture"
 
 #: models/nonrel/read.py:175 templates/navbars/read-endless.html:41
-#: templates/snippets/selector/selector.html:27
+#: templates/snippets/selector/selector.html:28
 msgid "Read later"
 msgstr "Lire plus tard"
 
@@ -1591,23 +1641,23 @@ msgstr " ({feed}) "
 msgid "{title}{source}"
 msgstr "{title}{source}"
 
-#: models/nonrel/subscription.py:76
+#: models/nonrel/subscription.py:77
 msgid "Tags that will be applied to new reads in this subscription."
 msgstr ""
 "Tags qui seront appliqués automatiquement à toute nouvelle lecture de cet "
 "abonnement."
 
-#: models/nonrel/subscription.py:80
+#: models/nonrel/subscription.py:81
 msgid "Folders"
 msgstr "Dossiers"
 
-#: models/nonrel/subscription.py:81
+#: models/nonrel/subscription.py:82
 msgid "Folders in which this subscription appears (can be more than one)."
 msgstr ""
 "Dossiers dans lesquels cet abonnement apparaît (vous pouvez en choisir "
 "plusieurs)."
 
-#: models/nonrel/subscription.py:115
+#: models/nonrel/subscription.py:116
 #, python-brace-format
 msgid "{0}+{1} (#{2})"
 msgstr "{0}+{1} (#{2})"
@@ -1754,8 +1804,8 @@ msgstr "PostgreSQL"
 msgid "MongoDB"
 msgstr "MongoDB"
 
-#: templates/profile.html:79 templates/snippets/selector/manage-folder.html:29
-#: templates/snippets/selector/manage-subscription.html:65
+#: templates/profile.html:79 templates/snippets/selector/manage-folder.html:37
+#: templates/snippets/selector/manage-subscription.html:86
 msgid "Save"
 msgstr "Enregistrer"
 
@@ -1927,7 +1977,7 @@ msgstr "Raccourcis :"
 
 #: templates/navbars/read-endless.html:26
 #: templates/snippets/preferences/staff.html:17
-#: templates/snippets/selector/selector.html:19
+#: templates/snippets/selector/selector.html:20
 msgid "Reading lists"
 msgstr "Listes de lecture"
 
@@ -1936,12 +1986,12 @@ msgid "All"
 msgstr "Tout"
 
 #: templates/navbars/read-endless.html:35
-#: templates/snippets/selector/selector.html:33
+#: templates/snippets/selector/selector.html:34
 msgid "Funbox"
 msgstr "Funbox"
 
 #: templates/navbars/read-endless.html:37
-#: templates/snippets/selector/selector.html:34
+#: templates/snippets/selector/selector.html:35
 msgid "Starred"
 msgstr "Sélectionné"
 
@@ -1950,47 +2000,47 @@ msgid "Unread"
 msgstr "Non-lu"
 
 #: templates/navbars/read-endless.html:50
-#: templates/snippets/selector/selector.html:46
+#: templates/snippets/selector/selector.html:47
 msgid "Watching lists"
 msgstr "Listes de veille"
 
 #: templates/navbars/read-endless.html:57
-#: templates/snippets/selector/selector.html:61
+#: templates/snippets/selector/selector.html:62
 msgid "Knowledge"
 msgstr "Savoirs"
 
 #: templates/navbars/read-endless.html:59
-#: templates/snippets/selector/selector.html:60
+#: templates/snippets/selector/selector.html:61
 msgid "Quotes"
 msgstr "Citations"
 
 #: templates/navbars/read-endless.html:61
-#: templates/snippets/selector/selector.html:53
+#: templates/snippets/selector/selector.html:54
 msgid "Prospective"
 msgstr "Prospective"
 
 #: templates/navbars/read-endless.html:63
-#: templates/snippets/selector/selector.html:59
+#: templates/snippets/selector/selector.html:60
 msgid "Regulations"
 msgstr "Réglementations"
 
 #: templates/navbars/read-endless.html:65
-#: templates/snippets/selector/selector.html:58
+#: templates/snippets/selector/selector.html:59
 msgid "Best-Practices"
 msgstr "Best-practices"
 
 #: templates/navbars/read-endless.html:70
-#: templates/snippets/selector/selector.html:50
+#: templates/snippets/selector/selector.html:51
 msgid "Facts"
 msgstr "Faits"
 
 #: templates/navbars/read-endless.html:72
-#: templates/snippets/selector/selector.html:51
+#: templates/snippets/selector/selector.html:52
 msgid "Numbers"
 msgstr "Chiffres clefs"
 
 #: templates/navbars/read-endless.html:74
-#: templates/snippets/selector/selector.html:52
+#: templates/snippets/selector/selector.html:53
 msgid "Analysis"
 msgstr "Analyses"
 
@@ -2213,7 +2263,7 @@ msgstr "Préférences avancées"
 
 #: templates/snippets/preferences/advanced.html:10
 #: templates/snippets/preferences/read.html:32
-#: templates/snippets/preferences/selector.html:17
+#: templates/snippets/preferences/selector.html:25
 msgid "Important notice:"
 msgstr "Note importante :"
 
@@ -2255,12 +2305,16 @@ msgstr ""
 msgid "Unread display"
 msgstr "Afficher les non-lus"
 
-#: templates/snippets/preferences/selector.html:10
-#: templates/snippets/selector/selector.html:110
+#: templates/snippets/preferences/selector.html:11
+msgid "Folders and subscriptions"
+msgstr "Dossiers et abonnements"
+
+#: templates/snippets/preferences/selector.html:18
+#: templates/snippets/selector/selector.html:114
 msgid "Closed streams"
 msgstr "Flux fermés"
 
-#: templates/snippets/preferences/selector.html:17
+#: templates/snippets/preferences/selector.html:25
 msgid ""
 "\n"
 "If you have the sources selector open in another browser tab, you need to reload it for changes to take effect.\n"
@@ -2654,21 +2708,21 @@ msgstr "Ouvrir cet article sur le site web d'origine"
 msgid "By"
 msgstr "Par "
 
-#: templates/snippets/selector/folder.html:23
+#: templates/snippets/selector/folder.html:45
 #, python-format
 msgid "No subscription in “%(folder_name)s”."
 msgstr "Pas d'abonnement dans « %(folder_name)s »."
 
-#: templates/snippets/selector/manage-folder.html:4
+#: templates/snippets/selector/manage-folder.html:11
 msgid "Edit folder"
 msgstr "Modifier le dossier"
 
-#: templates/snippets/selector/manage-folder.html:4
-#: templates/snippets/selector/selector.html:11
+#: templates/snippets/selector/manage-folder.html:11
+#: templates/snippets/selector/selector.html:10
 msgid "Add a folder"
 msgstr "Ajouter un dossier"
 
-#: templates/snippets/selector/manage-folder.html:14
+#: templates/snippets/selector/manage-folder.html:22
 msgid ""
 "\n"
 "                If you delete this folder, all its subfolders will be moved one level up in the folder hierarchy. All its direct subscriptions will be moved to “unclassified”. Subscriptions in its subfolders will not be affected.\n"
@@ -2677,16 +2731,16 @@ msgstr ""
 "\n"
 "Si vous supprimez ce dossier, tous ses sous-dossiers seront déplacés d'un niveau vers le haut dans la hiérarchie. Tous les abonnements qu'il contient directement deviendront « non-classés ». Les abonnements des sous-dossiers ne seront pas modifiés."
 
-#: templates/snippets/selector/manage-folder.html:24
+#: templates/snippets/selector/manage-folder.html:32
 msgid "Delete this folder"
 msgstr "Supprimer ce dossier"
 
-#: templates/snippets/selector/manage-folder.html:28
-#: templates/snippets/selector/manage-subscription.html:64
+#: templates/snippets/selector/manage-folder.html:36
+#: templates/snippets/selector/manage-subscription.html:85
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/snippets/selector/manage-folder.html:29
+#: templates/snippets/selector/manage-folder.html:37
 msgid "Create"
 msgstr "Créer"
 
@@ -2694,77 +2748,78 @@ msgstr "Créer"
 msgid "Edit subscription"
 msgstr "Modifier l'abonnement"
 
-#: templates/snippets/selector/manage-subscription.html:16
+#: templates/snippets/selector/manage-subscription.html:29
+msgid "NOTE:"
+msgstr "NOTE :"
+
+#: templates/snippets/selector/manage-subscription.html:31
+#, python-format
+msgid ""
+"This feed has been closed %(date_closed)s ago, it will not receive any new "
+"update. Reason invoqued: %(closed_reason)s."
+msgstr ""
+"Ce flux d'informations a été fermé il y a %(date_closed)s. Il ne recevra "
+"aucune mise à jour. Raison invoquée : %(closed_reason)s."
+
+#: templates/snippets/selector/manage-subscription.html:52
 msgid "Open in Admin. Interface"
 msgstr "Ouvrir dans l'interface d'admin."
 
-#: templates/snippets/selector/manage-subscription.html:28
+#: templates/snippets/selector/manage-subscription.html:59
 msgid "Search on Google Images"
 msgstr "Chercher sur Google Images"
 
-#: templates/snippets/selector/manage-subscription.html:34
+#: templates/snippets/selector/manage-subscription.html:65
 msgid "Search on Google Play Store"
 msgstr "Chercher sur le Google Play Store"
 
-#: templates/snippets/selector/manage-subscription.html:51
-msgid ""
-"\n"
-"                If you delete this subscription, all articles you read in it will be permanently deleted from your personnal space and your attributes/ratings will be lost.\n"
-"            "
-msgstr ""
-"\n"
-"Si vous effacez cet abonnement, tous les articles que vous y avez lus seront effacés de votre espace personnel définitivement, et vos attributs de veille/notes seront perdus."
-
-#: templates/snippets/selector/manage-subscription.html:60
-msgid "Delete this subscription"
-msgstr "Supprimer cet abonnement"
-
-#: templates/snippets/selector/selector.html:5
+#: templates/snippets/selector/selector.html:4
 msgid "Add a stream"
 msgstr "Ajouter un flux"
 
-#: templates/snippets/selector/selector.html:24
+#: templates/snippets/selector/selector.html:25
 msgid "Inbox"
 msgstr "Boîte de réception"
 
-#: templates/snippets/selector/selector.html:26
+#: templates/snippets/selector/selector.html:27
 msgid "Web snaps"
 msgstr "Snaps web"
 
-#: templates/snippets/selector/selector.html:28
+#: templates/snippets/selector/selector.html:29
 msgid "All unread"
 msgstr "Tous les non-lus"
 
-#: templates/snippets/selector/selector.html:37
+#: templates/snippets/selector/selector.html:38
 msgid "Sent Articles"
 msgstr "Articles envoyés"
 
-#: templates/snippets/selector/selector.html:39
+#: templates/snippets/selector/selector.html:40
 msgid "All articles"
 msgstr "Tous les articles"
 
-#: templates/snippets/selector/selector.html:91
+#: templates/snippets/selector/selector.html:90
 msgid "Unclassified information streams"
 msgstr "Flux d'informations non-classés"
 
-#: templates/snippets/selector/subscription.html:8
-msgid "unread"
-msgstr "non-lu"
-
-#: templates/snippets/selector/subscription.html:9
-msgid "to read later"
-msgstr "à lire plus tard"
-
-#: templates/snippets/selector/subscription.html:11
-msgid "all"
-msgstr "tous"
-
-#: templates/snippets/selector/subscription.html:22
+#: templates/snippets/selector/subscription.html:10
+#: templates/snippets/selector/subscription.html:42
 #, python-format
 msgid "Click to read the %(unread_count)s new article(s)"
 msgstr "Cliquez pour lire le(s) %(unread_count)s nouveau(x) article(s)"
 
 #: templates/snippets/selector/subscription.html:28
+msgid "unread"
+msgstr "non-lu"
+
+#: templates/snippets/selector/subscription.html:29
+msgid "to read later"
+msgstr "à lire plus tard"
+
+#: templates/snippets/selector/subscription.html:31
+msgid "all"
+msgstr "tous"
+
+#: templates/snippets/selector/subscription.html:48
 msgid "Nothing new"
 msgstr "Rien de nouveau"
 
@@ -2831,13 +2886,24 @@ msgstr "Enregistrer les changements"
 msgid "Reset"
 msgstr "Remettre à zéro"
 
-#: templatetags/coretags.py:30
+#: templatetags/coretags.py:79
 msgid ""
 "Feature coming soon. More information on the 1flow blog "
 "http://blog.1flow.io/ or Twitter @1flow_io."
 msgstr ""
 "Fonctionnalité en cours de développement. Plus d'informations sur le blog "
 "1flow http://blog.1flow.io/ ou sur Twitter @1flow_io."
+
+#~ msgid ""
+#~ "\n"
+#~ "                If you delete this subscription, all articles you read in it will be permanently deleted from your personnal space and your attributes/ratings will be lost.\n"
+#~ "            "
+#~ msgstr ""
+#~ "\n"
+#~ "Si vous effacez cet abonnement, tous les articles que vous y avez lus seront effacés de votre espace personnel définitivement, et vos attributs de veille/notes seront perdus."
+
+#~ msgid "Delete this subscription"
+#~ msgstr "Supprimer cet abonnement"
 
 #~ msgid "Lists"
 #~ msgstr "Listes"
