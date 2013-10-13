@@ -36,7 +36,7 @@
         {% if user.is_superuser and preferences.staff.super_powers_enabled and preferences.staff.selector_shows_admin_links %}
 
             <div class="manage-admin-actions">
-                <a href="/admin/models/feed/{{ subscription.feed.id }}" target="_blank">
+                <a href="/admin/nonrel/feed/{{ subscription.feed.id }}" target="_blank">
                   <i class="icon-edit icon-2x muted"></i>
                   {% trans "Open in Admin. Interface" %}
                 </a><br />
