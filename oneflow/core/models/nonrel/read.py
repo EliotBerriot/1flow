@@ -565,6 +565,10 @@ def Subscription_create_reads_method(self, article, verbose=True, **kwargs):
         new_read.update(set__tags=tags,
                         set__subscriptions=[self], **params)
 
+        # Update cached descriptors
+        self.all_articles_count += 1
+        self.unread_articles_count += 1
+
         return True
 
 Subscription.create_reads = Subscription_create_reads_method

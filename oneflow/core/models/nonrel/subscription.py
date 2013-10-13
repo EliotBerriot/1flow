@@ -184,6 +184,9 @@ class Subscription(Document, DocumentHelperMixin):
         currently_unread.update(set__is_read=True,
                                 set__date_read=prior_datetime)
 
+        # TODO: optimize this, don't recompute everything everytime.
+        self.pre_compute_cached_descriptors()
+
     def check_reads(self, force=False, articles=None):
 
         if not force:
@@ -238,6 +241,8 @@ class Subscription(Document, DocumentHelperMixin):
                     # No params == all by default == is_read is False
                     pass
 
+            # The `create_reads()` methods is defined
+            # in `nonrel/read.py` to avoid an import loop.
             created = self.create_reads(article, False, **params)
 
             if created:
