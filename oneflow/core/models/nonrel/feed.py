@@ -573,8 +573,8 @@ class Feed(Document, DocumentHelperMixin):
         # In the case of a mutualized article, it will be fetched only
         # once, but all subscribers of all feeds must be connected to
         # it to be able to read it.
-        for sub in self.subscriptions:
-            sub.create_reads(new_article, verbose=created)
+        for subscription in self.subscriptions:
+            subscription.create_reads(new_article, verbose=created)
 
         # Don't forget the parenthesis else we return ``False`` everytime.
         return created or (None if mutualized else False)
