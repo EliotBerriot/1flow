@@ -558,6 +558,11 @@
         @include thumbnail-img-styles($subscription-image-size * 3);
     }
 
+    label.note {
+        padding-top: 0px;
+        vertical-align: top;
+    }
+
     .manage-admin-actions {
         padding: 10px 20px 0;
         margin-left: -20px;
