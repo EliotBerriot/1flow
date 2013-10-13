@@ -21,8 +21,8 @@ from ....base.utils import (RedisExpiringLock,
                             HttpResponseLogProcessor)
 
 from ....base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
-from ....base.utils.dateutils import (now, timedelta, today,
-                                      datetime)
+from ....base.utils.dateutils import (now, timedelta, today, datetime,
+                                      is_naive, make_aware, utc)
 
 from .common import (DocumentHelperMixin,
                      CONTENT_NOT_PARSED, ORIGIN_TYPE_FEEDPARSER)
@@ -516,6 +516,14 @@ class Feed(Document, DocumentHelperMixin):
 
         except:
             date_published = None
+
+        else:
+            # This is probably a false assumption, but have currently no
+            # simple way to get the timezone of the feed. Anyway, we *need*
+            # an offset aware for later comparisons. BTW, in most cases,
+            # feedparser already did a good job before reaching here.
+            if is_naive(date_published):
+                date_published = make_aware(date_published, utc)
 
         tags = list(Tag.get_tags_set((
                     t['term'] for t in article.get('tags', [])
