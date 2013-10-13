@@ -385,3 +385,14 @@ class PseudoQuerySet(list):
 
         raise self.model.DoesNotExist(u'No {0} found with query {1}'.format(
                                       self.model.__class__.__name__, kwargs))
+
+    def filter(self, *args, **kwargs):
+        """ Fake a :meth:`filter` method, the easy way. """
+
+        results = self.model.objects.filter(*args, **kwargs)
+
+        new_pqs = PseudoQuerySet(model=self.model)
+
+        new_pqs[:] = [res for res in results if res in self]
+
+        return new_pqs
