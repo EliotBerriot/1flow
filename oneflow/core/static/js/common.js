@@ -6,6 +6,33 @@ var scroll_speed = 500;
 var debug_touch = false;
 var open_hover_muted = [];
 var hover_muted_timers = {};
+var last_updated = new Date().getTime();
+
+function check_needs_update() {
+    // needs a global var "last_updated".
+    // works with start_checking_for_needed_updates().
+
+    var now = new Date().getTime();
+
+    //console.log(now - last_updated);
+
+    if (now - last_updated > 5000) {
+        try {
+            window['update_needed']();
+
+        } catch (err) {
+            console.error('Could not run update_needed(): ' + err);
+        }
+    }
+
+    last_updated = now;
+}
+function start_checking_for_needed_updates() {
+    // works with check_needs_update().
+
+    setInterval(check_needs_update, 1000);
+}
+
 $.pnotify.defaults.delay = 5000;
 
 // bindable_hovered NOT USED YET
@@ -687,11 +714,11 @@ function setup_keyboard() {
         var goto_location = null;
 
         if(ev.which == 37) {
-            goto_location = $('a#previous');
+            goto_location = $('a#previous').attr('href');
         }
 
         if(ev.which == 39) {
-            goto_location = $('a#next');
+            goto_location = $('a#next').attr('href');
         }
 
         if (!!goto_location) {

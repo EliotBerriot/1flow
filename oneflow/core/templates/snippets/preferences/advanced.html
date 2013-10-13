@@ -1,0 +1,14 @@
+
+<fieldset>
+  <legend>{% trans "Advanced preferences" %}</legend>
+
+  {% include "widgets/forms/field-checkbox.html" with field=home_form.show_advanced_preferences %}
+</fieldset>
+
+
+<fieldset class="form-end-notice">
+<p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}
+If you ever enable these advanced preferences, beware that <strong>this is kind of a non-return path</strong>: any advanced preference you change will remain, even if you come back here later to disable them globally. They will just not show, but their state will remain active.</p>
+<p>To get back to initial “stock 1flow” state, you will have to switch all advanced preferences you changed back to their default value one by one. This is not hard, though, because we don't have that much preferences yet.
+{% endblocktrans %}</p>
+</fieldset>

@@ -4,11 +4,7 @@
 {% block body_id %}selector{% endblock body_id %}
 
 {% block application_content %}
-<div class="row-fluid">
-    <div class="span8 offset2">
-        {% include 'snippets/selector/selector.html' %}
-    </div>
-</div>
+    {% include 'snippets/selector/selector.html' %}
 {% endblock application_content %}
 
 {% block extrajs_footer %}

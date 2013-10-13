@@ -71,14 +71,13 @@ The solution involves finding tasks to revoke (cf. IPython notebook):
 
 If we don't do this, the revocation is not sufficient. Some of the tasks come back over and over again after the retry-delay.
 
-    while read ID
+    # ssh orni
+
+    while read ID;
     do
-        redis-cli -n 1 del celery-task-meta-${ID}
-    done < /home/lxc/data/worker-03.1flow.io/rootfs/home/1flow/www/src/revoked-tasks.ids
-
-    # doesn't work, probably redis-cli mixes stdout and stderr
-    # | grep ' 1' | wc -l
-
+        echo -ne "${ID} "; redis-cli -n 1 del celery-task-meta-${ID};
+    done < /home/lxc/data/worker-03.1flow.io/rootfs/home/1flow/www/src/revoked-tasks.ids 2>&1 \
+        | grep -E '1$' | less
 
 ## Hard cleaning
 

@@ -1,27 +1,27 @@
 {% with unread_count=subscription.unread_articles_count later_count=subscription.bookmarked_articles_count %}
     <div class="subscription {{ unread_count|yesno:'has-unread,' }}">
+
+        <a name="{{ subscription.id }}"></a>
+
         <div class="thumbnail">
-            {% if user.is_superuser and preferences.staff.super_powers_enabled and preferences.staff.selector_shows_admin_links %}
-                {% if subscription.feed.thumbnail_url %}
-                    <img src="{{ subscription.feed.thumbnail_url }}" />
-
-                {% else %}
-                    <a href="/admin/models/feed/{{ subscription.feed.id }}" target="_blank">
-                      <i class="icon-edit icon-2x muted"></i>
-                    </a>
-                    <a href="https://www.google.com/search?q={{ subscription.feed.name|urlencode }}+logo&tbm=isch"
-                        target="_blank">
-                      <i class="icon-picture icon-2x muted"></i>
-                    </a><br />
-                    <a href="https://play.google.com/store/search?q={{ subscription.feed.name }}&c=apps"
-                        target="_blank">
-                      <i class="icon-android icon-2x muted"></i>
-                    </a>
-
-                {% endif %}
-            {% else %}
-                <img src="{% firstof subscription.feed.thumbnail_url "http://lorempixel.com/64/64/abstract/" %}" />
+            {% if unread_count %}
+                <a href="{% url 'read_feed' feed=subscription.id %}"
+                    data-toggle="tooltip"
+                    title="{% blocktrans %}Click to read the {{unread_count}} new article(s){% endblocktrans %}">
             {% endif %}
+
+            {% if subscription.feed.thumbnail_url %}
+                <img src="{{ subscription.feed.thumbnail_url }}" />
+
+            {% else %}
+                <div class="generic-img"
+                    style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
+            {% endif %}
+
+            {% if unread_count %}
+                </a>
+            {% endif %}
+
         </div>
 
         <div class="links css-hover-muted">
@@ -32,6 +32,9 @@
         </div>
 
         <div class="name">
+            <span class="pull-right css-hover-muted"><a
+                href="{% url 'edit_subscription' subscription=subscription.id %}"
+                data-toggle="modal" data-target="#" class="manage"><i class="icon-cog"></i></a></span>
 
                 {% if unread_count %}
                     <a href="{% url 'read_feed' feed=subscription.id %}"

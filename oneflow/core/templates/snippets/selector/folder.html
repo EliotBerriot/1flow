@@ -1,18 +1,63 @@
-<div id="{{ folder.id }}" class="folder level-{{ level }}">
-    <div class="folder-name">
-        {{ folder.name }}
-    </div>
-    <div class="children">
-        {% comment %}
+{% comment %}
 
-        {% for child in folder.children %}
-            {% include "snippets/selector/folder.html" with folder=child level=level|add:'1' %}
-        {% endfor %}
-        {% endcomment %}
-    </div>
-    <div class="subscriptions">
-        {% for subscription in folder.subscriptions %}
-            {% include "snippets/selector/subscription.html" %}
-        {% endfor %}
+    IMPORTANT NOTICE:
+
+    If you modify the "folder" structure in this snippet, don't forget
+    to update the "fixed" pseudo folders at the end of the selector
+    (unclassified and closed streams), which use a simplified
+    (non-dynamic) version of the current file.
+
+{% endcomment %}
+
+<div class="folder-wrapper clearfix level-{{ level }}"
+    style="border-{{ level|divisibleby:'2'|yesno:'left,right' }}-color: {{ folder_color_border }}">
+    <div class="folder-border-top" style="background-color: {{ folder_color_border }}"></div>
+    <div class="folder {% if folder.subscriptions or folder.children %}has_content{% endif %}">
+
+        <a name="{{ folder.id }}"></a>
+
+        <div class="name-wrapper level-{{ level }}">
+            {% if level|divisibleby:'2' %}
+                <span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}</span>&nbsp;<span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}" data-toggle="modal" data-target="#" class="manage"><i class="icon-cog"></i></a></span>
+
+            {% else %}
+                <span class="css-hover-muted"><a href="{% url 'edit_folder' folder=folder.id %}"
+                    data-toggle="modal" data-target="#" class="manage"><i class="icon-cog"></i></a></span>&nbsp;<span class="name" style="border-top-color: {{ folder_color_border }}">{{ folder.name }}</span>
+
+            {% endif %}
+
+            {# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}
+        </div>
+        {# Operators priorities https://docs.djangoproject.com/en/dev/ref/templates/builtins/#boolean-operators #}
+        {% if folder.open_subscriptions or show_closed_streams and folder.subscriptions %}
+            <div class="subscriptions clearfix level-{{ level }}">
+                {% for subscription in folder.subscriptions %}
+                    {% if show_closed_streams or not subscription.feed.closed %}
+                        {% include "snippets/selector/subscription.html" %}
+                    {% endif %}
+                {% endfor %}
+            </div>
+
+        {% else %}
+            {% if not folder.children %}
+                <div class="no-subscription-wrapper">
+                    <div class="no-subscription">
+                        {% blocktrans with folder_name=folder.name %}No subscription in “{{folder_name}}”.{% endblocktrans %}
+                    </div>
+                </div>
+            {% endif %}
+        {% endif %}
+
+        {% if folder.children %}
+            <div class="children clearfix">
+                {# Why this "with template_name …": http://stackoverflow.com/a/11644588/654755 #}
+                {% for child in folder.children_by_name %}
+                    {% with template_name="snippets/selector/folder.html" folder=child level=level|add:'1' %}
+                        {% include template_name %}
+                    {% endwith %}
+                {% endfor %}
+            </div>
+        {% endif %}
+
     </div>
 </div>

@@ -1,3 +1,14 @@
+
+// —————————————————————————————————— http://sachagreif.com/useful-sass-mixins/
+
+@function black($opacity){
+    @return rgba(0, 0, 0, $opacity)
+}
+
+@function white($opacity){
+    @return rgba(255, 255, 255, $opacity)
+}
+
 @mixin black-and-white ($value: 100%) {
 
     @if $value == none {
@@ -16,7 +27,7 @@
 
 @mixin multiline-ellipsis($height, $lineheight, $ellipsiswidth) {
 
-$ellipsiswidth: 3em !default;
+    $ellipsiswidth: 3em !default;
 
     .ellipsis {
         overflow: hidden;
@@ -45,48 +56,38 @@ $ellipsiswidth: 3em !default;
         background: white;
         background: -webkit-gradient(linear, left top, right top,
                 from(rgba(255, 255, 255, 0)), to(white), color-stop(50%, white));
-            background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
-            background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
-            background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
-            background: linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white)
+        background: -moz-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+        background: -o-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+        background: -ms-linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white);
+        background: linear-gradient(to right, rgba(255, 255, 255, 0), white 50%, white)
     }
-
 }
 
 @mixin text-full-outline ($color: #000) {
-  text-shadow: 1px 1px 0 $color,
-    -1px 1px 0 $color,
-    1px -1px 0 $color,
-    -1px -1px 0 $color,
-    0px 1px 0 $color,
-    0px -1px 0 $color,
-    -1px 0px 0 $color,
-    1px 0px 0 $color,
-    2px 2px 0 $color,
-    -2px 2px 0 $color,
-    2px -2px 0 $color,
-    -2px -2px 0 $color,
-    0px 2px 0 $color,
-    0px -2px 0 $color,
-    -2px 0px 0 $color,
-    2px 0px 0 $color,
-    1px 2px 0 $color,
-    -1px 2px 0 $color,
-    1px -2px 0 $color,
-    -1px -2px 0 $color,
-    2px 1px 0 $color,
-    -2px 1px 0 $color,
-    2px -1px 0 $color,
-    -2px -1px 0 $color;
-}
-
-/* http://sachagreif.com/useful-sass-mixins/ */
-
-@function black($opacity){
-    @return rgba(0, 0, 0, $opacity)
-}
-@function white($opacity){
-    @return rgba(255, 255, 255, $opacity)
+    text-shadow: 1px 1px 0 $color,
+      -1px 1px 0 $color,
+      1px -1px 0 $color,
+      -1px -1px 0 $color,
+      0px 1px 0 $color,
+      0px -1px 0 $color,
+      -1px 0px 0 $color,
+      1px 0px 0 $color,
+      2px 2px 0 $color,
+      -2px 2px 0 $color,
+      2px -2px 0 $color,
+      -2px -2px 0 $color,
+      0px 2px 0 $color,
+      0px -2px 0 $color,
+      -2px 0px 0 $color,
+      2px 0px 0 $color,
+      1px 2px 0 $color,
+      -1px 2px 0 $color,
+      1px -2px 0 $color,
+      -1px -2px 0 $color,
+      2px 1px 0 $color,
+      -2px 1px 0 $color,
+      2px -1px 0 $color,
+      -2px -1px 0 $color;
 }
 
 @mixin box-emboss($opacity, $opacity2){
@@ -108,9 +109,24 @@ $ellipsiswidth: 3em !default;
                         inset 0 (-$bitb_width) $bitb_width (-$bitb_width) $color;
 }
 
+// ———————————————————————————————————————————————————————— Bootstrap overrides
+
 a.brand {
     text-transform: none;
 }
+
+.tab-content {
+  // 20131004, Olive. Without this override, we hit
+  // https://github.com/twbs/bootstrap/issues/6962
+  overflow: inherit;
+}
+
+.nav-tabs .secondary-nav {
+  float: right;
+  margin-left: 10px;
+  margin-right: 0;
+}
+
 
 .spinner-wrapper {
     text-align: center;
@@ -157,18 +173,6 @@ img.centered {
     margin-right: auto;
 }
 
-.tab-content {
-  // 20131004, Olive. Without this override, we hit
-  // https://github.com/twbs/bootstrap/issues/6962
-  overflow: inherit;
-}
-
-.nav-tabs .secondary-nav {
-  float: right;
-  margin-left: 10px;
-  margin-right: 0;
-}
-
 .not-ready {
   filter: url("/static/img/filters.svg#blur4px");
   @include filter(blur(4px));
@@ -176,7 +180,19 @@ img.centered {
   cursor: help;
 }
 
-/* Thanks https://github.com/twitter/bootstrap/issues/4286 */
+a[name] {
+  margin-top: -60px;
+  padding-top: 60px;
+}
+
+.css-hover-muted {
+    @include single-transition(opacity, 0.5s, ease-out, 0.3s);
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+// ———————————————————— Thanks https://github.com/twitter/bootstrap/issues/4286
 
 .spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer10  { height: 10px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
@@ -190,6 +206,20 @@ img.centered {
 .spacer50  { height: 50px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer100 { height: 100px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
 .spacer200 { height: 200px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+
+
+// ——————————————————————————————————————————————————— Any Firefox in the room?
+
+// http://sonspring.com/journal/removing-dotted-links
+:-moz-any-link:focus {
+  outline: none;
+}
+
+// TODO: http://stackoverflow.com/questions/1142819/how-to-remove-dotted-border-around-active-hyperlinks-in-ie8-with-css
+
+select {
+    height: 2.2em;
+}
 
 /* ------------------------------------------------------- Isotope animations */
 

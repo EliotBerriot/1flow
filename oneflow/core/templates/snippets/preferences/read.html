@@ -5,12 +5,15 @@
 
 </fieldset>
 
-<fieldset>
-  <legend>{% trans "Comfort" %}</legend>
+{% if preferences.home.show_advanced_preferences %}
+  <fieldset>
+    <legend>{% trans "Comfort" %}</legend>
 
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.show_bottom_navbar %}
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.read_switches_to_fullscreen %}
-</fieldset>
+    {% include "widgets/forms/field-checkbox.html" with field=reading_form.read_switches_to_fullscreen %}
+
+      {% include "widgets/forms/field-checkbox.html" with field=reading_form.show_bottom_navbar %}
+  </fieldset>
+{% endif %}
 
 <fieldset>
   <legend>{% trans "Keeping for later" %}</legend>

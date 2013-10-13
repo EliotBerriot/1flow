@@ -7,7 +7,8 @@ import logging
 
 from django.conf import settings
 
-from ..utils import RedisExpiringLock, AlreadyLockedException
+from ..utils import (RedisExpiringLock, AlreadyLockedException,
+                     eventually_deferred)
 from ..utils.dateutils import ftstamp
 
 LOGGER = logging.getLogger(__name__)
@@ -59,7 +60,9 @@ class RedisCachedDescriptor(object):
         #   a MongoDB document or not, or any way to be sure `self.key_name`
         #   is unique accross the application, to avoid nasty clashes.
         #
-        self.default     = default
+
+        self.default     = self.defer_callable
+        self.first_default = default
         self.cache       = cache
         self.set_default = set_default
         self.uuid        = uuid.uuid4().hex
@@ -70,11 +73,33 @@ class RedisCachedDescriptor(object):
                                     '.', '_').replace(':', '_')
                                         + '_') if cls_name else '',
                                     attr_name.replace(
-                                    '.', '_').replace(':', '_'))
+                                        '.', '_').replace(':', '_'))
         self.key_name = '%s%%s' % self.cache_key
 
         # LOGGER.warning('INIT: %s > %s, cache: %s, default: %s',
         #                self.cache_key, self.key_name, cache, default)
+
+    def defer_callable(self, instance):
+        """ This method will be run only once, at the first call of
+            ``self.default(instance)``.
+
+            It will try to resolve/import any eventual deferred default set
+            at instanciation time. If it succeeds, it will replace itself by
+            it, for next calls to use the resolved callable directly.
+
+            If the resolved default is not callable, it will just return it,
+            after having replaced itsef by it for future uses too.
+        """
+
+        self.default = eventually_deferred(self.first_default)
+
+        del self.first_default
+
+        if callable(self.default):
+            return self.default(instance)
+
+        else:
+            return self.default
 
     def __get__(self, instance, objtype=None):
 
@@ -175,6 +200,7 @@ class RedisCachedDescriptor(object):
             if my_lock.acquire(reentrant_id=self.uuid):
                 try:
                     return self.__get__(instance)
+
                 finally:
                     my_lock.release()
             else:
@@ -205,6 +231,7 @@ class RedisCachedDescriptor(object):
             # LOGGER.warning('DELETE-cache: %s %s', instance,
             #                '_r_c_d_' + self.cache_key)
             delattr(instance, '_r_c_d_' + self.cache_key)
+
 
 # Allow to override this in tests
 RedisCachedDescriptor.REDIS = REDIS

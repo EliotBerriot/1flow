@@ -5,12 +5,21 @@
   {% include "widgets/forms/field-checkbox.html" with field=sources_form.folders_show_unread_count %}
 </fieldset>
 
-<fieldset>
-  <legend>{% trans "Closed streams" %}</legend>
+{% if preferences.home.show_advanced_preferences %}
 
-  {% include "widgets/forms/field-checkbox.html" with field=sources_form.show_closed_streams %}
-</fieldset>
+    <fieldset>
+      <legend>{% trans "Folders and subscriptions" %}</legend>
 
+      {% include "widgets/forms/field-checkbox.html" with field=sources_form.extended_folders_depth %}
+      {% include "widgets/forms/field-checkbox.html" with field=sources_form.subscriptions_in_multiple_folders %}
+    </fieldset>
+
+    <fieldset>
+      <legend>{% trans "Closed streams" %}</legend>
+
+      {% include "widgets/forms/field-checkbox.html" with field=sources_form.show_closed_streams %}
+    </fieldset>
+{% endif %}
 
 <fieldset class="form-end-notice">
 <p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}

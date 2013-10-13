@@ -13,7 +13,8 @@ TEST_REDIS = redis.StrictRedis(host=settings.REDIS_TEST_HOST,
 
 def connect_mongodb_testsuite():
     disconnect()
-    connect('{0}_testsuite'.format(settings.MONGODB_NAME))
+    connect('{0}_testsuite'.format(settings.MONGODB_NAME),
+            tz_aware=settings.USE_TZ)
 
 
 __all__ = ('TEST_REDIS', 'connect_mongodb_testsuite', )

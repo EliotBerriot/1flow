@@ -10,8 +10,8 @@ from django.test import TestCase  # TransactionTestCase
 from django.test.utils import override_settings
 from django.contrib.auth import get_user_model
 
-from oneflow.core.models import (Feed, Subscription,
-                                 Article, Read,
+from oneflow.core.models import (Feed, Subscription, PseudoQuerySet,
+                                 Article, Read, Folder, TreeCycleException,
                                  User, Tag, WebSite, Author)
 from oneflow.core.tasks import global_feeds_checker
 from oneflow.base.utils import RedisStatsCounter
@@ -33,6 +33,7 @@ Read.drop_collection()
 User.drop_collection()
 Feed.drop_collection()
 Tag.drop_collection()
+Folder.drop_collection()
 WebSite.drop_collection()
 Author.drop_collection()
 
@@ -256,6 +257,72 @@ class ThrottleIntervalTest(TestCase):
                           config.FEED_FETCH_MIN_INTERVAL)
 
 
+class PseudoQuerySetTest(TestCase):
+
+    def test_append(self):
+
+        q1 = PseudoQuerySet()
+        q1.append(1)
+        q1.append(2)
+        q1.append(3)
+
+        self.assertTrue(len(q1) == 3)
+        self.assertTrue(1 in q1)
+        self.assertTrue(2 in q1)
+        self.assertTrue(3 in q1)
+
+    def test_extend(self):
+
+        q1 = PseudoQuerySet()
+        q1.append(1)
+        q1.append(2)
+        q1.append(3)
+
+        q2 = PseudoQuerySet()
+        q2.append(4)
+        q2.append(5)
+        q2.append(6)
+
+        #LOGGER.warning(q1)
+
+        q1.extend(q2)
+
+        #LOGGER.warning(q1)
+
+        self.assertTrue(len(q1) == 6)
+        self.assertTrue(4 in q1)
+        self.assertTrue(5 in q1)
+        self.assertTrue(6 in q1)
+
+    def test_append_extend(self):
+
+        q1 = PseudoQuerySet()
+        q1.append(1)
+        q1.append(2)
+
+        q2 = PseudoQuerySet()
+        q2.append(4)
+        q2.append(5)
+
+        q3 = PseudoQuerySet()
+        q3.append(7)
+        q3.append(8)
+        #LOGGER.warning(q1)
+
+        q1.append(3)
+        q1.extend(q2)
+        q1.append(6)
+        q1.extend(q3)
+        q1.append(9)
+
+        #LOGGER.warning(q1)
+
+        self.assertTrue(len(q1) == 9)
+        self.assertTrue(4 in q1)
+        self.assertTrue(6 in q1)
+        self.assertTrue(8 in q1)
+
+
 @override_settings(STATICFILES_STORAGE=
                    'pipeline.storage.NonPackagingPipelineStorage',
                    CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
@@ -282,7 +349,8 @@ class FeedsTest(TestCase):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
+            # PG post_save() signal already created the MongoDB user.
+            u = du.mongo
             Read(user=u, article=self.article1).save()
             Subscription(user=u, feed=self.feed).save()
 
@@ -290,7 +358,6 @@ class FeedsTest(TestCase):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
 
     def tearDown(self):
         Subscription.drop_collection()
@@ -344,14 +411,16 @@ class ArticleDuplicateTest(TestCase):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
+            # NOTE: the mongoDB user is created automatically. If you
+            # try to create one it will fail with duplicate index error.
+            u = du.mongo
             Read(user=u, article=self.article1).save()
 
         for index in xrange(6, 11):
             username = 'test_user_%s' % index
             du = DjangoUser.objects.create(username=username,
                                            email='%s@test.1flow.io' % username)
-            u = User(django_user=du.id, username=username).save()
+            u = du.mongo
             Read(user=u, article=self.article2).save()
 
         # Feeds creation
@@ -610,8 +679,8 @@ class UsersTest(TestCase):
             username='testuser', password='testpass',
             email='test-ocE3f6VQqFaaAZ@1flow.io')
 
-        self.mongodb_user = User(django_user=self.django_user.id,
-                                 username='test_user').save()
+        # Auto-created on PG's post_save().
+        self.mongodb_user = self.django_user.mongo
 
     def tearDown(self):
         User.drop_collection()
@@ -625,3 +694,205 @@ class UsersTest(TestCase):
         # We just want to be sure preferences are created when a new
         # user is, and all the embedded documents are created too.
         self.assertEquals(self.django_user.mongo.preferences.home.style, u'RL')
+
+
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
+class FoldersTest(TestCase):
+    def setUp(self):
+
+        self.django_user = DjangoUser.objects.create_user(
+            username='testuser', password='testpass',
+            email='test-ocE3f6VQqFaaAZ@1flow.io')
+
+        # Auto-created on PG's post_save().
+        self.mongodb_user = self.django_user.mongo
+
+    def tearDown(self):
+        User.drop_collection()
+        Folder.drop_collection()
+
+    def test_properties(self):
+
+        user = self.mongodb_user
+
+        self.assertEquals(len(user.folders), 0)
+
+        # Be sure 2 calls to `Folder.get_root_for` don't create 2 folders.
+        # The second call must return the
+
+        root = Folder.get_root_for(user)
+
+        # The root folder is kind of hidden and is not counted in folders.
+        self.assertEquals(len(user.folders), 0)
+        self.assertEquals(len(user.folders_tree), 0)
+
+        self.assertEquals(root, user.root_folder)
+
+    def test_parent_children_root(self):
+
+        user = self.mongodb_user
+        root = user.root_folder
+
+        self.assertEquals(len(user.folders), 0)
+
+        ftest1 = Folder.add_folder('test1', user)
+
+        self.assertEquals(len(user.folders), 1)
+
+        ftest2 = Folder.add_folder('test2', user)
+        ftest3 = Folder.add_folder('test3', user)
+
+        #We didn't pass "root" as argument. `Folder` class
+        # updated the DB, but not our local instance.
+        root.reload()
+
+        self.assertEquals(len(root.children), 3)
+
+        for folder in (ftest1, ftest2, ftest3):
+            self.assertTrue(folder in root.children)
+            self.assertTrue(folder.parent == root)
+
+        self.assertEquals(len(user.folders), 3)
+
+    def test_parent_children_multiple(self):
+
+        user = self.mongodb_user
+        root = user.root_folder
+
+        ftest1 = Folder.add_folder('test1', user)
+
+        self.assertEquals(len(user.folders), 1)
+
+        ftest2 = Folder.add_folder('test2', user, ftest1)
+        ftest3 = Folder.add_folder('test3', user, ftest1)
+
+        # We didn't pass "root" as argument. `Folder` class
+        # updated the DB, but not our local instance. This
+        # will implicitely reload a full folder hierarchy
+        # from the database.
+        root.reload()
+
+        self.assertEquals(len(root.children), 1)
+        self.assertEquals(len(ftest1.children), 2)
+        self.assertEquals(len(ftest2.children), 0)
+        self.assertEquals(len(ftest3.children), 0)
+
+        for folder in (ftest2, ftest3):
+            self.assertFalse(folder in root.children)
+            self.assertTrue(folder in root.children_tree)
+
+            self.assertTrue(folder in ftest1.children)
+            self.assertTrue(folder in ftest1.children_tree)
+            self.assertTrue(folder.parent == ftest1)
+
+            self.assertFalse(ftest1 in folder.children)
+            self.assertFalse(root   in folder.children)
+            self.assertFalse(ftest1 in folder.children_tree)
+            self.assertFalse(root   in folder.children_tree)
+
+        self.assertEquals(len(user.folders), 3)
+
+        for folder in (ftest1, ftest2, ftest3):
+            self.assertTrue(folder in user.folders)
+            self.assertTrue(folder in user.folders_tree)
+            self.assertTrue(folder in root.children_tree)
+
+        # Move the folder in the hierarchy.
+        ftest3.set_parent(ftest2)
+
+        # HEADS UP: we need to reload ftest1 because
+        # id(ftest2) != id(ftest1.children[0]) for some
+        # obscure reason. This will implicitely reload
+        # a full folder hierarchy from the database.
+        ftest1.reload()
+
+        # These are not necessary.
+        #ftest2.reload()
+        #ftest3.reload()
+
+        self.assertEquals(len(root.children), 1)
+        self.assertEquals(len(ftest1.children), 1)
+        self.assertEquals(len(ftest2.children), 1)
+        self.assertEquals(len(ftest3.children), 0)
+
+        self.assertTrue(ftest3 in ftest2.children)
+        self.assertFalse(ftest3 in ftest1.children)
+
+        self.assertTrue(ftest3 in user.folders_tree)
+        self.assertTrue(ftest3 in ftest2.children_tree)
+        self.assertTrue(ftest3 in ftest1.children_tree)
+        self.assertTrue(ftest3 in root.children_tree)
+
+    def test_parent_chain_checking(self):
+
+        user = self.mongodb_user
+        root = user.root_folder
+
+        ftest1 = Folder.add_folder('test1', user)
+        ftest2 = Folder.add_folder('test2', user, ftest1)
+        ftest3 = Folder.add_folder('test3', user, ftest2)
+
+        # root
+        self.assertTrue(root.is_parent_of(ftest1))
+        self.assertTrue(root.is_parent_of(ftest2))
+        self.assertTrue(root.is_parent_of(ftest3))
+
+        self.assertFalse(root.is_parent_of(root))
+
+        # ftest1
+        self.assertTrue(ftest1.is_parent_of(ftest2))
+        self.assertTrue(ftest1.is_parent_of(ftest3))
+
+        self.assertFalse(ftest1.is_parent_of(ftest1))
+        self.assertFalse(ftest1.is_parent_of(root))
+
+        # ftest2
+        self.assertTrue(ftest2.is_parent_of(ftest3))
+
+        self.assertFalse(ftest2.is_parent_of(ftest2))
+        self.assertFalse(ftest2.is_parent_of(ftest1))
+        self.assertFalse(ftest2.is_parent_of(root))
+
+        # ftest3
+        self.assertFalse(ftest3.is_parent_of(ftest3))
+        self.assertFalse(ftest3.is_parent_of(ftest2))
+        self.assertFalse(ftest3.is_parent_of(ftest1))
+        self.assertFalse(ftest3.is_parent_of(root))
+
+    def test_avoid_cycles(self):
+
+        user = self.mongodb_user
+        root = user.root_folder
+
+        ftest1 = Folder.add_folder('test1', user)
+        ftest2 = Folder.add_folder('test2', user, ftest1)
+        ftest3 = Folder.add_folder('test3', user, ftest2)
+
+        self.assertTrue(ftest1.is_parent_of(ftest2))
+        self.assertTrue(ftest1.is_parent_of(ftest3))
+
+        self.assertFalse(ftest1.is_parent_of(ftest1))
+        self.assertFalse(ftest1.is_parent_of(root))
+
+        self.assertRaises(RuntimeError, ftest1.set_parent, ftest1)
+
+        self.assertFalse(ftest1 in ftest1.children_tree)
+        self.assertFalse(ftest1 in ftest2.children_tree)
+        self.assertFalse(ftest1 in ftest3.children_tree)
+
+        self.assertFalse(ftest2 in ftest2.children_tree)
+        self.assertFalse(ftest2 in ftest3.children_tree)
+
+        self.assertFalse(ftest3 in ftest3.children_tree)
+
+        self.assertRaises(RuntimeError, ftest2.add_child, ftest2)
+
+        self.assertRaises(TreeCycleException, ftest1.set_parent, ftest2)
+        self.assertRaises(TreeCycleException, ftest1.set_parent, ftest3)
+        self.assertRaises(TreeCycleException, ftest2.add_child,  ftest1)
+        self.assertRaises(TreeCycleException, ftest3.add_child,  ftest1)
+        self.assertRaises(TreeCycleException, ftest3.add_child,  ftest2)

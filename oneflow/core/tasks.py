@@ -574,7 +574,7 @@ def clean_obsolete_redis_keys():
 
 
 @task(queue='high')
-def refresh_all_feeds(limit=None):
+def refresh_all_feeds(limit=None, force=False):
 
     if config.FEED_FETCH_DISABLED:
         # Do not raise any .retry(), this is a scheduled task.
@@ -589,11 +589,17 @@ def refresh_all_feeds(limit=None):
     my_lock = RedisExpiringLock('refresh_all_feeds', expire_time=120)
 
     if not my_lock.acquire():
-        # Avoid running this task over and over again in the queue
-        # if the previous instance did not yet terminate. Happens
-        # when scheduled task runs too quickly.
-        LOGGER.warning(u'refresh_all_feeds() is already locked, aborting.')
-        return
+        if force:
+            my_lock.release()
+            my_lock.acquire()
+            LOGGER.warning(_(u'Forcing all feed refresh…'))
+
+        else:
+            # Avoid running this task over and over again in the queue
+            # if the previous instance did not yet terminate. Happens
+            # when scheduled task runs too quickly.
+            LOGGER.warning(u'refresh_all_feeds() is already locked, aborting.')
+            return
 
     feeds = Feed.objects.filter(closed__ne=True)
 
@@ -623,18 +629,19 @@ def refresh_all_feeds(limit=None):
                 LOGGER.info(u'Launched immediate refresh of feed %s which '
                             u'has never been refreshed.', feed)
 
-            elif feed.last_fetch + interval < mynow:
+            elif force or feed.last_fetch + interval < mynow:
 
                 how_late = feed.last_fetch + interval - mynow
                 how_late = how_late.days * 86400 + how_late.seconds
 
                 if config.FEED_REFRESH_RANDOMIZE:
                     countdown = randrange(config.FEED_REFRESH_RANDOMIZE_DELAY)
-                    feed_refresh.apply_async((feed.id, ), countdown=countdown)
+                    feed_refresh.apply_async((feed.id, force),
+                                             countdown=countdown)
 
                 else:
                     countdown = 0
-                    feed_refresh.delay(feed.id)
+                    feed_refresh.delay(feed.id, force)
 
                 LOGGER.info(u'%s refresh of feed %s %s (%s late).',
                             u'Scheduled randomized'
@@ -667,7 +674,7 @@ def global_feeds_checker():
                 settings.SITE_DOMAIN,
 
                 reverse('admin:%s_%s_change' % (
-                    feed._meta.get('app_label', 'models'),
+                    feed._meta.get('app_label', 'nonrel'),
                     feed._meta.get('module_name', 'feed')),
                     args=[feed.id]),
 

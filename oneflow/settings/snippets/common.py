@@ -438,6 +438,7 @@ INSTALLED_APPS = (
     'memcache_status',
     'markdown_deux',
     'djangojs',
+    'django_select2',
     'pipeline',
     'absolute',
     'endless_pagination',
@@ -463,6 +464,11 @@ ENDLESS_PAGINATION_PER_PAGE = 100
 
 # This is done directly in the templates.
 #ENDLESS_PAGINATION_LOADING  = ugettext_lazy(u'loading more entries…')
+
+AUTO_RENDER_SELECT2_STATICS = False
+#GENERATE_RANDOM_SELECT2_ID = True
+ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
+# See cache.py for Select2 memcache settings.
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
@@ -598,6 +604,12 @@ SOCIAL_AUTH_PIPELINE = (
     #'oneflow.core.social_pipeline.check_1flow_requirements',
     'oneflow.core.social_pipeline.get_social_avatar',
 )
+
+# —————————————————————————————————————————————————————————————— 1flow settings
+
+
+DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
 

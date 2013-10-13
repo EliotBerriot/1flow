@@ -1,0 +1,39 @@
+
+
+// ————————————————————————————————————————————————————————— desktop >= full HD
+
+
+@media (min-width: 1920px) {
+
+    $application-width: 1620px;
+    $columns: 4;
+
+    @include selector-factory($application-width,
+                              $selector-columns: $columns);
+}
+
+
+// ——————————————————————————————————————————————————— laptop/desktop < full HD
+
+
+@media (min-width: 1440px) and (max-width: 1919px) {
+
+    $application-width: 1260px;
+    $columns: 3;
+
+    @include selector-factory($application-width,
+                              $selector-columns: $columns);
+}
+
+
+// ———————————————————————————————————————————————————— standard laptop/desktop
+
+
+@media (min-width: 1280px) and (max-width: 1439px) {
+
+    $application-width: 1120px;
+    $columns: 3;
+
+    @include selector-factory($application-width,
+                              $selector-columns: $columns);
+}

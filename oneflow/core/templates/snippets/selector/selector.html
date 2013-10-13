@@ -1,48 +1,82 @@
-<div class="spacer25"></div>
-<form>
-    <fieldset id="reading-lists">
-        <legend>{% trans "Lists" %}</legend>
-        <div class="row-fluid">
-            <div class="span3">
-                <ul>
-                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Inbox" %}</li>
-                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Web snaps" %}</li>
-                    <li>{% reading_list_with_count 'read_later' _("Read later") %}</li>
-                    <li>{% reading_list_with_count 'read' _("All unread") %}</li>
-                </ul>
-            </div>
-            <div class="span3">
-                <ul>
-                    <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</li>
-                    <li>{% reading_list_with_count 'read_starred' _('Starred') %}</li>
-
-                    <li class="muted not-ready" {% feature_not_ready %}>{% trans "Sent Articles" %}</li>
-
-                    <li>{% reading_list_with_count 'read_all' _('All articles') %}</li>
-                </ul>
-            </div>
-            <div class="span3">
-                <ul>
-                  <li><a href="{% url 'read_facts' %}">{% trans 'Facts' %}</a></li>
-                  <li><a href="{% url 'read_numbers' %}">{% trans 'Numbers' %}</a></li>
-                  <li><a href="{% url 'read_analysis' %}">{% trans 'Analysis' %}</a></li>
-                  <li><a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
-                </ul>
-            </div>
-            <div class="span3">
-                <ul>
-                  <li><a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>
-                  <li><a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
-                  <li><a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
-                  <li><a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
-                </ul>
-            </div>
+<div id="header" class="clearfix">
+    <div class="ctrls">
+        <div class="btn-group pull-right">
+            <button class="btn">{% trans "Add a stream" %}</button>
+            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                <span class="caret"></span>
+            </button>
+            <ul class="dropdown-menu">
+                <li><a href="{% url 'add_folder' %}"
+                        data-toggle="modal">{% trans "Add a folder" %}</a></li>
+            </ul>
         </div>
-    </fieldset>
+    </div>
+</div>
 
-    <fieldset id="subscriptions">
-        <legend>{% trans "Unclassified information streams" %} ({{ nofolder_open_subscriptions|length }})
-            {% comment %}
+<div id="lists" class="clearfix">
+    <form>
+        <div class="row-fluid">
+            <fieldset id="reading-lists" class="span6">
+                <legend>{% trans "Reading lists" %}</legend>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <ul>
+                            <li class="muted not-ready" {% feature_not_ready %}>
+                                {% trans "Inbox" %}</li>
+                            <li class="muted not-ready" {% feature_not_ready %}>
+                                {% trans "Web snaps" %}</li>
+                            <li>{% reading_list_with_count 'read_later' _("Read later") %}</li>
+                            <li>{% reading_list_with_count 'read' _("All unread") %}</li>
+                        </ul>
+                    </div>
+                    <div class="span6">
+                        <ul>
+                            <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</li>
+                            <li>{% reading_list_with_count 'read_starred' _('Starred') %}</li>
+
+                            <li class="muted not-ready" {% feature_not_ready %}>
+                                {% trans "Sent Articles" %}</li>
+
+                            <li>{% reading_list_with_count 'read_all' _('All articles') %}</li>
+                        </ul>
+                    </div>
+                </div>
+            </fieldset>
+
+            <fieldset id="watching-lists" class="span6">
+                <legend>{% trans "Watching lists" %}</legend>
+                <div class="row-fluid">
+                    <div class="span6">
+                        <ul>
+                          <li><a href="{% url 'read_facts' %}">{% trans 'Facts' %}</a></li>
+                          <li><a href="{% url 'read_numbers' %}">{% trans 'Numbers' %}</a></li>
+                          <li><a href="{% url 'read_analysis' %}">{% trans 'Analysis' %}</a></li>
+                          <li><a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
+                        </ul>
+                    </div>
+                    <div class="span6">
+                        <ul>
+                          <li><a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>
+                          <li><a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
+                          <li><a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
+                          <li><a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
+                        </ul>
+                    </div>
+                </div>
+            </fieldset>
+        </div>
+    </form>
+</div>
+
+<div id="folders">
+    {% for folder in mongodb_user.top_folders %}
+        {% captureas folder_color_border %}{% html_background_color_for_name folder.name 0.5 %}{% endcaptureas %}
+        {% include "snippets/selector/folder.html" with folder=folder level=0 %}
+    {% endfor %}
+
+    {% if nofolder_open_subscriptions %}
+
+        {% comment %}
             <div class="global-links pull-right">
                 <span class="unread">{% reading_list_with_count 'read' _('unread') %}</span>
 
@@ -50,37 +84,53 @@
 
                 <span class="all">{% reading_list_with_count 'read_all' _('all') %}</span>
             </div>
-            {% endcomment %}
+        {% endcomment %}
 
-        </legend>
+        {% trans "Unclassified information streams" as nofolder_open_subscriptions_trans %}
+        {% captureas folder_color_border %}{% html_background_color_for_name nofolder_open_subscriptions_trans 0.5 %}{% endcaptureas %}
 
-        <div>
-            {% for folder in user.top_folders %}
-                {% include "snippets/selector/folder.html" with folder=folder level=0 %}
-            {% endfor %}
+        <div class="folder-wrapper clearfix level-0"
+                style="border-left-color: {{ folder_color_border }}">
+            <div class="folder-border-top" style="background-color: {{ folder_color_border  }}"></div>
+            <div id="{{ folder.id }}" class="folder has_content">
+                <div class="name-wrapper level-0">
+                    <span class="name" style="border-top-color: {{ folder_color_border }}">
+                        {{ nofolder_open_subscriptions_trans }}
+                    </span>
+                </div>
+                <div class="subscriptions level-0">
+                    {% for subscription in nofolder_open_subscriptions %}
+                        {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
+                    {% endfor %}
+                </div>
+            </div>
         </div>
-        <div class="clearfix"></div>
 
-        <div>
-            {% for subscription in nofolder_open_subscriptions %}
-                {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
-            {% endfor %}
-        </div>
-        <div class="clearfix"></div>
-    </fieldset>
+    {% endif %}
 
-    {% if show_closed_streams %}
+    {% if show_closed_streams and closed_subscriptions %}
 
-        <fieldset id="closed-subscriptions">
-                <legend>{% trans "Closed streams" %} ({{ closed_subscriptions|length }})</legend>
+        {% trans "Closed streams" as closed_streams_trans %}
+        {% captureas folder_color_border %}{% html_background_color_for_name closed_streams_trans 0.5 %}{% endcaptureas %}
 
-                <div>
+        <div class="folder-wrapper clearfix level-0"
+                style="border-left-color: {{ folder_color_border }}">
+            <div class="folder-border-top" style="background-color: {{ folder_color_border  }}"></div>
+
+            <div id="{{ folder.id }}" class="folder has_content">
+                <div class="name-wrapper level-0">
+                    <span class="name" style="border-top-color: {{ folder_color_border }}">
+                        {{ closed_streams_trans }}
+                    </span>
+                </div>
+                <div class="subscriptions level-0">
                     {% for subscription in closed_subscriptions %}
                         {% include "snippets/selector/subscription.html" with subscription=subscription level=0 %}
                     {% endfor %}
                 </div>
-        </fieldset>
+            </div>
+        </div>
 
     {% endif %}
 
-</form>
+</div>

@@ -87,6 +87,12 @@ body {
 
 section {}
 
+#application {
+    #header {
+        width: 100%;
+    }
+}
+
 #home-styles-chooser {
 
     /* Separate chooser from the intro text. */
@@ -171,10 +177,6 @@ header {
         p {
             margin-bottom: 0;
         }
-    }
-
-    select {
-        height: 2.2em;
     }
 }
 

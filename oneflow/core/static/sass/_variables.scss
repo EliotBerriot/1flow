@@ -16,11 +16,13 @@ $textColor:             rgb(124, 124, 124) !default;
 $linkColor:             rgb(50, 50, 50) !default;
 $linkColorHover:        $dark_orange !default;
 
-$subscription-link-color:      #586a7f;
-$subscription-padding:         15px;
-$subscription-image-size:      40px;
-$baseline-difference:          4px;
-$subscription-name-height:     22px;
-$subscription-opacity-default: 0.25;
+//#586a7f;
+$subscription-link-color:       rgb(44, 55, 66);
+$subscription-link-hover:       $dark_orange;
+$subscription-padding:          15px;
+$subscription-image-size:       40px;
+$baseline-difference:           4px;
+$subscription-name-height:      22px;
+$subscription-opacity-default:  0.4;
 
 $subscription-border-color:    #d7d7d7;

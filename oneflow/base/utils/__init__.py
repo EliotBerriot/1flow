@@ -5,6 +5,7 @@ import time
 import redis
 import urllib2
 import logging
+import importlib
 
 try:
     import blinker
@@ -198,6 +199,72 @@ def detect_encoding_from_requests_response(response):
                 pass
 
     return None
+
+
+def eventually_deferred(thing):
+    """ Try to import ``thing``'s parent and return a runtime reference to
+        ``thing`` if it's callable. ``parent.parent`` will be tried too,
+        but no more. """
+
+    if thing is None:
+        return thing
+
+    if callable(thing):
+        return thing
+
+    if isinstance(thing, str) or isinstance(thing, unicode):
+        try:
+            module_name, callable_name = thing.rsplit(u'.', 1)
+
+        except ValueError:
+            # 'thing' is a simple string with no special meaning.
+            return thing
+
+        else:
+            try:
+                module = importlib.import_module(module_name)
+
+            except ImportError, e:
+                try:
+                    # Perhaps we failed to import 'module.submodule.MyClass'.
+                    # Try one level up.
+                    sup_module_name, class_name = module_name.rsplit(u'.', 1)
+
+                except ValueError:
+                    # There is a real import problem,
+                    # raise the original exception.
+                    raise e
+
+                else:
+                    # Any exception at this level is bubbled directly.
+                    # If we were able to `rsplit('.')` 2 times, we are
+                    # most probably dealing with a real Python module.
+                    # Any error at import time must be known.
+                    sup_module = importlib.import_module(module_name)
+
+                    candidate = getattr(getattr(sup_module, class_name),
+                                        callable_name)
+
+                    if callable(candidate):
+                        return candidate
+
+                    else:
+                        raise RuntimeError(u'Cannot use "%s" as deferred '
+                                           u'default value, it is not '
+                                           u'callable.' % thing)
+
+            else:
+                candidate = getattr(module, callable_name)
+
+                if callable(candidate):
+                    return candidate
+
+                else:
+                    raise RuntimeError(u'Cannot use "%s" as deferred default '
+                                       u'value, it is not callable.' % thing)
+
+    return thing
+
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper classes
 

@@ -1,5 +1,5 @@
 {% extends 'base.html' %}
-{% load raven %}
+{% load raven django_select2_tags %}
 
 {% block body_id %}home{% endblock body_id %}
 
@@ -21,6 +21,9 @@
 
         <!-- ,700,900,300italic,400italic,700italic,900italic -->
     {% endcomment %}
+
+    {# TODO: include this in PIPELINE #}
+    {% import_django_select2_css %}
 
     {% compressed_css 'core-bootstrap-detail' %}
 {% endblock extrajs_header %}
@@ -97,6 +100,8 @@
         src="http://cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
     <script type="text/javascript"
         src="http://cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
+
+    {% import_django_select2_js %}
 
     {% compressed_js 'vendor-all' %}
     {#{% compressed_js 'core' %}#}
