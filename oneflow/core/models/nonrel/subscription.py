@@ -15,7 +15,8 @@ from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
 from ....base.fields import IntRedisDescriptor
-from ....base.utils.dateutils import now, timedelta, today, combine, time
+from ....base.utils.dateutils import (timedelta, today, combine,
+                                      now, time)  # , make_aware, utc)
 
 from .common import DocumentHelperMixin
 from .folder import Folder
