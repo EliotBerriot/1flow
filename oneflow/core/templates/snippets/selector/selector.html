@@ -69,22 +69,22 @@
 </div>
 
 <div id="folders">
-    {% for folder in user.mongo.top_folders %}
+    {% for folder in mongodb_user.top_folders %}
         {% captureas folder_color_border %}{% html_background_color_for_name folder.name 0.5 %}{% endcaptureas %}
         {% include "snippets/selector/folder.html" with folder=folder level=0 %}
     {% endfor %}
 
-        {% comment %}
-        <div class="global-links pull-right">
-            <span class="unread">{% reading_list_with_count 'read' _('unread') %}</span>
-
-            <span class="hot muted not-ready" {% feature_not_ready %}>{% trans "hot" %}</span>
-
-            <span class="all">{% reading_list_with_count 'read_all' _('all') %}</span>
-        </div>
-        {% endcomment %}
-
     {% if nofolder_open_subscriptions %}
+
+        {% comment %}
+            <div class="global-links pull-right">
+                <span class="unread">{% reading_list_with_count 'read' _('unread') %}</span>
+
+                <span class="hot muted not-ready" {% feature_not_ready %}>{% trans "hot" %}</span>
+
+                <span class="all">{% reading_list_with_count 'read_all' _('all') %}</span>
+            </div>
+        {% endcomment %}
 
         {% trans "Unclassified information streams" as nofolder_open_subscriptions_trans %}
         {% captureas folder_color_border %}{% html_background_color_for_name nofolder_open_subscriptions_trans 0.5 %}{% endcaptureas %}

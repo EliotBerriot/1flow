@@ -28,11 +28,13 @@
 
             {# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}
         </div>
-
-        {% if folder.subscriptions %}
+        {# Operators priorities https://docs.djangoproject.com/en/dev/ref/templates/builtins/#boolean-operators #}
+        {% if folder.open_subscriptions or show_closed_streams and folder.subscriptions %}
             <div class="subscriptions clearfix level-{{ level }}">
                 {% for subscription in folder.subscriptions %}
-                    {% include "snippets/selector/subscription.html" %}
+                    {% if show_closed_streams or not subscription.feed.closed %}
+                        {% include "snippets/selector/subscription.html" %}
+                    {% endif %}
                 {% endfor %}
             </div>
 
