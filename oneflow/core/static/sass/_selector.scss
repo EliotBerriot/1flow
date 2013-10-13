@@ -351,6 +351,10 @@
 
 @mixin thumbnail-img-styles($size) {
 
+    a:hover {
+        text-decoration: none;
+    }
+
     img, .generic-img {
         max-width: $size;
         max-height: $size;

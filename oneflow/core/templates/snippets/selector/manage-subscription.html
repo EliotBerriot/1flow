@@ -12,14 +12,25 @@
             <div class="control-group">
                 <div class="controls">
                     <div class="thumbnail">
+                        {% if subscription.feed.site_url %}
+                            <a href="{{ subscription.feed.site_url }}"
+                                title="{% trans "Visit the website" %}"
+                                data-toggle="tooltip">
+                        {% endif %}
+
                         {% if subscription.feed.thumbnail_url %}
-                        <img src="{{ subscription.feed.thumbnail_url }}" />
+                            <img src="{{ subscription.feed.thumbnail_url }}" />
 
                         {% else %}
                             <div class="generic-img"
                                 style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
 
                         {% endif %}
+
+                        {% if subscription.feed.site_url %}
+                            </a>
+                        {% endif %}
+
                     </div>
                 </div>
             </div>
