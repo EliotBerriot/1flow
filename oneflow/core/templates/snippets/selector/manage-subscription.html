@@ -24,6 +24,16 @@
                 </div>
             </div>
 
+            {% if subscription.feed.closed %}
+                <div class="control-group">
+                    <label class="control-label note">{% trans "NOTE:" %}</label>
+                    <div class="controls muted">
+                        {% blocktrans with closed_reason=subscription.feed.closed_reason date_closed=subscription.feed.date_closed|naturaldelta %}This feed has been closed {{ date_closed }} ago, it will not receive any new update. Reason invoqued: {{ closed_reason }}.{% endblocktrans %}
+                    </div>
+                </div>
+
+            {% endif %}
+
             {% include "widgets/forms/field-input-text.html" with field=form.name %}
             {% include "widgets/forms/field-generic.html" with field=form.folders %}
 
