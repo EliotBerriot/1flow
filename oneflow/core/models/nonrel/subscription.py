@@ -290,6 +290,13 @@ def Folder_subscriptions_property_get(self):
     return Subscription.objects(folders=self)
 
 
+def Folder_open_subscriptions_property_get(self):
+
+    # No need to query on the user, it's already common to folder and
+    # subscription. The "duplicate folder name" problem doesn't exist.
+    return [s for s in Subscription.objects(folders=self) if not s.feed.closed]
+
+
 def User_subscriptions_property_get(self):
     return Subscription.objects(user=self)
 
@@ -311,6 +318,7 @@ def User_subscriptions_by_folder_property_get(self):
 
 
 Folder.subscriptions          = property(Folder_subscriptions_property_get)
+Folder.open_subscriptions     = property(Folder_open_subscriptions_property_get)
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
 User.subscriptions_by_folder = property(
