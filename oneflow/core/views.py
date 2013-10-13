@@ -140,6 +140,7 @@ def manage_folder(request, **kwargs):
     folder_id = kwargs.pop('folder', None)
     folder    = Folder.get_or_404(folder_id) if folder_id else None
     user      = request.user.mongo
+
     if request.POST:
         if folder:
             form = ManageFolderForm(request.POST, instance=folder,
@@ -229,8 +230,6 @@ def edit_subscription(request, **kwargs):
             return HttpResponseBadRequest('Did you forget to do an Ajax call?')
 
         form = ManageSubscriptionForm(instance=subscription)
-
-        form.fields['folders'].queryset = request.user.mongo.folders_tree
 
     return render(request, 'snippets/selector/manage-subscription.html',
                   {'form': form, 'subscription': subscription})
