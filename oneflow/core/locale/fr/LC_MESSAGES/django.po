@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-13 12:24+0200\n"
-"PO-Revision-Date: 2013-10-13 12:29+0009\n"
+"POT-Creation-Date: 2013-10-13 14:03+0200\n"
+"PO-Revision-Date: 2013-10-13 14:05+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -214,7 +214,7 @@ msgstr "Confirmation"
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: forms.py:170 forms.py:342 forms.py:349
+#: forms.py:170 forms.py:349
 msgid "(None)"
 msgstr "(aucun)"
 
@@ -308,47 +308,47 @@ msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:105
+#: urls.py:104
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:108
+#: urls.py:107
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:110
+#: urls.py:109
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:111
+#: urls.py:110
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:116
+#: urls.py:115
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:119
+#: urls.py:118
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:122
+#: urls.py:121
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:125
+#: urls.py:124
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:130
+#: urls.py:129
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:139
+#: urls.py:138
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:141
+#: urls.py:140
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
@@ -1652,10 +1652,8 @@ msgid "Folders"
 msgstr "Dossiers"
 
 #: models/nonrel/subscription.py:82
-msgid "Folders in which this subscription appears (can be more than one)."
-msgstr ""
-"Dossiers dans lesquels cet abonnement apparaît (vous pouvez en choisir "
-"plusieurs)."
+msgid "Folder(s) in which this subscription appears."
+msgstr "Dossier(s) dans lesquel(s) cet abonnement apparaît."
 
 #: models/nonrel/subscription.py:116
 #, python-brace-format
