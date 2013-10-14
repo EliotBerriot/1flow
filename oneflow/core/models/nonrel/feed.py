@@ -21,6 +21,7 @@ from ....base.utils import (RedisExpiringLock,
                             HttpResponseLogProcessor)
 
 from ....base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
+from ....base.utils import ro_classproperty
 from ....base.utils.dateutils import (now, timedelta, today, datetime,
                                       is_naive, make_aware, utc)
 
@@ -213,6 +214,14 @@ class Feed(Document, DocumentHelperMixin):
     subscriptions_count = IntRedisDescriptor(
         attr_name='f.s_c', default=feed_subscriptions_count_default,
         set_default=True)
+
+    @ro_classproperty
+    def good_feeds(cls):
+        """ Return feeds suitable for use in the “add subscription”
+            part of the source selector, eg feeds marked as usable by
+            the administrators, and not closed. """
+
+        return cls.objects(good_for_use=True, closed__ne=True)
 
     @property
     def latest_article(self):
