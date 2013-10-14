@@ -25,19 +25,19 @@
                                 {% trans "Inbox" %}</li>
                             <li class="muted not-ready" {% feature_not_ready %}>
                                 {% trans "Web snaps" %}</li>
-                            <li>{% reading_list_with_count 'read_later' _("Read later") %}</li>
-                            <li>{% reading_list_with_count 'read' _("All unread") %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read_later' %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read' %}</li>
                         </ul>
                     </div>
                     <div class="span6">
                         <ul>
-                            <li>{% reading_list_with_count 'read_fun' _('Funbox') %}</li>
-                            <li>{% reading_list_with_count 'read_starred' _('Starred') %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read_fun' %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read_starred' %}</li>
 
                             <li class="muted not-ready" {% feature_not_ready %}>
                                 {% trans "Sent Articles" %}</li>
 
-                            <li>{% reading_list_with_count 'read_all' _('All articles') %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read_all' %}</li>
                         </ul>
                     </div>
                 </div>
@@ -48,18 +48,18 @@
                 <div class="row-fluid">
                     <div class="span6">
                         <ul>
-                          <li><a href="{% url 'read_facts' %}">{% trans 'Facts' %}</a></li>
-                          <li><a href="{% url 'read_numbers' %}">{% trans 'Numbers' %}</a></li>
-                          <li><a href="{% url 'read_analysis' %}">{% trans 'Analysis' %}</a></li>
-                          <li><a href="{% url 'read_prospective' %}">{% trans 'Prospective' %}</a></li>
+                          <li>{% reading_list_with_count mongodb_user 'read_facts' %}</li>
+                          <li>{% reading_list_with_count mongodb_user 'read_numbers' %}</li>
+                          <li>{% reading_list_with_count mongodb_user 'read_analysis' %}</li>
+                          <li>{% reading_list_with_count mongodb_user 'read_prospective' %}</li>
                         </ul>
                     </div>
                     <div class="span6">
                         <ul>
-                          <li><a href="{% url 'read_best_practices' %}">{% trans 'Best-Practices' %}</a></li>
-                          <li><a href="{% url 'read_rules' %}">{% trans 'Regulations' %}</a></li>
-                          <li><a href="{% url 'read_quotes' %}">{% trans 'Quotes' %}</a></li>
-                          <li><a href="{% url 'read_knowledge' %}">{% trans 'Knowledge' %}</a></li>
+                          <li>{% reading_list_with_count mongodb_user 'read_know_how' %}</li>
+                          <li>{% reading_list_with_count mongodb_user 'read_rules' %}</li>
+                          <li>{% reading_list_with_count mongodb_user 'read_quotes' %}</li>
+                          <li>{% reading_list_with_count mongodb_user 'read_knowledge' %}</li>
                         </ul>
                     </div>
                 </div>

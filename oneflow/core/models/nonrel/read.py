@@ -295,7 +295,7 @@ class Read(Document, DocumentHelperMixin):
         'is_knowhow': {
             'list_name':    _(u'best-practices'),
             # WARNING: there  is a '_' in the view name, and a '-' in the URL.
-            'view_name':     u'best_practices',
+            'view_name':     u'know_how',
             'list_url':      _(ur'^read/best-practices/$'),
             'list_url_feed': _(ur'^read/best-practices/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as best-practices / state of art '
