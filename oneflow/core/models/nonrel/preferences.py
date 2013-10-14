@@ -93,6 +93,12 @@ class SelectorPreferences(EmbeddedDocument):
                     u'unread count in parenthesis near the feed titles.'),
         default=False)
 
+    lists_show_unread_count = BooleanField(
+        verbose_name=_(u'Reading lists show unread count'),
+        help_text=_(u'Each reading list is appended the number of articles '
+                    u'marked as being part of it.'),
+        default=False)
+
     folders_show_unread_count = BooleanField(
         verbose_name=_(u'Folders show unread count'),
         help_text=_(u'Each folder is appended the sum of unread articles '
