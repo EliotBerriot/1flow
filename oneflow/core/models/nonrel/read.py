@@ -510,7 +510,7 @@ def user_has_content_default(user, *args, **kwargs):
 
 def Folder_reads_property_get(self):
 
-    return Read.objects(subscriptions=self.subscriptions)
+    return Read.objects(subscriptions__contains=self.subscriptions)
 
 
 def Subscription_reads_property_get(self):
