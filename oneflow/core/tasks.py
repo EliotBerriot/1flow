@@ -745,7 +745,7 @@ def global_subscriptions_checker(force=False):
         if force:
             my_lock.release()
             my_lock.acquire()
-            LOGGER.warning(_(u'Forcing subscriptions checks…'))
+            LOGGER.warning(u'Forcing subscriptions checks…')
 
         else:
             # Avoid running this task over and over again in the queue
@@ -757,22 +757,27 @@ def global_subscriptions_checker(force=False):
 
     with benchmark("Check all subscriptions"):
         for feed in Feed.good_feeds:
-            all_articles = feed.all_articles_count
+            feed_all_articles = feed.all_articles_count
 
             for subscription in feed.subscriptions:
 
-                if subscription.all_articles_count != all_articles:
+                if subscription.all_articles_count != feed_all_articles:
 
-                    subscription.check_reads()
+                    LOGGER.info(u'Subscription %s has only %s reads whereas '
+                                u'its feed has %s; checking it…', subscription,
+                                subscription.all_articles_count,
+                                feed_all_articles)
+
+                    subscription.check_reads(force=True)
 
                 # Release and get back the lock to refresh the timer and
                 # avoid it to automatically release the lock while we are
                 # running.
                 my_lock.release()
                 if not my_lock.acquire():
-                    LOGGER.error(_(u'Could not re-acquire '
+                    LOGGER.error(u'Could not re-acquire '
                                  u'global_subscriptions_checker() lock, '
-                                 u'aborting!'))
+                                 u'aborting!')
                     return
 
     my_lock.release()
