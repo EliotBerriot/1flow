@@ -141,11 +141,10 @@ class Subscription(Document, DocumentHelperMixin):
         self.save()
 
     @classmethod
-    def subscribe_user_to_feed(cls, user, feed, force=False):
+    def subscribe_user_to_feed(cls, user, feed, force=False, background=False):
 
         try:
-            subscription = cls(user=user, feed=feed,
-                               name=feed.name, tags=feed.tags).save()
+            subscription = cls(user=user, feed=feed).save()
 
         except (NotUniqueError, DuplicateKeyError):
             if not force:
@@ -154,7 +153,15 @@ class Subscription(Document, DocumentHelperMixin):
                 return cls.objects.get(user=user, feed=feed,
                                        name=feed.name, tags=feed.tags)
 
-        subscription.check_reads(True)
+        else:
+            subscription.name = feed.name
+            subscription.tags = feed.tags[:]
+            subscription.save()
+
+        if background:
+            subscription_check_reads.delay(subscription.id, True)
+        else:
+            subscription.check_reads(True)
 
         LOGGER.info(u'Subscribed %s to %s via %s.', user, feed, subscription)
 
@@ -183,6 +190,8 @@ class Subscription(Document, DocumentHelperMixin):
             between the task call and the moment it is effectively run,
             we define what to exactly mark as read with the datetime when
             the operation was done by the user.
+
+            Also available as a task for background execution.
         """
 
         currently_unread = self.reads.filter(is_read__ne=True,
