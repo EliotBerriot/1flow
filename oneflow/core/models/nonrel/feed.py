@@ -108,7 +108,10 @@ def feed_refresh(feed_id, *args, **kwargs):
 class Feed(Document, DocumentHelperMixin):
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
-    site_url       = URLField(verbose_name=_(u'web site'))
+    site_url       = URLField(verbose_name=_(u'web site'),
+                              help_text=_(u'Website public URL, linked to the '
+                                          u'globe icon in the source selector. '
+                                          u'This is not the XML feed URL.'))
     slug           = StringField(verbose_name=_(u'slug'))
     tags           = ListField(ReferenceField('Tag', reverse_delete_rule=PULL),
                                default=list, verbose_name=_(u'tags'),

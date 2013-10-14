@@ -1,4 +1,4 @@
-{% with unread_count=subscription.unread_articles_count later_count=subscription.bookmarked_articles_count %}
+{% with unread_count=subscription.unread_articles_count all_count=subscription.all_articles_count later_count=subscription.bookmarked_articles_count %}
     <div class="subscription {{ unread_count|yesno:'has-unread,' }}">
 
         <a name="{{ subscription.id }}"></a>
@@ -7,7 +7,13 @@
             {% if unread_count %}
                 <a href="{% url 'read_feed' feed=subscription.id %}"
                     data-toggle="tooltip"
-                    title="{% blocktrans %}Click to read the {{unread_count}} new article(s){% endblocktrans %}">
+                    title="{% blocktrans %}Click to read the {{ unread_count }} new article(s){% endblocktrans %}">
+
+            {% else %}
+                <a href="{% url 'read_all_feed' feed=subscription.id %}"
+                    data-toggle="tooltip"
+                    title="{% blocktrans %}Click to display all the {{ all_count }} articles of this subscription.{% endblocktrans %}">
+
             {% endif %}
 
             {% if subscription.feed.thumbnail_url %}
@@ -18,9 +24,7 @@
                     style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
             {% endif %}
 
-            {% if unread_count %}
-                </a>
-            {% endif %}
+            </a>
 
         </div>
 
@@ -52,8 +56,11 @@
                     </a>
 
                 {% else %}
-                    <span data-toggle="tooltip"
-                        title="{% trans "Nothing new" %}">{{ subscription.name }}</span>
+                    <a href="{% url 'read_all_feed' feed=subscription.id %}"
+                        data-toggle="tooltip"
+                        title="{% blocktrans %}Click to display all the {{ all_count }} articles of this subscription.{% endblocktrans %}">
+                      {{ subscription.name }}
+                    </a>
 
                 {% endif %}
 
