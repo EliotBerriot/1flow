@@ -45,7 +45,7 @@ __all__ = ('feed_update_latest_article_date_published',
            'feed_good_articles_count_default',
            'feed_bad_articles_count_default',
            'feed_recent_articles_count_default',
-           'feed_subscriptions_count_default',)
+           'feed_subscriptions_count_default', )
 
 
 # ————————————— issue https://code.google.com/p/feedparser/issues/detail?id=404
@@ -222,23 +222,23 @@ class Feed(Document, DocumentHelperMixin):
 
     all_articles_count = IntRedisDescriptor(
         attr_name='f.aa_c', default=feed_all_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     good_articles_count = IntRedisDescriptor(
         attr_name='f.ga_c', default=feed_good_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     bad_articles_count = IntRedisDescriptor(
         attr_name='f.ba_c', default=feed_bad_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     recent_articles_count = IntRedisDescriptor(
         attr_name='f.ra_c', default=feed_recent_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     subscriptions_count = IntRedisDescriptor(
         attr_name='f.s_c', default=feed_subscriptions_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     @ro_classproperty
     def good_feeds(cls):
@@ -332,11 +332,7 @@ class Feed(Document, DocumentHelperMixin):
 
     def update_subscriptions_count(self):
 
-        self.subscriptions_count = self.subscriptions.count()
-
-    def update_all_articles_count(self):
-
-        self.all_articles_count = self.articles.count()
+        self.subscriptions_count = feed_subscriptions_count_default(self)
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
