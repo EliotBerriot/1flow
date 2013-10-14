@@ -341,6 +341,7 @@ class FeedAdminForm(DocumentForm):
         widgets = {
             'url': TextInput(attrs={'class': 'vURLField'}),
             'name': TextInput(attrs={'class': 'vLargeTextField'}),
+            'site_url': TextInput(attrs={'class': 'vLargeTextField'}),
             'languages': HorizontalCheckbox(),
             'last_etag': TextInput(attrs={'class': 'vLargeTextField'}),
             'last_modified': TextInput(attrs={'class': 'vLargeTextField'}),
@@ -379,7 +380,7 @@ class FeedAdmin(admin.DocumentAdmin):
 
     fieldsets = (
         ('Main', {
-            'fields': ('name',
+            'fields': (('name', 'site_url', ),
                        'thumbnail_url',
                        ('good_for_use', 'restricted', ),
                        'languages',
