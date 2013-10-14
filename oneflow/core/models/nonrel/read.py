@@ -510,7 +510,9 @@ def user_has_content_default(user, *args, **kwargs):
 
 def Folder_reads_property_get(self):
 
-    return Read.objects(subscriptions__contains=self.subscriptions)
+    # self.subscriptions is a QuerySet, we need
+    # to convert it to a list for the new QuerySet.
+    return Read.objects(subscriptions__in=[s for s in self.subscriptions])
 
 
 def Subscription_reads_property_get(self):
