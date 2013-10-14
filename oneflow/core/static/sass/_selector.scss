@@ -511,6 +511,15 @@
     }
 }
 
+.is_closed {
+    .name:not(.css-hover-muted) {
+        text-decoration: line-through;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
 
 #manage-folder.modal,
 #manage-subscription.modal {
