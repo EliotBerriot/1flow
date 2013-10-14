@@ -45,6 +45,8 @@ from django.conf import settings
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
+from ....base.utils.dateutils import benchmark
+
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
 
 
@@ -241,6 +243,37 @@ class DocumentHelperMixin(object):
 
         except:
             pass
+
+    def compute_cached_descriptors(self, all=False, unread=False,
+                                   starred=False, bookmarked=False):
+
+        # TODO: detect descriptors automatically by examining the __class__.
+
+        lower_class = self.__class__.__name__.lower()
+        myglobs = self.nonrel_globals
+
+        with benchmark('Pre-compute cached descriptors for %s' % self):
+            try:
+                if all:
+                    self.all_articles_count = myglobs[
+                        lower_class + '_all_articles_count_default'](self)
+
+                if unread:
+                    self.unread_articles_count = myglobs[
+                        lower_class + '_unread_articles_count_default'](self)
+
+                if starred:
+                    self.starred_articles_count = myglobs[
+                        lower_class + '_starred_articles_count_default'](self)
+
+                if bookmarked:
+                    self.bookmarked_articles_count = myglobs[
+                        lower_class
+                        + '_bookmarked_articles_count_default'](self)
+
+            except:
+                LOGGER.exception(u'%s could not pre_compute_cached_'
+                                 u'descriptors() properly.', self)
 
 
 class DocumentTreeMixin(object):

@@ -26,7 +26,16 @@ from .feed import Feed
 LOGGER = logging.getLogger(__name__)
 
 
-__all__ = ('subscription_post_create_task', 'Subscription', )
+__all__ = ('subscription_post_create_task', 'subscription_check_reads',
+           'subscription_mark_all_read_in_database',
+           'Subscription',
+
+           # Make these accessible to compute them from `DocumentHelperMixin`.
+           'subscription_all_articles_count_default',
+           'subscription_unread_articles_count_default',
+           'subscription_starred_articles_count_default',
+           'subscription_bookmarked_articles_count_default',
+           )
 
 
 def subscription_all_articles_count_default(subscription):
@@ -105,19 +114,6 @@ class Subscription(Document, DocumentHelperMixin):
         attr_name='s.ba_c',
         default=subscription_bookmarked_articles_count_default,
         set_default=True, min_value=0)
-
-    def pre_compute_cached_descriptors(self):
-
-        # TODO: move this into the DocumentHelperMixin and detect all
-        #       descriptors automatically by examining the __class__.
-
-        self.all_articles_count = subscription_all_articles_count_default(self)
-        self.unread_articles_count = \
-            subscription_unread_articles_count_default(self)
-        self.starred_articles_count = \
-            subscription_starred_articles_count_default(self)
-        self.bookmarked_articles_count = \
-            subscription_bookmarked_articles_count_default(self)
 
     def __unicode__(self):
         return _(u'{0}+{1} (#{2})').format(
@@ -200,8 +196,7 @@ class Subscription(Document, DocumentHelperMixin):
         currently_unread.update(set__is_read=True,
                                 set__date_read=prior_datetime)
 
-        # TODO: optimize this, don't recompute everything everytime.
-        self.pre_compute_cached_descriptors()
+        self.compute_cached_descriptors(unread=True)
 
     def check_reads(self, force=False, articles=None):
         """ Also available as a task for background execution. """
@@ -278,14 +273,14 @@ class Subscription(Document, DocumentHelperMixin):
                 failed += 1
 
         if missing or rechecked:
-            self.all_articles_count = \
-                subscription_all_articles_count_default(self)
-            self.unread_articles_count = \
-                subscription_unread_articles_count_default(self)
+            #
+            # TODO: don't recompute everything, just
+            #    add or subscribe the changed counts.
+            #
+            self.compute_cached_descriptors(all=True, unread=True)
 
             for folder in self.folders:
-                folder.all_articles_count.compute_default()
-                folder.unread_articles_count.compute_default()
+                folder.compute_cached_descriptors(all=True, unread=True)
 
         LOGGER.info(u'Checked subscription #%s. '
                     u'%s/%s non-existing/re-checked, '

@@ -19,7 +19,14 @@ from .user import User
 LOGGER = logging.getLogger(__name__)
 
 
-__all__ = ('Folder', )
+__all__ = ('Folder',
+
+           # Make these accessible to compute them from `DocumentHelperMixin`.
+           'folder_all_articles_count_default',
+           'folder_starred_articles_count_default',
+           'folder_unread_articles_count_default',
+           'folder_bookmarked_articles_count_default',
+           )
 
 
 def folder_all_articles_count_default(folder, *args, **kwargs):
