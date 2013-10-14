@@ -246,7 +246,8 @@ class Feed(Document, DocumentHelperMixin):
             part of the source selector, eg feeds marked as usable by
             the administrators, and not closed. """
 
-        return cls.objects(good_for_use=True, closed__ne=True)
+        return cls.objects(good_for_use=True, closed__ne=True).filter(
+            Q(duplicate_of__exists=False) | Q(duplicate_of=None))
 
     @property
     def latest_article(self):
