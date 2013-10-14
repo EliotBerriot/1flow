@@ -63,6 +63,13 @@ def subscription_mark_all_read_in_database(subscription_id, *args, **kwargs):
     return subscription.mark_all_read_in_database(*args, **kwargs)
 
 
+@task(name='Subscription.check_reads', queue='low')
+def subscription_check_reads(subscription_id, *args, **kwargs):
+
+    subscription = Subscription.objects.get(id=subscription_id)
+    return subscription.check_reads(*args, **kwargs)
+
+
 class Subscription(Document, DocumentHelperMixin):
     feed = ReferenceField('Feed', reverse_delete_rule=CASCADE)
     user = ReferenceField('User', unique_with='feed',
@@ -188,6 +195,7 @@ class Subscription(Document, DocumentHelperMixin):
         self.pre_compute_cached_descriptors()
 
     def check_reads(self, force=False, articles=None):
+        """ Also available as a task for background execution. """
 
         if not force:
             LOGGER.info(u'This method is very costy and should not be needed '
