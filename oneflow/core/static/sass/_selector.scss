@@ -7,7 +7,8 @@
     $folder-level-0-subscription-width: $folder-level-0-children / $selector-columns - $selector-margin;
     $folder-level-1-width: $folder-level-0-children / $selector-columns - $folder-border-width - $selector-margin;
 
-    #selector #application {
+    #selector #application,
+    #add-subscription #application {
 
         @if $application-width < 768 {
             margin: 1em auto;
@@ -511,6 +512,15 @@
     }
 }
 
+.is_closed {
+    .name:not(.css-hover-muted) {
+        text-decoration: line-through;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
 
 #manage-folder.modal,
 #manage-subscription.modal {
@@ -576,5 +586,71 @@
         margin-right: -15px;
         border-top: 1px solid #bbb;
         text-align: center;
+    }
+}
+
+#add-subscription #application .form-wrapper {
+    margin-top: 5em;
+    margin-bottom: 5em;
+    padding: 0 25%;
+
+    h1 {
+        margin-bottom: 2em;
+    }
+
+    #number-of-streams {
+        //border: 1px solid grey;
+    }
+
+    .form-actions {
+        // override Bootstrap's form-horizontal value.
+        padding-left: 20px;
+        margin-top: 40px;
+    }
+
+    .control-label:last-child {
+        padding-top: 10px;
+    }
+
+    .control-group:first-child {
+        margin-bottom: 0;
+    }
+
+    .help-block:last-child {
+        margin-top: 2em;
+    }
+
+    .select2-container {
+        width: 85%;
+    }
+    input[type="text"]:last-child {
+        width: 80%;
+    }
+
+    .or-choice {
+        text-align: center;
+        margin: 1em 40%;
+        width: 20%;
+        position: relative;
+        font-size: 250%;
+
+        &:before,
+        &:after {
+            display: block;
+            content: ' ';
+            position: absolute;
+            top: 50%;
+            width: 200%;
+            height: 1px;
+            border-top: 1px solid #ccc;
+        }
+        &:before {
+            left: -200%;
+        }
+        &:after {
+            //left: 20px;
+            right: -200%;
+
+        }
     }
 }

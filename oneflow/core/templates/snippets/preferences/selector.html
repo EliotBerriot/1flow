@@ -2,7 +2,13 @@
   <legend>{% trans "Unread display" %}</legend>
 
   {% include "widgets/forms/field-checkbox.html" with field=sources_form.titles_show_unread_count %}
+
+{% if preferences.home.show_advanced_preferences %}
+
   {% include "widgets/forms/field-checkbox.html" with field=sources_form.folders_show_unread_count %}
+  {% include "widgets/forms/field-checkbox.html" with field=sources_form.lists_show_unread_count %}
+
+{% endif %}
 </fieldset>
 
 {% if preferences.home.show_advanced_preferences %}

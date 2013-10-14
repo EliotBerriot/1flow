@@ -21,6 +21,7 @@ from ....base.utils import (RedisExpiringLock,
                             HttpResponseLogProcessor)
 
 from ....base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
+from ....base.utils import ro_classproperty
 from ....base.utils.dateutils import (now, timedelta, today, datetime,
                                       is_naive, make_aware, utc)
 
@@ -37,7 +38,14 @@ __all__ = ('feed_update_latest_article_date_published',
            'feed_update_recent_articles_count',
            'feed_update_subscriptions_count',
            'feed_update_all_articles_count',
-           'feed_refresh', 'Feed', )
+           'feed_refresh',
+           'Feed',
+
+           'feed_all_articles_count_default',
+           'feed_good_articles_count_default',
+           'feed_bad_articles_count_default',
+           'feed_recent_articles_count_default',
+           'feed_subscriptions_count_default', )
 
 
 # ————————————— issue https://code.google.com/p/feedparser/issues/detail?id=404
@@ -58,6 +66,16 @@ feedparser.registerDateHandler(dateutilDateHandler)
 def feed_all_articles_count_default(feed, *args, **kwargs):
 
     return feed.articles.count()
+
+
+def feed_good_articles_count_default(feed, *args, **kwargs):
+
+    return feed.good_articles.count()
+
+
+def feed_bad_articles_count_default(feed, *args, **kwargs):
+
+    return feed.bad_articles.count()
 
 
 def feed_recent_articles_count_default(feed, *args, **kwargs):
@@ -204,15 +222,32 @@ class Feed(Document, DocumentHelperMixin):
 
     all_articles_count = IntRedisDescriptor(
         attr_name='f.aa_c', default=feed_all_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
+
+    good_articles_count = IntRedisDescriptor(
+        attr_name='f.ga_c', default=feed_good_articles_count_default,
+        set_default=True, min_value=0)
+
+    bad_articles_count = IntRedisDescriptor(
+        attr_name='f.ba_c', default=feed_bad_articles_count_default,
+        set_default=True, min_value=0)
 
     recent_articles_count = IntRedisDescriptor(
         attr_name='f.ra_c', default=feed_recent_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     subscriptions_count = IntRedisDescriptor(
         attr_name='f.s_c', default=feed_subscriptions_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
+
+    @ro_classproperty
+    def good_feeds(cls):
+        """ Return feeds suitable for use in the “add subscription”
+            part of the source selector, eg feeds marked as usable by
+            the administrators, and not closed. """
+
+        return cls.objects(good_for_use=True, closed__ne=True).filter(
+            Q(duplicate_of__exists=False) | Q(duplicate_of=None))
 
     @property
     def latest_article(self):
@@ -273,8 +308,7 @@ class Feed(Document, DocumentHelperMixin):
 
     @property
     def recent_articles(self):
-        return Article.objects.filter(
-            feeds__contains=self).filter(
+        return self.good_articles.filter(
                 date_published__gt=today()
                 - timedelta(
                     days=config.FEED_ADMIN_MEANINGFUL_DELTA))
@@ -298,29 +332,7 @@ class Feed(Document, DocumentHelperMixin):
 
     def update_subscriptions_count(self):
 
-        self.subscriptions_count = self.subscriptions.count()
-
-    @property
-    def good_articles(self):
-        """ Subscriptions should always use :attr:`good_articles` to give
-            to users only useful content for them, whereas :class:`Feed`
-            will use :attr:`articles` or :attr:`all_articles` to reflect
-            real numbers.
-        """
-
-        return self.articles.filter(
-                                    (
-                                        Q(duplicate_of__exists=False)
-                                        | Q(duplicate_of=None)
-                                    ) & (
-                                        Q(url_absolute=True)
-                                        & Q(orphaned__ne=True)
-                                    )
-                                )
-
-    def update_all_articles_count(self):
-
-        self.all_articles_count = self.articles.count()
+        self.subscriptions_count = feed_subscriptions_count_default(self)
 
     # •••••••••••••••••••••••••••••••••••••••••••• end properties / descriptors
 
@@ -409,15 +421,28 @@ class Feed(Document, DocumentHelperMixin):
 
         return Article.objects(feeds__contains=self)
 
+    @property
+    def good_articles(self):
+        """ Subscriptions should always use :attr:`good_articles` to give
+            to users only useful content for them, whereas :class:`Feed`
+            will use :attr:`articles` or :attr:`all_articles` to reflect
+            real numbers.
+        """
+        return self.articles(orphaned__ne=True, url_absolute=True).filter(
+            Q(duplicate_of__exists=False) | Q(duplicate_of=None))
+
+    @property
+    def bad_articles(self):
+        return self.articles(Q(orphaned=True) | Q(url_absolute=False)
+                             | Q(duplicate_of__ne=None))
+
     def get_articles(self, limit=None):
         """ A parameter-able version of the :attr:`articles` property. """
 
         if limit:
-            return Article.objects.filter(
-                feeds__contains=self).order_by('-date_published').limit(limit)
+            return self.articles.order_by('-date_published').limit(limit)
 
-        return Article.objects.filter(
-            feeds__contains=self).order_by('-date_published')
+        return self.articles.order_by('-date_published')
 
     def validate(self, *args, **kwargs):
         try:

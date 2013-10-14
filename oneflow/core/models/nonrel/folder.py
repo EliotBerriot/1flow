@@ -19,7 +19,14 @@ from .user import User
 LOGGER = logging.getLogger(__name__)
 
 
-__all__ = ('Folder', )
+__all__ = ('Folder',
+
+           # Make these accessible to compute them from `DocumentHelperMixin`.
+           'folder_all_articles_count_default',
+           'folder_starred_articles_count_default',
+           'folder_unread_articles_count_default',
+           'folder_bookmarked_articles_count_default',
+           )
 
 
 def folder_all_articles_count_default(folder, *args, **kwargs):
@@ -104,6 +111,29 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
 
             if e.errors:
                 raise e
+
+    @classmethod
+    def add_folder_from_tag(cls, tag, owner, parent=None):
+
+        if len(tag.parents) == 1:
+            parent_folder = cls.add_folder_from_tag(tag.parents[0], owner)
+
+        elif len(tag.parents) > 1:
+            best_parent = tag.parents[0]
+
+            # TODO: get the best tag from the LANG or whatever.
+            #
+            # for parent_tag in tag.parents:
+            #    …
+
+            parent_folder = cls.add_folder_from_tag(best_parent, owner)
+
+        else:
+            parent_folder = None
+
+        folder = cls.add_folder(tag.name, owner, parent_folder)
+
+        return folder
 
     @classmethod
     def add_folder(cls, name, user, parent=None, children=None):

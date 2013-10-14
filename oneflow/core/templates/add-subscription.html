@@ -1,0 +1,12 @@
+{% extends 'home.html' %}
+{% block title %}{% trans "Add a subscription" %}{% endblock title %}
+{% block body_id %}add-subscription{% endblock body_id %}
+
+{% block application_content %}
+    {% include 'snippets/selector/add-subscription.html' %}
+{% endblock application_content %}
+
+{% block extrajs_footer %}
+    {{ block.super }}
+    {% compressed_js 'feed-selector' %}
+{% endblock extrajs_footer %}

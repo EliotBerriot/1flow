@@ -13,7 +13,7 @@ from django_select2.widgets import Select2Widget, Select2MultipleWidget
 
 from .models import (HomePreferences, ReadPreferences,
                      SelectorPreferences, StaffPreferences,
-                     Folder, Subscription)
+                     Folder, Subscription, Feed)
 
 LOGGER = logging.getLogger(__name__)
 User = get_user_model()
@@ -373,3 +373,77 @@ class ManageSubscriptionForm(DocumentForm):
             subscription.save()
 
         return subscription
+
+
+class AddSubscriptionForm(forms.Form):
+
+    feeds = OnlyNameMultipleChoiceField(queryset=Feed.objects.none(),
+                                        required=False,
+                                        label=_(u'Search 1flow\'s streams'),
+                                        widget=Select2MultipleWidget())
+
+    search_for = forms.CharField(
+        label=_(u'Enter an URL'), required=False,
+        help_text=_(u'Type a website url (eg. <code>theguardian.com</code>) '
+                    u'and 1flow will search for any information stream on it.'
+                    u' If more than one is found, 1flow will create a new '
+                    u'folder in you selector, for you to be able to choose '
+                    u'which stream you would like to keep or not.<br />'
+                    u'<span class="muted">NOTE: this process can take quite '
+                    u'a long time. You will be notified when search is done.'))
+
+    def __init__(self, *args, **kwargs):
+
+        self.owner = kwargs.pop('owner')
+
+        super(AddSubscriptionForm, self).__init__(*args, **kwargs)
+
+        # not_shown = [s.feed.id for s in self.owner.subscriptions]
+        # LOGGER.warning(len(not_shown))
+
+        self.fields['feeds'].queryset = Feed.good_feeds(
+            id__nin=[s.feed.id for s in self.owner.subscriptions])
+
+    def is_valid(self):
+
+        res = super(AddSubscriptionForm, self).is_valid()
+
+        if not res:
+            return False
+
+        if not self.cleaned_data['feeds'] \
+                and not self.cleaned_data['search_for']:
+            self._errors['nothing_choosen'] = \
+                _(u'You have to fill at least one of the two fields.')
+            return False
+
+        return True
+
+    def save(self, commit=True):
+
+        created_subscriptions = []
+
+        selector_prefs = self.owner.preferences.selector
+
+        for feed in self.cleaned_data['feeds']:
+
+            folders = []
+
+            for tag in feed.tags:
+                folders.append(Folder.add_folder_from_tag(tag, self.owner))
+
+                if not selector_prefs.subscriptions_in_multiple_folders:
+                    # One is enough.
+                    break
+
+            subscription = Subscription.subscribe_user_to_feed(self.owner, feed,
+                                                               background=True)
+
+            subscription.folders = folders
+
+            if commit:
+                subscription.save()
+
+            created_subscriptions.append(subscription)
+
+        return created_subscriptions

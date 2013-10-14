@@ -45,6 +45,8 @@ from django.conf import settings
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
+from ....base.utils.dateutils import benchmark
+
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
 
 
@@ -241,6 +243,37 @@ class DocumentHelperMixin(object):
 
         except:
             pass
+
+    def compute_cached_descriptors(self, **kwargs):
+
+        # TODO: detect descriptors automatically by examining the __class__.
+
+        lower_class = self.__class__.__name__.lower()
+        myglobs = self.nonrel_globals
+
+        with benchmark('Pre-compute cached descriptors for %s' % self):
+            for what_name in ('all', 'good', 'bad', 'unread',
+                              'starred', 'bookmarked'):
+
+                if kwargs.get(what_name, False):
+                    func_name = (lower_class + '_'
+                                 + what_name + '_articles_count_default')
+                    attr_name = what_name + '_articles_count'
+
+                    if func_name in myglobs:
+                        try:
+                            setattr(self, attr_name, myglobs[func_name](self))
+
+                        except:
+                            LOGGER.exception(u'%s #%s could not compute %s '
+                                             u'properly.', lower_class,
+                                             self.id, attr_name)
+                    else:
+                        LOGGER.exception(u'%s #%s was asked to compute %s, '
+                                         u'but the compute function "%s()" '
+                                         u'does not exist in the `nonrel` '
+                                         u'namespace.', lower_class, self.id,
+                                         attr_name, func_name)
 
 
 class DocumentTreeMixin(object):

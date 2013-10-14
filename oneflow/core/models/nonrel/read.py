@@ -23,14 +23,14 @@ from .common import DocumentHelperMixin
 from .folder import Folder
 from .subscription import Subscription
 from .article import Article
+from .user import User
 from .tag import Tag
 
 LOGGER                = logging.getLogger(__name__)
 feedparser.USER_AGENT = settings.DEFAULT_USER_AGENT
 
 
-__all__ = ('read_post_create_task', 'Read',
-           'user_has_content_default')
+__all__ = ('read_post_create_task', 'Read', )
 
 
 READ_BOOKMARK_TYPE_CHOICES = (
@@ -295,7 +295,7 @@ class Read(Document, DocumentHelperMixin):
         'is_knowhow': {
             'list_name':    _(u'best-practices'),
             # WARNING: there  is a '_' in the view name, and a '-' in the URL.
-            'view_name':     u'best_practices',
+            'view_name':     u'know_how',
             'list_url':      _(ur'^read/best-practices/$'),
             'list_url_feed': _(ur'^read/best-practices/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as best-practices / state of art '
@@ -491,26 +491,15 @@ class Read(Document, DocumentHelperMixin):
                     folder.bookmarked_articles_count -= 1
 
 
-# ————————————————————————————————————————————— external attributes and helpers
-#                                            Defined here to avoid import loops
-
-
-def user_has_content_default(user, *args, **kwargs):
-    """ Deferred redis descriptor callable.
-
-        Used in :mod:`~oneflow.core.models.nonrel.user`.
-    """
-
-    return Read.objects(user=user).count()
-
-
 # ————————————————————————————————————————————————————————— external properties
 #                                            Defined here to avoid import loops
 
 
 def Folder_reads_property_get(self):
 
-    return Read.objects(subscriptions__contains=self.subscriptions)
+    # self.subscriptions is a QuerySet, we need
+    # to convert it to a list for the new QuerySet.
+    return Read.objects(subscriptions__in=[s for s in self.subscriptions])
 
 
 def Subscription_reads_property_get(self):
@@ -523,9 +512,15 @@ def Article_reads_property_get(self):
     return Read.objects.filter(article=self)
 
 
+def User_reads_property_get(self):
+
+    return Read.objects.filter(user=self)
+
+
 Folder.reads       = property(Folder_reads_property_get)
 Subscription.reads = property(Subscription_reads_property_get)
 Article.reads      = property(Article_reads_property_get)
+User.reads         = property(User_reads_property_get)
 
 
 # —————————————————————————————————————————————————————— external bound methods

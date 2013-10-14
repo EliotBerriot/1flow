@@ -731,7 +731,60 @@ def global_feeds_checker():
                 naturaldelta(pytime.time() - start_time))
 
 
+@task(queue='low')
+def global_subscriptions_checker(force=False):
+    """ A conditionned version of :meth:`Feed.check_subscriptions`. """
+
+    if config.CHECK_SUBSCRIPTIONS_DISABLED:
+        LOGGER.warning(u'Subscriptions checks disabled in configuration.')
+        return
+
+    my_lock = RedisExpiringLock('check_all_subscriptions', expire_time=3600)
+
+    if not my_lock.acquire():
+        if force:
+            my_lock.release()
+            my_lock.acquire()
+            LOGGER.warning(u'Forcing subscriptions checks…')
+
+        else:
+            # Avoid running this task over and over again in the queue
+            # if the previous instance did not yet terminate. Happens
+            # when scheduled task runs too quickly.
+            LOGGER.warning(u'global_subscriptions_checker() is already '
+                           u'locked, aborting.')
+            return
+
+    with benchmark("Check all subscriptions"):
+        for feed in Feed.good_feeds:
+            feed.compute_cached_descriptors(all=True, good=True, bad=True)
+
+            for subscription in feed.subscriptions:
+
+                if subscription.all_articles_count != feed.all_articles_count:
+
+                    LOGGER.info(u'Subscription %s has only %s reads whereas '
+                                u'its feed has %s; checking it…', subscription,
+                                subscription.all_articles_count,
+                                feed.all_articles_count)
+
+                    subscription.check_reads(force=True)
+
+                # Release and get back the lock to refresh the timer and
+                # avoid it to automatically release the lock while we are
+                # running.
+                my_lock.release()
+                if not my_lock.acquire():
+                    LOGGER.error(u'Could not re-acquire '
+                                 u'global_subscriptions_checker() lock, '
+                                 u'aborting!')
+                    return
+
+    my_lock.release()
+
+
 # ••••••••••••••••••••••••••••••••••••••••••••••••••• Move things to Archive DB
+
 
 def archive_article_one_internal(article, counts):
     """ internal function. Do not use directly

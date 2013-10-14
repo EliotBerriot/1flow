@@ -91,15 +91,70 @@ def read_status_css(read):
 
     return u' '.join(css)
 
+reading_lists = {
+
+    'read_all':         (_('All articles'),
+                         _(u'You have {0} articles in 1flow'),
+                         'all_articles_count'),
+    'read':             (_("All unread"),
+                         _(u'You have {0} unread articles'),
+                         'unread_articles_count'),
+    'read_later':       (_("Read later"),
+                         _(u'You have {0} articles to read later'),
+                         'bookmarked_articles_count'),
+    'read_starred':     (_('Starred'),
+                         _(u'You have {0} starred articles'),
+                         'starred_articles_count'),
+
+    'read_fun':         (_('Funbox'),
+                         _(u'You have {0} fun articles'),
+                         'fun_articles_count'),
+
+    'read_facts':       (_(u'Facts'),
+                         _(u'You have {0} articles marked as fact(s)'),
+                         'fact_articles_count'),
+    'read_numbers':     (_(u'Numbers'),
+                         _(u'You have {0} articles marked as number(s)'),
+                         'number_articles_count'),
+    'read_analysis':    (_(u'Analysis'),
+                         _(u'You have {0} articles marked as analysis'),
+                         'analysis_articles_count'),
+    'read_prospective': (_(u'Prospective'),
+                         _(u'You have {0} articles marked as prospective'),
+                         'prospective_articles_count'),
+    'read_know_how':    (_(u'Best-practices'),
+                         _(u'You have {0} articles marked as best-practices'),
+                         'knowhow_articles_count'),
+    'read_rules':       (_(u'Regulations'),
+                         _(u'You have {0} articles marked as regulation/legal'),
+                         'rules_articles_count'),
+    'read_quotes':      (_(u'Quotes'),
+                         _(u'You have {0} articles marked as quote(s)'),
+                         'quote_articles_count'),
+    'read_knowledge':   (_(u'Knowledge'),
+                         _(u'You have {0} articles marked as knowledge'),
+                         'knowledge_articles_count'),
+}
+
 
 @register.simple_tag
-def reading_list_with_count(view_name, translation, css_classes=None):
+def reading_list_with_count(user, view_name, css_classes=None):
+
+    list_name, tooltip, count_attr_name = reading_lists[view_name]
+
+    if user.preferences.selector.lists_show_unread_count:
+        count_span = u' <span class="count muted">({0})</span>'
+    else:
+        count_span = u''
+
+    count = getattr(user, count_attr_name)
 
     return mark_safe((
-        u'<a href="{0}" class="{1}">{2}'
-        u'<span data-async-get="count"></span></a>'
+        u'<a href="{0}" class="{1}" title="{2}" '
+        u'data-toggle="tooltip">{3}{4}</a>'
     ).format(
-        reverse(view_name), css_classes or u'nowrap', translation))
+        reverse(view_name), css_classes or u'nowrap',
+        tooltip.format(count), list_name, count_span.format(count)))
 
 
 @register.simple_tag

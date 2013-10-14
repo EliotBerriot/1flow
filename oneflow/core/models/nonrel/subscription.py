@@ -26,7 +26,16 @@ from .feed import Feed
 LOGGER = logging.getLogger(__name__)
 
 
-__all__ = ('subscription_post_create_task', 'Subscription', )
+__all__ = ('subscription_post_create_task', 'subscription_check_reads',
+           'subscription_mark_all_read_in_database',
+           'Subscription',
+
+           # Make these accessible to compute them from `DocumentHelperMixin`.
+           'subscription_all_articles_count_default',
+           'subscription_unread_articles_count_default',
+           'subscription_starred_articles_count_default',
+           'subscription_bookmarked_articles_count_default',
+           )
 
 
 def subscription_all_articles_count_default(subscription):
@@ -61,6 +70,13 @@ def subscription_mark_all_read_in_database(subscription_id, *args, **kwargs):
 
     subscription = Subscription.objects.get(id=subscription_id)
     return subscription.mark_all_read_in_database(*args, **kwargs)
+
+
+@task(name='Subscription.check_reads', queue='low')
+def subscription_check_reads(subscription_id, *args, **kwargs):
+
+    subscription = Subscription.objects.get(id=subscription_id)
+    return subscription.check_reads(*args, **kwargs)
 
 
 class Subscription(Document, DocumentHelperMixin):
@@ -99,19 +115,6 @@ class Subscription(Document, DocumentHelperMixin):
         default=subscription_bookmarked_articles_count_default,
         set_default=True, min_value=0)
 
-    def pre_compute_cached_descriptors(self):
-
-        # TODO: move this into the DocumentHelperMixin and detect all
-        #       descriptors automatically by examining the __class__.
-
-        self.all_articles_count = subscription_all_articles_count_default(self)
-        self.unread_articles_count = \
-            subscription_unread_articles_count_default(self)
-        self.starred_articles_count = \
-            subscription_starred_articles_count_default(self)
-        self.bookmarked_articles_count = \
-            subscription_bookmarked_articles_count_default(self)
-
     def __unicode__(self):
         return _(u'{0}+{1} (#{2})').format(
             self.user.username, self.feed.name, self.id)
@@ -129,16 +132,15 @@ class Subscription(Document, DocumentHelperMixin):
     def post_create_task(self):
         """ Method meant to be run from a celery task. """
 
-        self.name = self.feed.name
-
-        self.save()
+        # The content of this method is done in subscribe_user_to_feed()
+        # to avoid more-than-needed write operations on the database.
+        pass
 
     @classmethod
-    def subscribe_user_to_feed(cls, user, feed, force=False):
+    def subscribe_user_to_feed(cls, user, feed, force=False, background=False):
 
         try:
-            subscription = cls(user=user, feed=feed,
-                               name=feed.name, tags=feed.tags).save()
+            subscription = cls(user=user, feed=feed).save()
 
         except (NotUniqueError, DuplicateKeyError):
             if not force:
@@ -147,7 +149,15 @@ class Subscription(Document, DocumentHelperMixin):
                 return cls.objects.get(user=user, feed=feed,
                                        name=feed.name, tags=feed.tags)
 
-        subscription.check_reads(True)
+        else:
+            subscription.name = feed.name
+            subscription.tags = feed.tags[:]
+            subscription.save()
+
+        if background:
+            subscription_check_reads.delay(subscription.id, True)
+        else:
+            subscription.check_reads(True)
 
         LOGGER.info(u'Subscribed %s to %s via %s.', user, feed, subscription)
 
@@ -176,6 +186,8 @@ class Subscription(Document, DocumentHelperMixin):
             between the task call and the moment it is effectively run,
             we define what to exactly mark as read with the datetime when
             the operation was done by the user.
+
+            Also available as a task for background execution.
         """
 
         currently_unread = self.reads.filter(is_read__ne=True,
@@ -184,10 +196,10 @@ class Subscription(Document, DocumentHelperMixin):
         currently_unread.update(set__is_read=True,
                                 set__date_read=prior_datetime)
 
-        # TODO: optimize this, don't recompute everything everytime.
-        self.pre_compute_cached_descriptors()
+        self.compute_cached_descriptors(unread=True)
 
     def check_reads(self, force=False, articles=None):
+        """ Also available as a task for background execution. """
 
         if not force:
             LOGGER.info(u'This method is very costy and should not be needed '
@@ -261,14 +273,14 @@ class Subscription(Document, DocumentHelperMixin):
                 failed += 1
 
         if missing or rechecked:
-            self.all_articles_count = \
-                subscription_all_articles_count_default(self)
-            self.unread_articles_count = \
-                subscription_unread_articles_count_default(self)
+            #
+            # TODO: don't recompute everything, just
+            #    add or subscribe the changed counts.
+            #
+            self.compute_cached_descriptors(all=True, unread=True)
 
             for folder in self.folders:
-                folder.all_articles_count.compute_default()
-                folder.unread_articles_count.compute_default()
+                folder.compute_cached_descriptors(all=True, unread=True)
 
         LOGGER.info(u'Checked subscription #%s. '
                     u'%s/%s non-existing/re-checked, '
