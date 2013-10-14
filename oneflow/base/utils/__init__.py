@@ -268,6 +268,16 @@ def eventually_deferred(thing):
 
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••• utils/helper classes
 
+class ro_classproperty(object):
+    """ http://stackoverflow.com/q/5189699/654755 is my friend, and
+        more particularly http://stackoverflow.com/a/5192374/654755 which
+        fits perfectly for R/O part. """
+
+    def __init__(self, f):
+        self.f = f
+
+    def __get__(self, obj, owner):
+        return self.f(owner)
 
 class JsContextSerializer(ContextSerializer):
     """ This class should probably move into sparks some day. """
