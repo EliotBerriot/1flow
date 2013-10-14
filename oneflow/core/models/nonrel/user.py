@@ -26,7 +26,24 @@ LOGGER     = logging.getLogger(__name__)
 DjangoUser = get_user_model()
 
 
-__all__ = ('user_post_create_task', 'User', 'Group', )
+__all__ = (
+    'user_post_create_task',
+    'User', 'Group',
+    'user_all_articles_count_default',
+    'user_unread_articles_count_default',
+    'user_starred_articles_count_default',
+    'user_bookmarked_articles_count_default',
+
+    'user_fun_articles_count_default',
+    'user_fact_articles_count_default',
+    'user_number_articles_count_default',
+    'user_analysis_articles_count_default',
+    'user_quote_articles_count_default',
+    'user_knowhow_articles_count_default',
+    'user_rules_articles_count_default',
+    'user_prospective_articles_count_default',
+    'user_knowledge_articles_count_default',
+)
 
 
 def user_django_user_random_default():
@@ -52,6 +69,71 @@ def user_django_user_random_default():
                                u' generate a not-taken random ID)…')
 
 
+def user_all_articles_count_default(user):
+
+    return user.reads.count()
+
+
+def user_unread_articles_count_default(user):
+
+    return user.reads.filter(is_read__ne=True).count()
+
+
+def user_starred_articles_count_default(user):
+
+    return user.reads.filter(is_starred=True).count()
+
+
+def user_bookmarked_articles_count_default(user):
+
+    return user.reads.filter(is_bookmarked=True).count()
+
+
+def user_fact_articles_count_default(user):
+
+    return user.reads.filter(is_fact=True).count()
+
+
+def user_number_articles_count_default(user):
+
+    return user.reads.filter(is_number=True).count()
+
+
+def user_analysis_articles_count_default(user):
+
+    return user.reads.filter(is_analysis=True).count()
+
+
+def user_quote_articles_count_default(user):
+
+    return user.reads.filter(is_quote=True).count()
+
+
+def user_prospective_articles_count_default(user):
+
+    return user.reads.filter(is_prospective=True).count()
+
+
+def user_knowhow_articles_count_default(user):
+
+    return user.reads.filter(is_knowhow=True).count()
+
+
+def user_knowledge_articles_count_default(user):
+
+    return user.reads.filter(is_knowledge=True).count()
+
+
+def user_rules_articles_count_default(user):
+
+    return user.reads.filter(is_rules=True).count()
+
+
+def user_fun_articles_count_default(user):
+
+    return user.reads.filter(is_fun=True).count()
+
+
 @task(name='User.post_create', queue='high')
 def user_post_create_task(user_id, *args, **kwargs):
 
@@ -68,9 +150,73 @@ class User(Document, DocumentHelperMixin):
     preferences_data = ReferenceField(Preferences,
                                       reverse_delete_rule=NULLIFY)
 
-    has_content = IntRedisDescriptor(
-        attr_name='u.h_c', set_default=True,
-        default='oneflow.core.models.nonrel.read.user_has_content_default')
+    all_articles_count = IntRedisDescriptor(
+        attr_name='u.aa_c', default=user_all_articles_count_default,
+        set_default=True, min_value=0)
+
+    unread_articles_count = IntRedisDescriptor(
+        attr_name='u.ua_c', default=user_unread_articles_count_default,
+        set_default=True, min_value=0)
+
+    starred_articles_count = IntRedisDescriptor(
+        attr_name='u.sa_c', default=user_starred_articles_count_default,
+        set_default=True, min_value=0)
+
+    bookmarked_articles_count = IntRedisDescriptor(
+        attr_name='u.ba_c',
+        default=user_bookmarked_articles_count_default,
+        set_default=True, min_value=0)
+
+    # ———————————————————————————————————————————————————————— Watch attributes
+
+    fact_articles_count = IntRedisDescriptor(
+        attr_name='u.fa_c',
+        default=user_fact_articles_count_default,
+        set_default=True, min_value=0)
+
+    number_articles_count = IntRedisDescriptor(
+        attr_name='u.na_c',
+        default=user_number_articles_count_default,
+        set_default=True, min_value=0)
+
+    analysis_articles_count = IntRedisDescriptor(
+        attr_name='u.ya_c',
+        default=user_analysis_articles_count_default,
+        set_default=True, min_value=0)
+
+    quote_articles_count = IntRedisDescriptor(
+        attr_name='u.qa_c',
+        default=user_quote_articles_count_default,
+        set_default=True, min_value=0)
+
+    prospective_articles_count = IntRedisDescriptor(
+        attr_name='u.pa_c',
+        default=user_prospective_articles_count_default,
+        set_default=True, min_value=0)
+
+    rules_articles_count = IntRedisDescriptor(
+        attr_name='u.ra_c',
+        default=user_rules_articles_count_default,
+        set_default=True, min_value=0)
+
+    knowhow_articles_count = IntRedisDescriptor(
+        attr_name='u.ka_c',
+        default=user_knowhow_articles_count_default,
+        set_default=True, min_value=0)
+
+    knowledge_articles_count = IntRedisDescriptor(
+        attr_name='u.oa_c',
+        default=user_knowledge_articles_count_default,
+        set_default=True, min_value=0)
+
+    fun_articles_count = IntRedisDescriptor(
+        attr_name='u.la_c',
+        default=user_fun_articles_count_default,
+        set_default=True, min_value=0)
+
+    @property
+    def has_content(self):
+        return self.all_articles_count > 0
 
     @property
     def preferences(self):
