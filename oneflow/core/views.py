@@ -139,10 +139,11 @@ def manage_folder(request, **kwargs):
 
     folder_id = kwargs.pop('folder', None)
     folder    = Folder.get_or_404(folder_id) if folder_id else None
+    edit_mode = folder is not None
     user      = request.user.mongo
 
     if request.POST:
-        if folder:
+        if edit_mode:
             form = ManageFolderForm(request.POST, instance=folder,
                                     owner=user)
 
@@ -163,12 +164,17 @@ def manage_folder(request, **kwargs):
 
                 messages.add_message(request, messages.INFO,
                                      _(u'Folder “{0}” successfully '
-                                       u'created.').format(folder.name))
+                                       u'{1}.').format(folder.name,
+                                                       _(u'modified')
+                                                       if edit_mode
+                                                       else _(u'created')))
 
         else:
             messages.add_message(request, messages.WARNING,
-                                 _(u'Could not create folder: {0}.').format(
-                                     form.errors))
+                                 _(u'Could not {1} folder: {0}.').format(
+                                     form.errors, _(u'modify') if edit_mode
+                                     else _(u'create')))
+
             LOGGER.error(form.errors)
 
         return HttpResponseRedirect(reverse('source_selector')
@@ -213,11 +219,11 @@ def edit_subscription(request, **kwargs):
 
             messages.add_message(request, messages.INFO,
                                  _(u'Subscription “{0}” successfully '
-                                   u'created.').format(subscription.name))
+                                   u'modified.').format(subscription.name))
 
         else:
             messages.add_message(request, messages.WARNING,
-                                 _(u'Could not create '
+                                 _(u'Could not save '
                                    u'subscription: {0}.').format(
                                      form.errors))
             LOGGER.error(form.errors)
