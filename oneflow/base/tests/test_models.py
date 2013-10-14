@@ -1,13 +1,15 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=E1103,C0103
 
+import uuid
 import redis
 import logging
 
 from django.conf import settings
 from django.test import TestCase  # TransactionTestCase
 
-from oneflow.base.utils import RedisSemaphore
+from ..utils import RedisSemaphore
+from ..fields import RedisCachedDescriptor, IntRedisDescriptor
 
 LOGGER = logging.getLogger(__file__)
 
@@ -17,6 +19,7 @@ TEST_REDIS = redis.StrictRedis(host=settings.REDIS_TEST_HOST,
 
 # Use the test database not to pollute the production/development one.
 RedisSemaphore.REDIS = TEST_REDIS
+RedisCachedDescriptor.REDIS = TEST_REDIS
 
 TEST_REDIS.flushdb()
 
@@ -139,3 +142,71 @@ class RedisSemaphoreTests(TestCase):
         self.assertEquals(res, False)
 
         self.assertEquals(self.sem1.holders(), 0)
+
+
+class IntRedisCachedDescriptorTest(TestCase):
+
+    def setUp(self):
+
+        # Warning: not inheriting from `object`
+        # in Python 2.7 makes the whole thing fail.
+        class IRCDT(object):
+            i1   = IntRedisDescriptor('test_redis_descr_1')
+            imin = IntRedisDescriptor('test_redis_descr_min', min_value=0)
+            imax = IntRedisDescriptor('test_redis_descr_max', max_value=100)
+
+            def __init__(self, myid=None):
+                self.id = myid
+
+        self.IRCDT = IRCDT
+
+    def int_redis_descriptor_test(self):
+
+        tird = self.IRCDT()
+
+        tird.i1 = 5
+        self.assertEquals(tird.i1, 5)
+
+        tird.i1 -= 15
+        self.assertEquals(tird.i1, -10)
+
+        tird.i1 += 22
+        self.assertEquals(tird.i1, 12)
+
+        del tird
+
+    def test_min_value(self):
+
+        tmin = self.IRCDT(uuid.uuid4().hex)
+
+        tmin.imin = 5
+        self.assertEquals(tmin.imin, 5)
+
+        tmin.imin -= 1
+        self.assertEquals(tmin.imin, 4)
+
+        tmin.imin -= 5
+        self.assertEquals(tmin.imin, 0)
+
+        tmin.imin -= 5
+        self.assertEquals(tmin.imin, 0)
+
+        tmin.imin += 10
+        self.assertEquals(tmin.imin, 10)
+
+        del tmin
+
+    def test_max_value(self):
+
+        tmax = self.IRCDT(uuid.uuid4().hex)
+        tmax.imax = 5
+
+        self.assertEquals(tmax.imax, 5)
+
+        tmax.imax += 150
+
+        self.assertEquals(tmax.imax, 100)
+
+        tmax.imax -= 200
+
+        self.assertEquals(tmax.imax, -100)
