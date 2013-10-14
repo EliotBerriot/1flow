@@ -84,20 +84,20 @@ class Subscription(Document, DocumentHelperMixin):
 
     all_articles_count = IntRedisDescriptor(
         attr_name='s.aa_c', default=subscription_all_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     unread_articles_count = IntRedisDescriptor(
         attr_name='s.ua_c', default=subscription_unread_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     starred_articles_count = IntRedisDescriptor(
         attr_name='s.sa_c', default=subscription_starred_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     bookmarked_articles_count = IntRedisDescriptor(
         attr_name='s.ba_c',
         default=subscription_bookmarked_articles_count_default,
-        set_default=True)
+        set_default=True, min_value=0)
 
     def pre_compute_cached_descriptors(self):
 
