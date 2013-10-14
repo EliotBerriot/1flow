@@ -23,7 +23,7 @@ from django.shortcuts import render
 from django.template import add_to_builtins
 #from django.views.generic import ListView
 from django.contrib.auth import authenticate, login, get_user_model
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext as __
 
 #from infinite_pagination.paginator import InfinitePaginator
 from endless_pagination.utils import get_page_number_from_request
@@ -251,7 +251,7 @@ def add_subscription(request, **kwargs):
             form.save()
 
         return HttpResponseRedirect(reverse('source_selector')
-                                    + _(u'#unclassified-streams'))
+                                    + __(u'#unclassified-streams'))
 
     else:
         form = AddSubscriptionForm(owner=request.user.mongo)
