@@ -37,7 +37,8 @@ from .forms import (FullUserCreationForm,
                     SelectorPreferencesForm,
                     StaffPreferencesForm,
                     ManageFolderForm,
-                    ManageSubscriptionForm)
+                    ManageSubscriptionForm,
+                    AddSubscriptionForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Subscription, Read, Folder, TreeCycleException
 from .models.reldb import HelpContent
@@ -239,6 +240,24 @@ def edit_subscription(request, **kwargs):
 
     return render(request, 'snippets/selector/manage-subscription.html',
                   {'form': form, 'subscription': subscription})
+
+
+def add_subscription(request, **kwargs):
+
+    if request.POST:
+        form = AddSubscriptionForm(request.POST, owner=request.user.mongo)
+
+        if form.is_valid():
+            form.save()
+
+        return HttpResponseRedirect(reverse('source_selector')
+                                    + _(u'#unclassified-streams'))
+
+    else:
+        form = AddSubscriptionForm(owner=request.user.mongo)
+
+    return render(request, 'add-subscription.html', {'form': form,
+                  'available_feeds': form.fields['feeds'].queryset.count()})
 
 
 # ———————————————————————————————————————————————————————————————————————— Read
