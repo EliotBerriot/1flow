@@ -9,7 +9,7 @@ from ....base.utils import connect_mongoengine_signals
 from .common import * # NOQA
 from .preferences  import * # NOQA
 
-# user has to come before folder, subscription
+# user has to come before folder, subscription, read
 from .user import * # NOQA
 
 # folder has to come before read, subscription
@@ -30,7 +30,7 @@ from .feed import * # NOQA
 # subscription needs folder, user, feed
 from .subscription import * # NOQA
 
-# read needs article, folder, subscription
+# read needs article, folder, subscription, user
 from .read import * # NOQA
 
 # We need to explicitely clutter the class globals for it
