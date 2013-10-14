@@ -102,6 +102,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(hour='1', minute='1'),
     },
 
+    'global-subscriptions-checker': {
+        'task': 'oneflow.core.tasks.global_subscriptions_checker',
+        'schedule': crontab(hour='1', minute='11'),
+    },
+
     # De-activated as it's much to slow since Tags are ReferenceField()
     # instead of GenericReferenceField() in articles.
     #

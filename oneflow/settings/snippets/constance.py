@@ -148,6 +148,15 @@ CONSTANCE_CONFIG = {
                                    u'expressed in days. Set to 0 to archive '
                                    u'everything without mercy.')),
 
+    # ••••••••••••••••••••••••••••••••••••••••••• Various checks and core tasks
+
+    'CHECK_SUBSCRIPTIONS_DISABLED': (False, ugettext(u'Disable or not the '
+                                     u'night subscription check that will '
+                                     u'check_reads() all subscriptions that '
+                                     u'do not have the same number of '
+                                     u'articles than the feed they belong '
+                                     u'to.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
 
     # GR_LOAD_LIMIT * GR_WAVE_LIMIT must equals GR_MAX_ARTICLES:
