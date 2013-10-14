@@ -244,17 +244,13 @@ def edit_subscription(request, **kwargs):
 # ———————————————————————————————————————————————————————————————————————— Read
 
 
-def read_with_endless_pagination(request, **kwargs):
+def _rwep_generate_query_kwargs(request, **kwargs):
+    """ This is not a view, but an helper
+        for read_with_endless_pagination(). """
 
     query_kwargs = {}
-    combinations = ()
+    combinations = set()
     attributes   = Read.status_data.keys()
-
-    def check_order_by(value):
-        if value in (u'id', ):
-            return
-
-        raise RuntimeError()
 
     # First, get the view mode we were called from.
     if kwargs.get('all', False):
@@ -264,8 +260,6 @@ def read_with_endless_pagination(request, **kwargs):
         pass
 
     else:
-        combinations = set()
-
         for attrname in attributes:
             mykwarg = kwargs.get(attrname, None)
 
@@ -310,6 +304,17 @@ def read_with_endless_pagination(request, **kwargs):
         else:
             query_kwargs[parameter] = checked_value
 
+    return query_kwargs
+
+
+def _rwep_generate_order_by(request, **kwargs):
+
+    def check_order_by(value):
+        if value in (u'id', u'title', ):
+            return
+
+        raise RuntimeError
+
     if request.user.is_superuser or request.user.is_staff:
         order_by = unicode(request.GET.get('order_by', u'-id'))
     else:
@@ -325,26 +330,39 @@ def read_with_endless_pagination(request, **kwargs):
                          order_by)
         order_by = u'-id'
 
-    # ——————————————————————————————————————————————————————— start filter more
+    return order_by
+
+
+def read_with_endless_pagination(request, **kwargs):
+
+    query_kwargs = _rwep_generate_query_kwargs(request, **kwargs)
+    order_by     = _rwep_generate_order_by(request, **kwargs)
+
+    # ——————————————————————————————————————————————————— filter feed or folder
 
     feed = kwargs.get('feed', None)
 
     if feed:
-        #LOGGER.info(u'Refining reads by %s', feed)
-        query_kwargs[u'subscriptions__contains'] = \
-            Subscription.objects.get(id=feed)
+        feed = Subscription.objects.get(id=feed)
 
-    # ————————————————————————————————————————————————————————— end filter more
+        LOGGER.info(u'Refining reads by feed %s', feed)
+        query_kwargs[u'subscriptions__contains'] = feed
+
+    folder = kwargs.get('folder', None)
+
+    if folder:
+        folder = Folder.objects.get(id=folder)
+
+        LOGGER.info(u'Refining reads by folder %s', folder)
+        query_kwargs[u'subscriptions__in'] = \
+            Subscription.objects(folders=folder)
+
+    # ——————————————————————————————————————————————————————————————— the query
 
     #LOGGER.info(u'query_kwargs: %s', query_kwargs)
 
     reads = Read.objects(user=request.user.mongo,
                          **query_kwargs).order_by(order_by).no_cache()
-
-    #LOGGER.info(u'%s\n%s > %s, %s, %s', reads[0], reads[0].article,
-    #            reads[0].article.url_absolute,
-    #            reads[0].article.duplicate_of,
-    #            reads[0].article.orphaned)
 
     context = {
         u'reads': reads,
@@ -356,20 +374,53 @@ def read_with_endless_pagination(request, **kwargs):
 
     #preferences = request.user.mongo.preferences
 
+    # ——————————————————————————————————————————————————————————— Ajax requests
+
     if request.is_ajax():
 
         if request.GET.get('count', False):
             template = u'snippets/read/read-endless-count.html'
             context[u'reads_count'] = reads.count()
 
+            #
+            # TODO: compare / update the cached counters
+            #
+
+            attr_name = None
+
+            if kwargs.get('all', False):
+                attr_name = 'all_articles_count'
+
+            elif query_kwargs.get('is_starred', False):
+                attr_name = 'starred_articles_count'
+
+            elif query_kwargs.get('is_bookmarked', False):
+                attr_name = 'bookmarked_articles_count'
+
+            elif query_kwargs.get('is_read', None) is False:
+                attr_name = 'unread_articles_count'
+
+            if attr_name:
+                if feed:
+                    # feed is really a nonrel.subscription
+                    setattr(feed, attr_name, context[u'reads_count'])
+
+                elif folder:
+                    setattr(folder, attr_name, context[u'reads_count'])
+
         elif request.GET.get('mark_all_read', False):
 
             if feed:
-                query_kwargs[u'subscriptions__contains'].mark_all_read()
+                # feed is really a nonrel.subscription
+                feed.mark_all_read()
+
+            elif folder:
+                for subscription in query_kwargs[u'subscriptions__in']:
+                    subscription.mark_all_read()
 
             else:
-                for sub in request.user.mongo.subscriptions:
-                    sub.mark_all_read()
+                for subscription in request.user.mongo.subscriptions:
+                    subscription.mark_all_read()
 
             return HttpResponse('DONE')
 
@@ -383,7 +434,9 @@ def read_with_endless_pagination(request, **kwargs):
                 (get_page_number_from_request(request) - 1) \
                 * config.READ_INFINITE_ITEMS_PER_FETCH
 
-        #LOGGER.info(u'Ajax with %s', context.get('tenths_counter'))
+        # LOGGER.info(u'Ajax with %s', context.get('tenths_counter'))
+
+    # ———————————————————————————————————————————————————— Standard GET request
 
     else:
         template = u'read-endless.html'
