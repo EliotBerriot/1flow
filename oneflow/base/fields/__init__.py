@@ -48,8 +48,9 @@ class RedisCachedDescriptor(object):
 
     REDIS = None
 
-    def __init__(self, attr_name, cls_name=None, default=None,
-                 cache=True, set_default=False):
+    def __init__(self, attr_name, cls_name=None, cache=True,
+                 default=None, set_default=False,
+                 min_value=None, max_value=None):
 
         #
         # As MongoDB IDs are unique accross databases and objects,
@@ -61,11 +62,13 @@ class RedisCachedDescriptor(object):
         #   is unique accross the application, to avoid nasty clashes.
         #
 
-        self.default     = self.defer_callable
+        self.default       = self.defer_callable
         self.first_default = default
-        self.cache       = cache
-        self.set_default = set_default
-        self.uuid        = uuid.uuid4().hex
+        self.cache         = cache
+        self.set_default   = set_default
+        self.uuid          = uuid.uuid4().hex
+        self.min_value     = min_value
+        self.max_value     = max_value
 
         # NOTE: we use '_' instead of the classic ':' to be compatible
         # with the instance cache, which is a standard Python attribute.
@@ -210,6 +213,12 @@ class RedisCachedDescriptor(object):
     def __set__(self, instance, value):
 
         #LOGGER.warning('SET-redis: %s %s', self.key_name % instance.id, value)
+
+        if self.min_value is not None and value < self.min_value:
+            value = self.min_value
+
+        if self.max_value is not None and value > self.max_value:
+            value = self.max_value
 
         # Always store into REDIS, whatever the cache. We need persistence.
         self.REDIS.set(self.key_name % instance.id, self.to_redis(value))
