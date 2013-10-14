@@ -54,19 +54,19 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
                          default=list, verbose_name=_(u'Children'))
 
     all_articles_count = IntRedisDescriptor(
-        attr_name='uf.aa_c', default=folder_all_articles_count_default,
+        attr_name='f.aa_c', default=folder_all_articles_count_default,
         set_default=True)
 
     unread_articles_count = IntRedisDescriptor(
-        attr_name='uf.ua_c', default=folder_unread_articles_count_default,
+        attr_name='f.ua_c', default=folder_unread_articles_count_default,
         set_default=True)
 
     starred_articles_count = IntRedisDescriptor(
-        attr_name='uf.sa_c', default=folder_starred_articles_count_default,
+        attr_name='f.sa_c', default=folder_starred_articles_count_default,
         set_default=True)
 
     bookmarked_articles_count = IntRedisDescriptor(
-        attr_name='uf.ba_c', default=folder_bookmarked_articles_count_default,
+        attr_name='f.ba_c', default=folder_bookmarked_articles_count_default,
         set_default=True)
 
     def __unicode__(self):
