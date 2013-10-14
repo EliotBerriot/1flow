@@ -757,16 +757,16 @@ def global_subscriptions_checker(force=False):
 
     with benchmark("Check all subscriptions"):
         for feed in Feed.good_feeds:
-            feed_all_articles = feed.all_articles_count
+            feed.compute_cached_descriptors(all=True, good=True, bad=True)
 
             for subscription in feed.subscriptions:
 
-                if subscription.all_articles_count != feed_all_articles:
+                if subscription.all_articles_count != feed.all_articles_count:
 
                     LOGGER.info(u'Subscription %s has only %s reads whereas '
                                 u'its feed has %s; checking it…', subscription,
                                 subscription.all_articles_count,
-                                feed_all_articles)
+                                feed.all_articles_count)
 
                     subscription.check_reads(force=True)
 
