@@ -132,9 +132,9 @@ class Subscription(Document, DocumentHelperMixin):
     def post_create_task(self):
         """ Method meant to be run from a celery task. """
 
-        self.name = self.feed.name
-
-        self.save()
+        # The content of this method is done in subscribe_user_to_feed()
+        # to avoid more-than-needed write operations on the database.
+        pass
 
     @classmethod
     def subscribe_user_to_feed(cls, user, feed, force=False, background=False):
