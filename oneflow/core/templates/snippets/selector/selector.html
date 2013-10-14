@@ -92,7 +92,10 @@
         <div class="folder-wrapper clearfix level-0"
                 style="border-left-color: {{ folder_color_border }}">
             <div class="folder-border-top" style="background-color: {{ folder_color_border  }}"></div>
-            <div id="{{ folder.id }}" class="folder has_content">
+
+            <a name="{% trans "#unclassified-streams" %}"></a>
+
+            <div class="folder has_content">
                 <div class="name-wrapper level-0">
                     <span class="name" style="border-top-color: {{ folder_color_border }}">
                         {{ nofolder_open_subscriptions_trans }}
@@ -117,7 +120,9 @@
                 style="border-left-color: {{ folder_color_border }}">
             <div class="folder-border-top" style="background-color: {{ folder_color_border  }}"></div>
 
-            <div id="{{ folder.id }}" class="folder has_content">
+            <a name="{% trans "#closed-streams" %}"></a>
+
+            <div class="folder has_content">
                 <div class="name-wrapper level-0">
                     <span class="name" style="border-top-color: {{ folder_color_border }}">
                         {{ closed_streams_trans }}
