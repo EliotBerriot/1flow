@@ -169,12 +169,13 @@ class Subscription(Document, DocumentHelperMixin):
             return
 
         count = self.unread_articles_count
+
         self.unread_articles_count = 0
 
         for folder in self.folders:
             folder.unread_articles_count -= count
 
-        # TODO: update global if no folders.
+        self.user.unread_articles_count -= count
 
         # Marking all read is not a database-friendly operation,
         # thus it's run via a task to be able to return now immediately,
