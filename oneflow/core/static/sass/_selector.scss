@@ -598,10 +598,6 @@
         margin-bottom: 2em;
     }
 
-    #number-of-streams {
-        //border: 1px solid grey;
-    }
-
     .form-actions {
         // override Bootstrap's form-horizontal value.
         padding-left: 20px;
@@ -612,12 +608,9 @@
         padding-top: 10px;
     }
 
-    .control-group:first-child {
-        margin-bottom: 0;
-    }
-
     .help-block:last-child {
         margin-top: 2em;
+        text-align: center;
     }
 
     .select2-container {

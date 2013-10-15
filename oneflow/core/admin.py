@@ -556,19 +556,28 @@ class FeedAdmin(admin.DocumentAdmin):
 admin.site.register(Feed, FeedAdmin)
 
 if settings.FULL_ADMIN:
+    name_fields_names = tuple(('name_' + code)
+                              for code, lang in languages)
+    name_fields_displays = tuple((field + '_display')
+                                 for field in name_fields_names)
     content_fields_names = tuple(('content_' + code)
                                  for code, lang in languages)
     content_fields_displays = tuple((field + '_display')
                                     for field in content_fields_names)
 
     class HelpContentAdmin(django_admin.ModelAdmin):
-        list_display_links = ('name', )
-        list_display       = ('name', 'ordering', 'active', ) \
-            + content_fields_displays
+        list_display_links = ('label', )
+        list_display       = ('label', 'ordering', 'active', ) \
+            + name_fields_displays
         list_editable      = ('ordering', 'active', )
-        search_fields      = ('name', ) + content_fields_names
-        ordering           = ('ordering', 'name', )
+        search_fields      = ('label', ) + name_fields_names + content_fields_names # NOQA
+        ordering           = ('ordering', 'label', )
         save_as            = True
+
+    for attr, attr_name in zip(name_fields_names,
+                               name_fields_displays):
+        setattr(HelpContentAdmin, attr_name,
+                truncate_field(HelpContent, attr))
 
     for attr, attr_name in zip(content_fields_names,
                                content_fields_displays):

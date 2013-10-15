@@ -3,13 +3,16 @@
 import logging
 
 from django import forms
-from django.forms import TextInput
+from django.core.urlresolvers import reverse
+
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
 
 from mongodbforms import DocumentForm
 
-from django_select2.widgets import Select2Widget, Select2MultipleWidget
+from django_select2.widgets import (Select2Widget,
+                                    Select2MultipleWidget, )
+                                    # HeavySelect2MultipleWidget)
 
 from .models import (HomePreferences, ReadPreferences,
                      SelectorPreferences, StaffPreferences,
@@ -178,7 +181,7 @@ class ManageFolderForm(DocumentForm):
         model = Folder
         fields = ('name', 'parent', )
         widgets = {
-            'name': TextInput(),
+            'name': forms.TextInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -327,7 +330,7 @@ class ManageSubscriptionForm(DocumentForm):
         # not work because of attribute being a list and field being not.
         fields = ('name', )
         widgets = {
-            'name': TextInput(),
+            'name': forms.TextInput(),
         }
 
     def __init__(self, *args, **kwargs):
@@ -382,15 +385,7 @@ class AddSubscriptionForm(forms.Form):
                                         label=_(u'Search 1flow\'s streams'),
                                         widget=Select2MultipleWidget())
 
-    search_for = forms.CharField(
-        label=_(u'Enter an URL'), required=False,
-        help_text=_(u'Type a website url (eg. <code>theguardian.com</code>) '
-                    u'and 1flow will search for any information stream on it.'
-                    u' If more than one is found, 1flow will create a new '
-                    u'folder in you selector, for you to be able to choose '
-                    u'which stream you would like to keep or not.<br />'
-                    u'<span class="muted">NOTE: this process can take quite '
-                    u'a long time. You will be notified when search is done.'))
+    search_for = forms.CharField(label=_(u'Enter an URL'), required=False)
 
     def __init__(self, *args, **kwargs):
 
@@ -403,6 +398,16 @@ class AddSubscriptionForm(forms.Form):
 
         self.fields['feeds'].queryset = Feed.good_feeds(
             id__nin=[s.feed.id for s in self.owner.subscriptions])
+
+        self.fields['feeds'].widget.set_placeholder(
+            _(u'Select feed(s) from the {0} referenced').format(
+                self.fields['feeds'].queryset.count()))
+
+        self.fields['search_for'].help_text = _(
+            u'<span class="muted">NOTE: this can be long. '
+            u'You will be notified when search is done.</span> '
+            u'<a href="{0}" target="_blank">How does it work?</a>').format(
+                reverse('help') + unicode(_(u'#adding-subscriptions')))
 
     def is_valid(self):
 

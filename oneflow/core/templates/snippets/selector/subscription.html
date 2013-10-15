@@ -1,7 +1,7 @@
 {% with unread_count=subscription.unread_articles_count all_count=subscription.all_articles_count later_count=subscription.bookmarked_articles_count %}
     <div class="subscription {{ unread_count|yesno:'has-unread,' }} {{ subscription.feed.closed|yesno:'is_closed,' }}">
 
-        <a name="{{ subscription.id }}"></a>
+        <a id="{{ subscription.id }}"></a>
 
         <div class="thumbnail">
             {% if unread_count %}

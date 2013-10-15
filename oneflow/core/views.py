@@ -104,10 +104,9 @@ for attrkey, attrval in Read.status_data.items():
 def home(request):
     """ root of the application. """
 
-    home_style = request.user.mongo.preferences.home.style
-
-    if home_style and home_style == 'T1':
-        return HttpResponseRedirect(reverse(u'read'))
+    # home_style = request.user.mongo.preferences.home.style
+    # if home_style and home_style == 'T1':
+    #     return HttpResponseRedirect(reverse(u'read'))
 
     return render(request, 'home.html', {
         'gr_import': GoogleReaderImport(request.user.id),
@@ -256,8 +255,7 @@ def add_subscription(request, **kwargs):
     else:
         form = AddSubscriptionForm(owner=request.user.mongo)
 
-    return render(request, 'add-subscription.html', {'form': form,
-                  'available_feeds': form.fields['feeds'].queryset.count()})
+    return render(request, 'add-subscription.html', {'form': form})
 
 
 # ———————————————————————————————————————————————————————————————————————— Read

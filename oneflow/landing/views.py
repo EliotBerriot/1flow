@@ -21,7 +21,12 @@ LOGGER = logging.getLogger(__name__)
 def home(request):
 
     if request.user.is_authenticated():
-        if not (request.user.is_staff or request.user.is_superuser):
+
+        is_staff = request.user.is_staff or request.user.is_superuser
+        super_powers = request.user.mongo.preferences.staff.super_powers_enabled
+        no_home_redirect = request.user.mongo.preferences.staff.no_home_redirect
+
+        if not is_staff or not super_powers or not no_home_redirect:
             return HttpResponseRedirect(reverse('home'))
 
     if request.POST:
@@ -35,7 +40,8 @@ def home(request):
             if created:
                 # We need to forge a context for celery,
                 # passing the request "as is" never works.
-                context = request_context_celery(request, {'new_user_id': user.id})
+                context = request_context_celery(request,
+                                                 {'new_user_id': user.id})
 
                 # we need to delay to be sure the profile creation is done.
                 background_post_register_actions.delay(context)
@@ -45,7 +51,7 @@ def home(request):
             else:
                 return HttpResponseRedirect(reverse('landing_thanks',
                                             kwargs={'already_registered':
-                                            _('again')}))
+                                                    _('again')}))
 
     else:
         form = LandingPageForm()
