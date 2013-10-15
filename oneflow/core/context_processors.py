@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from django.conf import settings
 
 def mongodb_user(request):
     """ not the most usefull context manager in the world. """
@@ -15,6 +16,8 @@ def mongodb_user(request):
         u'mongodb_user': request.user.mongo,
         u'preferences': request.user.mongo.preferences,
         u'wizards': request.user.mongo.preferences.wizards,
+
+        u'NONREL_ADMIN': settings.NONREL_ADMIN,
     }
 
 

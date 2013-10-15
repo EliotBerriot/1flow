@@ -32,6 +32,10 @@ if MAIN_SERVER is None:
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 BASE_ROOT    = os.path.dirname(PROJECT_ROOT)
 
+# This one is hardcoded for all admin links, to avoid the need to
+# replace it everywhere when mongoadmin wants to change things…
+NONREL_ADMIN = u'/admin/nonrel/'
+
 ADMINS   = (('Olivier Cortès', 'oc@1flow.io'), )
 MANAGERS = ADMINS
 
