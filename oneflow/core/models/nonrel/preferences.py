@@ -164,6 +164,13 @@ class StaffPreferences(EmbeddedDocument):
                     u'<span class="muted">Default: enabled.</span>'),
         default=True)
 
+    no_home_redirect = BooleanField(
+        verbose_name=_(u'Landing page does not redirect to webapp'),
+        help_text=_(u'As a staff member, you can have access to the landing '
+                    u'page for testing / check purposes even if you are '
+                    u'logged in, whereas standard logged in users are always '
+                    u'automatically redirected to the web application.'),
+        default=False)
 
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),

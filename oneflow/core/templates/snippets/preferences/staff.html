@@ -8,6 +8,12 @@
 {% if preferences.staff.super_powers_enabled %}
 
 <fieldset>
+  <legend>{% trans "Landing page" %}</legend>
+
+  {% include "widgets/forms/field-checkbox.html" with field=staff_form.no_home_redirect %}
+</fieldset>
+
+<fieldset>
   <legend>{% trans "Selector" %}</legend>
 
   {% include "widgets/forms/field-checkbox.html" with field=staff_form.selector_shows_admin_links %}
