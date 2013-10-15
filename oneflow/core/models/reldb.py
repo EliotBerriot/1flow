@@ -263,22 +263,27 @@ class Comment(Feedback, Hierarchy):
 class HelpContent(models.Model):
     __metaclass__ = TransMeta
 
-    name    = models.CharField(_(u'Help section name'),
-                               max_length=128, unique=True,
-                               help_text=_(u'Any text. Will be the title '
-                                           u'of the help section.'))
+    label = models.CharField(_(u'Help section label'),
+                             max_length=128, unique=True,
+                             help_text=_(u'Any text. Will NOT show '
+                                         u'anywhere, but is used to '
+                                         u'distinguish sections from '
+                                         u'one another.'))
     ordering = models.IntegerField(_(u'Ordering'), help_text=_(u'An integer '
                                    u'that will be used to order help sections '
                                    u'on the help page.'), default=0)
     active = models.BooleanField(default=True, help_text=_(u'is this help '
                                  u'section currently displayed on the '
                                  u'website?'))
+    name    = models.CharField(_(u'Help section name'), max_length=128,
+                               help_text=_(u'Any text. Will be the title '
+                                           u'of the help section.'))
     content = models.TextField(_(u'Help section content'),
                                help_text=_(u'Any text. Entered as Markdown.'))
 
     def __unicode__(self):
         return _(u'{field_name}: {truncated_field_value}').format(
-            field_name=self.name, truncated_field_value=self.content[:30]
+            field_name=self.label, truncated_field_value=self.content[:30]
             + (self.content[30:] and u'…'))
 
     @property
@@ -288,6 +293,6 @@ class HelpContent(models.Model):
     class Meta:
         app_label = 'core'
         ordering = ['ordering', 'id']
-        translate = ('content', )
+        translate = ('name', 'content', )
         verbose_name = _(u'Help section')
         verbose_name_plural = _(u'Help contents')
