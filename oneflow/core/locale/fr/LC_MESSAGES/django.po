@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-15 14:31+0200\n"
-"PO-Revision-Date: 2013-10-15 15:17+0009\n"
+"PO-Revision-Date: 2013-10-15 16:06+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -228,7 +228,7 @@ msgstr "Dossier"
 
 #: forms.py:385
 msgid "Search 1flow's streams"
-msgstr "Chercher dans les flux 1flow"
+msgstr "Cherchez dans 1flow"
 
 #: forms.py:388
 msgid "Enter an URL"
@@ -246,8 +246,8 @@ msgid ""
 "search is done.</span> <a href=\"{0}\" target=\"_blank\">How does it "
 "work?</a>"
 msgstr ""
-"<span class=\"muted\">NOTE : celà peut être long. Vous serez notifié(e) "
-"quand la recherche est terminée.</span> <a href=\"{0}\" "
+"<span class=\"muted\">NOTE : cette opération est longue, vous serez "
+"notifié(e) quand elle est terminée.</span>&nbsp;<a href=\"{0}\" "
 "target=\"_blank\">Comment ça marche ?</a>"
 
 #: forms.py:410
