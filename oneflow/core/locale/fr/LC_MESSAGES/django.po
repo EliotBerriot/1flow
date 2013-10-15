@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-14 23:41+0200\n"
-"PO-Revision-Date: 2013-10-14 23:54+0009\n"
+"POT-Creation-Date: 2013-10-15 14:31+0200\n"
+"PO-Revision-Date: 2013-10-15 14:35+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -198,59 +198,63 @@ msgstr "Le flux est ouvert"
 msgid "Closed?"
 msgstr "Fermé(e) ?"
 
-#: forms.py:33
+#: forms.py:36
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne correspondent pas."
 
-#: forms.py:37
+#: forms.py:40
 msgid "Password"
 msgstr "Mot de passe"
 
-#: forms.py:39
+#: forms.py:42
 msgid "Password confirmation"
 msgstr "Confirmation"
 
-#: forms.py:41
+#: forms.py:44
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: forms.py:170 forms.py:349
+#: forms.py:173 forms.py:352
 msgid "(None)"
 msgstr "(aucun)"
 
-#: forms.py:341 models/nonrel/subscription.py:97
+#: forms.py:344 models/nonrel/subscription.py:97
 msgid "Folders"
 msgstr "Dossiers"
 
-#: forms.py:348
+#: forms.py:351
 msgid "Folder"
 msgstr "Dossier"
 
-#: forms.py:382
+#: forms.py:385
 msgid "Search 1flow's streams"
-msgstr "Chercher dans les flux 1flow"
+msgstr "Chercher dans les flux 1flow"
 
-#: forms.py:386
+#: forms.py:388
 msgid "Enter an URL"
 msgstr "Saississez une URL"
 
-#: forms.py:387
-msgid ""
-"Type a website url (eg. <code>theguardian.com</code>) and 1flow will search "
-"for any information stream on it. If more than one is found, 1flow will "
-"create a new folder in you selector, for you to be able to choose which "
-"stream you would like to keep or not.<br /><span class=\"muted\">NOTE: this "
-"process can take quite a long time. You will be notified when search is "
-"done."
-msgstr ""
-"Tapez une adresse de site web (par exemple <code>atlantico.fr</code>) et "
-"1flow va chercher les flux d'informations qu'il propose. Si plusieurs flux "
-"sont trouvés, 1flow créera un nouveau dossier dans votre sélecteur pour vous"
-" permettre de choisir lesquels vous souhaitez garder ou pas.<br /><span "
-"class=\"muted\">NOTE : ce processus peut être relativement long. Vous serez "
-"notifié(e) lorsqu'il est terminé.</span>"
+#: forms.py:403
+#, python-brace-format
+msgid "Select feed(s) from the {0} referenced"
+msgstr "Sélectionnez des flux parmis les {0} référencés"
 
-#: forms.py:417
+#: forms.py:407
+#, python-brace-format
+msgid ""
+"<span class=\"muted\">NOTE: this can be long. You will be notified when "
+"search is done.</span> <a href=\"{0}\" target=\"_blank\">How does it "
+"work?</a>"
+msgstr ""
+"<span class=\"muted\">NOTE : celà peut être long. Vous serez notifié(e) "
+"quand la recherche est terminée.</span> <a href=\"{0}\" "
+"target=\"_blank\">Comment ça marche ?</a>"
+
+#: forms.py:410
+msgid "#adding-subscriptions"
+msgstr "#ajout-dabonnement"
+
+#: forms.py:422
 msgid "You have to fill at least one of the two fields."
 msgstr "Vous devez remplir au moins un des deux champs."
 
@@ -275,6 +279,12 @@ msgid ""
 "You can manually reopen any of them from the admin interface.\n"
 "\n"
 msgstr ""
+"\n"
+"Voici la liste, les dates (s'il y en a) et les raisons (quand il y en a) de fermeture :\n"
+"\n"
+"{feed_list}\n"
+"\n"
+"Vous pouvez manuellement ré-ouvrir n'importe lequel de ces flux directement depuis l'interface d'administration de 1flow.\n"
 
 #: urls.py:43
 msgid "^home/$"
@@ -425,40 +435,36 @@ msgstr "Abonnement « {0} » modifié avec succès."
 msgid "Could not save subscription: {0}."
 msgstr "Impossible d'enregistrer l'abonnement : {0}."
 
-#: views.py:254 templates/snippets/selector/selector.html:97
-msgid "#unclassified-streams"
-msgstr "#flux-non-classes"
-
-#: views.py:700
+#: views.py:699
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:704
+#: views.py:703
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:708
+#: views.py:707
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:715
+#: views.py:714
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:719
+#: views.py:718
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:725
+#: views.py:724
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:728
+#: views.py:727
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -467,49 +473,61 @@ msgid "Categories"
 msgstr "Catégories"
 
 #: models/reldb.py:266
-msgid "Help section name"
-msgstr "Nom de section d'aide"
+msgid "Help section label"
+msgstr "Label de section d'aide"
 
 #: models/reldb.py:268
-msgid "Any text. Will be the title of the help section."
-msgstr "Le titre de la section. Du texte, quoi."
+msgid ""
+"Any text. Will NOT show anywhere, but is used to distinguish sections from "
+"one another."
+msgstr ""
+"N'importe quel texte (mais doit être unique). Il N'APPARAIT NULLE PART, mais"
+" est simplement utilisé pour distinguer les sections les unes des autres."
 
-#: models/reldb.py:270
+#: models/reldb.py:272
 msgid "Ordering"
 msgstr "Ordre d'apparition"
 
-#: models/reldb.py:270
+#: models/reldb.py:272
 msgid "An integer that will be used to order help sections on the help page."
 msgstr ""
 "Un nombre entier positif qui sera utilisé pour ordonner les sections dans la"
 " page d'aide."
 
-#: models/reldb.py:273
+#: models/reldb.py:275
 msgid "is this help section currently displayed on the website?"
 msgstr ""
 "Cette section est-elle affichée ? (décocher pour rédiger une section "
 "tranquillement avant de la mettre en ligne)"
 
-#: models/reldb.py:276
+#: models/reldb.py:278
+msgid "Help section name"
+msgstr "Nom de section d'aide"
+
+#: models/reldb.py:279
+msgid "Any text. Will be the title of the help section."
+msgstr "Le titre de la section. Du texte, quoi."
+
+#: models/reldb.py:281
 msgid "Help section content"
 msgstr "Contenu de la section d'aide"
 
-#: models/reldb.py:277
+#: models/reldb.py:282
 msgid "Any text. Entered as Markdown."
 msgstr ""
 "Du texte, en markdown. Je crois qu'il y a une limite à 4096 caractères, mais"
 " je ne suis pas sûr…"
 
-#: models/reldb.py:280
+#: models/reldb.py:285
 #, python-brace-format
 msgid "{field_name}: {truncated_field_value}"
 msgstr "{field_name} : {truncated_field_value}"
 
-#: models/reldb.py:292
+#: models/reldb.py:297
 msgid "Help section"
 msgstr "Section d'aide"
 
-#: models/reldb.py:293
+#: models/reldb.py:298
 msgid "Help contents"
 msgstr "Contenu de l'aide"
 
@@ -530,6 +548,8 @@ msgid ""
 "The article URL has been successfully absolutized to its unique and final "
 "location."
 msgstr ""
+"L'URL de l'article a été absolutisée avec succès vers son unique et finale "
+"destination."
 
 #: models/nonrel/article.py:155
 msgid "URL fetch error"
@@ -546,6 +566,8 @@ msgstr "URLs des pages suivantes"
 #: models/nonrel/article.py:158
 msgid "In case of a multi-pages article, other pages URLs will be here."
 msgstr ""
+"Dans le cas d'un article multi-pages, les URLs des pages supplémentaires "
+"sont là."
 
 #: models/nonrel/article.py:163
 msgid "Orphaned"
@@ -654,6 +676,8 @@ msgstr "Type d'origine"
 msgid ""
 "Origin of article (feedparser, twitter, websnap…). Can be 0 (none/unknown)."
 msgstr ""
+"Origine de l'article (feedparser, twitter, websnap…). Peut être 0 "
+"(aucune/inconnue)."
 
 #: models/nonrel/article.py:247
 msgid ""
@@ -661,6 +685,9 @@ msgid ""
 "they have different URLs (eg. one can be shortened, the other not), they "
 "lead to the same final destination on the web."
 msgstr ""
+"Cet article est un duplicata d'un autre, qui est référencé ici. Même s'ils "
+"ont des URLs différentes (une peut être raccourcie, l'autre non), celles-ci "
+"pointent vers la même destination finale sur le web."
 
 #: models/nonrel/article.py:269
 #, python-brace-format
@@ -682,12 +709,19 @@ msgid ""
 "need to store it for future comparisons in case firstname and lastname get "
 "manually modified after author creation."
 msgstr ""
+"Lors de la devinette des auteurs, nous avons seulement un équivalent de « "
+"fullname ». Nous devons le stocker pour les comparaisons futures, pour le "
+"cas où les noms / prénoms auraient été modifiés manuellement après la "
+"création de l'auteur."
 
 #: models/nonrel/author.py:48
 msgid ""
 "Set to True when the author has been found from its origin_name and not via "
 "email; because origin_name can be duplicated, but not emails."
 msgstr ""
+"Ceci est à « vrai » quand l'auteur a été trouvé à partir de son "
+"`origin_name` et non via son `email` ; car `origin_name` peut générer des "
+"auteurs homonymes, mais pas les e-mails qui sont uniques par définition."
 
 #: models/nonrel/author.py:54
 msgid "Link an internet author to a 1flow user."
@@ -1160,33 +1194,25 @@ msgstr "Liste de lecture"
 
 #: models/nonrel/preferences.py:170
 msgid "Tiled News"
-msgstr ""
+msgstr "News en tuiles"
 
-#: models/nonrel/preferences.py:171
-msgid "Tiled experiment #1"
-msgstr ""
-
-#: models/nonrel/preferences.py:172
-msgid "Dashboard"
-msgstr ""
-
-#: models/nonrel/preferences.py:177
+#: models/nonrel/preferences.py:175
 msgid "Unread articles"
 msgstr "Articles non-lus"
 
-#: models/nonrel/preferences.py:178
+#: models/nonrel/preferences.py:176
 msgid "Source selector"
 msgstr "Sélecteur de source"
 
-#: models/nonrel/preferences.py:190
+#: models/nonrel/preferences.py:188
 msgid "How the user wants his 1flow home to appear"
-msgstr ""
+msgstr "Comment l'utilisateur veut voir sa home page"
 
-#: models/nonrel/preferences.py:195
+#: models/nonrel/preferences.py:193
 msgid "I want to play with my life"
 msgstr "Je veux jouer avec ma vie"
 
-#: models/nonrel/preferences.py:196
+#: models/nonrel/preferences.py:194
 msgid ""
 "With this setting, you will be able to tune the 1flow interface a lot more. "
 "<strong>But BEWARE:</strong> you will gain access to features which are not "
@@ -1203,11 +1229,11 @@ msgstr ""
 "défaut, c'est désactivé : nous voulons que votre expérience utilisateur soit"
 " agréable et fluide.</span>"
 
-#: models/nonrel/preferences.py:205
+#: models/nonrel/preferences.py:203
 msgid "Clicking <code>Read</code> displays:"
 msgstr "Cliquer sur <code>Lecture</code> affiche :"
 
-#: models/nonrel/preferences.py:208
+#: models/nonrel/preferences.py:206
 msgid ""
 "Define what 1flow will display when you click on the <code>Read</code> link "
 "in the top navbar of the interface. <br /><span class=\"muted\">Default: "
@@ -1232,60 +1258,75 @@ msgstr "Ce week-end"
 
 #: models/nonrel/read.py:59
 msgid "The Owner has read the content or has manually marked it as such."
-msgstr ""
+msgstr "Le propriétaire a lu le contenu, ou l'a marqué comme tél."
 
 #: models/nonrel/read.py:64
 msgid ""
 "The system has automatically marked it as read, in respect of a system rule "
 "or a user preference."
 msgstr ""
+"Le système a automatiquement marqué le contenu comme lu, en application "
+"d'une règle système ou d'une préférence utilisateur."
 
 #: models/nonrel/read.py:71
 msgid ""
 "The owner has starred the content, signifying he/she loves it or that it is "
 "much of interest for him/her."
 msgstr ""
+"Le propriétaire a sélectionné le contenu, signifiant ainsi qu'il l'aprécie "
+"ou qu'il est digne d'intérêt pour lui/elle."
 
 #: models/nonrel/read.py:76
 msgid ""
 "This content is marked to be read later. When, depends on the "
 "`.bookmark_type` attribute."
 msgstr ""
+"Ce contenu est marqué à lire plus tard. « Quand » dépend de la valeur de "
+"l'attribut `.bookmark_type`."
 
 #: models/nonrel/read.py:84
 msgid "Qualifies a time-dependant fact."
-msgstr ""
+msgstr "Qualifie un fait relié à une date précise."
 
 #: models/nonrel/read.py:88
 msgid "Qualifies someone’s words, thoughts or intentions."
-msgstr ""
+msgstr "Qualifie les mots, pensées ou intentions de quelqu'un."
 
 #: models/nonrel/read.py:92
 msgid "Qualifies explicitely quantized data."
-msgstr ""
+msgstr "Qualifie des données explicitement quantifiées."
 
 #: models/nonrel/read.py:96
 msgid "Qualifies in-depth analysis, studies or research publications."
 msgstr ""
+"Qualifie une analyse en profondeur, des études ou des publications de "
+"travaux de recherches."
 
 #: models/nonrel/read.py:101
 msgid "Qualifies things that want to watch, that will happen or not."
 msgstr ""
+"Qualifie des choses que vous souhaitez surveiller, qui arriveront ou non."
 
 #: models/nonrel/read.py:106
 msgid ""
 "Qualifies anything about How-to-do things and profession best-practices."
 msgstr ""
+"Qualifie les savoirs-faires, les méthodes de travail, les bonnes-pratiques "
+"ou l'état de l'art d'une profession."
 
 #: models/nonrel/read.py:111
 msgid "Qualifies anything about laws, governments/public regulations."
 msgstr ""
+"Qualifie ce qui relève des lois, des règlementations ou tout ce qui est "
+"d'ordre juridique, gouvernemental ou officiel."
 
 #: models/nonrel/read.py:116
 msgid ""
 "Qualifies anything that the owner wants to retain as a “must know”, whatever"
 " the context."
 msgstr ""
+"Qualifie n'importe quoi dont le propriétaire veut se souvenir, quel que soit"
+" le contexte ou le contenu."
 
 #: models/nonrel/read.py:122
 msgid "Qualifies anything that makes you laugh out loud."
@@ -1737,6 +1778,8 @@ msgid ""
 "Initial origin from where the tag was created from, to eventually help "
 "defining other attributes."
 msgstr ""
+"Origine initiale de création du tag. Ça peut éventuellement servir plus tard"
+" à définir d'autres attributs."
 
 #: models/nonrel/tag.py:64
 msgid ""
@@ -1782,6 +1825,16 @@ msgstr ""
 #: templates/help.html:30
 msgid "Help sections"
 msgstr "Sections d'aide"
+
+#: templates/help.html:41
+#, python-format
+msgid ""
+"\n"
+"      Edit <em>%(section_name)s</em> in admin.\n"
+"  "
+msgstr ""
+"\n"
+" Modifier <em>%(section_name)s</em> dans l'admin."
 
 #: templates/home.html:6
 msgid "Home"
@@ -2265,54 +2318,6 @@ msgstr "À propos"
 msgid "Contact"
 msgstr "Contact"
 
-#: templates/snippets/home/choose-home-style.html:7
-msgid "Welcome!"
-msgstr "Bienvenue !"
-
-#: templates/snippets/home/choose-home-style.html:9
-#, python-format
-msgid ""
-"\n"
-"            Please choose your 1flow home style. You can change it later in <a href=\"%(profile_url)s\">your preferences</a>.\n"
-"        "
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:18
-msgid "Read everything"
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:26
-msgid "Shows all your unread articles"
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:27
-msgid "Go straight to the information, the classic way."
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:33
-msgid "Electronic Newspaper"
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:41
-msgid "Tiled sources and articles"
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:42
-msgid "Comfortable and easy to use. Perfect for tablets."
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:48
-msgid "1flow dashboard"
-msgstr "Tableau de bord"
-
-#: templates/snippets/home/choose-home-style.html:56
-msgid "Summary and statistics of all your content."
-msgstr ""
-
-#: templates/snippets/home/choose-home-style.html:57
-msgid "Embrace your world in a sight. For experts."
-msgstr ""
-
 #: templates/snippets/preferences/advanced.html:3
 msgid "Advanced preferences"
 msgstr "Préférences avancées"
@@ -2747,7 +2752,7 @@ msgstr "Image principale de l'article"
 #: templates/snippets/read/read-tiles-experimental-tile.html:5
 #: templates/snippets/read/read-tiles-tile.html:5
 msgid "Placeholder-"
-msgstr ""
+msgstr "Remplisseur-"
 
 #: templates/snippets/read/read-tiles-experimental-tile.html:6
 #: templates/snippets/read/read-tiles-tile.html:6
@@ -2769,35 +2774,18 @@ msgid "Add one or more subscriptions"
 msgstr "Ajouter un ou plusieurs abonnements"
 
 #: templates/snippets/selector/add-subscription.html:24
-#, python-format
-msgid ""
-"\n"
-"            (%(available_feeds)s streams currently referenced)\n"
-"        "
-msgstr ""
-"\n"
-" (actuellement %(available_feeds)s flux référencés)"
-
-#: templates/snippets/selector/add-subscription.html:28
 msgid "or"
 msgstr "ou"
 
-#: templates/snippets/selector/add-subscription.html:30
-msgid "This part is not yet available. Under development."
-msgstr "Cette partie n'est pas encore utilisable. En développement."
+#: templates/snippets/selector/add-subscription.html:26
+msgid "Feature not ready yet, under development."
+msgstr "Fonctionnalité pas encore utilisable, en développement."
 
-#: templates/snippets/selector/add-subscription.html:32
-#, python-format
-msgid ""
-"\n"
-"Stay tuned <a href=\"http://blog.1flow.io/\" target=\"_blank\">on our blog</a> or <a href=\"%(quick_add_url)s\">add it to your sources</a>."
-msgstr ""
-
-#: templates/snippets/selector/add-subscription.html:41
+#: templates/snippets/selector/add-subscription.html:35
 msgid "Add to my flow"
 msgstr "Ajouter à mon 1flow"
 
-#: templates/snippets/selector/add-subscription.html:47
+#: templates/snippets/selector/add-subscription.html:41
 #: templates/snippets/selector/manage-folder.html:36
 #: templates/snippets/selector/manage-subscription.html:96
 msgid "Cancel"
@@ -2886,6 +2874,10 @@ msgstr "Articles envoyés"
 #: templates/snippets/selector/selector.html:90
 msgid "Unclassified information streams"
 msgstr "Flux d'informations non-classés"
+
+#: templates/snippets/selector/selector.html:97
+msgid "#unclassified-streams"
+msgstr "#flux-non-classes"
 
 #: templates/snippets/selector/selector.html:124
 msgid "#closed-streams"
@@ -3083,6 +3075,35 @@ msgstr "k+"
 #, python-brace-format
 msgid "{0} articles"
 msgstr "{0} articles"
+
+#~ msgid "Welcome!"
+#~ msgstr "Bienvenue !"
+
+#~ msgid "1flow dashboard"
+#~ msgstr "Tableau de bord"
+
+#~ msgid ""
+#~ "Type a website url (eg. <code>theguardian.com</code>) and 1flow will search "
+#~ "for any information stream on it. If more than one is found, 1flow will "
+#~ "create a new folder in you selector, for you to be able to choose which "
+#~ "stream you would like to keep or not.<br /><span class=\"muted\">NOTE: this "
+#~ "process can take quite a long time. You will be notified when search is "
+#~ "done."
+#~ msgstr ""
+#~ "Tapez une adresse de site web (par exemple <code>atlantico.fr</code>) et "
+#~ "1flow va chercher les flux d'informations qu'il propose. Si plusieurs flux "
+#~ "sont trouvés, 1flow créera un nouveau dossier dans votre sélecteur pour vous"
+#~ " permettre de choisir lesquels vous souhaitez garder ou pas.<br /><span "
+#~ "class=\"muted\">NOTE : ce processus peut être relativement long. Vous serez "
+#~ "notifié(e) lorsqu'il est terminé.</span>"
+
+#~ msgid ""
+#~ "\n"
+#~ "            (%(available_feeds)s streams currently referenced)\n"
+#~ "        "
+#~ msgstr ""
+#~ "\n"
+#~ " (actuellement %(available_feeds)s flux référencés)"
 
 #~ msgid "Nothing new"
 #~ msgstr "Rien de nouveau"
