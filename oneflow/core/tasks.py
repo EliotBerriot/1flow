@@ -783,6 +783,82 @@ def global_subscriptions_checker(force=False):
     my_lock.release()
 
 
+@task(queue='low')
+def global_duplicates_checker(limit=None, force=False):
+    """ Something that will ensure that duplicate articles have no more read
+        anywhere, fix it if not, and update all counters accordingly. """
+
+    if config.CHECK_DUPLICATES_DISABLED:
+        LOGGER.warning(u'Duplicates check disabled in configuration.')
+        return
+
+    my_lock = RedisExpiringLock('check_all_duplicates', expire_time=3600)
+
+    if not my_lock.acquire():
+        if force:
+            my_lock.release()
+            my_lock.acquire()
+            LOGGER.warning(u'Forcing duplicates check…')
+
+        else:
+            # Avoid running this task over and over again in the queue
+            # if the previous instance did not yet terminate. Happens
+            # when scheduled task runs too quickly.
+            LOGGER.warning(u'global_subscriptions_checker() is already '
+                           u'locked, aborting.')
+            return
+
+    if limit is None:
+        limit = 0
+
+    duplicates = Article.objects(duplicate_of__ne=None).no_cache()
+
+    total_dupes_count = duplicates.count()
+    total_reads_count = 0
+    processed_dupes   = 0
+    done_dupes_count  = 0
+
+    with benchmark(u"Check {0}/{1} duplicates".format(limit,
+                   total_dupes_count)):
+
+        for duplicate in duplicates:
+            reads = Read.objects(article=duplicate)
+
+            processed_dupes += 1
+
+            if reads:
+                done_dupes_count  += 1
+                reads_count        = reads.count()
+                total_reads_count += reads_count
+
+                LOGGER.info(u'Duplicate article %s still has %s reads, fixing…',
+                            duplicate, reads_count)
+
+                duplicate.duplicate_of.replace_duplicate_everywhere(duplicate)
+
+                if limit and done_dupes_count >= limit:
+                    break
+
+            # Release and get back the lock to refresh the timer and
+            # avoid it to automatically release the lock while we are
+            # running.
+            my_lock.release()
+            if not my_lock.acquire():
+                LOGGER.error(u'Could not re-acquire '
+                             u'global_duplicates_checker() lock, '
+                             u'aborting!')
+                return
+
+    LOGGER.info(u'global_duplicates_checker(): %s/%s duplicates processed '
+                u'(%.2f%%), %s corrected (%.2f%%), %s reads altered.',
+                processed_dupes, total_dupes_count,
+                processed_dupes * 100.0 / total_dupes_count,
+                done_dupes_count, done_dupes_count * 100.0 / processed_dupes,
+                total_reads_count)
+
+    my_lock.release()
+
+
 # ••••••••••••••••••••••••••••••••••••••••••••••••••• Move things to Archive DB
 
 

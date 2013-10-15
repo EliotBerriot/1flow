@@ -107,6 +107,11 @@ CELERYBEAT_SCHEDULE = {
         'schedule': crontab(hour='1', minute='11'),
     },
 
+    'global-duplicates-checker': {
+        'task': 'oneflow.core.tasks.global_duplicates_checker',
+        'schedule': crontab(hour='2', minute='22'),
+    },
+
     # De-activated as it's much to slow since Tags are ReferenceField()
     # instead of GenericReferenceField() in articles.
     #
