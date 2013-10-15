@@ -256,8 +256,7 @@ def add_subscription(request, **kwargs):
     else:
         form = AddSubscriptionForm(owner=request.user.mongo)
 
-    return render(request, 'add-subscription.html', {'form': form,
-                  'available_feeds': form.fields['feeds'].queryset.count()})
+    return render(request, 'add-subscription.html', {'form': form})
 
 
 # ———————————————————————————————————————————————————————————————————————— Read

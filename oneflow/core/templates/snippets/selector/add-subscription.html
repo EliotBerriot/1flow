@@ -21,20 +21,14 @@
             </div>
         {% endwith %}
 
-        <div id="number-of-streams" class="centered muted">{% blocktrans %}
-            ({{ available_feeds }} streams currently referenced)
-        {% endblocktrans %}</div>
-
         <div class="or-choice">{% trans "or" %}</div>
 
-        <div id="not-yet-ready" class="centered muted">{% trans "This part is not yet available. Under development." %}
-            {% if FALSE and not user.has_1flow_feed %}
-{% blocktrans %}
-Stay tuned <a href="http://blog.1flow.io/" target="_blank">on our blog</a> or <a href="{{ quick_add_url }}">add it to your sources</a>.{% endblocktrans %}
-            {% endif %}
-        </div>
+        {% trans "Feature not ready yet, under development." as search_placeholder_text %}
 
-        {% include "widgets/forms/field-input-text.html" with field=form.search_for|add_class:"span5"|attr:'disabled="disabled"' %}
+        {% with search_placeholder='placeholder:'|add:search_placeholder_text %}
+            {% include "widgets/forms/field-input-text.html" with field=form.search_for|add_class:"span5"|attr:'disabled="disabled"'|attr:search_placeholder %}
+
+        {% endwith %}
 
         <div class="form-actions">
             <div class="pull-right">
