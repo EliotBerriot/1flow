@@ -180,10 +180,17 @@ img.centered {
   cursor: help;
 }
 
-a[id] {
-  margin-top: -60px;
-  padding-top: 60px;
-}
+// To place the page correctly on #links, we use the JS implementation of
+// cf. https://github.com/twbs/bootstrap/issues/1768#issuecomment-13306753
+// because the pure-CSS one works only on Firefox but not with Chrome.
+// It's in our `base.html` template.
+//
+// a[id] {
+//   margin-top: -60px;
+//   padding-top: 60px;
+//   -webkit-background-clip: content-box;
+//   background-clip: content-box;
+// }
 
 .css-hover-muted {
     @include single-transition(opacity, 0.5s, ease-out, 0.3s);

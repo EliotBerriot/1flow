@@ -33,9 +33,17 @@
     <script type="text/javascript"
         src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
 
+    <script type="text/javascript">
+      var scrollForHash = function() { scrollBy(0, -70) };
+
+      window.addEventListener("hashchange", scrollForHash);
+
+      function loadScrollForHash() { if (window.location.hash) scrollForHash(); }
+    </script>
+
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
-  <body id="{% block body_id %}{% endblock body_id %}" {% block body_data %}{% endblock body_data %}>
+  <body id="{% block body_id %}{% endblock body_id %}" {% block body_data %}{% endblock body_data %} onload="loadScrollForHash()">
     {% block body %}{% endblock body %}
 
     {% block extrajs_footer %}{% endblock extrajs_footer %}
