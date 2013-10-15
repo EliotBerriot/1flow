@@ -14,7 +14,7 @@
     <div class="folder-border-top" style="background-color: {{ folder_color_border }}"></div>
     <div class="folder {% if folder.subscriptions or folder.children %}has_content{% endif %}">
 
-        <a name="{{ folder.id }}"></a>
+        <a id="{{ folder.id }}"></a>
 
         <div class="name-wrapper level-{{ level }}">
             {% if level|divisibleby:'2' %}
