@@ -135,6 +135,18 @@ class Read(Document, DocumentHelperMixin):
     # For free users, fix a limit ?
     #meta = {'max_documents': 1000, 'max_size': 2000000}
 
+    watch_attributes = (
+        'is_fact',
+        'is_number',
+        'is_analysis',
+        'is_quote',
+        'is_prospective',
+        'is_rules',
+        'is_knowhow',
+        'is_knowledge',
+        'is_fun',
+    )
+
     status_data = {
 
         'is_read': {
@@ -369,6 +381,42 @@ class Read(Document, DocumentHelperMixin):
             return cls._status_attributes_cache
 
     @classmethod
+    def signal_pre_delete_handler(cls, sender, document, **kwargs):
+
+        read         = document
+        to_decrement = ['all_articles_count']
+
+        if read.is_bookmarked:
+            to_decrement.append('bookmarked_articles_count')
+
+        if read.is_starred:
+            to_decrement.append('starred_articles_count')
+
+        if not read.is_read:
+            to_decrement.append('unread_articles_count')
+
+        for subscription in read.subscriptions:
+
+            for attr_name in to_decrement:
+                setattr(subscription, attr_name,
+                        getattr(subscription, attr_name) - 1)
+
+            for folder in subscription.folders:
+
+                for attr_name in to_decrement:
+                    setattr(folder, attr_name,
+                            getattr(folder, attr_name) - 1)
+
+        for watch_attr_name in Read.watch_attributes:
+            if getattr(read, watch_attr_name):
+                # Strip 'is_' from the attribute name.
+                to_decrement.append(watch_attr_name[3:] + '_articles_count')
+
+        for attr_name in to_decrement:
+            setattr(read.user, attr_name,
+                    getattr(read.user, attr_name) - 1)
+
+    @classmethod
     def signal_post_save_handler(cls, sender, document,
                                  created=False, **kwargs):
 
@@ -451,12 +499,16 @@ class Read(Document, DocumentHelperMixin):
                 for folder in subscription.folders:
                     folder.unread_articles_count -= 1
 
+            self.user.unread_articles_count -= 1
+
         else:
             for subscription in self.subscriptions:
                 subscription.unread_articles_count += 1
 
                 for folder in subscription.folders:
                     folder.unread_articles_count += 1
+
+            self.user.unread_articles_count += 1
 
     def is_starred_changed(self):
 
@@ -467,12 +519,16 @@ class Read(Document, DocumentHelperMixin):
                 for folder in subscription.folders:
                     folder.starred_articles_count += 1
 
+            self.user.starred_articles_count += 1
+
         else:
             for subscription in self.subscriptions:
                 subscription.starred_articles_count -= 1
 
                 for folder in subscription.folders:
                     folder.starred_articles_count -= 1
+
+            self.user.starred_articles_count -= 1
 
     def is_bookmarked_changed(self):
 
@@ -483,12 +539,16 @@ class Read(Document, DocumentHelperMixin):
                 for folder in subscription.folders:
                     folder.bookmarked_articles_count += 1
 
+            self.user.bookmarked_articles_count += 1
+
         else:
             for subscription in self.subscriptions:
                 subscription.bookmarked_articles_count -= 1
 
                 for folder in subscription.folders:
                     folder.bookmarked_articles_count -= 1
+
+            self.user.bookmarked_articles_count -= 1
 
 
 # ————————————————————————————————————————————————————————— external properties
