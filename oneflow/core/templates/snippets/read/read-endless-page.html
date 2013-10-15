@@ -45,6 +45,10 @@
 
                                 {% if article.url_absolute %}
                                     <code style="color: green">absolute</code>
+
+                                {% else %}
+                                    <code style="color: red">NOT-absolute</code>, {{ article.url_error }}
+
                                 {% endif %}
 
                                 {% if article.orphaned %}
@@ -53,7 +57,7 @@
 
                                 {% if article.duplicate_of %}
                                     duplicate of: <a
-                                    href="/admin/models/article/{{ article.duplicate_of.id }}/"
+                                    href="{{ NONREL_ADMIN }}article/{{ article.duplicate_of.id }}/"
                                     target="_blank">{{ article.duplicate_of.id }}</a>
                                 {% endif %}
 

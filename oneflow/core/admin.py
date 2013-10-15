@@ -210,8 +210,9 @@ class TagAdmin(admin.DocumentAdmin):
     def parents_display(self, obj):
 
         if obj.parents:
-            return u', '.join(u'<a href="/admin/models/tag/{0}" '
-                              u'target="_blank">{1}</a>'.format(
+            return u', '.join(u'<a href="{0}tag/{1}" '
+                              u'target="_blank">{2}</a>'.format(
+                                  settings.NONREL_ADMIN,
                                   parent.id, parent.name)
                               for parent in obj.parents)
 
@@ -223,8 +224,9 @@ class TagAdmin(admin.DocumentAdmin):
     def children_display(self, obj):
 
         if obj.children:
-            return u', '.join(u'<a href="/admin/models/tag/{0}" '
-                              u'target="_blank">{1}</a>'.format(
+            return u', '.join(u'<a href="{0}tag/{1}" '
+                              u'target="_blank">{2}</a>'.format(
+                                  settings.NONREL_ADMIN,
                                   child.id, child.name)
                               for child in obj.children)
 
@@ -258,8 +260,9 @@ class ArticleAdmin(admin.DocumentAdmin):
     def tags_display(self, obj):
 
         try:
-            return u', '.join(u'<a href="/admin/models/tag/{0}" '
-                              u'target="_blank">{1}</a>'.format(
+            return u', '.join(u'<a href="{0}tag/{1}" '
+                              u'target="_blank">{2}</a>'.format(
+                                  settings.NONREL_ADMIN,
                                   tag.id, tag.name)
                               for tag in obj.tags)
         except Exception, e:
@@ -272,9 +275,10 @@ class ArticleAdmin(admin.DocumentAdmin):
     def duplicate_of_display(self, obj):
 
         if obj.duplicate_of:
-            return (u'<a href="/admin/models/article/{0}" '
+            return (u'<a href="{0}article/{1}" '
                     u'style="cursor: pointer; font-size: 300%;" '
-                    u'target="_blank">∃</a>').format(obj.duplicate_of.id)
+                    u'target="_blank">∃</a>').format(
+                        settings.NONREL_ADMIN, obj.duplicate_of.id)
 
         return u''
 
@@ -424,9 +428,10 @@ class FeedAdmin(admin.DocumentAdmin):
     def duplicate_of_display(self, obj):
 
         if obj.duplicate_of:
-            return (u'<a href="/admin/models/feed/{0}" '
+            return (u'<a href="{0}feed/{1}" '
                     u'style="cursor: pointer; font-size: 300%;" '
-                    u'target="_blank">∃</a>').format(obj.duplicate_of.id)
+                    u'target="_blank">∃</a>').format(
+                        settings.NONREL_ADMIN, obj.duplicate_of.id)
 
         return u''
 
