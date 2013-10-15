@@ -168,8 +168,6 @@ class StaffPreferences(EmbeddedDocument):
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
-    (u'T1', _(u'Tiled experiment #1')),
-    (u'DB', _(u'Dashboard')),
 )
 
 
