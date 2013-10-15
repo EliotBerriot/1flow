@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2013-10-15 14:31+0200\n"
-"PO-Revision-Date: 2013-10-15 14:35+0009\n"
+"PO-Revision-Date: 2013-10-15 15:17+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -228,7 +228,7 @@ msgstr "Dossier"
 
 #: forms.py:385
 msgid "Search 1flow's streams"
-msgstr "Chercher dans les flux 1flow"
+msgstr "Chercher dans les flux 1flow"
 
 #: forms.py:388
 msgid "Enter an URL"
@@ -2771,7 +2771,7 @@ msgstr "Par "
 
 #: templates/snippets/selector/add-subscription.html:3
 msgid "Add one or more subscriptions"
-msgstr "Ajouter un ou plusieurs abonnements"
+msgstr "Ajouter un ou plusieurs abonnements"
 
 #: templates/snippets/selector/add-subscription.html:24
 msgid "or"
