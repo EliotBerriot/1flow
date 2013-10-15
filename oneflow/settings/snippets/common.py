@@ -32,6 +32,10 @@ if MAIN_SERVER is None:
 PROJECT_ROOT = os.path.dirname(os.path.dirname(__file__))
 BASE_ROOT    = os.path.dirname(PROJECT_ROOT)
 
+# This one is hardcoded for all admin links, to avoid the need to
+# replace it everywhere when mongoadmin wants to change things…
+NONREL_ADMIN = u'/admin/nonrel/'
+
 ADMINS   = (('Olivier Cortès', 'oc@1flow.io'), )
 MANAGERS = ADMINS
 
@@ -466,7 +470,7 @@ ENDLESS_PAGINATION_PER_PAGE = 100
 #ENDLESS_PAGINATION_LOADING  = ugettext_lazy(u'loading more entries…')
 
 AUTO_RENDER_SELECT2_STATICS = False
-#GENERATE_RANDOM_SELECT2_ID = True
+GENERATE_RANDOM_SELECT2_ID = True
 ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
 # See cache.py for Select2 memcache settings.
 

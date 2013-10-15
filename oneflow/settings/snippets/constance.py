@@ -155,7 +155,13 @@ CONSTANCE_CONFIG = {
                                      u'check_reads() all subscriptions that '
                                      u'do not have the same number of '
                                      u'articles than the feed they belong '
-                                     u'to.')),
+                                     u'to. Default: enabled.')),
+
+    'CHECK_DUPLICATES_DISABLED': (False, ugettext(u'Disable or not the '
+                                  u'night duplicates check that will '
+                                  u'ensure all duplicate articles have '
+                                  u'no read left in the system. Default: '
+                                  u'let it run (=enabled).')),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
 

@@ -158,10 +158,10 @@ class DocumentHelperMixin(object):
         assert hasattr(duplicate, 'duplicate_of')
 
         _cls_name_ = self.__class__.__name__
-
+        _cls_name_lower_ = _cls_name_.lower()
         # TODO: get this from a class attribute?
         # I'm not sure for MongoEngine models.
-        lower_plural = _cls_name_.lower() + u's'
+        lower_plural = _cls_name_lower_ + u's'
 
         if duplicate.duplicate_of:
             if duplicate.duplicate_of != self:
@@ -195,7 +195,7 @@ class DocumentHelperMixin(object):
             # Having tasks not as methods because of Celery bugs forces
             # us to do strange things. We have to "guess" and lookup the
             # task name in the current module. OK, not *that* big deal.
-            self.nonrel_globals[self.__class__.__name__.lower()
+            self.nonrel_globals[_cls_name_lower_
                                 + '_replace_duplicate_everywhere'].delay(
                                     self.id, duplicate.id)
 

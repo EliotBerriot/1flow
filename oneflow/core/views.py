@@ -354,6 +354,8 @@ def read_with_endless_pagination(request, **kwargs):
 
     query_kwargs = _rwep_generate_query_kwargs(request, **kwargs)
     order_by     = _rwep_generate_order_by(request, **kwargs)
+    user         = request.user.mongo
+    # preferences = user.preferences
 
     # ——————————————————————————————————————————————————— filter feed or folder
 
@@ -378,7 +380,7 @@ def read_with_endless_pagination(request, **kwargs):
 
     #LOGGER.info(u'query_kwargs: %s', query_kwargs)
 
-    reads = Read.objects(user=request.user.mongo,
+    reads = Read.objects(user=user,
                          **query_kwargs).order_by(order_by).no_cache()
 
     context = {
@@ -389,15 +391,13 @@ def read_with_endless_pagination(request, **kwargs):
         u'initial': False,
     }
 
-    #preferences = request.user.mongo.preferences
-
     # ——————————————————————————————————————————————————————————— Ajax requests
 
     if request.is_ajax():
 
         if request.GET.get('count', False):
             template = u'snippets/read/read-endless-count.html'
-            context[u'reads_count'] = reads.count()
+            count = context[u'reads_count'] = reads.count()
 
             #
             # TODO: compare / update the cached counters
@@ -414,16 +414,41 @@ def read_with_endless_pagination(request, **kwargs):
             elif query_kwargs.get('is_bookmarked', False):
                 attr_name = 'bookmarked_articles_count'
 
-            elif query_kwargs.get('is_read', None) is False:
+            elif query_kwargs.get('is_read__ne', None) is True:
                 attr_name = 'unread_articles_count'
 
             if attr_name:
                 if feed:
-                    # feed is really a nonrel.subscription
-                    setattr(feed, attr_name, context[u'reads_count'])
+                    current_count = getattr(feed, attr_name)
+
+                    if current_count != count:
+                        LOGGER.info(u'Setting Subscription#%s.%s=%s for '
+                                    u'Read.%s (old was: %s).',
+                                    feed.id, attr_name, count, query_kwargs,
+                                    current_count, )
+
+                        # feed is really a nonrel.subscription
+                        setattr(feed, attr_name, count)
 
                 elif folder:
-                    setattr(folder, attr_name, context[u'reads_count'])
+                    current_count = getattr(folder, attr_name)
+
+                    if current_count != count:
+                        LOGGER.info(u'Setting Folder#%s.%s=%s for Read.%s '
+                                    u'(old was: %s).', folder.id, attr_name,
+                                    count, query_kwargs, current_count)
+
+                        setattr(folder, attr_name, count)
+
+                else:
+                    current_count = getattr(user, attr_name)
+
+                    if current_count != count:
+                        LOGGER.info(u'Setting User#%s.%s=%s for Read.%s '
+                                    u'(old was: %s).', user.id, attr_name,
+                                    count, query_kwargs, current_count)
+
+                        setattr(user, attr_name, count)
 
         elif request.GET.get('mark_all_read', False):
 
@@ -436,7 +461,7 @@ def read_with_endless_pagination(request, **kwargs):
                     subscription.mark_all_read()
 
             else:
-                for subscription in request.user.mongo.subscriptions:
+                for subscription in user.subscriptions:
                     subscription.mark_all_read()
 
             return HttpResponse('DONE')

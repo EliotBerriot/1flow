@@ -10,7 +10,7 @@
               href="{% url 'read_one' read.id %}"
               target="_blank">{{ read.id }}</td>
           <td><div class="right">{% trans "Article: " %} <a
-              href="/admin/models/article/{{ article.id }}/"
+              href="{{ NONREL_ADMIN }}article/{{ article.id }}/"
               target="_blank">{{ article.id }}</a></div></td>
         </tr>
         <tr>
@@ -19,7 +19,7 @@
               {% if article.feeds %}
                   {% trans "Feeds: " %}
                     {% for feed in article.feeds %}
-                      <a href="/admin/models/feed/{{feed.id}}/"
+                      <a href="{{ NONREL_ADMIN }}feed/{{feed.id}}/"
                         target="_blank">{{feed.name}}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
 
