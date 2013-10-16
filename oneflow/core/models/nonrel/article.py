@@ -957,6 +957,29 @@ class Article(Document, DocumentHelperMixin):
             LOGGER.exception(u'Extraction failed for article %s.', self)
             return
 
+    @property
+    def is_good(self):
+        """ Return ``True`` if the current article
+            is ready to be seen by final users. """
+
+        #
+        # NOTE: sync the conditions with @Feed.good_articles
+        #
+
+        if self.orphaned:
+            return False
+
+        if not self.url_absolute:
+            return False
+
+        if self.duplicate_of:
+            return False
+
+        if self.content_type not in CONTENT_TYPES_FINAL:
+            return False
+
+        return True
+
     def find_image_must_abort(self, force=False, commit=True):
 
         if self.image_url and not force:
