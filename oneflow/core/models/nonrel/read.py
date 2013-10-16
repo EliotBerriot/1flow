@@ -13,7 +13,7 @@ from mongoengine.fields import (StringField, BooleanField,
                                 FloatField, DateTimeField,
                                 ListField, ReferenceField,
                                 GenericReferenceField)
-from mongoengine.errors import NotUniqueError  # , ValidationError
+from mongoengine.errors import NotUniqueError, ValidationError
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
