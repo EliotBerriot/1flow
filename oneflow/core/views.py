@@ -23,7 +23,8 @@ from django.shortcuts import render
 from django.template import add_to_builtins
 #from django.views.generic import ListView
 from django.contrib.auth import authenticate, login, get_user_model
-from django.utils.translation import ugettext_lazy as _, ugettext as __
+from django.utils.translation import (ugettext_lazy as _,
+                                      ugettext as __, ungettext)
 
 #from infinite_pagination.paginator import InfinitePaginator
 from endless_pagination.utils import get_page_number_from_request
@@ -266,6 +267,7 @@ def _rwep_generate_query_kwargs(request, **kwargs):
         for read_with_endless_pagination(). """
 
     query_kwargs = {}
+    primary_mode = None
     combinations = set()
     attributes   = Read.status_data.keys()
 
@@ -274,13 +276,15 @@ def _rwep_generate_query_kwargs(request, **kwargs):
         # No particular kwargs for this one, but we
         # needed to pass in the 'if' to avoid the
         # default case where we get only the unread.
-        pass
+        primary_mode = (u'all', False)
 
     else:
         for attrname in attributes:
             mykwarg = kwargs.get(attrname, None)
 
             if mykwarg is not None:
+                primary_mode = (attrname, mykwarg)
+
                 if mykwarg:
                     query_kwargs[attrname] = mykwarg
 
@@ -321,7 +325,7 @@ def _rwep_generate_query_kwargs(request, **kwargs):
         else:
             query_kwargs[parameter] = checked_value
 
-    return query_kwargs
+    return query_kwargs, primary_mode
 
 
 def _rwep_generate_order_by(request, **kwargs):
@@ -350,22 +354,139 @@ def _rwep_generate_order_by(request, **kwargs):
     return order_by
 
 
+def _rwep_ajax_update_counters(kwargs, query_kwargs,
+                               subscription, folder,
+                               user, count):
+
+    attr_name = None
+
+    LOGGER.info(query_kwargs)
+
+    if kwargs.get('all', False):
+        attr_name = 'all_articles_count'
+
+    elif query_kwargs.get('is_starred', False):
+        attr_name = 'starred_articles_count'
+
+    elif query_kwargs.get('is_bookmarked', False):
+        attr_name = 'bookmarked_articles_count'
+
+    elif query_kwargs.get('is_read__ne', None) is True:
+        attr_name = 'unread_articles_count'
+
+    if attr_name:
+        if subscription:
+            current_count = getattr(subscription, attr_name)
+
+            if current_count != count:
+                LOGGER.info(u'Setting Subscription#%s.%s=%s for '
+                            u'Read.%s (old was: %s).',
+                            subscription.id, attr_name, count, query_kwargs,
+                            current_count, )
+
+                # subscription is really a nonrel.subscription
+                setattr(subscription, attr_name, count)
+
+        elif folder:
+            current_count = getattr(folder, attr_name)
+
+            if current_count != count:
+                LOGGER.info(u'Setting Folder#%s.%s=%s for Read.%s '
+                            u'(old was: %s).', folder.id, attr_name,
+                            count, query_kwargs, current_count)
+
+                setattr(folder, attr_name, count)
+
+        else:
+            current_count = getattr(user, attr_name)
+
+            if current_count != count:
+                LOGGER.info(u'Setting User#%s.%s=%s for Read.%s '
+                            u'(old was: %s).', user.id, attr_name,
+                            count, query_kwargs, current_count)
+
+                setattr(user, attr_name, count)
+
+
+def _rwep_ajax_mark_all_read(subscription, folder, user):
+
+    if subscription:
+        subscription.mark_all_read()
+
+    elif folder:
+        for subscription in folder.subscriptions:
+            subscription.mark_all_read()
+
+    else:
+        for subscription in user.subscriptions:
+            subscription.mark_all_read()
+
+
+def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
+
+    mode, negated = primary_mode
+
+    if mode == 'is_read' and not negated:
+        mode = 'is_unread'
+
+    attr_name = (u'all_articles_count'
+                 if mode == u'all'
+                 else mode[3:] + u'_articles_count')
+
+    singular_text, plural_text = Read.status_data[mode]['list_headers']
+
+    if subscription:
+        count = getattr(subscription, attr_name)
+
+        header_text = ungettext(singular_text, plural_text, count) % {
+                                'count': count, 'list': subscription.name}
+
+    elif folder:
+        count = getattr(folder, attr_name)
+
+        header_text = ungettext(singular_text, plural_text, count) % {
+                                'count': count, 'list': folder.name}
+
+        sub_count = len(folder.subscriptions)
+
+        header_text += ungettext(u' (%(count)s subscription)',
+                                 u' (%(count)s subscriptions)', sub_count) % {
+                                'count': sub_count}
+
+    else:
+        sub_count = len(user.subscriptions)
+
+        sub_text = ungettext(u'%(count)s subscription',
+                             u'%(count)s subscriptions', sub_count) % {
+                                'count': sub_count}
+
+        count = getattr(user, attr_name)
+
+        header_text = ungettext(singular_text, plural_text, count) % {
+                                'count': count, 'list': sub_text}
+
+    return header_text
+
+
 def read_with_endless_pagination(request, **kwargs):
 
-    query_kwargs = _rwep_generate_query_kwargs(request, **kwargs)
-    order_by     = _rwep_generate_order_by(request, **kwargs)
-    user         = request.user.mongo
+    (query_kwargs,
+     primary_mode) = _rwep_generate_query_kwargs(request, **kwargs)
+    order_by       = _rwep_generate_order_by(request, **kwargs)
+    user           = request.user.mongo
     # preferences = user.preferences
 
-    # ——————————————————————————————————————————————————— filter feed or folder
+    # —————————————————————————————————————————————————— subscription or folder
 
-    feed = kwargs.get('feed', None)
+    # "feed" (from the user point of view) is actually
+    # a subscription (from the developer point of view).
+    subscription = kwargs.get('feed', None)
 
-    if feed:
-        feed = Subscription.objects.get(id=feed)
+    if subscription:
+        subscription = Subscription.objects.get(id=subscription)
 
-        LOGGER.info(u'Refining reads by feed %s', feed)
-        query_kwargs[u'subscriptions__contains'] = feed
+        LOGGER.info(u'Refining reads by subscription %s', subscription)
+        query_kwargs[u'subscriptions__contains'] = subscription
 
     folder = kwargs.get('folder', None)
 
@@ -384,7 +505,12 @@ def read_with_endless_pagination(request, **kwargs):
 
     context = {
         u'reads': reads,
-
+        u'primary_mode': primary_mode,
+        u'subscription': subscription,
+        u'folder': folder,
+        u'read_page_header_text': _rwep_build_page_header_text(subscription,
+                                                               folder, user,
+                                                               primary_mode),
         # are we rendering the first "main"
         # page, or just a subset via ajax?
         u'initial': False,
@@ -398,70 +524,12 @@ def read_with_endless_pagination(request, **kwargs):
             template = u'snippets/read/read-endless-count.html'
             count = context[u'reads_count'] = reads.count()
 
-            #
-            # TODO: compare / update the cached counters
-            #
-
-            attr_name = None
-
-            if kwargs.get('all', False):
-                attr_name = 'all_articles_count'
-
-            elif query_kwargs.get('is_starred', False):
-                attr_name = 'starred_articles_count'
-
-            elif query_kwargs.get('is_bookmarked', False):
-                attr_name = 'bookmarked_articles_count'
-
-            elif query_kwargs.get('is_read__ne', None) is True:
-                attr_name = 'unread_articles_count'
-
-            if attr_name:
-                if feed:
-                    current_count = getattr(feed, attr_name)
-
-                    if current_count != count:
-                        LOGGER.info(u'Setting Subscription#%s.%s=%s for '
-                                    u'Read.%s (old was: %s).',
-                                    feed.id, attr_name, count, query_kwargs,
-                                    current_count, )
-
-                        # feed is really a nonrel.subscription
-                        setattr(feed, attr_name, count)
-
-                elif folder:
-                    current_count = getattr(folder, attr_name)
-
-                    if current_count != count:
-                        LOGGER.info(u'Setting Folder#%s.%s=%s for Read.%s '
-                                    u'(old was: %s).', folder.id, attr_name,
-                                    count, query_kwargs, current_count)
-
-                        setattr(folder, attr_name, count)
-
-                else:
-                    current_count = getattr(user, attr_name)
-
-                    if current_count != count:
-                        LOGGER.info(u'Setting User#%s.%s=%s for Read.%s '
-                                    u'(old was: %s).', user.id, attr_name,
-                                    count, query_kwargs, current_count)
-
-                        setattr(user, attr_name, count)
+            _rwep_ajax_update_counters(kwargs, query_kwargs,
+                                       subscription, folder, user, count)
 
         elif request.GET.get('mark_all_read', False):
 
-            if feed:
-                # feed is really a nonrel.subscription
-                feed.mark_all_read()
-
-            elif folder:
-                for subscription in query_kwargs[u'subscriptions__in']:
-                    subscription.mark_all_read()
-
-            else:
-                for subscription in user.subscriptions:
-                    subscription.mark_all_read()
+            _rwep_ajax_mark_all_read(subscription, folder, user)
 
             return HttpResponse('DONE')
 
