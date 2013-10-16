@@ -380,8 +380,7 @@ def read_with_endless_pagination(request, **kwargs):
 
     #LOGGER.info(u'query_kwargs: %s', query_kwargs)
 
-    reads = Read.objects(user=user,
-                         **query_kwargs).order_by(order_by).no_cache()
+    reads = user.reads(**query_kwargs).order_by(order_by).no_cache()
 
     context = {
         u'reads': reads,
