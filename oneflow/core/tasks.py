@@ -743,7 +743,10 @@ def global_subscriptions_checker(force=False):
         LOGGER.warning(u'Subscriptions checks disabled in configuration.')
         return
 
-    my_lock = RedisExpiringLock('check_all_subscriptions', expire_time=3600)
+    # This task runs one a day. Acquire the lock for just a
+    # little more time to avoid over-parallelized runs.
+    my_lock = RedisExpiringLock('check_all_subscriptions',
+                                expire_time=3600 * 25)
 
     if not my_lock.acquire():
         if force:
@@ -790,7 +793,9 @@ def global_duplicates_checker(limit=None, force=False):
         LOGGER.warning(u'Duplicates check disabled in configuration.')
         return
 
-    my_lock = RedisExpiringLock('check_all_duplicates', expire_time=3600)
+    # This task runs one a day. Acquire the lock for just a
+    # little more time to avoid over-parallelized runs.
+    my_lock = RedisExpiringLock('check_all_duplicates', expire_time=3600 * 25)
 
     if not my_lock.acquire():
         if force:
