@@ -442,6 +442,35 @@ class Read(Document, DocumentHelperMixin):
             setattr(self.user, attr_name,
                     op(getattr(self.user, attr_name), 1))
 
+    def validate(self, *args, **kwargs):
+        try:
+            super(Read, self).validate(*args, **kwargs)
+
+        except ValidationError as e:
+            tags_error = e.errors.get('tags', None)
+
+            if tags_error and 'GenericReferences can only contain documents' \
+                    in str(tags_error):
+
+                good_tags  = set()
+                to_replace = set()
+
+                for tag in self.tags:
+                    if isinstance(tag, Document):
+                        good_tags.add(tag)
+
+                    else:
+                        to_replace.add(tag)
+
+                new_tags = Tag.get_tags_set([t for t in to_replace
+                                            if t not in (u'', None)])
+
+                self.tags = good_tags | new_tags
+                e.errors.pop('tags')
+
+            if e.errors:
+                raise e
+
     @classmethod
     def signal_post_save_handler(cls, sender, document,
                                  created=False, **kwargs):
