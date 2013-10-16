@@ -16,4 +16,4 @@ worker_low:        python manage.py celery worker -E --loglevel=info    --queues
 worker_background: python manage.py celery worker -E --loglevel=warning --queues background --hostname background.${HOSTNAME} -c 2 --maxtasksperchild 16
 worker_fetch:      python manage.py celery worker -E --loglevel=warning --queues fetch      --hostname fetch.${HOSTNAME}      -c 3 --maxtasksperchild 16
 worker_swarm:      python manage.py celery worker -E --loglevel=warning --queues swarm      --hostname swarm.${HOSTNAME}      -c 8 --maxtasksperchild 32
-
+worker_clean:      python manage.py celery worker -E --loglevel=warning --queues clean      --hostname clean.${HOSTNAME}      -c 1 --maxtasksperchild 8
