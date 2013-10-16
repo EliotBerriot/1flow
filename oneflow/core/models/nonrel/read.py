@@ -363,7 +363,12 @@ class Read(Document, DocumentHelperMixin):
     }
 
     meta = {
-        'indexes': ['user', ]
+        'indexes': [
+            'user',
+            ('user', 'is_read'),
+            ('user', 'is_starred'),
+            ('user', 'is_bookmarked'),
+        ]
     }
 
     @classmethod
