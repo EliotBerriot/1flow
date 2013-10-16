@@ -163,6 +163,11 @@ CONSTANCE_CONFIG = {
                                   u'no read left in the system. Default: '
                                   u'let it run (=enabled).')),
 
+    'CHECK_READS_DISABLED': (False, ugettext(u'Disable or not the night '
+                             u'reads check that will switch on-and-off their '
+                             u'`is_good` attribute. Default: let it run '
+                             u'(=enabled).')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
 
     # GR_LOAD_LIMIT * GR_WAVE_LIMIT must equals GR_MAX_ARTICLES:

@@ -8,6 +8,7 @@ from random import randrange
 from constance import config
 
 from pymongo.errors import DuplicateKeyError
+from mongoengine.fields import DBRef
 from mongoengine.errors import OperationError, NotUniqueError, ValidationError
 from mongoengine.queryset import Q
 from mongoengine.context_managers import no_dereference
@@ -15,7 +16,7 @@ from mongoengine.context_managers import no_dereference
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
 
-from celery import task
+from celery import task, chain as tasks_chain
 
 from django.conf import settings
 from django.core.mail import mail_admins
@@ -611,51 +612,76 @@ def refresh_all_feeds(limit=None, force=False):
 
     with benchmark('refresh_all_feeds()'):
 
-        count = 0
-        mynow = now()
+        try:
+            count = 0
+            mynow = now()
 
-        for feed in feeds:
+            for feed in feeds:
 
-            if feed.refresh_lock.is_locked():
-                LOGGER.info(u'Feed %s already locked, skipped.', feed)
-                continue
+                if feed.refresh_lock.is_locked():
+                    LOGGER.info(u'Feed %s already locked, skipped.', feed)
+                    continue
 
-            interval = timedelta(seconds=feed.fetch_interval)
+                interval = timedelta(seconds=feed.fetch_interval)
 
-            if feed.last_fetch is None:
+                if feed.last_fetch is None:
 
-                feed_refresh.delay(feed.id)
+                    feed_refresh.delay(feed.id)
 
-                LOGGER.info(u'Launched immediate refresh of feed %s which '
-                            u'has never been refreshed.', feed)
+                    LOGGER.info(u'Launched immediate refresh of feed %s which '
+                                u'has never been refreshed.', feed)
 
-            elif force or feed.last_fetch + interval < mynow:
+                elif force or feed.last_fetch + interval < mynow:
 
-                how_late = feed.last_fetch + interval - mynow
-                how_late = how_late.days * 86400 + how_late.seconds
+                    how_late = feed.last_fetch + interval - mynow
+                    how_late = how_late.days * 86400 + how_late.seconds
 
-                if config.FEED_REFRESH_RANDOMIZE:
-                    countdown = randrange(config.FEED_REFRESH_RANDOMIZE_DELAY)
-                    feed_refresh.apply_async((feed.id, force),
-                                             countdown=countdown)
+                    if config.FEED_REFRESH_RANDOMIZE:
+                        countdown = randrange(
+                            config.FEED_REFRESH_RANDOMIZE_DELAY)
 
-                else:
-                    countdown = 0
-                    feed_refresh.delay(feed.id, force)
+                        feed_refresh.apply_async((feed.id, force),
+                                                 countdown=countdown)
 
-                LOGGER.info(u'%s refresh of feed %s %s (%s late).',
-                            u'Scheduled randomized'
-                            if countdown else u'Launched',
-                            feed,
-                            u' in {0}'.format(naturaldelta(countdown))
-                            if countdown else u'in the background',
-                            naturaldelta(how_late))
-                count += 1
+                    else:
+                        countdown = 0
+                        feed_refresh.delay(feed.id, force)
+
+                    LOGGER.info(u'%s refresh of feed %s %s (%s late).',
+                                u'Scheduled randomized'
+                                if countdown else u'Launched',
+                                feed,
+                                u' in {0}'.format(naturaldelta(countdown))
+                                if countdown else u'in the background',
+                                naturaldelta(how_late))
+                    count += 1
+
+        finally:
+            my_lock.release()
 
         LOGGER.info(u'Launched %s refreshes out of %s feed(s) checked.',
                     count, feeds.count())
 
-    my_lock.release()
+
+@task(queue='high')
+def global_checker_task(*args, **kwargs):
+    """ Just run all tasks in a celery chain, to avoid
+        them to overlap and hit the database too much. """
+
+    global_check_chain = tasks_chain(
+        # HEADS UP: all subtasks are immutable, we just want them to run
+        # chained to avoid dead times, without any link between them.
+
+        # begin by archiving everything we can, for subsequent
+        # tasks to work on the smallest documents-set possible.
+        archive_documents.si(),
+
+        global_duplicates_checker.si(),
+        global_subscriptions_checker.si(),
+        global_reads_checker.si(),
+    )
+
+    return global_check_chain.delay()
 
 
 @task(queue='low')
@@ -739,7 +765,10 @@ def global_subscriptions_checker(force=False):
         LOGGER.warning(u'Subscriptions checks disabled in configuration.')
         return
 
-    my_lock = RedisExpiringLock('check_all_subscriptions', expire_time=3600)
+    # This task runs one a day. Acquire the lock for just a
+    # little more time to avoid over-parallelized runs.
+    my_lock = RedisExpiringLock('check_all_subscriptions',
+                                expire_time=3600 * 25)
 
     if not my_lock.acquire():
         if force:
@@ -756,31 +785,26 @@ def global_subscriptions_checker(force=False):
             return
 
     with benchmark("Check all subscriptions"):
-        for feed in Feed.good_feeds:
-            feed.compute_cached_descriptors(all=True, good=True, bad=True)
+        try:
+            for feed in Feed.good_feeds:
+                feed.compute_cached_descriptors(all=True, good=True, bad=True)
 
-            for subscription in feed.subscriptions:
+                for subscription in feed.subscriptions:
 
-                if subscription.all_articles_count != feed.all_articles_count:
+                    if subscription.all_articles_count \
+                            != feed.good_articles_count:
 
-                    LOGGER.info(u'Subscription %s has only %s reads whereas '
-                                u'its feed has %s; checking it…', subscription,
-                                subscription.all_articles_count,
-                                feed.all_articles_count)
+                        LOGGER.info(u'Subscription %s (#%s) has %s reads '
+                                    u'whereas its feed has %s good articles;'
+                                    u' checking…', subscription.name,
+                                    subscription.id,
+                                    subscription.all_articles_count,
+                                    feed.good_articles_count)
 
-                    subscription.check_reads(force=True)
+                        subscription.check_reads(force=True)
 
-                # Release and get back the lock to refresh the timer and
-                # avoid it to automatically release the lock while we are
-                # running.
-                my_lock.release()
-                if not my_lock.acquire():
-                    LOGGER.error(u'Could not re-acquire '
-                                 u'global_subscriptions_checker() lock, '
-                                 u'aborting!')
-                    return
-
-    my_lock.release()
+        finally:
+            my_lock.release()
 
 
 @task(queue='low')
@@ -792,7 +816,9 @@ def global_duplicates_checker(limit=None, force=False):
         LOGGER.warning(u'Duplicates check disabled in configuration.')
         return
 
-    my_lock = RedisExpiringLock('check_all_duplicates', expire_time=3600)
+    # This task runs one a day. Acquire the lock for just a
+    # little more time to avoid over-parallelized runs.
+    my_lock = RedisExpiringLock('check_all_duplicates', expire_time=3600 * 25)
 
     if not my_lock.acquire():
         if force:
@@ -821,33 +847,28 @@ def global_duplicates_checker(limit=None, force=False):
     with benchmark(u"Check {0}/{1} duplicates".format(limit,
                    total_dupes_count)):
 
-        for duplicate in duplicates:
-            reads = Read.objects(article=duplicate)
+        try:
+            for duplicate in duplicates:
+                reads = Read.objects(article=duplicate)
 
-            processed_dupes += 1
+                processed_dupes += 1
 
-            if reads:
-                done_dupes_count  += 1
-                reads_count        = reads.count()
-                total_reads_count += reads_count
+                if reads:
+                    done_dupes_count  += 1
+                    reads_count        = reads.count()
+                    total_reads_count += reads_count
 
-                LOGGER.info(u'Duplicate article %s still has %s reads, fixing…',
-                            duplicate, reads_count)
+                    LOGGER.info(u'Duplicate article %s still has %s '
+                                u'reads, fixing…', duplicate, reads_count)
 
-                duplicate.duplicate_of.replace_duplicate_everywhere(duplicate)
+                    duplicate.duplicate_of.replace_duplicate_everywhere(
+                        duplicate)
 
-                if limit and done_dupes_count >= limit:
-                    break
+                    if limit and done_dupes_count >= limit:
+                        break
 
-            # Release and get back the lock to refresh the timer and
-            # avoid it to automatically release the lock while we are
-            # running.
+        finally:
             my_lock.release()
-            if not my_lock.acquire():
-                LOGGER.error(u'Could not re-acquire '
-                             u'global_duplicates_checker() lock, '
-                             u'aborting!')
-                return
 
     LOGGER.info(u'global_duplicates_checker(): %s/%s duplicates processed '
                 u'(%.2f%%), %s corrected (%.2f%%), %s reads altered.',
@@ -856,7 +877,96 @@ def global_duplicates_checker(limit=None, force=False):
                 done_dupes_count, done_dupes_count * 100.0 / processed_dupes,
                 total_reads_count)
 
-    my_lock.release()
+
+@task(queue='low')
+def global_reads_checker(limit=None, force=False, verbose=False,
+                         break_on_exception=False):
+
+    if config.CHECK_READS_DISABLED:
+        LOGGER.warning(u'Reads check disabled in configuration.')
+        return
+
+    # This task runs twice a day. Acquire the lock for just a
+    # little more time (13h, because Redis doesn't like floats)
+    # to avoid over-parallelized runs.
+    my_lock = RedisExpiringLock('check_all_reads', expire_time=3600 * 13)
+
+    if not my_lock.acquire():
+        if force:
+            my_lock.release()
+            my_lock.acquire()
+            LOGGER.warning(u'Forcing reads check…')
+
+        else:
+            # Avoid running this task over and over again in the queue
+            # if the previous instance did not yet terminate. Happens
+            # when scheduled task runs too quickly.
+            LOGGER.warning(u'global_reads_checker() is already '
+                           u'locked, aborting.')
+            return
+
+    if limit is None:
+        limit = 0
+
+    bad_reads = Read.objects(Q(is_good__exists=False)
+                             | Q(is_good__ne=True)).no_cache()
+
+    total_reads_count   = bad_reads.count()
+    processed_reads     = 0
+    wiped_reads_count   = 0
+    changed_reads_count = 0
+
+    with benchmark(u"Check {0}/{1} reads".format(limit, total_reads_count)):
+        try:
+            for read in bad_reads:
+
+                processed_reads += 1
+
+                if limit and changed_reads_count >= limit:
+                    break
+
+                if read.is_good:
+                    # This article has been activated via
+                    # another, coming from the same article.
+                    changed_reads_count += 1
+                    continue
+
+                article = read.article
+
+                try:
+                    if article.is_good:
+                        changed_reads_count += 1
+
+                        if verbose:
+                            LOGGER.info(u'Bad read %s has a good article, '
+                                        u'fixing…', read)
+
+                        article.activate_reads()
+
+                except:
+                    if isinstance(article, DBRef) or article is None:
+                        # The article doesn't exist anymore. Wipe the read.
+                        wiped_reads_count += 1
+                        read.delete()
+
+                    else:
+                        LOGGER.exception(u'Could not activate reads from '
+                                         u'article %s of read %s.',
+                                         article, read)
+                        if break_on_exception:
+                            break
+
+        finally:
+            my_lock.release()
+
+    LOGGER.info(u'global_reads_checker(): %s/%s reads processed '
+                u'(%.2f%%), %s corrected (%.2f%%); %s deleted (%.2f%%).',
+                processed_reads, total_reads_count,
+                processed_reads * 100.0 / total_reads_count,
+                changed_reads_count,
+                changed_reads_count * 100.0 / processed_reads,
+                wiped_reads_count,
+                wiped_reads_count * 100.0 / processed_reads)
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••• Move things to Archive DB
@@ -979,7 +1089,7 @@ def archive_documents(limit=None, force=False):
     # Be sure two archiving operations don't overlap, this is a very costly
     # operation for the database, and it can make the system very slugish.
     # The whole operation can be very long, we lock for a long time.
-    my_lock = RedisExpiringLock('archive_documents', expire_time=86400)
+    my_lock = RedisExpiringLock('archive_documents', expire_time=3600 * 24)
 
     if not my_lock.acquire():
         if force:

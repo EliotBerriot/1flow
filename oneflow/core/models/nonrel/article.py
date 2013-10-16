@@ -957,6 +957,44 @@ class Article(Document, DocumentHelperMixin):
             LOGGER.exception(u'Extraction failed for article %s.', self)
             return
 
+        self.activate_reads()
+
+    @property
+    def is_good(self):
+        """ Return ``True`` if the current article
+            is ready to be seen by final users. """
+
+        #
+        # NOTE: sync the conditions with @Feed.good_articles
+        #
+
+        if self.orphaned:
+            return False
+
+        if not self.url_absolute:
+            return False
+
+        if self.duplicate_of:
+            return False
+
+        if self.content_type not in CONTENT_TYPES_FINAL:
+            return False
+
+        return True
+
+    def activate_reads(self, force=False, verbose=False):
+
+        if self.is_good or force:
+            for read in self.bad_reads:
+                # We 'force' to avoid the reverse test in Read.
+                # We already know the article is OK.
+                read.activate(force=True)
+
+        else:
+            if verbose:
+                LOGGER.warning(u'Will not activate reads of bad article %s',
+                               self)
+
     def find_image_must_abort(self, force=False, commit=True):
 
         if self.image_url and not force:

@@ -428,11 +428,22 @@ class Feed(Document, DocumentHelperMixin):
             will use :attr:`articles` or :attr:`all_articles` to reflect
             real numbers.
         """
+
+        #
+        # NOTE: sync the conditions with @Article.is_good
+        #       and invert them in @Feed.bad_articles
+        #
+
         return self.articles(orphaned__ne=True, url_absolute=True).filter(
             Q(duplicate_of__exists=False) | Q(duplicate_of=None))
 
     @property
     def bad_articles(self):
+
+        #
+        # NOTE: invert these conditions in @Feed.good_articles
+        #
+
         return self.articles(Q(orphaned=True) | Q(url_absolute=False)
                              | Q(duplicate_of__ne=None))
 

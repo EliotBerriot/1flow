@@ -1,18 +1,19 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import operator
 import feedparser
 
 from celery import task
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Document, CASCADE
+from mongoengine import Document, Q, CASCADE
 from mongoengine.fields import (StringField, BooleanField,
                                 FloatField, DateTimeField,
                                 ListField, ReferenceField,
                                 GenericReferenceField)
-from mongoengine.errors import NotUniqueError  # , ValidationError
+from mongoengine.errors import NotUniqueError, ValidationError
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
@@ -55,6 +56,13 @@ class Read(Document, DocumentHelperMixin):
     subscriptions = ListField(ReferenceField(Subscription))
 
     date_created = DateTimeField(default=now)
+
+    is_good   = BooleanField(verbose_name=_('good for use?'),
+                             help_text=_(u'The system has validated the '
+                                         u'underlying article, and the read '
+                                         u'can now be shown, used by its '
+                                         u'owner, and counted in statistics.'),
+                             default=False)
 
     is_read   = BooleanField(help_text=_(u'The Owner has read the content or '
                              u'has manually marked it as such.'),
@@ -148,6 +156,10 @@ class Read(Document, DocumentHelperMixin):
     )
 
     status_data = {
+        #
+        # NOTE: "is_good" has nothing to do here, it's a system flag.
+        #       do not confuse it with read statuses.
+        #
 
         'is_read': {
             'list_name':     _p(u'past participle, plural', u'read'),
@@ -363,7 +375,15 @@ class Read(Document, DocumentHelperMixin):
     }
 
     meta = {
-        'indexes': ['user', ]
+        'indexes': [
+            'user',
+            ('user', 'is_good'),
+            ('user', 'is_good', 'is_read'),
+            ('user', 'is_good', 'is_starred'),
+            ('user', 'is_good', 'is_bookmarked'),
+            'article',
+            ('article', 'is_good'),
+        ]
     }
 
     @classmethod
@@ -383,38 +403,116 @@ class Read(Document, DocumentHelperMixin):
     @classmethod
     def signal_pre_delete_handler(cls, sender, document, **kwargs):
 
-        read         = document
-        to_decrement = ['all_articles_count']
+        read = document
 
-        if read.is_bookmarked:
-            to_decrement.append('bookmarked_articles_count')
+        if not read.is_good:
+            # counters already don't take this read into account.
+            return
 
-        if read.is_starred:
-            to_decrement.append('starred_articles_count')
+        read.update_cached_descriptors(operation='-')
 
-        if not read.is_read:
-            to_decrement.append('unread_articles_count')
+    def update_cached_descriptors(self, operation=None, update_only=None):
 
-        for subscription in read.subscriptions:
+        if operation is None:
+            operation = '+'
 
-            for attr_name in to_decrement:
+        assert operation in ('+', '-')
+
+        if operation == '+':
+            op = operator.add
+        else:
+            op = operator.sub
+
+        if update_only is None:
+
+            to_change = ['all_articles_count']
+
+            if self.is_bookmarked:
+                to_change.append('bookmarked_articles_count')
+
+            if self.is_starred:
+                to_change.append('starred_articles_count')
+
+            if not self.is_read:
+                to_change.append('unread_articles_count')
+
+            for watch_attr_name in Read.watch_attributes:
+                if getattr(self, watch_attr_name):
+                    # Strip 'is_' from the attribute name.
+                    to_change.append(watch_attr_name[3:] + '_articles_count')
+
+        else:
+            assert type(update_only) in (type(tuple()), type([]))
+
+            to_change = [only + '_articles_count' for only in update_only]
+
+        for subscription in self.subscriptions:
+            for attr_name in to_change:
                 setattr(subscription, attr_name,
-                        getattr(subscription, attr_name) - 1)
+                        op(getattr(subscription, attr_name), 1))
 
             for folder in subscription.folders:
-
-                for attr_name in to_decrement:
+                for attr_name in to_change:
                     setattr(folder, attr_name,
-                            getattr(folder, attr_name) - 1)
+                            op(getattr(folder, attr_name), 1))
 
-        for watch_attr_name in Read.watch_attributes:
-            if getattr(read, watch_attr_name):
-                # Strip 'is_' from the attribute name.
-                to_decrement.append(watch_attr_name[3:] + '_articles_count')
+        for attr_name in to_change:
+            setattr(self.user, attr_name,
+                    op(getattr(self.user, attr_name), 1))
 
-        for attr_name in to_decrement:
-            setattr(read.user, attr_name,
-                    getattr(read.user, attr_name) - 1)
+    def validate(self, *args, **kwargs):
+        try:
+            super(Read, self).validate(*args, **kwargs)
+
+        except ValidationError as e:
+            tags_error = e.errors.get('tags', None)
+
+            if tags_error and 'GenericReferences can only contain documents' \
+                    in str(tags_error):
+
+                good_tags  = set()
+                to_replace = set()
+
+                for tag in self.tags:
+                    if isinstance(tag, Document):
+                        good_tags.add(tag)
+
+                    else:
+                        to_replace.add(tag)
+
+                new_tags = Tag.get_tags_set([t for t in to_replace
+                                            if t not in (u'', None)])
+
+                self.tags = good_tags | new_tags
+                e.errors.pop('tags')
+
+            if e.errors:
+                raise e
+
+    def activate(self, force=False):
+        """ This method will mark the Read ``.is_good=True``
+            and do whatever in consequence. """
+
+        if not force and not self.article.is_good:
+            LOGGER.error(u'Cannot activate read %s, whose article '
+                         u'is not ready for public use!', self)
+            return
+
+        self.is_good = True
+        self.save()
+
+        update_only = ['all']
+
+        if self.is_starred:
+            update_only.append('starred')
+
+        if self.is_bookmarked:
+            update_only.append('bookmarked')
+
+        if not self.is_read:
+            update_only.append('unread')
+
+        self.update_cached_descriptors(update_only=update_only)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -435,6 +533,8 @@ class Read(Document, DocumentHelperMixin):
 
         self.save()
 
+        self.update_cached_descriptors()
+
     def __unicode__(self):
         return _(u'{0}∞{1} (#{2}) {3} {4}').format(
             self.user, self.article, self.id,
@@ -442,13 +542,16 @@ class Read(Document, DocumentHelperMixin):
                 if self.is_read else _p(u'adjective', u'unread'), self.rating)
 
     def set_subscriptions(self, commit=True):
-        user_feeds    = [sub.feed for sub in self.user.subscriptions]
-        article_feeds = [feed for feed in self.article.feeds
-                         if feed in user_feeds]
+        user_feeds         = [sub.feed for sub in self.user.subscriptions]
+        article_feeds      = [feed for feed in self.article.feeds
+                              if feed in user_feeds]
         self.subscriptions = list(Subscription.objects(feed__in=article_feeds))
 
         if commit:
             self.save()
+
+            # TODO: only for the new subscriptions.
+            #self.update_cached_descriptors( … )
 
         return self.subscriptions
 
@@ -480,6 +583,7 @@ class Read(Document, DocumentHelperMixin):
         if self.tags == []:
             self.tags = self.article.tags.copy()
             self.save()
+            # NO update_cached_descriptors() here.
 
     def add_tags(self, tags):
 
@@ -487,68 +591,26 @@ class Read(Document, DocumentHelperMixin):
             self.update(add_to_set__tags=tag)
 
         self.safe_reload()
+        # NO update_cached_descriptors() here.
 
     # ————————————————————————————————————————————— update subscriptions caches
 
     def is_read_changed(self):
 
-        if self.is_read:
-            for subscription in self.subscriptions:
-                subscription.unread_articles_count -= 1
-
-                for folder in subscription.folders:
-                    folder.unread_articles_count -= 1
-
-            self.user.unread_articles_count -= 1
-
-        else:
-            for subscription in self.subscriptions:
-                subscription.unread_articles_count += 1
-
-                for folder in subscription.folders:
-                    folder.unread_articles_count += 1
-
-            self.user.unread_articles_count += 1
+        self.update_cached_descriptors(operation='-' if self.is_read else '+',
+                                       update_only=['unread'])
 
     def is_starred_changed(self):
 
-        if self.is_starred:
-            for subscription in self.subscriptions:
-                subscription.starred_articles_count += 1
-
-                for folder in subscription.folders:
-                    folder.starred_articles_count += 1
-
-            self.user.starred_articles_count += 1
-
-        else:
-            for subscription in self.subscriptions:
-                subscription.starred_articles_count -= 1
-
-                for folder in subscription.folders:
-                    folder.starred_articles_count -= 1
-
-            self.user.starred_articles_count -= 1
+        self.update_cached_descriptors(operation='+'
+                                       if self.is_starred else '-',
+                                       update_only=['starred'])
 
     def is_bookmarked_changed(self):
 
-        if self.is_bookmarked:
-            for subscription in self.subscriptions:
-                subscription.bookmarked_articles_count += 1
-
-                for folder in subscription.folders:
-                    folder.bookmarked_articles_count += 1
-
-            self.user.bookmarked_articles_count += 1
-
-        else:
-            for subscription in self.subscriptions:
-                subscription.bookmarked_articles_count -= 1
-
-                for folder in subscription.folders:
-                    folder.bookmarked_articles_count -= 1
-
-            self.user.bookmarked_articles_count -= 1
+        self.update_cached_descriptors(operation='+'
+                                       if self.is_bookmarked else '-',
+                                       update_only=['bookmarked'])
 
 
 # ————————————————————————————————————————————————————————— external properties
@@ -557,29 +619,50 @@ class Read(Document, DocumentHelperMixin):
 
 def Folder_reads_property_get(self):
 
+    # The owner has already filtered good reads via an indexed search.
+    #
     # self.subscriptions is a QuerySet, we need
     # to convert it to a list for the new QuerySet.
-    return Read.objects(subscriptions__in=[s for s in self.subscriptions])
+    return self.owner.reads(subscriptions__in=[s for s in self.subscriptions])
 
 
 def Subscription_reads_property_get(self):
 
-    return Read.objects.filter(user=self.user, subscriptions__contains=self)
+    # The user has already filtered good reads via an indexed search.
+    return self.user.reads(subscriptions__contains=self)
 
 
 def Article_reads_property_get(self):
 
+    # Do NOT filter on is_good here. The Article needs to
+    # know about ALL reads, to activate them when ready.
     return Read.objects.filter(article=self)
+
+
+def Article_good_reads_property_get(self):
+
+    # Do NOT filter on is_good here. The Article needs to
+    # know about ALL reads, to activate them when ready.
+    return self.reads(is_good=True)
+
+
+def Article_bad_reads_property_get(self):
+
+    # Do NOT filter on is_good here. The Article needs to
+    # know about ALL reads, to activate them when ready.
+    return self.reads(Q(is_good__exists=False) | Q(is_good=False))
 
 
 def User_reads_property_get(self):
 
-    return Read.objects.filter(user=self)
+    return Read.objects.filter(user=self, is_good=True)
 
 
 Folder.reads       = property(Folder_reads_property_get)
 Subscription.reads = property(Subscription_reads_property_get)
 Article.reads      = property(Article_reads_property_get)
+Article.good_reads = property(Article_good_reads_property_get)
+Article.bad_reads  = property(Article_bad_reads_property_get)
 User.reads         = property(User_reads_property_get)
 
 
