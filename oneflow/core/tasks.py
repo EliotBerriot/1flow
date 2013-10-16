@@ -770,13 +770,14 @@ def global_subscriptions_checker(force=False):
                 for subscription in feed.subscriptions:
 
                     if subscription.all_articles_count \
-                            != feed.all_articles_count:
+                            != feed.good_articles_count:
 
-                        LOGGER.info(u'Subscription %s has only %s reads '
-                                    u'whereas its feed has %s; checking it…',
-                                    subscription,
+                        LOGGER.info(u'Subscription %s (#%s) has %s reads '
+                                    u'whereas its feed has %s good articles;'
+                                    u' checking…', subscription.name,
+                                    subscription.id,
                                     subscription.all_articles_count,
-                                    feed.all_articles_count)
+                                    feed.good_articles_count)
 
                         subscription.check_reads(force=True)
 
@@ -977,7 +978,7 @@ def archive_documents(limit=None, force=False):
     # Be sure two archiving operations don't overlap, this is a very costly
     # operation for the database, and it can make the system very slugish.
     # The whole operation can be very long, we lock for a long time.
-    my_lock = RedisExpiringLock('archive_documents', expire_time=86400)
+    my_lock = RedisExpiringLock('archive_documents', expire_time=3600 * 24)
 
     if not my_lock.acquire():
         if force:
