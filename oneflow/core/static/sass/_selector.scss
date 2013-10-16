@@ -1,6 +1,6 @@
+$folder-border-width-default: 2px;
 
-
-@mixin selector-factory($application-width, $folder-border-width: 3px,
+@mixin selector-factory($application-width, $folder-border-width: $folder-border-width-default,
                         $selector-margin: 20px, $selector-columns: 2) {
 
     $folder-level-0-children: $application-width - $folder-border-width;
@@ -247,8 +247,10 @@
 
 .folder-border-top {
     width: 33%;
-    height: 3px;
-    margin: 0 0 -3px 0;
+    height: $folder-border-width-default;
+
+    // DUNNO: why "-$folder-border-width-default" doesn't work.
+    margin: 0 0 -2px 0;
 }
 
 
@@ -258,6 +260,7 @@
 
 .folder-wrapper.level-0 {
     border-left-style: solid;
+    border-left-width: $folder-border-width-default;
 
     .folder-border-top {
         float: left;
@@ -273,6 +276,7 @@
 }
 .folder-wrapper.level-1 {
     border-right-style: solid;
+    border-right-width: $folder-border-width-default;
 
     .folder-border-top {
         float: right;
@@ -288,6 +292,7 @@
 }
 .folder-wrapper.level-2 {
     border-left-style: solid;
+    border-left-width: $folder-border-width-default;
 
     .folder-border-top {
         float: left;
@@ -303,6 +308,7 @@
 }
 .folder-wrapper.level-3 {
     border-right-style: solid;
+    border-right-width: $folder-border-width-default;
 
     .folder-border-top {
         float: right;
@@ -318,6 +324,7 @@
 }
 .folder-wrapper.level-4 {
     border-left-style: solid;
+    border-left-width: $folder-border-width-default;
 
     .folder-border-top {
         float: left;
