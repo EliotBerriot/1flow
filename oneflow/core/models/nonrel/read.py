@@ -616,29 +616,50 @@ class Read(Document, DocumentHelperMixin):
 
 def Folder_reads_property_get(self):
 
+    # The owner has already filtered good reads via an indexed search.
+    #
     # self.subscriptions is a QuerySet, we need
     # to convert it to a list for the new QuerySet.
-    return Read.objects(subscriptions__in=[s for s in self.subscriptions])
+    return self.owner.reads(subscriptions__in=[s for s in self.subscriptions])
 
 
 def Subscription_reads_property_get(self):
 
-    return Read.objects.filter(user=self.user, subscriptions__contains=self)
+    # The user has already filtered good reads via an indexed search.
+    return self.user.reads(subscriptions__contains=self)
 
 
 def Article_reads_property_get(self):
 
+    # Do NOT filter on is_good here. The Article needs to
+    # know about ALL reads, to activate them when ready.
     return Read.objects.filter(article=self)
+
+
+def Article_good_reads_property_get(self):
+
+    # Do NOT filter on is_good here. The Article needs to
+    # know about ALL reads, to activate them when ready.
+    return self.reads(is_good=True)
+
+
+def Article_bad_reads_property_get(self):
+
+    # Do NOT filter on is_good here. The Article needs to
+    # know about ALL reads, to activate them when ready.
+    return self.reads(Q(is_good__exists=False) | Q(is_good=False))
 
 
 def User_reads_property_get(self):
 
-    return Read.objects.filter(user=self)
+    return Read.objects.filter(user=self, is_good=True)
 
 
 Folder.reads       = property(Folder_reads_property_get)
 Subscription.reads = property(Subscription_reads_property_get)
 Article.reads      = property(Article_reads_property_get)
+Article.good_reads = property(Article_good_reads_property_get)
+Article.bad_reads  = property(Article_bad_reads_property_get)
 User.reads         = property(User_reads_property_get)
 
 
