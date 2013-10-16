@@ -187,7 +187,10 @@
         margin-bottom: 25px;
     }
 
-    .h1-side {
+
+    // The big squared background.
+    /*
+    .h1-background {
         position: absolute;
         top: 0;
         left: 0;
@@ -197,30 +200,49 @@
         //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
         background-color: $light-grey;
     }
+    */
+
+    // The thin-lined background
+    .h1-background {
+        position: absolute;
+        top: 14px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
+        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
+        //background-color: $light-grey;
+        background-color: $red-blood;
+    }
 
     h1 {
         position: absolute;
         top: 0;
-        left: 0;
         height: 25px;
         line-height: 25px;
         color: $dark-grey;
-        padding-left: 25px;
-        padding-right: 25px;
         background-color: $backgroundLightColor;
+    }
+
+    h1.left-side {
+        left: 50px;
+
+        padding-left: 15px;
+        padding-right: 15px;
+
         font-size: 150%;
-
-        // margin-left makes the "square" on the left of title.
-        margin: 0 0 0 25px;
-    }
-
-    #list-name {
-        font-style: italic;
         font-weight: bolder;
-        padding-left: 0.75em;
-        //color: $red-blood;
+        color: $navbar-grey;
     }
 
+    h1.right-side {
+        right: 50px;
+
+        padding-left: 15px;
+        padding-right: 15px;
+
+        font-size: 125%;
+    }
 }
 
 .initial-loading .loading {
