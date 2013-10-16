@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import operator
 import feedparser
 
 from celery import task
@@ -388,38 +389,58 @@ class Read(Document, DocumentHelperMixin):
     @classmethod
     def signal_pre_delete_handler(cls, sender, document, **kwargs):
 
-        read         = document
-        to_decrement = ['all_articles_count']
+        read = document
 
-        if read.is_bookmarked:
-            to_decrement.append('bookmarked_articles_count')
+        read.update_cached_descriptors(operation='-')
 
-        if read.is_starred:
-            to_decrement.append('starred_articles_count')
+    def update_cached_descriptors(self, operation=None, update_only=None):
 
-        if not read.is_read:
-            to_decrement.append('unread_articles_count')
+        if operation is None:
+            operation = '+'
 
-        for subscription in read.subscriptions:
+        assert operation in ('+', '-')
 
-            for attr_name in to_decrement:
+        if operation == '+':
+            op = operator.add
+        else:
+            op = operator.sub
+
+        if update_only is None:
+
+            to_change = ['all_articles_count']
+
+            if self.is_bookmarked:
+                to_change.append('bookmarked_articles_count')
+
+            if self.is_starred:
+                to_change.append('starred_articles_count')
+
+            if not self.is_read:
+                to_change.append('unread_articles_count')
+
+            for watch_attr_name in Read.watch_attributes:
+                if getattr(self, watch_attr_name):
+                    # Strip 'is_' from the attribute name.
+                    to_change.append(watch_attr_name[3:] + '_articles_count')
+
+        else:
+            assert type(update_only) in (type(tuple()), type([]))
+
+            to_change = [only + '_articles_count' for only in update_only]
+
+        for subscription in self.subscriptions:
+            for attr_name in to_change:
                 setattr(subscription, attr_name,
-                        getattr(subscription, attr_name) - 1)
+                        op(getattr(subscription, attr_name), 1))
 
             for folder in subscription.folders:
-
-                for attr_name in to_decrement:
+                for attr_name in to_change:
                     setattr(folder, attr_name,
-                            getattr(folder, attr_name) - 1)
+                            op(getattr(folder, attr_name), 1))
 
-        for watch_attr_name in Read.watch_attributes:
-            if getattr(read, watch_attr_name):
-                # Strip 'is_' from the attribute name.
-                to_decrement.append(watch_attr_name[3:] + '_articles_count')
-
-        for attr_name in to_decrement:
-            setattr(read.user, attr_name,
-                    getattr(read.user, attr_name) - 1)
+        for attr_name in to_change:
+            setattr(self.user, attr_name,
+                    op(getattr(self.user, attr_name), 1))
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -440,6 +461,8 @@ class Read(Document, DocumentHelperMixin):
 
         self.save()
 
+        self.update_cached_descriptors()
+
     def __unicode__(self):
         return _(u'{0}∞{1} (#{2}) {3} {4}').format(
             self.user, self.article, self.id,
@@ -447,13 +470,16 @@ class Read(Document, DocumentHelperMixin):
                 if self.is_read else _p(u'adjective', u'unread'), self.rating)
 
     def set_subscriptions(self, commit=True):
-        user_feeds    = [sub.feed for sub in self.user.subscriptions]
-        article_feeds = [feed for feed in self.article.feeds
-                         if feed in user_feeds]
+        user_feeds         = [sub.feed for sub in self.user.subscriptions]
+        article_feeds      = [feed for feed in self.article.feeds
+                              if feed in user_feeds]
         self.subscriptions = list(Subscription.objects(feed__in=article_feeds))
 
         if commit:
             self.save()
+
+            # TODO: only for the new subscriptions.
+            #self.update_cached_descriptors( … )
 
         return self.subscriptions
 
@@ -485,6 +511,7 @@ class Read(Document, DocumentHelperMixin):
         if self.tags == []:
             self.tags = self.article.tags.copy()
             self.save()
+            # NO update_cached_descriptors() here.
 
     def add_tags(self, tags):
 
@@ -492,68 +519,26 @@ class Read(Document, DocumentHelperMixin):
             self.update(add_to_set__tags=tag)
 
         self.safe_reload()
+        # NO update_cached_descriptors() here.
 
     # ————————————————————————————————————————————— update subscriptions caches
 
     def is_read_changed(self):
 
-        if self.is_read:
-            for subscription in self.subscriptions:
-                subscription.unread_articles_count -= 1
-
-                for folder in subscription.folders:
-                    folder.unread_articles_count -= 1
-
-            self.user.unread_articles_count -= 1
-
-        else:
-            for subscription in self.subscriptions:
-                subscription.unread_articles_count += 1
-
-                for folder in subscription.folders:
-                    folder.unread_articles_count += 1
-
-            self.user.unread_articles_count += 1
+        self.update_cached_descriptors(operation='-' if self.is_read else '+',
+                                       update_only=['unread'])
 
     def is_starred_changed(self):
 
-        if self.is_starred:
-            for subscription in self.subscriptions:
-                subscription.starred_articles_count += 1
-
-                for folder in subscription.folders:
-                    folder.starred_articles_count += 1
-
-            self.user.starred_articles_count += 1
-
-        else:
-            for subscription in self.subscriptions:
-                subscription.starred_articles_count -= 1
-
-                for folder in subscription.folders:
-                    folder.starred_articles_count -= 1
-
-            self.user.starred_articles_count -= 1
+        self.update_cached_descriptors(operation='+'
+                                       if self.is_starred else '-',
+                                       update_only=['starred'])
 
     def is_bookmarked_changed(self):
 
-        if self.is_bookmarked:
-            for subscription in self.subscriptions:
-                subscription.bookmarked_articles_count += 1
-
-                for folder in subscription.folders:
-                    folder.bookmarked_articles_count += 1
-
-            self.user.bookmarked_articles_count += 1
-
-        else:
-            for subscription in self.subscriptions:
-                subscription.bookmarked_articles_count -= 1
-
-                for folder in subscription.folders:
-                    folder.bookmarked_articles_count -= 1
-
-            self.user.bookmarked_articles_count -= 1
+        self.update_cached_descriptors(operation='+'
+                                       if self.is_bookmarked else '-',
+                                       update_only=['bookmarked'])
 
 
 # ————————————————————————————————————————————————————————— external properties
