@@ -611,51 +611,55 @@ def refresh_all_feeds(limit=None, force=False):
 
     with benchmark('refresh_all_feeds()'):
 
-        count = 0
-        mynow = now()
+        try:
+            count = 0
+            mynow = now()
 
-        for feed in feeds:
+            for feed in feeds:
 
-            if feed.refresh_lock.is_locked():
-                LOGGER.info(u'Feed %s already locked, skipped.', feed)
-                continue
+                if feed.refresh_lock.is_locked():
+                    LOGGER.info(u'Feed %s already locked, skipped.', feed)
+                    continue
 
-            interval = timedelta(seconds=feed.fetch_interval)
+                interval = timedelta(seconds=feed.fetch_interval)
 
-            if feed.last_fetch is None:
+                if feed.last_fetch is None:
 
-                feed_refresh.delay(feed.id)
+                    feed_refresh.delay(feed.id)
 
-                LOGGER.info(u'Launched immediate refresh of feed %s which '
-                            u'has never been refreshed.', feed)
+                    LOGGER.info(u'Launched immediate refresh of feed %s which '
+                                u'has never been refreshed.', feed)
 
-            elif force or feed.last_fetch + interval < mynow:
+                elif force or feed.last_fetch + interval < mynow:
 
-                how_late = feed.last_fetch + interval - mynow
-                how_late = how_late.days * 86400 + how_late.seconds
+                    how_late = feed.last_fetch + interval - mynow
+                    how_late = how_late.days * 86400 + how_late.seconds
 
-                if config.FEED_REFRESH_RANDOMIZE:
-                    countdown = randrange(config.FEED_REFRESH_RANDOMIZE_DELAY)
-                    feed_refresh.apply_async((feed.id, force),
-                                             countdown=countdown)
+                    if config.FEED_REFRESH_RANDOMIZE:
+                        countdown = randrange(
+                            config.FEED_REFRESH_RANDOMIZE_DELAY)
 
-                else:
-                    countdown = 0
-                    feed_refresh.delay(feed.id, force)
+                        feed_refresh.apply_async((feed.id, force),
+                                                 countdown=countdown)
 
-                LOGGER.info(u'%s refresh of feed %s %s (%s late).',
-                            u'Scheduled randomized'
-                            if countdown else u'Launched',
-                            feed,
-                            u' in {0}'.format(naturaldelta(countdown))
-                            if countdown else u'in the background',
-                            naturaldelta(how_late))
-                count += 1
+                    else:
+                        countdown = 0
+                        feed_refresh.delay(feed.id, force)
+
+                    LOGGER.info(u'%s refresh of feed %s %s (%s late).',
+                                u'Scheduled randomized'
+                                if countdown else u'Launched',
+                                feed,
+                                u' in {0}'.format(naturaldelta(countdown))
+                                if countdown else u'in the background',
+                                naturaldelta(how_late))
+                    count += 1
+
+        finally:
+            my_lock.release()
 
         LOGGER.info(u'Launched %s refreshes out of %s feed(s) checked.',
                     count, feeds.count())
-
-    my_lock.release()
 
 
 @task(queue='low')
@@ -756,31 +760,25 @@ def global_subscriptions_checker(force=False):
             return
 
     with benchmark("Check all subscriptions"):
-        for feed in Feed.good_feeds:
-            feed.compute_cached_descriptors(all=True, good=True, bad=True)
+        try:
+            for feed in Feed.good_feeds:
+                feed.compute_cached_descriptors(all=True, good=True, bad=True)
 
-            for subscription in feed.subscriptions:
+                for subscription in feed.subscriptions:
 
-                if subscription.all_articles_count != feed.all_articles_count:
+                    if subscription.all_articles_count \
+                            != feed.all_articles_count:
 
-                    LOGGER.info(u'Subscription %s has only %s reads whereas '
-                                u'its feed has %s; checking it…', subscription,
-                                subscription.all_articles_count,
-                                feed.all_articles_count)
+                        LOGGER.info(u'Subscription %s has only %s reads '
+                                    u'whereas its feed has %s; checking it…',
+                                    subscription,
+                                    subscription.all_articles_count,
+                                    feed.all_articles_count)
 
-                    subscription.check_reads(force=True)
+                        subscription.check_reads(force=True)
 
-                # Release and get back the lock to refresh the timer and
-                # avoid it to automatically release the lock while we are
-                # running.
-                my_lock.release()
-                if not my_lock.acquire():
-                    LOGGER.error(u'Could not re-acquire '
-                                 u'global_subscriptions_checker() lock, '
-                                 u'aborting!')
-                    return
-
-    my_lock.release()
+        finally:
+            my_lock.release()
 
 
 @task(queue='low')
@@ -821,33 +819,28 @@ def global_duplicates_checker(limit=None, force=False):
     with benchmark(u"Check {0}/{1} duplicates".format(limit,
                    total_dupes_count)):
 
-        for duplicate in duplicates:
-            reads = Read.objects(article=duplicate)
+        try:
+            for duplicate in duplicates:
+                reads = Read.objects(article=duplicate)
 
-            processed_dupes += 1
+                processed_dupes += 1
 
-            if reads:
-                done_dupes_count  += 1
-                reads_count        = reads.count()
-                total_reads_count += reads_count
+                if reads:
+                    done_dupes_count  += 1
+                    reads_count        = reads.count()
+                    total_reads_count += reads_count
 
-                LOGGER.info(u'Duplicate article %s still has %s reads, fixing…',
-                            duplicate, reads_count)
+                    LOGGER.info(u'Duplicate article %s still has %s '
+                                u'reads, fixing…', duplicate, reads_count)
 
-                duplicate.duplicate_of.replace_duplicate_everywhere(duplicate)
+                    duplicate.duplicate_of.replace_duplicate_everywhere(
+                        duplicate)
 
-                if limit and done_dupes_count >= limit:
-                    break
+                    if limit and done_dupes_count >= limit:
+                        break
 
-            # Release and get back the lock to refresh the timer and
-            # avoid it to automatically release the lock while we are
-            # running.
+        finally:
             my_lock.release()
-            if not my_lock.acquire():
-                LOGGER.error(u'Could not re-acquire '
-                             u'global_duplicates_checker() lock, '
-                             u'aborting!')
-                return
 
     LOGGER.info(u'global_duplicates_checker(): %s/%s duplicates processed '
                 u'(%.2f%%), %s corrected (%.2f%%), %s reads altered.',
