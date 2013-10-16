@@ -157,11 +157,8 @@ class Read(Document, DocumentHelperMixin):
 
     status_data = {
         #
-        # NOTE: "is_good" has nothing to do here, it's a system flag.
+        # NOTE 1: "is_good" has nothing to do here, it's a system flag.
         #       do not confuse it with read statuses.
-        #
-
-
         #
         # NOTE 2: These two are not real statuses, but having them here
         #       allows to keep everything status-related here, without
@@ -187,6 +184,8 @@ class Read(Document, DocumentHelperMixin):
                               _(u'<span id="reads-number">%(count)s</span> '
                                 u'unread articles in <span id="list-name">%(list)s</span>')), # NOQA
         },
+
+        # —————————————————————————————————————————————————————————————————————
 
         'is_read': {
             'list_name':     _p(u'past participle, plural', u'read'),

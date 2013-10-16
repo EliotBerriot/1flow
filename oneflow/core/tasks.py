@@ -927,8 +927,8 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                     break
 
                 if read.is_good:
-                    # This article has been activated via
-                    # another, coming from the same article.
+                    # This read has been activated via another
+                    # one, attached to the same article.
                     changed_reads_count += 1
                     continue
 
