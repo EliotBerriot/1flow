@@ -915,6 +915,7 @@ def global_reads_checker(limit=None, force=False, verbose=False,
     processed_reads     = 0
     wiped_reads_count   = 0
     changed_reads_count = 0
+    skipped_count       = 0
 
     with benchmark(u"Check {0}/{1} reads".format(limit, total_reads_count)):
         try:
@@ -932,11 +933,20 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                     continue
 
                 if extended_check:
-                    if read.subscriptions:
-                        read.check_subscriptions()
+                    try:
+                        if read.subscriptions:
+                            read.check_subscriptions()
 
-                    else:
-                        read.set_subscriptions()
+                        else:
+                            read.set_subscriptions()
+
+                    except:
+                        skipped_count += 1
+                        LOGGER.exception(u'Could not set subscriptions on '
+                                         u'read #%s, from article #%s, for '
+                                         u'user #%s. Skipping.', read.id,
+                                         read.article.id, read.user.id)
+                        continue
 
                 article = read.article
 
@@ -967,13 +977,16 @@ def global_reads_checker(limit=None, force=False, verbose=False,
             my_lock.release()
 
     LOGGER.info(u'global_reads_checker(): %s/%s reads processed '
-                u'(%.2f%%), %s corrected (%.2f%%); %s deleted (%.2f%%).',
+                u'(%.2f%%), %s corrected (%.2f%%), %s deleted (%.2f%%), '
+                u'%s skipped (%.2f%%).',
                 processed_reads, total_reads_count,
                 processed_reads * 100.0 / total_reads_count,
                 changed_reads_count,
                 changed_reads_count * 100.0 / processed_reads,
                 wiped_reads_count,
-                wiped_reads_count * 100.0 / processed_reads)
+                wiped_reads_count * 100.0 / processed_reads,
+                skipped_count,
+                skipped_count * 100.0 / processed_reads)
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••• Move things to Archive DB
