@@ -377,9 +377,12 @@ class Read(Document, DocumentHelperMixin):
     meta = {
         'indexes': [
             'user',
-            ('user', 'is_read'),
-            ('user', 'is_starred'),
-            ('user', 'is_bookmarked'),
+            ('user', 'is_good'),
+            ('user', 'is_good', 'is_read'),
+            ('user', 'is_good', 'is_starred'),
+            ('user', 'is_good', 'is_bookmarked'),
+            'article',
+            ('article', 'is_good'),
         ]
     }
 
