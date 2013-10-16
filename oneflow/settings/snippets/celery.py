@@ -97,27 +97,10 @@ CELERYBEAT_SCHEDULE = {
         'task': 'oneflow.core.tasks.refresh_all_feeds',
         'schedule': crontab(hour='*', minute='*'),
     },
-    'global-feeds-checker': {
-        'task': 'oneflow.core.tasks.global_feeds_checker',
+
+    'global-checker-task': {
+        'task': 'oneflow.core.tasks.global_checker_task',
         'schedule': crontab(hour='1', minute='1'),
-    },
-
-    'global-subscriptions-checker': {
-        'task': 'oneflow.core.tasks.global_subscriptions_checker',
-        'schedule': crontab(hour='1', minute='11'),
-    },
-
-    'global-duplicates-checker': {
-        'task': 'oneflow.core.tasks.global_duplicates_checker',
-        'schedule': crontab(hour='2', minute='22'),
-    },
-
-    # De-activated as it's much to slow since Tags are ReferenceField()
-    # instead of GenericReferenceField() in articles.
-    #
-    'archive-documents': {
-        'task': 'oneflow.core.tasks.archive_documents',
-        'schedule': crontab(hour='4', minute='4'),
     },
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Statistics

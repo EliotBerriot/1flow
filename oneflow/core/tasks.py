@@ -16,7 +16,7 @@ from mongoengine.context_managers import no_dereference
 from libgreader import GoogleReader, OAuth2Method
 from libgreader.url import ReaderUrl
 
-from celery import task
+from celery import task, chain as tasks_chain
 
 from django.conf import settings
 from django.core.mail import mail_admins
@@ -661,6 +661,27 @@ def refresh_all_feeds(limit=None, force=False):
 
         LOGGER.info(u'Launched %s refreshes out of %s feed(s) checked.',
                     count, feeds.count())
+
+
+@task(queue='high')
+def global_checker_task(*args, **kwargs):
+    """ Just run all tasks in a celery chain, to avoid
+        them to overlap and hit the database too much. """
+
+    global_check_chain = tasks_chain(
+        # HEADS UP: all subtasks are immutable, we just want them to run
+        # chained to avoid dead times, without any link between them.
+
+        # begin by archiving everything we can, for subsequent
+        # tasks to work on the smallest documents-set possible.
+        archive_documents.si(),
+
+        global_duplicates_checker.si(),
+        global_subscriptions_checker.si(),
+        global_reads_checker.si(),
+    )
+
+    return global_check_chain.delay()
 
 
 @task(queue='low')
