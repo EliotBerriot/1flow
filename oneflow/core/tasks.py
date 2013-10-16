@@ -880,7 +880,7 @@ def global_duplicates_checker(limit=None, force=False):
 
 @task(queue='low')
 def global_reads_checker(limit=None, force=False, verbose=False,
-                         break_on_exception=False):
+                         break_on_exception=False, extended_check=False):
 
     if config.CHECK_READS_DISABLED:
         LOGGER.warning(u'Reads check disabled in configuration.')
@@ -930,6 +930,9 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                     # another, coming from the same article.
                     changed_reads_count += 1
                     continue
+
+                if extended_check:
+                    read.check_subscriptions()
 
                 article = read.article
 

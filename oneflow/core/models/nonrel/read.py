@@ -599,6 +599,24 @@ class Read(Document, DocumentHelperMixin):
             if read._db_name != settings.MONGODB_NAME_ARCHIVE:
                 read_post_create_task.delay(read.id)
 
+    def check_subscriptions(self):
+
+        to_keep = []
+
+        for subscription in self.subscriptions:
+            if isinstance(subscription, Subscription):
+                to_keep.append(subscription)
+
+            else:
+                LOGGER.warning(u'Clearing dangling Subscription reference %s '
+                               u'from Read %s. ', subscription, self)
+
+        if len(to_keep) != len(self.subscriptions):
+            self.update(set__subscriptions=[])
+            self.subscriptions = to_keep
+            self.save()
+            # No need to update cached descriptors, they should already be ok…
+
     def post_create_task(self):
         """ Method meant to be run from a celery task. """
 
