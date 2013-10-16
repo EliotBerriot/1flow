@@ -183,8 +183,8 @@
     .h1-wrapper {
         position: relative;
         height: 25px;
-        margin-top: 25px;
-        margin-bottom: 5px;
+        margin-top: 50px;
+        margin-bottom: 25px;
     }
 
     .h1-side {
@@ -193,7 +193,9 @@
         left: 0;
         right: 0;
         height: 25px;
-        background-color: $grayLighter;
+        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
+        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
+        background-color: $light-grey;
     }
 
     h1 {
@@ -202,7 +204,7 @@
         left: 0;
         height: 25px;
         line-height: 25px;
-        color: $gray;
+        color: $dark-grey;
         padding-left: 25px;
         padding-right: 25px;
         background-color: $backgroundLightColor;
@@ -214,7 +216,9 @@
 
     #list-name {
         font-style: italic;
-        color: $grayDark;
+        font-weight: bolder;
+        padding-left: 0.75em;
+        //color: $red-blood;
     }
 
 }

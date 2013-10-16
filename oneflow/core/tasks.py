@@ -932,7 +932,11 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                     continue
 
                 if extended_check:
-                    read.check_subscriptions()
+                    if read.subscriptions:
+                        read.check_subscriptions()
+
+                    else:
+                        read.set_subscriptions()
 
                 article = read.article
 

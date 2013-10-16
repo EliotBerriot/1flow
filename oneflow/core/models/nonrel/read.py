@@ -612,7 +612,6 @@ class Read(Document, DocumentHelperMixin):
                                u'from Read %s. ', subscription, self)
 
         if len(to_keep) != len(self.subscriptions):
-            self.update(set__subscriptions=[])
             self.subscriptions = to_keep
             self.save()
             # No need to update cached descriptors, they should already be ok…
