@@ -927,9 +927,20 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                     break
 
                 if read.is_good:
-                    # This article has been activated via
-                    # another, coming from the same article.
+                    # This read has been activated via another
+                    # one, attached to the same article.
                     changed_reads_count += 1
+                    continue
+
+                article = read.article
+
+                if isinstance(article, DBRef) or article is None:
+                    # The article doesn't exist anymore. Wipe the read.
+                    wiped_reads_count += 1
+                    LOGGER.error(u'Read #%s has dangling reference to '
+                                 u'non-existing article #%s, removing.',
+                                 read.id, article.id)
+                    read.delete()
                     continue
 
                 if extended_check:
@@ -945,10 +956,8 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                         LOGGER.exception(u'Could not set subscriptions on '
                                          u'read #%s, from article #%s, for '
                                          u'user #%s. Skipping.', read.id,
-                                         read.article.id, read.user.id)
+                                         article.id, read.user.id)
                         continue
-
-                article = read.article
 
                 try:
                     if article.is_good:
@@ -961,17 +970,11 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                         article.activate_reads()
 
                 except:
-                    if isinstance(article, DBRef) or article is None:
-                        # The article doesn't exist anymore. Wipe the read.
-                        wiped_reads_count += 1
-                        read.delete()
-
-                    else:
-                        LOGGER.exception(u'Could not activate reads from '
-                                         u'article %s of read %s.',
-                                         article, read)
-                        if break_on_exception:
-                            break
+                    LOGGER.exception(u'Could not activate reads from '
+                                     u'article %s of read %s.',
+                                     article, read)
+                    if break_on_exception:
+                        break
 
         finally:
             my_lock.release()

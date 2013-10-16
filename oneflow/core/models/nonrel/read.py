@@ -157,11 +157,8 @@ class Read(Document, DocumentHelperMixin):
 
     status_data = {
         #
-        # NOTE: "is_good" has nothing to do here, it's a system flag.
+        # NOTE 1: "is_good" has nothing to do here, it's a system flag.
         #       do not confuse it with read statuses.
-        #
-
-
         #
         # NOTE 2: These two are not real statuses, but having them here
         #       allows to keep everything status-related here, without
@@ -176,17 +173,19 @@ class Read(Document, DocumentHelperMixin):
 
         'all': {
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'articles')),
         },
 
         'is_unread': {
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'unread article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'unread article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'unread articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'unread articles')),
         },
+
+        # —————————————————————————————————————————————————————————————————————
 
         'is_read': {
             'list_name':     _p(u'past participle, plural', u'read'),
@@ -195,9 +194,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/read/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as read'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'read article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'read article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'read articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'read articles')),
             'undo_title':    _(u'Mark as unread'),
             'do_label' :     _(u'Mark read'),
             'undo_label':    _(u'Mark unread'),
@@ -213,9 +212,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/starred/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Star (add to favorites)'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'starred article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'starred article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'starred articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'starred articles')),
             'undo_title':    _(u'Remove from starred/favorites'),
             'do_label' :     _p(u'verb', u'Star'),
             'undo_label':    _(u'Unstar'),
@@ -231,9 +230,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/later/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Keep for reading later'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article to read later in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'article to read later'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles to read later in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'articles to read later')),
             'undo_title':    _(u'Remove from reading list'),
             'do_label':      _(u'Read later'),
             'undo_label':    _(u'Do not read later'),
@@ -249,9 +248,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/facts/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as fact / important event'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article containing fact(s) in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'article containing fact(s)'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles containing fact(s) in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'articles containing fact(s)')),
             'undo_title':    _(u'Remove from facts / important events'),
             'status_title':  _(u'This article contains one or '
                                u'more important facts'),
@@ -269,9 +268,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/numbers/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as valuable number'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article containing number(s) in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'article containing number(s)'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles containing number(s) in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'articles containing number(s)')),
             'undo_title':    _(u'Remove from valuable numbers'),
             'status_title':  _(u'This article contains quantified '
                                u'numbers for a watch.'),
@@ -292,9 +291,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/analysis/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as analysis / study / research'),
             'list_headers':  (_p(u'singular', u'<span id="reads-number">%(count)s</span> ' # NOQA
-                              u'analysis in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'analysis'),
                               _p(u'plural', u'<span id="reads-number">%(count)s</span> ' # NOQA
-                                 u'analysis in <span id="list-name">%(list)s</span>')), # NOQA
+                                 u'analysis')),
             'undo_title':    _(u'Unmark analysis / study / research'),
             'status_title':  _(u'This article contains an analysis, '
                                u'an in-depth study or a research '
@@ -316,9 +315,9 @@ class Read(Document, DocumentHelperMixin):
             'do_title':      _(u'Mark as containing quote(s) from people '
                                u'you consider important'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article containing quote(s) in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'article containing quote(s)'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles containing quote(s) in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'articles containing quote(s)')),
             'undo_title':    _(u'Unmark as containing quotes '
                                u'(people are not famous anymore?)'),
             'status_title':  _(u'This article contains one or more quote '
@@ -340,9 +339,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/prospective/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as prospective-related content'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'prospective article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'prospective article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'prospective articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'prospective articles')),
             'undo_title':    _(u'Unmark as prospective-related content'),
             'status_title':  _(u'This article contains prospective element(s) '
                                u'or must-remember hypothesis.'),
@@ -362,9 +361,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/rules/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as legal/regulations-related content'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'regulation-related article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'regulation-related article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'regulation-related articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'regulation-related articles')),
             'undo_title':    _(u'Unmark as legal content (overriden laws?)'),
             'status_title':  _(u'This article contains regulations/'
                                u'law/rules element(s)'),
@@ -388,9 +387,9 @@ class Read(Document, DocumentHelperMixin):
             'do_title':      _(u'Mark as best-practices / state of art '
                                u'content'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'best-practices article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'best-practices article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'best-practices articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'best-practices articles')),
             'undo_title':    _(u'Unmark as best-practices / state of art '
                                u'(has it become obsolete?)'),
             'status_title':  _(u'This article contains best-practices / '
@@ -412,9 +411,9 @@ class Read(Document, DocumentHelperMixin):
             'do_title':      _(u'Mark as a valuable piece of '
                                u'knowlegde for your brain or life'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'knowledge article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'knowledge article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'knowledge articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'knowledge articles')),
             'undo_title':    _(u'Unmark as neuronal-exciting '
                                u'element(s)'),
             'status_title':  _(u'This article contains a valuable '
@@ -435,9 +434,9 @@ class Read(Document, DocumentHelperMixin):
             'list_url_feed': _(ur'^read/fun/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as being fun. Are you sure?'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'fun article in <span id="list-name">%(list)s</span>'), # NOQA
+                              u'fun article'),
                               _(u'<span id="reads-number">%(count)s</span> '
-                                u'fun articles in <span id="list-name">%(list)s</span>')), # NOQA
+                                u'fun articles')),
             'undo_title':    _(u'Not fun anymore, sadly.'),
             'status_title':  _(u'OMG, this thing is sooooooooo fun! LMAO!'),
             'do_label' :     _(u'Mark as fun'),

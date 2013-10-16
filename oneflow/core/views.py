@@ -438,34 +438,29 @@ def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
     if subscription:
         count = getattr(subscription, attr_name)
 
-        header_text = ungettext(singular_text, plural_text, count) % {
-                                'count': count, 'list': subscription.name}
+        header_text_left = subscription.name
 
     elif folder:
-        count = getattr(folder, attr_name)
-
-        header_text = ungettext(singular_text, plural_text, count) % {
-                                'count': count, 'list': folder.name}
-
+        count     = getattr(folder, attr_name)
         sub_count = len(folder.subscriptions)
 
-        header_text += ungettext(u' (%(count)s subscription)',
-                                 u' (%(count)s subscriptions)', sub_count) % {
-                                'count': sub_count}
+        header_text_left = folder.name + ungettext(
+            u' (%(count)s subscription)',
+            u' (%(count)s subscriptions)', sub_count) % {'count': sub_count}
 
     else:
+        count     = getattr(user, attr_name)
         sub_count = len(user.subscriptions)
 
-        sub_text = ungettext(u'%(count)s subscription',
-                             u'%(count)s subscriptions', sub_count) % {
-                                'count': sub_count}
+        header_text_left = ungettext(
+            u'In your <span class="hide">%(count)s</span> subscription',
+            u'In your %(count)s subscriptions', sub_count) % {
+                                                        'count': sub_count}
 
-        count = getattr(user, attr_name)
+    header_text_right = ungettext(singular_text, plural_text, count) % {
+                            'count': count}
 
-        header_text = ungettext(singular_text, plural_text, count) % {
-                                'count': count, 'list': sub_text}
-
-    return header_text
+    return header_text_left, header_text_right
 
 
 def read_with_endless_pagination(request, **kwargs):
@@ -503,14 +498,18 @@ def read_with_endless_pagination(request, **kwargs):
 
     reads = user.reads(**query_kwargs).order_by(order_by).no_cache()
 
+    header_text_left, header_text_right = _rwep_build_page_header_text(
+                                    subscription, folder, user, primary_mode)
+
     context = {
         u'reads': reads,
-        u'primary_mode': primary_mode,
         u'subscription': subscription,
         u'folder': folder,
-        u'read_page_header_text': _rwep_build_page_header_text(subscription,
-                                                               folder, user,
-                                                               primary_mode),
+        # 'user' is already there, via a context processor.
+
+        u'read_page_header_text_left': header_text_left,
+        u'read_page_header_text_right': header_text_right,
+
         # are we rendering the first "main"
         # page, or just a subset via ajax?
         u'initial': False,
