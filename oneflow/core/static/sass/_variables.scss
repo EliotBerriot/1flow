@@ -7,10 +7,12 @@ $grayDarker:            #222 !default;
 $grayDark:              #333 !default;
 $gray:                  #555 !default;
 $grayLight:             #999 !default;
-$grayLighter:           #eee !default;
+$grayLighter:           #ccc !default;
+$grayLightMax:          #eee !default;
 $white:                 #fff !default;
 
 $bodyBackground:        $white !default;
+$backgroundLightColor:  rgb(247, 247, 247);
 $textColor:             rgb(124, 124, 124) !default;
 
 $linkColor:             rgb(50, 50, 50) !default;
