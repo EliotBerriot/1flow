@@ -176,13 +176,47 @@
 }
 
 #reads-list-header {
-    /*  Don't let the reads-number slide the whole
-        list when appearing, this is disgratious. */
-    min-height: 80px;
-
-    /* Align text on the list content (not edge). */
+    // Align text on the list content (not edge).
     padding-left: 10px;
     padding-right: 10px;
+
+    .h1-wrapper {
+        position: relative;
+        height: 25px;
+        margin-top: 25px;
+        margin-bottom: 5px;
+    }
+
+    .h1-side {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 25px;
+        background-color: $grayLighter;
+    }
+
+    h1 {
+        position: absolute;
+        top: 0;
+        left: 0;
+        height: 25px;
+        line-height: 25px;
+        color: $gray;
+        padding-left: 25px;
+        padding-right: 25px;
+        background-color: $backgroundLightColor;
+        font-size: 150%;
+
+        // margin-left makes the "square" on the left of title.
+        margin: 0 0 0 25px;
+    }
+
+    #list-name {
+        font-style: italic;
+        color: $grayDark;
+    }
+
 }
 
 .initial-loading .loading {

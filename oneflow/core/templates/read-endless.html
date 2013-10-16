@@ -8,13 +8,9 @@
 {% with home_style=preferences.home.style %}
 <div class="row-fluid">
     <div id="reads-list-header" class="span8 offset2">
-        <div class="row-fluid">
-            <div class="span6">
-                <span id="reads-number" class="hide"></span>
-            </div>
-            <div class="span6">
-                {# buttons here #}
-            </div>
+        <div class="h1-wrapper">
+            <div class="h1-side"></div>
+            <h1 >{{ read_page_header_text|safe }}</h1>
         </div>
     </div>
 
@@ -109,7 +105,7 @@
                         // articles in the counter span!!
                         $.get(document.location.pathname + '?count=1',
                             function(data){
-                                $('#reads-number').html(data).slideDown();
+                                $('#reads-number').html(data);
                             }
                         );
                     }
