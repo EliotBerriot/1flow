@@ -8,6 +8,7 @@ from random import randrange
 from constance import config
 
 from pymongo.errors import DuplicateKeyError
+from mongoengine.fields import DBRef
 from mongoengine.errors import OperationError, NotUniqueError, ValidationError
 from mongoengine.queryset import Q
 from mongoengine.context_managers import no_dereference
@@ -855,7 +856,96 @@ def global_duplicates_checker(limit=None, force=False):
                 done_dupes_count, done_dupes_count * 100.0 / processed_dupes,
                 total_reads_count)
 
-    my_lock.release()
+
+@task(queue='low')
+def global_reads_checker(limit=None, force=False, verbose=False,
+                         break_on_exception=False):
+
+    if config.CHECK_READS_DISABLED:
+        LOGGER.warning(u'Reads check disabled in configuration.')
+        return
+
+    # This task runs twice a day. Acquire the lock for just a
+    # little more time (13h, because Redis doesn't like floats)
+    # to avoid over-parallelized runs.
+    my_lock = RedisExpiringLock('check_all_reads', expire_time=3600 * 13)
+
+    if not my_lock.acquire():
+        if force:
+            my_lock.release()
+            my_lock.acquire()
+            LOGGER.warning(u'Forcing reads check…')
+
+        else:
+            # Avoid running this task over and over again in the queue
+            # if the previous instance did not yet terminate. Happens
+            # when scheduled task runs too quickly.
+            LOGGER.warning(u'global_reads_checker() is already '
+                           u'locked, aborting.')
+            return
+
+    if limit is None:
+        limit = 0
+
+    bad_reads = Read.objects(Q(is_good__exists=False)
+                             | Q(is_good__ne=True)).no_cache()
+
+    total_reads_count   = bad_reads.count()
+    processed_reads     = 0
+    wiped_reads_count   = 0
+    changed_reads_count = 0
+
+    with benchmark(u"Check {0}/{1} reads".format(limit, total_reads_count)):
+        try:
+            for read in bad_reads:
+
+                processed_reads += 1
+
+                if limit and changed_reads_count >= limit:
+                    break
+
+                if read.is_good:
+                    # This article has been activated via
+                    # another, coming from the same article.
+                    changed_reads_count += 1
+                    continue
+
+                article = read.article
+
+                try:
+                    if article.is_good:
+                        changed_reads_count += 1
+
+                        if verbose:
+                            LOGGER.info(u'Bad read %s has a good article, '
+                                        u'fixing…', read)
+
+                        article.activate_reads()
+
+                except:
+                    if isinstance(article, DBRef) or article is None:
+                        # The article doesn't exist anymore. Wipe the read.
+                        wiped_reads_count += 1
+                        read.delete()
+
+                    else:
+                        LOGGER.exception(u'Could not activate reads from '
+                                         u'article %s of read %s.',
+                                         article, read)
+                        if break_on_exception:
+                            break
+
+        finally:
+            my_lock.release()
+
+    LOGGER.info(u'global_reads_checker(): %s/%s reads processed '
+                u'(%.2f%%), %s corrected (%.2f%%); %s deleted (%.2f%%).',
+                processed_reads, total_reads_count,
+                processed_reads * 100.0 / total_reads_count,
+                changed_reads_count,
+                changed_reads_count * 100.0 / processed_reads,
+                wiped_reads_count,
+                wiped_reads_count * 100.0 / processed_reads)
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••• Move things to Archive DB
