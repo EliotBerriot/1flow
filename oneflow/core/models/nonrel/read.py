@@ -8,7 +8,7 @@ from celery import task
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Document, CASCADE
+from mongoengine import Document, Q, CASCADE
 from mongoengine.fields import (StringField, BooleanField,
                                 FloatField, DateTimeField,
                                 ListField, ReferenceField,
@@ -56,6 +56,13 @@ class Read(Document, DocumentHelperMixin):
     subscriptions = ListField(ReferenceField(Subscription))
 
     date_created = DateTimeField(default=now)
+
+    is_good   = BooleanField(verbose_name=_('good for use?'),
+                             help_text=_(u'The system has validated the '
+                                         u'underlying article, and the read '
+                                         u'can now be shown, used by its '
+                                         u'owner, and counted in statistics.'),
+                             default=False)
 
     is_read   = BooleanField(help_text=_(u'The Owner has read the content or '
                              u'has manually marked it as such.'),
@@ -149,6 +156,10 @@ class Read(Document, DocumentHelperMixin):
     )
 
     status_data = {
+        #
+        # NOTE: "is_good" has nothing to do here, it's a system flag.
+        #       do not confuse it with read statuses.
+        #
 
         'is_read': {
             'list_name':     _p(u'past participle, plural', u'read'),
@@ -391,6 +402,10 @@ class Read(Document, DocumentHelperMixin):
 
         read = document
 
+        if not read.is_good:
+            # counters already don't take this read into account.
+            return
+
         read.update_cached_descriptors(operation='-')
 
     def update_cached_descriptors(self, operation=None, update_only=None):
@@ -470,6 +485,31 @@ class Read(Document, DocumentHelperMixin):
 
             if e.errors:
                 raise e
+
+    def activate(self, force=False):
+        """ This method will mark the Read ``.is_good=True``
+            and do whatever in consequence. """
+
+        if not force and not self.article.is_good:
+            LOGGER.error(u'Cannot activate read %s, whose article '
+                         u'is not ready for public use!', self)
+            return
+
+        self.is_good = True
+        self.save()
+
+        update_only = ['all']
+
+        if self.is_starred:
+            update_only.append('starred')
+
+        if self.is_bookmarked:
+            update_only.append('bookmarked')
+
+        if not self.is_read:
+            update_only.append('unread')
+
+        self.update_cached_descriptors(update_only=update_only)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
