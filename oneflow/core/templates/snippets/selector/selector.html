@@ -6,6 +6,7 @@
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
+                <li><a href="{% url 'add_subscription' %}">{% trans "Add a stream" %}</a></li>
                 <li><a href="{% url 'add_folder' %}"
                         data-toggle="modal">{% trans "Add a folder" %}</a></li>
             </ul>
