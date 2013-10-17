@@ -157,24 +157,21 @@ def manage_folder(request, **kwargs):
                 folder = form.save(user)
 
             except TreeCycleException, e:
-                messages.add_message(request, messages.ERROR,
-                                     _(u'Save “{0}” failed: {1}').format(
-                                         folder.name, e))
+                messages.error(request, _(u'Save <em>{0}</em> '
+                               u'failed: {1}').format(folder.name, e),
+                               extra_tags=u'safe')
 
             else:
 
-                messages.add_message(request, messages.INFO,
-                                     _(u'Folder “{0}” successfully '
-                                       u'{1}.').format(folder.name,
-                                                       _(u'modified')
-                                                       if edit_mode
-                                                       else _(u'created')))
+                messages.info(request, _(u'Folder <em>{0}</em> successfully '
+                              u'{1}.').format(folder.name, _(u'modified')
+                                              if edit_mode else _(u'created')),
+                              extra_tags=u'safe')
 
         else:
-            messages.add_message(request, messages.WARNING,
-                                 _(u'Could not {1} folder: {0}.').format(
-                                     form.errors, _(u'modify') if edit_mode
-                                     else _(u'create')))
+            messages.warning(request, _(u'Could not {1} folder: {0}.').format(
+                             form.errors, _(u'modify') if edit_mode
+                             else _(u'create')), extra_tags=u'safe')
 
             LOGGER.error(form.errors)
 
@@ -218,15 +215,15 @@ def edit_subscription(request, **kwargs):
         if form.is_valid():
             subscription = form.save()
 
-            messages.add_message(request, messages.INFO,
-                                 _(u'Subscription “{0}” successfully '
-                                   u'modified.').format(subscription.name))
+            messages.info(request, _(u'Subscription <em>{0}</em> successfully '
+                          u'modified.').format(subscription.name),
+                          extra_tags=u'safe')
 
         else:
-            messages.add_message(request, messages.WARNING,
-                                 _(u'Could not save '
-                                   u'subscription: {0}.').format(
-                                     form.errors))
+            messages.warning(request, _(u'Could not save '
+                             u'subscription: {0}.').format(form.errors),
+                             extra_tags=u'safe')
+
             LOGGER.error(form.errors)
 
         return HttpResponseRedirect(reverse('source_selector')
@@ -268,9 +265,9 @@ def delete_subscription(request, **kwargs):
 
         subscription.delete()
 
-        messages.add_message(request, messages.INFO,
-                             _(u'Subscription <em>{0}</em> successfully '
-                               u'deleted.').format(subscription.name))
+        messages.info(request, _(u'Subscription <em>{0}</em> successfully '
+                      u'deleted.').format(subscription.name),
+                      extra_tags=u'safe')
 
         return HttpResponseRedirect(reverse('source_selector'))
 
@@ -788,7 +785,7 @@ def google_reader_import(request, user_id=None):
     redirect_url = request.META.get('HTTP_REFERER', fallback_url)
 
     def info(text):
-        messages.add_message(request, messages.INFO, text)
+        messages.info(request, text)
 
     gri = GoogleReaderImport(user_id)
 
@@ -853,7 +850,7 @@ def feed_closed_toggle(request, feed_id):
 def google_reader_import_stop(request, user_id):
 
     def info(text):
-        messages.add_message(request, messages.INFO, text)
+        messages.info(request, text)
 
     gri          = GoogleReaderImport(user_id)
     redirect_url = request.META.get('HTTP_REFERER',
