@@ -15,9 +15,7 @@ function update_needed() {
     console.log('update needed…')
 }
 
-// Support for AJAX loaded modal window.
-// Focuses on first input textbox after it loads the window.
-$('[data-toggle="modal"]').click(function(e) {
+function handle_modal(e) {
 
     e.preventDefault();
 
@@ -29,6 +27,7 @@ $('[data-toggle="modal"]').click(function(e) {
     } else {
 
         $.get(url, function(data) {
+
             $(data).modal().on("shown", function () {
 
                 //$('input:visible:enabled:first').focus();
@@ -48,4 +47,8 @@ $('[data-toggle="modal"]').click(function(e) {
             });
         });
     }
-});
+}
+
+// Support for AJAX loaded modal window.
+// Focuses on first input textbox after it loads the window.
+$('[data-toggle="modal"]').click(handle_modal);
