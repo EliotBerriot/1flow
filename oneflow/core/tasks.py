@@ -758,7 +758,7 @@ def global_feeds_checker():
 
 
 @task(queue='low')
-def global_subscriptions_checker(force=False, extended_check=False):
+def global_subscriptions_checker(force=False, limit=None, extended_check=False):
     """ A conditionned version of :meth:`Feed.check_subscriptions`. """
 
     if config.CHECK_SUBSCRIPTIONS_DISABLED:
@@ -784,19 +784,39 @@ def global_subscriptions_checker(force=False, extended_check=False):
                            u'locked, aborting.')
             return
 
+    if limit is None:
+        limit = 0
+
+    assert int(limit) >= 0
+
     try:
         with benchmark("Check all subscriptions from feeds"):
-            for feed in Feed.good_feeds.no_cache():
+
+            feeds           = Feed.good_feeds.no_cache()
+            feeds_count     = feeds.count()
+            processed_count = 0
+            checked_count   = 0
+
+            for feed in feeds:
+
+                if limit and checked_count > limit:
+                    break
 
                 if extended_check:
                     feed.compute_cached_descriptors(all=True,
                                                     good=True,
                                                     bad=True)
 
+                feed.check_subscriptions()
+
                 for subscription in feed.subscriptions:
+
+                    processed_count += 1
 
                     if subscription.all_articles_count \
                             != feed.good_articles_count:
+
+                        checked_count += 1
 
                         LOGGER.info(u'Subscription %s (#%s) has %s reads '
                                     u'whereas its feed has %s good articles;'
@@ -807,8 +827,19 @@ def global_subscriptions_checker(force=False, extended_check=False):
 
                         subscription.check_reads(force=True)
 
+            LOGGER.info(u'%s/%s(limit:%s) feeds processed, %s '
+                        u'checked (%.2f%%).', processed_count, feeds_count,
+                        checked_count, checked_count * 100.0 / processed_count)
+
         with benchmark("Check all subscriptions from users"):
-            for user in MongoUser.objects.all():
+
+            users           = MongoUser.objects.all().no_cache()
+            users_count     = users.count()
+            processed_count = 0
+
+            for user in users:
+
+                user.check_subscriptions()
 
                 if extended_check:
                     user.compute_cached_descriptors(all=True,
@@ -816,11 +847,16 @@ def global_subscriptions_checker(force=False, extended_check=False):
                                                     starred=True,
                                                     bookmarked=True)
 
-                user.check_subscriptions()
+                    for subscription in user.subscriptions:
+                            processed_count += 1
 
-                for subscription in user.subscriptions:
-                        subscription.check_reads(force=True,
-                                                 extended_check=extended_check)
+                            subscription.check_reads(force=True,
+                                                     extended_check=True)
+
+            LOGGER.info(u'%s users %sprocessed. '
+                        u'All were checked.', users_count,
+                        u'and %s subscriptions '.format(processed_count)
+                        if extended_check else u'')
 
     finally:
         my_lock.release()
