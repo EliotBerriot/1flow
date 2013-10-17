@@ -351,7 +351,17 @@ def generic_check_subscriptions_method(self):
                            self.__class__.__name__, self.id)
 
         elif isinstance(subscription, Subscription):
-            to_keep.append(subscription)
+
+            feed = subscription.feed
+
+            if isinstance(feed, DBRef) or feed is None:
+                LOGGER.warning(u'Clearing Subscription %s from %s %s, it '
+                               u'has a dangling reference to a non-existing '
+                               u'Feed %s.', subscription.id,
+                               self.__class__.__name__, self.id, feed.id)
+
+            else:
+                to_keep.append(subscription)
 
         else:
             LOGGER.warning(u'Clearing strange Subscription reference %s '
