@@ -982,13 +982,25 @@ class Article(Document, DocumentHelperMixin):
 
         return True
 
-    def activate_reads(self, force=False, verbose=False):
+    def activate_reads(self, force=False, verbose=False, extended_check=False):
 
         if self.is_good or force:
             for read in self.bad_reads:
-                # We 'force' to avoid the reverse test in Read.
-                # We already know the article is OK.
-                read.activate(force=True)
+                try:
+                    if extended_check:
+                        read.check_subscriptions()
+
+                    # We 'force' to avoid the reverse test in Read.
+                    # We already know the article is OK.
+                    read.activate(force=True)
+
+                except:
+                    # During a check, we cannot activate all reads at once
+                    # if some of them have dnagling subscriptions references.
+                    # But this is harmless, because they will be corrected
+                    # later in the global check.
+                    LOGGER.warning(u'Activation failed for Read #%s from '
+                                   u'Article #%s.', read.id, self.id)
 
         else:
             if verbose:
