@@ -368,21 +368,28 @@ def generic_check_subscriptions_method(self):
             # TODO: code a not-hard-coded way to do this test,
             #       eg. get the values via class attributes?
             if my_class_name == 'Feed':
-                attr_to_test  = subscription.user
-                class_to_test = 'User'
+                attrs_to_test  = [(subscription.user, 'User')]
+
+            elif my_class_name == 'Feed':
+                attrs_to_test  = [(subscription.feed, 'Feed')]
 
             else:
-                attr_to_test  = subscription.feed
-                class_to_test = 'Feed'
+                attrs_to_test  = [(subscription.user, 'User'),
+                                  (subscription.feed, 'Feed')]
 
-            if isinstance(attr_to_test, DBRef) or attr_to_test is None:
-                LOGGER.warning(u'Clearing Subscription %s from %s %s, it '
-                               u'has a dangling reference to a non-existing '
-                               u'%s %s.', subscription.id,
-                               my_class_name, self.id,
-                               class_to_test, attr_to_test.id)
+            keep_it = True
 
-            else:
+            for attr_to_test, class_to_test in attrs_to_test:
+                if isinstance(attr_to_test, DBRef) or attr_to_test is None:
+                    LOGGER.warning(u'Clearing Subscription #%s from %s #%s, it '
+                                   u'has a dangling reference to non-existing '
+                                   u'%s #%s.', subscription.id,
+                                   my_class_name, self.id,
+                                   class_to_test, attr_to_test.id)
+                    keep_it = False
+                    break
+
+            if keep_it:
                 to_keep.append(subscription)
 
         else:
