@@ -93,6 +93,10 @@ urlpatterns = patterns(
         login_required(never_cache(views.add_subscription)),
         name='add_subscription'),
 
+    url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$'),
+        login_required(never_cache(views.delete_subscription)),
+        name='delete_subscription'),
+
     url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$'),
         login_required(never_cache(views.edit_subscription)),
         name='edit_subscription'),
