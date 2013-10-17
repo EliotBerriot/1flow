@@ -825,7 +825,8 @@ def global_subscriptions_checker(force=False, limit=None, extended_check=False):
                                     subscription.all_articles_count,
                                     feed.good_articles_count)
 
-                        subscription.check_reads(force=True)
+                        subscription.check_reads(force=True,
+                                                 extended_check=extended_check)
 
             LOGGER.info(u'%s/%s(limit:%s) feeds processed, %s '
                         u'checked (%.2f%%).', processed_count, feeds_count,
