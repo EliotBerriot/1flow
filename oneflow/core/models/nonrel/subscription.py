@@ -202,7 +202,7 @@ class Subscription(Document, DocumentHelperMixin):
 
         self.compute_cached_descriptors(unread=True)
 
-    def check_reads(self, force=False, articles=None):
+    def check_reads(self, force=False, articles=None, extended_check=False):
         """ Also available as a task for background execution. """
 
         if not force:
@@ -234,6 +234,7 @@ class Subscription(Document, DocumentHelperMixin):
 
             if is_older or article.date_published is None:
                 params = {
+                    'is_good':        article.is_good,
                     'is_read':        True,
                     'is_auto_read':   True,
                     'date_read':      my_now,
@@ -248,6 +249,7 @@ class Subscription(Document, DocumentHelperMixin):
                     is_older = True
 
                     params = {
+                        'is_good':        article.is_good,
                         'is_read':        True,
                         'is_auto_read':   True,
                         'date_read':      my_now,
@@ -272,6 +274,16 @@ class Subscription(Document, DocumentHelperMixin):
 
             elif created is False:
                 rechecked += 1
+
+                if extended_check:
+                    try:
+                        article.activate_reads()
+
+                    except:
+                        LOGGER.exception(u'Problem while activating reads '
+                                         u'of Article #%s in Subscription '
+                                         u'#%s.check_reads(), continuing '
+                                         u'check.', article.id, self.id)
 
             else:
                 failed += 1
