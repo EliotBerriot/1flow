@@ -758,7 +758,7 @@ def global_feeds_checker():
 
 
 @task(queue='low')
-def global_subscriptions_checker(force=False):
+def global_subscriptions_checker(force=False, extended_check=False):
     """ A conditionned version of :meth:`Feed.check_subscriptions`. """
 
     if config.CHECK_SUBSCRIPTIONS_DISABLED:
@@ -784,10 +784,14 @@ def global_subscriptions_checker(force=False):
                            u'locked, aborting.')
             return
 
-    with benchmark("Check all subscriptions"):
-        try:
-            for feed in Feed.good_feeds:
-                feed.compute_cached_descriptors(all=True, good=True, bad=True)
+    try:
+        with benchmark("Check all subscriptions from feeds"):
+            for feed in Feed.good_feeds.no_cache():
+
+                if extended_check:
+                    feed.compute_cached_descriptors(all=True,
+                                                    good=True,
+                                                    bad=True)
 
                 for subscription in feed.subscriptions:
 
@@ -803,8 +807,23 @@ def global_subscriptions_checker(force=False):
 
                         subscription.check_reads(force=True)
 
-        finally:
-            my_lock.release()
+        with benchmark("Check all subscriptions from users"):
+            for user in MongoUser.objects.all():
+
+                if extended_check:
+                    user.compute_cached_descriptors(all=True,
+                                                    unread=True,
+                                                    starred=True,
+                                                    bookmarked=True)
+
+                user.check_subscriptions()
+
+                for subscription in user.subscriptions:
+                        subscription.check_reads(force=True,
+                                                 extended_check=extended_check)
+
+    finally:
+        my_lock.release()
 
 
 @task(queue='low')
