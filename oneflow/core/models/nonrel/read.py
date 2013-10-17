@@ -12,7 +12,7 @@ from mongoengine import Document, Q, CASCADE
 from mongoengine.fields import (StringField, BooleanField,
                                 FloatField, DateTimeField,
                                 ListField, ReferenceField,
-                                GenericReferenceField)
+                                GenericReferenceField, DBRef)
 from mongoengine.errors import NotUniqueError, ValidationError
 
 from django.conf import settings
@@ -603,11 +603,16 @@ class Read(Document, DocumentHelperMixin):
         to_keep = []
 
         for subscription in self.subscriptions:
-            if isinstance(subscription, Subscription):
+            if isinstance(subscription, DBRef) or subscription is None:
+                # We need to catch DBRef on its own.
+                LOGGER.warning(u'Clearing dangling Subscription reference %s '
+                               u'from Read %s. ', subscription.id, self)
+
+            elif isinstance(subscription, Subscription):
                 to_keep.append(subscription)
 
             else:
-                LOGGER.warning(u'Clearing dangling Subscription reference %s '
+                LOGGER.warning(u'Clearing strange Subscription reference %s '
                                u'from Read %s. ', subscription, self)
 
         if len(to_keep) != len(self.subscriptions):
