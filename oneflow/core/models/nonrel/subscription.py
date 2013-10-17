@@ -8,7 +8,7 @@ from pymongo.errors import DuplicateKeyError
 
 from mongoengine import Document, CASCADE, PULL
 from mongoengine.fields import (StringField, ListField, ReferenceField,
-                                GenericReferenceField)
+                                GenericReferenceField, DBRef)
 from mongoengine.errors import NotUniqueError
 
 from django.conf import settings
@@ -35,6 +35,9 @@ __all__ = ('subscription_post_create_task', 'subscription_check_reads',
            'subscription_unread_articles_count_default',
            'subscription_starred_articles_count_default',
            'subscription_bookmarked_articles_count_default',
+
+           # This one will be picked up by `Read` as an instance method.
+           'generic_check_subscriptions_method',
            )
 
 
@@ -335,9 +338,36 @@ def User_subscriptions_by_folder_property_get(self):
     return by_folders
 
 
+def generic_check_subscriptions_method(self):
+    """ This one is used for `Read` and `User` classes. """
+
+    to_keep = []
+
+    for subscription in self.subscriptions:
+        if isinstance(subscription, DBRef) or subscription is None:
+            # We need to catch DBRef on its own.
+            LOGGER.warning(u'Clearing dangling Subscription reference %s '
+                           u'from %s %s. ', subscription.id,
+                           self.__class__.__name__, self.id)
+
+        elif isinstance(subscription, Subscription):
+            to_keep.append(subscription)
+
+        else:
+            LOGGER.warning(u'Clearing strange Subscription reference %s '
+                           u'from %s %s. ', subscription,
+                           self.__class__.__name__, self.id)
+
+    if len(to_keep) != len(self.subscriptions):
+        self.subscriptions = to_keep
+        self.save()
+        # No need to update cached descriptors, they should already be ok…
+
+
 Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Folder.open_subscriptions     = property(Folder_open_subscriptions_property_get)
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
-User.subscriptions_by_folder = property(
+User.subscriptions_by_folder  = property(
                                     User_subscriptions_by_folder_property_get)
+User.check_subscriptions      = generic_check_subscriptions_method
