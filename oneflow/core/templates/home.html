@@ -36,7 +36,27 @@
   {% block application_header %}{% endblock application_header %}
 
   <section class="container-fluid">
-    <div id="notifications" class="row-fluid hide"></div>
+    <!--<div id="notifications" class="row-fluid hide"></div>-->
+
+    {% if messages %}
+        <script type="text/javascript">
+            $(document).ready(function(){
+
+            {% for message in messages %}
+
+                notify({
+                    text: {% if 'safe' in message.tags %}"{{ message|safe }}"{% else %}"{{ message }}"{% endif %},
+                    type: {% if 'warning' in message.tags %}"warning"{% else %}"info"{% endif %},
+                    icon: false,
+                    sticker: false
+                });
+
+            {% endfor %}
+
+            });
+        </script>
+    {% endif %}
+
     <div class="application" id="application">
     {% block application_content %}
 
