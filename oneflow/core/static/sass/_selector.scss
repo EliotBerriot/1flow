@@ -511,9 +511,10 @@ $folder-border-width-default: 2px;
 
     .name {
         opacity: 1;
-        font-weight: bold;
+        font-weight: 700;
 
         .unread-count {
+            font-weight: 400;
             opacity: 0.33;
         }
     }
