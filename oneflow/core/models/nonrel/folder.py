@@ -186,8 +186,9 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
     @property
     def max_depth(self):
 
-        return 5 if self.owner.preferences.selector.extended_folders_depth \
-                else 3
+        return 4 \
+            if self.owner.preferences.selector.extended_folders_depth \
+            else 2
 
     def get_subfolders(self, current_level):
 

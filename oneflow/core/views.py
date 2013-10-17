@@ -259,6 +259,24 @@ def add_subscription(request, **kwargs):
     return render(request, 'add-subscription.html', {'form': form})
 
 
+def delete_subscription(request, **kwargs):
+
+    subscription_id = kwargs.pop('subscription', None)
+    subscription    = Subscription.get_or_404(subscription_id)
+
+    if request.user.is_superuser or subscription.owner == request.user.mongo:
+
+        subscription.delete()
+
+        messages.add_message(request, messages.INFO,
+                             _(u'Subscription <em>{0}</em> successfully '
+                               u'deleted.').format(subscription.name))
+
+        return HttpResponseRedirect(reverse('source_selector'))
+
+    return HttpResponseForbidden()
+
+
 # ———————————————————————————————————————————————————————————————————————— Read
 
 

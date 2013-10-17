@@ -71,6 +71,10 @@
         // this one starts hidden and
         // will be shown by .open_content.
         display: none;
+
+        .article-title {
+            font-weight: 600;
+        }
     }
 }
 
@@ -160,11 +164,12 @@
 
 // .not_is_bookmarked.not_is_starred
 .read-list-item.not_is_read {
-    .article-title {
-        /* #a2b1c3 #29323d #29313c #586a7f */
-        text-shadow: 0 0 2px #bbb;
-        /* @include text-full-outline(#ccc);*/
+    .only_when_collapsed .article-title {
+        font-weight: 600;
 
+        // #a2b1c3 #29323d #29313c #586a7f
+        //text-shadow: 0 0 2px #bbb;
+        // @include text-full-outline(#ccc);
     }
 }
 
@@ -231,7 +236,7 @@
         padding-right: 15px;
 
         font-size: 150%;
-        font-weight: bolder;
+        font-weight: 700;
         color: $navbar-grey;
     }
 

@@ -9,6 +9,37 @@
 
         <div class="modal-body">
 
+            <!-- ———————————————————————————— delete subscription sub-modal -->
+            <div id="cancel-subscription" class="modal sub-modal hide">
+                <div class="modal-body">
+
+                    <h4>{% blocktrans with subscription_name=subscription.name %}
+                        Are you sure you want to cancel your subscription to <strong>{{ subscription_name }}</strong>?
+                    {% endblocktrans %}</h4>
+
+                    <p>{% blocktrans %}
+                        If you do so, all articles you read in it will be permanently deleted from your personnal space. Your watch attributes, ratings and other personnal data on these reads will be lost.
+                    {% endblocktrans %}</p>
+
+                    {% comment %}
+                        {% include "widgets/forms/field-checkbox.html" with field=form.confirm %}
+                    {% endcomment %}
+
+                    {% if user.is_superuser and preferences.staff.super_powers_enabled %}
+
+                    {% endif %}
+
+                </div>
+                <div class="modal-footer">
+
+                    <a href="#" class="btn" data-dismiss="submodal">{% trans "I didn't meant that" %}</a>
+                    <a href="{% url 'delete_subscription' subscription=subscription.id %}"
+                        class="btn btn-danger">{% trans "Do it. I'm sure. I won't cry." %}</a>
+                </div>
+            </div>
+            <!-- ———————————————————————————— delete subscription sub-modal -->
+
+
             <div class="control-group">
                 <div class="controls">
                     <div class="thumbnail">
@@ -48,12 +79,6 @@
             {% include "widgets/forms/field-input-text.html" with field=form.name %}
             {% include "widgets/forms/field-generic.html" with field=form.folders %}
 
-            {% comment %}
-                <p>{% blocktrans %}
-                    If you delete this subscription, all articles you read in it will be permanently deleted from your personnal space and your attributes/ratings will be lost.
-                {% endblocktrans %}</p>
-            {% endcomment %}
-
         {% if user.is_superuser and preferences.staff.super_powers_enabled and preferences.staff.selector_shows_admin_links %}
 
             <div class="manage-admin-actions">
@@ -84,13 +109,10 @@
         </div>
         <div class="modal-footer">
 
-            {% comment %}
-                NOT READY YET
-
-                <span class="pull-left">
-                <a href="{% url 'delete_subscription' subscription=subscription.id %}" class="btn btn-danger">{% trans "Delete this subscription" %}</a>
-                </span>
-            {% endcomment %}
+            <span class="pull-left">
+            <a href="#cancel-subscription" role="button" data-toggle="submodal"
+                class="btn btn-danger">{% trans "Cancel this subscription" %}</a>
+            </span>
 
             <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
             <button type="submit" class="btn btn-primary">{% trans "Save" %}</a>
