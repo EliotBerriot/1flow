@@ -106,10 +106,10 @@ class SelectorPreferences(EmbeddedDocument):
         default=False)
 
     extended_folders_depth = BooleanField(
-        verbose_name=_(u'folders can hold 4 levels of subfolders'),
-        help_text=_(u'Folders have two levels of subfolders in normal '
+        verbose_name=_(u'folders can hold three levels of subfolders'),
+        help_text=_(u'Folders have one level of subfolders in normal '
                     u'conditions. With this setting, you can push the limit '
-                    u'to four (which makes a total classifying depth of five '
+                    u'to three (which makes a total classifying depth of four '
                     u'for your subscriptions).<br />'
                     u'<span class="muted">NOTE: The interface will become a '
                     u'little more difficult to read. Having a big and wide '
