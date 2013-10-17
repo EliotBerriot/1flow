@@ -1027,7 +1027,7 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                             LOGGER.info(u'Bad read %s has a good article, '
                                         u'fixing…', read)
 
-                        article.activate_reads()
+                        article.activate_reads(extended_check=extended_check)
 
                 except:
                     LOGGER.exception(u'Could not activate reads from '
