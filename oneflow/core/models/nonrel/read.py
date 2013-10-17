@@ -12,7 +12,7 @@ from mongoengine import Document, Q, CASCADE
 from mongoengine.fields import (StringField, BooleanField,
                                 FloatField, DateTimeField,
                                 ListField, ReferenceField,
-                                GenericReferenceField, DBRef)
+                                GenericReferenceField)
 from mongoengine.errors import NotUniqueError, ValidationError
 
 from django.conf import settings
@@ -22,7 +22,7 @@ from ....base.utils.dateutils import now
 
 from .common import DocumentHelperMixin
 from .folder import Folder
-from .subscription import Subscription
+from .subscription import Subscription, generic_check_subscriptions_method
 from .article import Article
 from .user import User
 from .tag import Tag
@@ -485,6 +485,9 @@ class Read(Document, DocumentHelperMixin):
 
         read.update_cached_descriptors(operation='-')
 
+    # HEADS UP: this method come from the subscription module.
+    check_subscriptions = generic_check_subscriptions_method
+
     def update_cached_descriptors(self, operation=None, update_only=None):
 
         if operation is None:
@@ -597,28 +600,6 @@ class Read(Document, DocumentHelperMixin):
         if created:
             if read._db_name != settings.MONGODB_NAME_ARCHIVE:
                 read_post_create_task.delay(read.id)
-
-    def check_subscriptions(self):
-
-        to_keep = []
-
-        for subscription in self.subscriptions:
-            if isinstance(subscription, DBRef) or subscription is None:
-                # We need to catch DBRef on its own.
-                LOGGER.warning(u'Clearing dangling Subscription reference %s '
-                               u'from Read %s. ', subscription.id, self)
-
-            elif isinstance(subscription, Subscription):
-                to_keep.append(subscription)
-
-            else:
-                LOGGER.warning(u'Clearing strange Subscription reference %s '
-                               u'from Read %s. ', subscription, self)
-
-        if len(to_keep) != len(self.subscriptions):
-            self.subscriptions = to_keep
-            self.save()
-            # No need to update cached descriptors, they should already be ok…
 
     def post_create_task(self):
         """ Method meant to be run from a celery task. """
