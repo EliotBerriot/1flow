@@ -764,6 +764,11 @@ def Subscription_create_reads_method(self, article, verbose=True, **kwargs):
         # current one is registered in the read via the subscriptions.
         cur_read.update(add_to_set__subscriptions=self)
 
+        #
+        # NOTE: we do not check `is_good` here. This is done in the
+        #       article check part. Do not do everything everywhere.
+        #
+
         return False
 
     except:
