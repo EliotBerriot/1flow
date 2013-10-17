@@ -351,26 +351,36 @@ def User_subscriptions_by_folder_property_get(self):
 
 
 def generic_check_subscriptions_method(self):
-    """ This one is used for `Read` and `User` classes. """
+    """ This one is used for `Feed`, `Read` and `User` classes. """
 
-    to_keep = []
+    to_keep       = []
+    my_class_name = self.__class__.__name__
 
     for subscription in self.subscriptions:
         if isinstance(subscription, DBRef) or subscription is None:
             # We need to catch DBRef on its own.
             LOGGER.warning(u'Clearing dangling Subscription reference %s '
                            u'from %s %s. ', subscription.id,
-                           self.__class__.__name__, self.id)
+                           my_class_name, self.id)
 
         elif isinstance(subscription, Subscription):
 
-            feed = subscription.feed
+            # TODO: code a not-hard-coded way to do this test,
+            #       eg. get the values via class attributes?
+            if my_class_name == 'Feed':
+                attr_to_test  = subscription.user
+                class_to_test = 'User'
 
-            if isinstance(feed, DBRef) or feed is None:
+            else:
+                attr_to_test  = subscription.feed
+                class_to_test = 'Feed'
+
+            if isinstance(attr_to_test, DBRef) or attr_to_test is None:
                 LOGGER.warning(u'Clearing Subscription %s from %s %s, it '
                                u'has a dangling reference to a non-existing '
-                               u'Feed %s.', subscription.id,
-                               self.__class__.__name__, self.id, feed.id)
+                               u'%s %s.', subscription.id,
+                               my_class_name, self.id,
+                               class_to_test, attr_to_test.id)
 
             else:
                 to_keep.append(subscription)
@@ -378,7 +388,7 @@ def generic_check_subscriptions_method(self):
         else:
             LOGGER.warning(u'Clearing strange Subscription reference %s '
                            u'from %s %s. ', subscription,
-                           self.__class__.__name__, self.id)
+                           my_class_name, self.id)
 
     if len(to_keep) != len(self.subscriptions):
         self.subscriptions = to_keep
