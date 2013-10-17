@@ -26,7 +26,9 @@ from .feed import Feed
 LOGGER = logging.getLogger(__name__)
 
 
-__all__ = ('subscription_post_create_task', 'subscription_check_reads',
+__all__ = ('subscription_post_create_task',
+           'subscription_post_delete_task',
+           'subscription_check_reads',
            'subscription_mark_all_read_in_database',
            'Subscription',
 
@@ -66,6 +68,13 @@ def subscription_post_create_task(subscription_id, *args, **kwargs):
 
     subscription = Subscription.objects.get(id=subscription_id)
     return subscription.post_create_task(*args, **kwargs)
+
+
+@task(name='Subscription.post_delete', queue='clean')
+def subscription_post_delete_task(subscription_id, *args, **kwargs):
+
+    subscription = Subscription.objects.get(id=subscription_id)
+    return subscription.post_delete_task(*args, **kwargs)
 
 
 @task(name='Subscription.mark_all_read_in_database', queue='low')
@@ -138,6 +147,21 @@ class Subscription(Document, DocumentHelperMixin):
         # The content of this method is done in subscribe_user_to_feed()
         # to avoid more-than-needed write operations on the database.
         pass
+
+    @classmethod
+    def signal_post_delete_handler(cls, sender, document, **kwargs):
+
+        subscription = document
+
+        if subscription._db_name != settings.MONGODB_NAME_ARCHIVE:
+            subscription_post_delete_task.delay(subscription.id)
+
+    def post_delete_task(self):
+        """ This is an heavy operation for the database. Thus done
+            in a task, not in a `reverse_delete_rule` nor directly
+            in the signal handler. """
+
+        self.reads.update(pull__subscriptions=self)
 
     @classmethod
     def subscribe_user_to_feed(cls, user, feed, force=False, background=False):

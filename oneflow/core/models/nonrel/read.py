@@ -53,6 +53,8 @@ class Read(Document, DocumentHelperMixin):
     article = ReferenceField('Article', unique_with='user',
                              reverse_delete_rule=CASCADE)
 
+    # HEADS UP: no `reverse_delete_rule` here, this would be too heavy and
+    # slow. The hard work is done in `Subscription.post_delete_task()`.
     subscriptions = ListField(ReferenceField(Subscription))
 
     date_created = DateTimeField(default=now)
