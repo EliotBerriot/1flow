@@ -82,6 +82,7 @@ pymongo==2.6.2
 pyScss==1.1.5
 python-memcached==1.53
 pytz==2013d
+raven==3.5
 recordtype==1.1
 redis==2.7.6
 requests==1.2.3
