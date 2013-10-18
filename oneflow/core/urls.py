@@ -101,6 +101,10 @@ urlpatterns = patterns(
         login_required(never_cache(views.edit_subscription)),
         name='edit_subscription'),
 
+    url(_(r'^webimport/$'),
+        login_required(never_cache(views.import_web_pages)),
+        name='import_web_pages'),
+
     url(_(r'^(?P<klass>\w+)/(?P<oid>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
         login_required(never_cache(views.toggle)), name='toggle'),
 

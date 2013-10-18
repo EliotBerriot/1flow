@@ -173,8 +173,7 @@ class Subscription(Document, DocumentHelperMixin):
             if not force:
                 LOGGER.info(u'User %s already subscribed to feed %s.',
                             user, feed)
-                return cls.objects.get(user=user, feed=feed,
-                                       name=feed.name, tags=feed.tags)
+                return cls.objects.get(user=user, feed=feed)
 
         else:
             subscription.name = feed.name
@@ -358,6 +357,17 @@ def User_subscriptions_property_get(self):
     return Subscription.objects(user=self)
 
 
+def User_web_import_subscription_property_get(self):
+
+    try:
+        return self.subscriptions.get(feed=self.web_import_feed)
+
+    except Subscription.DoesNotExist:
+
+        return Subscription.subscribe_user_to_feed(user=self,
+                                                   feed=self.web_import_feed)
+
+
 def User_subscriptions_by_folder_property_get(self):
 
     subscriptions = Subscription.objects(user=self)
@@ -433,4 +443,6 @@ Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
 User.subscriptions_by_folder  = property(
                                     User_subscriptions_by_folder_property_get)
+User.web_import_subscription  = property(
+                                    User_web_import_subscription_property_get)
 User.check_subscriptions      = generic_check_subscriptions_method

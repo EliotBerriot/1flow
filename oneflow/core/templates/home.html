@@ -43,14 +43,16 @@
             $(document).ready(function(){
 
             {% for message in messages %}
+                {% with message.tags as tags %}
 
-                notify({
-                    text: {% if 'safe' in message.tags %}"{{ message|safe }}"{% else %}"{{ message }}"{% endif %},
-                    type: {% if 'warning' in message.tags %}"warning"{% else %}"info"{% endif %},
-                    icon: false,
-                    sticker: false
-                });
+                    notify({
+                        text: {% if 'safe' in tags %}"{{ message|safe }}"{% else %}"{{ message }}"{% endif %},
+                        type: {% if 'warning' in tags %}"warning"{% else %}"info"{% endif %},
+                        icon: false,
+                        sticker: {% if 'sticky' in tags %}true{% else %}false{% endif %}
+                    });
 
+                {% endwith %}
             {% endfor %}
 
             });

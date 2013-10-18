@@ -9,6 +9,8 @@
                 <li><a href="{% url 'add_subscription' %}">{% trans "Add a stream" %}</a></li>
                 <li><a href="{% url 'add_folder' %}"
                         data-toggle="modal">{% trans "Add a folder" %}</a></li>
+                <li><a href="{% url 'import_web_pages' %}"
+                        data-toggle="modal">{% trans "Import web item(s)" %}</a></li>
             </ul>
         </div>
     </div>
@@ -24,10 +26,9 @@
                         <ul>
                             <li class="muted not-ready" {% feature_not_ready %}>
                                 {% trans "Inbox" %}</li>
-                            <li class="muted not-ready" {% feature_not_ready %}>
-                                {% trans "Web snaps" %}</li>
-                            <li>{% reading_list_with_count mongodb_user 'read_later' %}</li>
-                            <li>{% reading_list_with_count mongodb_user 'read' %}</li>
+                            <li>{% special_subscription_list_with_count mongodb_user 'web_import' %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read_later' True %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read' True %}</li>
                         </ul>
                     </div>
                     <div class="span6">

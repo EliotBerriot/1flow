@@ -39,7 +39,8 @@ from .forms import (FullUserCreationForm,
                     StaffPreferencesForm,
                     ManageFolderForm,
                     ManageSubscriptionForm,
-                    AddSubscriptionForm)
+                    AddSubscriptionForm,
+                    WebPagesImportForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Subscription, Read, Folder, TreeCycleException
 from .models.reldb import HelpContent
@@ -375,7 +376,7 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
 
     attr_name = None
 
-    LOGGER.info(query_kwargs)
+    #LOGGER.info(query_kwargs)
 
     if kwargs.get('all', False):
         attr_name = 'all_articles_count'
@@ -495,7 +496,7 @@ def read_with_endless_pagination(request, **kwargs):
     if subscription:
         subscription = Subscription.objects.get(id=subscription)
 
-        LOGGER.info(u'Refining reads by subscription %s', subscription)
+        #LOGGER.info(u'Refining reads by subscription %s', subscription)
         query_kwargs[u'subscriptions__contains'] = subscription
 
     folder = kwargs.get('folder', None)
@@ -503,7 +504,7 @@ def read_with_endless_pagination(request, **kwargs):
     if folder:
         folder = Folder.objects.get(id=folder)
 
-        LOGGER.info(u'Refining reads by folder %s', folder)
+        # LOGGER.info(u'Refining reads by folder %s', folder)
         query_kwargs[u'subscriptions__in'] = \
             Subscription.objects(folders=folder)
 
@@ -672,6 +673,10 @@ def set_preference(request, base, sub, value):
 
 def toggle(request, klass, oid, key):
 
+    #
+    # TODO: push notifications on error to the user.
+    #
+
     try:
         obj = globals()[klass].get_or_404(oid)
 
@@ -716,6 +721,41 @@ def toggle(request, klass, oid, key):
 
 
 # ——————————————————————————————————————————————————————————————————————— Other
+
+
+def import_web_pages(request):
+
+    if request.POST:
+        form = WebPagesImportForm(request.POST, user=request.user.mongo)
+
+        if form.is_valid():
+            created, failed = form.save()
+
+        if request.is_ajax():
+            return HttpResponse('DONE %s/%s' % (created, failed))
+
+        if failed:
+            for url, reason in failed:
+                messages.warning(request, _(u'Import of URL <code>{0}</code> '
+                                 u'failed: {1}').format(url, reason),
+                                 extra_tags='sticky safe')
+
+        if created:
+            messages.info(request, _(u'Successfully launched import of '
+                          u'{0} web page(s)').format(len(created)))
+
+        return HttpResponseRedirect(reverse('source_selector'))
+
+    else:
+        form = WebPagesImportForm()
+
+    if request.is_ajax():
+        template = 'snippets/selector/import-web-pages.html'
+
+    else:
+        template = 'import-web-pages.html'
+
+    return render(request, template, {'form': form})
 
 
 def profile(request):
