@@ -26,8 +26,8 @@
                                 {% trans "Inbox" %}</li>
                             <li class="muted not-ready" {% feature_not_ready %}>
                                 {% trans "Web snaps" %}</li>
-                            <li>{% reading_list_with_count mongodb_user 'read_later' %}</li>
-                            <li>{% reading_list_with_count mongodb_user 'read' %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read_later' True %}</li>
+                            <li>{% reading_list_with_count mongodb_user 'read' True %}</li>
                         </ul>
                     </div>
                     <div class="span6">

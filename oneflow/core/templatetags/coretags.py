@@ -138,35 +138,49 @@ reading_lists = {
 
 
 @register.simple_tag
-def reading_list_with_count(user, view_name, css_classes=None):
+def reading_list_with_count(user, view_name, show_unreads=False,
+                            css_classes=None):
 
     list_name, tooltip, count_attr_name = reading_lists[view_name]
 
     if user.preferences.selector.lists_show_unread_count:
-        count_span = u' <span class="count muted">({0})</span>'
+        count_span = u'&nbsp; <small class="unread-count">({0})</small>'
     else:
         count_span = u''
 
     count = getattr(user, count_attr_name)
 
-    return mark_safe((
-        u'<a href="{0}" class="{1}" title="{2}" '
-        u'data-toggle="tooltip">{3}{4}</a>'
-    ).format(
-        reverse(view_name), css_classes or u'nowrap',
-        tooltip.format(count), list_name, count_span.format(count)))
+    if show_unreads and count:
+        has_unread_start = u'<span class="has-unread">'
+        has_unread_end   = u'</span>'
+
+    else:
+        has_unread_start = u''
+        has_unread_end   = u''
+
+    return mark_safe(
+        (
+            u'{5}<a href="{0}" class="{1} name" title="{2}" '
+            u'data-toggle="tooltip">{3}{4}</a>{6}'
+        ).format(
+            reverse(view_name), css_classes or u'nowrap',
+            tooltip.format(count), list_name, count_span.format(count),
+            has_unread_start, has_unread_end
+        )
+    )
 
 
 @register.simple_tag
 def feed_reading_list_with_count(view_name, subscription, attrname,
-                                 translation, css_classes=None):
+                                 translation, css_classes=None,
+                                 always_show=False):
 
     # u'<a href="{0}" class="{1} {2} async-get" data-async-get="count">{3}'
     # u'<span class="count"></span></a>'
 
     count = getattr(subscription, attrname + '_articles_count')
 
-    if count:
+    if always_show or count:
         count_as_digits = unicode(count)
 
         small_class = u''
@@ -187,7 +201,8 @@ def feed_reading_list_with_count(view_name, subscription, attrname,
 
         return mark_safe((
             u'<a href="{url}" class="{class1} {class2}" {title}>{trans}'
-            u'&nbsp;<span class="count muted {small}">({count})</span></a>'
+            u'&nbsp;<span class="unread-count count muted {small}">'
+            u'({count})</span></a>'
         ).format(
             url=reverse(view_name, kwargs={'feed': subscription.id}),
             class1=view_name,
