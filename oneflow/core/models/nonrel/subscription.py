@@ -173,8 +173,7 @@ class Subscription(Document, DocumentHelperMixin):
             if not force:
                 LOGGER.info(u'User %s already subscribed to feed %s.',
                             user, feed)
-                return cls.objects.get(user=user, feed=feed,
-                                       name=feed.name, tags=feed.tags)
+                return cls.objects.get(user=user, feed=feed)
 
         else:
             subscription.name = feed.name
