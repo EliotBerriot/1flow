@@ -361,14 +361,20 @@ class ManageSubscriptionForm(DocumentForm):
     def save(self, commit=True):
 
         subscription = super(ManageSubscriptionForm, self).save(commit=False)
+        preferences  = subscription.user.preferences.selector
 
         # Handle `folders` manually, because it's not in form.fields.
-        if subscription.user.preferences.selector.subscriptions_in_multiple_folders: # NOQA
-            subscription.folders = self.cleaned_data['folders']
+        if preferences.subscriptions_in_multiple_folders:
+            if self.cleaned_data['folders']:
+                subscription.folders = self.cleaned_data['folders']
 
-        else:
-            # Avoid the 'folders : Saisissez une liste de valeurs.' error.
-            # in "one folder only", we used a "select" widget which didn't
+        elif self.cleaned_data['folders'] is not None:
+            # Avoid the:
+            #   - 'folders : Saisissez une liste de valeurs.' error.
+            #   - A ReferenceField only accepts DBRef or documents: ['folders']
+            #       when nothing is selected, this makes value=[None].
+            #
+            # In "one folder only", we used a "select" widget which didn't
             # built a list. We need to reconstruct it for the save() to work.
             subscription.folders = [self.cleaned_data['folders']]
 
