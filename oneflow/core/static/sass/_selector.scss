@@ -531,7 +531,8 @@ $folder-border-width-default: 2px;
 }
 
 #manage-folder.modal,
-#manage-subscription.modal {
+#manage-subscription.modal,
+#import-web-pages.modal {
 
     form {
         margin-bottom: 0;
@@ -602,6 +603,16 @@ $folder-border-width-default: 2px;
     }
 }
 
+#import-web-pages.modal {
+    // http://stackoverflow.com/a/10169597/654755
+    width: 750px;
+    // must be half of the width, minus scrollbar on the left (30px)
+    margin-left: -375px;
+
+    textarea {
+        font-size: 80%;
+    }
+}
 #add-subscription #application .form-wrapper {
     margin-top: 5em;
     margin-bottom: 5em;
