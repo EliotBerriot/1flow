@@ -7,7 +7,6 @@ from statsd import statsd
 from celery import task
 from constance import config
 
-
 from mongoengine import Q, Document, NULLIFY, PULL
 from mongoengine.fields import (IntField, StringField, URLField, BooleanField,
                                 ListField, ReferenceField, DateTimeField)
@@ -26,13 +25,17 @@ from ....base.utils.dateutils import (now, timedelta, today, datetime,
                                       is_naive, make_aware, utc)
 
 from .common import (DocumentHelperMixin,
-                     CONTENT_NOT_PARSED, ORIGIN_TYPE_FEEDPARSER)
+                     CONTENT_NOT_PARSED,
+                     ORIGIN_TYPE_FEEDPARSER,
+                     ORIGIN_TYPE_WEBIMPORT,
+                     USER_FEEDS_SITE_URL,
+                     WEB_IMPORT_FEED_URL)
 from .tag import Tag
 from .article import Article
+from .user import User
 
 LOGGER                = logging.getLogger(__name__)
 feedparser.USER_AGENT = settings.DEFAULT_USER_AGENT
-
 
 __all__ = ('feed_update_latest_article_date_published',
            'feed_update_recent_articles_count',
@@ -126,6 +129,8 @@ def feed_refresh(feed_id, *args, **kwargs):
 class Feed(Document, DocumentHelperMixin):
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
+    is_internal    = BooleanField(default=False)
+
     site_url       = URLField(verbose_name=_(u'web site'),
                               help_text=_(u'Website public URL, linked to the '
                                           u'globe icon in the source selector. '
@@ -381,6 +386,16 @@ class Feed(Document, DocumentHelperMixin):
 
             LOGGER.info(u'Feed %s parallel fetch limit set to %s.',
                         self, new_limit)
+
+    @classmethod
+    def signal_pre_save_handler(cls, sender, document, **kwargs):
+
+        feed = document
+
+        for protocol in (u'http://', u'https://'):
+            if feed.url.startswith(protocol + settings.SITE_DOMAIN):
+                feed.is_internal = True
+                break
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -647,6 +662,10 @@ class Feed(Document, DocumentHelperMixin):
 
         if self.closed:
             LOGGER.info(u'Feed %s is closed. refresh aborted.', self)
+            return True
+
+        if self.is_internal:
+            LOGGER.info(u'Feed %s is internal, no need to refresh.', self)
             return True
 
         if config.FEED_FETCH_DISABLED:
@@ -923,3 +942,26 @@ class Feed(Document, DocumentHelperMixin):
 
 
 Feed.register_delete_rule(Article, 'feeds', PULL)
+
+
+# ———————————————————————————————————————— external non-subscription properties
+#                                            Defined here to avoid import loops
+
+
+def User_web_import_feed_property_get(self):
+
+    try:
+        return Feed.objects.get(url=WEB_IMPORT_FEED_URL.format(user=self))
+
+    except Feed.DoesNotExist:
+
+        return Feed(url=WEB_IMPORT_FEED_URL.format(user=self),
+                    name=_('Imported items of {0}').format(
+                        self.username or (u'#%s' % self.id)),
+                    site_url=USER_FEEDS_SITE_URL.format(user=self)).save()
+
+        # This will be done in the subscription property. DRY.
+        #Subscription.subscribe_user_to_feed(self, feed)
+
+
+User.web_import_feed = property(User_web_import_feed_property_get)

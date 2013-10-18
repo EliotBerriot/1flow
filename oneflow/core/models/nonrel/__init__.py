@@ -9,7 +9,7 @@ from ....base.utils import connect_mongoengine_signals
 from .common import * # NOQA
 from .preferences  import * # NOQA
 
-# user has to come before folder, subscription, read
+# user has to come before folder, subscription, read, feed
 from .user import * # NOQA
 
 # folder has to come before read, subscription
@@ -24,7 +24,7 @@ from .source import * # NOQA
 # article needs source, website, author
 from .article import * # NOQA
 
-# feed needs article, read
+# feed needs article, read, user
 from .feed import * # NOQA
 
 # subscription needs folder, user, feed

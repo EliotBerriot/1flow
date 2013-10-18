@@ -84,9 +84,13 @@ ORIGIN_TYPE_GOOGLE_READER = 1
 ORIGIN_TYPE_FEEDPARSER    = 2
 ORIGIN_TYPE_STANDALONE    = 3
 ORIGIN_TYPE_TWITTER       = 4
+ORIGIN_TYPE_WEBIMPORT     = 5
 
 ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
                         settings.SITE_DOMAIN)
+USER_FEEDS_SITE_URL   = u'http://{0}'.format(settings.SITE_DOMAIN
+                                             ) + u'/user/{user.id}/'
+WEB_IMPORT_FEED_URL   = USER_FEEDS_SITE_URL + 'imports'
 
 
 def lowername(objekt):
