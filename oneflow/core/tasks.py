@@ -602,7 +602,7 @@ def refresh_all_feeds(limit=None, force=False):
             LOGGER.warning(u'refresh_all_feeds() is already locked, aborting.')
             return
 
-    feeds = Feed.objects.filter(closed__ne=True)
+    feeds = Feed.objects.filter(closed__ne=True, is_internal__ne=True)
 
     if limit:
         feeds = feeds.limit(limit)
