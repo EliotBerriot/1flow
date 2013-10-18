@@ -93,6 +93,17 @@ def read_status_css(read):
 
 reading_lists = {
 
+    'web_import': (_('Web snaps'),
+                   #tooltip_both,
+                   _('You have {0} newly imported items.'),
+                   #tooltip_unread
+                   _('You have {0} newly imported items, out of {1} so far'),
+                   #tooltip_all,
+                   _(u'You imported {0} web items so far'),
+                   #tooltip_none
+                   _(u'You did not import anything until now'),
+                   ),
+
     'read_all':         (_('All articles'),
                          _(u'You have {0} articles in 1flow'),
                          'all_articles_count'),
@@ -165,6 +176,57 @@ def reading_list_with_count(user, view_name, show_unreads=False,
         ).format(
             reverse(view_name), css_classes or u'nowrap',
             tooltip.format(count), list_name, count_span.format(count),
+            has_unread_start, has_unread_end
+        )
+    )
+
+
+@register.simple_tag
+def special_subscription_list_with_count(user, special_name, css_classes=None):
+
+    list_name, tooltip_both, tooltip_unread, tooltip_all, tooltip_none = \
+                                            reading_lists[special_name]
+
+    subscription = getattr(user, special_name + u'_subscription')
+    all_count    = subscription.all_articles_count
+    unread_count = subscription.unread_articles_count
+
+    count_span = u''
+    make_span  = False
+
+    if unread_count and unread_count == all_count:
+        tooltip   = tooltip_both.format(unread_count, all_count)
+        make_span = True
+
+    elif unread_count:
+        tooltip   = tooltip_unread.format(unread_count, all_count)
+        make_span = True
+
+    elif all_count:
+        tooltip = tooltip_all.format(all_count)
+
+    else:
+        tooltip = _('You have nothing in this list yet.')
+
+    if make_span and user.preferences.selector.lists_show_unread_count:
+        count_span = (u'&nbsp; <small class="unread-count">'
+                      u'({0})</small>'.format(unread_count))
+
+    if unread_count:
+        has_unread_start = u'<span class="has-unread">'
+        has_unread_end   = u'</span>'
+
+    else:
+        has_unread_start = u''
+        has_unread_end   = u''
+
+    return mark_safe(
+        (
+            u'{5}<a href="{0}" class="{1} name" title="{2}" '
+            u'data-toggle="tooltip">{3}{4}</a>{6}'
+        ).format(
+            reverse('read_all_feed', kwargs={'feed': subscription.id}),
+            css_classes or u'nowrap', tooltip, list_name, count_span,
             has_unread_start, has_unread_end
         )
     )
