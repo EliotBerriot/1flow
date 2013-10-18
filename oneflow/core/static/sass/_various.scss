@@ -174,9 +174,8 @@ img.centered {
 }
 
 .not-ready {
-  filter: url("/static/img/filters.svg#blur4px");
-  @include filter(blur(4px));
-  opacity: 0.5;
+  filter: url("/static/img/filters.svg#blur5px");
+  @include filter(blur(5px));
   cursor: help;
 }
 
