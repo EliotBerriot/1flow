@@ -376,7 +376,7 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
 
     attr_name = None
 
-    LOGGER.info(query_kwargs)
+    #LOGGER.info(query_kwargs)
 
     if kwargs.get('all', False):
         attr_name = 'all_articles_count'
@@ -496,7 +496,7 @@ def read_with_endless_pagination(request, **kwargs):
     if subscription:
         subscription = Subscription.objects.get(id=subscription)
 
-        LOGGER.info(u'Refining reads by subscription %s', subscription)
+        #LOGGER.info(u'Refining reads by subscription %s', subscription)
         query_kwargs[u'subscriptions__contains'] = subscription
 
     folder = kwargs.get('folder', None)
@@ -504,7 +504,7 @@ def read_with_endless_pagination(request, **kwargs):
     if folder:
         folder = Folder.objects.get(id=folder)
 
-        LOGGER.info(u'Refining reads by folder %s', folder)
+        # LOGGER.info(u'Refining reads by folder %s', folder)
         query_kwargs[u'subscriptions__in'] = \
             Subscription.objects(folders=folder)
 
@@ -672,6 +672,10 @@ def set_preference(request, base, sub, value):
 
 
 def toggle(request, klass, oid, key):
+
+    #
+    # TODO: push notifications on error to the user.
+    #
 
     try:
         obj = globals()[klass].get_or_404(oid)
