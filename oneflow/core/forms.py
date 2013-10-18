@@ -7,6 +7,7 @@ from django.core.urlresolvers import reverse
 
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth import get_user_model
+from django.core.validators import URLValidator
 
 from mongodbforms import DocumentForm
 
@@ -458,3 +459,59 @@ class AddSubscriptionForm(forms.Form):
             created_subscriptions.append(subscription)
 
         return created_subscriptions
+
+
+class WebPagesImportForm(forms.Form):
+
+    urls = forms.CharField(label=_(u'Enter URL(s)'), required=True,
+                           help_text=_(u'Type one URL per line, as many '
+                                       u'as you want. Even if 1flow can '
+                                       u'currently display only text-pages '
+                                       u'correctly, you may import anything '
+                                       u'(websites home pages, youtube '
+                                       u'videos, etc). As soon as custom '
+                                       u'renderers are ready, the content '
+                                       u'you imported will show correctly.'),
+                           widget=forms.Textarea())
+
+    def __init__(self, *args, **kwargs):
+
+        self.user = kwargs.pop('user', None)
+
+        super(WebPagesImportForm, self).__init__(*args, **kwargs)
+
+    def save(self):
+
+        feed = self.user.web_import_feed
+
+        validator = URLValidator()
+
+        to_create = set()
+        created   = []
+        failed    = []
+
+        for line in self.cleaned_data['urls'].splitlines():
+            line = line.strip()
+
+            if not line:
+                continue
+
+            try:
+                validator(line)
+
+            except Exception, e:
+                failed.append((line, u', '.join(e.messages)))
+
+            else:
+                to_create.add(line)
+
+        for url in to_create:
+            try:
+                created.append(feed.create_article_from_url(url))
+
+            except Exception, e:
+                LOGGER.exception(u'Could not create article from '
+                                 u'imported URL %s', url)
+                failed.append((url, unicode(e)))
+
+        return created, failed

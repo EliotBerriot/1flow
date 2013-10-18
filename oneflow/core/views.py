@@ -39,7 +39,8 @@ from .forms import (FullUserCreationForm,
                     StaffPreferencesForm,
                     ManageFolderForm,
                     ManageSubscriptionForm,
-                    AddSubscriptionForm)
+                    AddSubscriptionForm,
+                    WebPagesImportForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import Feed, Subscription, Read, Folder, TreeCycleException
 from .models.reldb import HelpContent
@@ -716,6 +717,41 @@ def toggle(request, klass, oid, key):
 
 
 # ——————————————————————————————————————————————————————————————————————— Other
+
+
+def import_web_pages(request):
+
+    if request.POST:
+        form = WebPagesImportForm(request.POST, user=request.user.mongo)
+
+        if form.is_valid():
+            created, failed = form.save()
+
+        if request.is_ajax():
+            return HttpResponse('DONE %s/%s' % (created, failed))
+
+        if failed:
+            for url, reason in failed:
+                messages.warning(request, _(u'Import of URL <code>{0}</code> '
+                                 u'failed: {1}').format(url, reason),
+                                 extra_tags='sticky safe')
+
+        if created:
+            messages.info(request, _(u'Successfully launched import of '
+                          u'{0} web page(s)').format(len(created)))
+
+        return HttpResponseRedirect(reverse('source_selector'))
+
+    else:
+        form = WebPagesImportForm()
+
+    if request.is_ajax():
+        template = 'snippets/selector/import-web-pages.html'
+
+    else:
+        template = 'import-web-pages.html'
+
+    return render(request, template, {'form': form})
 
 
 def profile(request):
