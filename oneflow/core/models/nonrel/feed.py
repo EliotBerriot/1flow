@@ -537,7 +537,7 @@ class Feed(Document, DocumentHelperMixin):
 
         return retval
 
-    def create_article_and_reads(self, article, feed_tags):
+    def create_article_from_feedparser(self, article, feed_tags):
         """ Take a feedparser item and a list of Feed subscribers and
             feed tags, and create the corresponding Article and Read(s). """
 
@@ -860,7 +860,8 @@ class Feed(Document, DocumentHelperMixin):
                 spipe.incr('feeds.refresh.fetch.global.updated')
 
             for article in parsed_feed.entries:
-                created = self.create_article_and_reads(article, tags)
+                created = self.create_article_from_feedparser(article, tags)
+
                 if created:
                     new_articles += 1
 
