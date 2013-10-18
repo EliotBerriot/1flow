@@ -1,0 +1,36 @@
+{% comment %}
+    This snippet is meant to be included from:
+        - the selector modal.
+        - the standalone import page.
+{% endcomment %}
+
+
+<form method="POST" action="{% url 'import_web_pages' %}" class="form form-horizontal">
+    {% csrf_token %}
+
+    {% if in_modal %}
+        <div class="modal-body">
+    {% endif %}
+
+    {% include "widgets/forms/field-textarea.html" with field=form.urls|attr:"rows:3"|add_class:"span5" %}
+
+    {% if in_modal %}
+        </div>
+        <div class="modal-footer">
+
+    {% else %}
+        <div class="form-actions">
+
+    {% endif %}
+
+        <div class="pull-left">
+            <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+        </div>
+
+        <button type="submit" class="btn btn-primary">{% trans "Launch import" %}</a>
+
+    {% if in_modal %}
+        </div>
+    {% endif %}
+
+</form>
