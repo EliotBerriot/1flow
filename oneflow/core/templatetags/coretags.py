@@ -93,7 +93,7 @@ def read_status_css(read):
 
 reading_lists = {
 
-    'web_import': (_('Web snaps'),
+    'web_import': (_('Imported elements'),
                    #tooltip_both,
                    _('You have {0} newly imported items.'),
                    #tooltip_unread
