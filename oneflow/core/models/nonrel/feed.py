@@ -552,6 +552,45 @@ class Feed(Document, DocumentHelperMixin):
 
         return retval
 
+    def create_article_from_url(self, url):
+
+        # TODO: find article publication date while fetching content…
+        # TODO: set Title during fetch…
+
+        try:
+            new_article, created = Article.create_article(
+                url=url.replace(' ', '%20'),
+
+                # We *NEED* a title, but as we have no article.lang yet,
+                # it must be language independant as much as possible.
+                title=_(u'Imported item from {0}').format(url),
+                feeds=[self], origin_type=ORIGIN_TYPE_WEBIMPORT)
+
+        except:
+            # NOTE: duplication handling is already
+            # taken care of in Article.create_article().
+            LOGGER.exception(u'Article creation from URL %s failed in '
+                             u'feed %s.', url, self)
+            return False
+
+        mutualized = created is None
+
+        if created or mutualized:
+            self.recent_articles_count += 1
+            self.all_articles_count += 1
+
+        self.latest_article_date_published = now()
+
+        # Even if the article wasn't created, we need to create reads.
+        # In the case of a mutualized article, it will be fetched only
+        # once, but all subscribers of all feeds must be connected to
+        # it to be able to read it.
+        for subscription in self.subscriptions:
+            subscription.create_reads(new_article, verbose=created)
+
+        # Don't forget the parenthesis else we return ``False`` everytime.
+        return created or (None if mutualized else False)
+
     def create_article_from_feedparser(self, article, feed_tags):
         """ Take a feedparser item and a list of Feed subscribers and
             feed tags, and create the corresponding Article and Read(s). """
