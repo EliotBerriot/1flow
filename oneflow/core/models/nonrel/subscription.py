@@ -12,7 +12,7 @@ from mongoengine.fields import (StringField, ListField, ReferenceField,
 from mongoengine.errors import NotUniqueError
 
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, ugettext as __
 
 from ....base.fields import IntRedisDescriptor
 from ....base.utils.dateutils import (timedelta, today, combine,
@@ -183,6 +183,7 @@ class Subscription(Document, DocumentHelperMixin):
 
         if background:
             subscription_check_reads.delay(subscription.id, True)
+
         else:
             subscription.check_reads(True)
 
@@ -373,7 +374,8 @@ def User_web_import_subscription_property_get(self):
 
         return Subscription.subscribe_user_to_feed(user=self,
                                                    feed=self.web_import_feed,
-                                                   name=_(u'Imported items'))
+                                                   name=__(u'Imported items'),
+                                                   background=True)
 
 
 def User_subscriptions_by_folder_property_get(self):
