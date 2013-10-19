@@ -127,6 +127,14 @@ class Subscription(Document, DocumentHelperMixin):
         default=subscription_bookmarked_articles_count_default,
         set_default=True, min_value=0)
 
+    meta = {
+        'indexes': [
+            'user',
+            'feed',
+            'folders',
+        ]
+    }
+
     def __unicode__(self):
         return _(u'{0}+{1} (#{2})').format(
             self.user.username, self.feed.name, self.id)
@@ -356,13 +364,23 @@ def Folder_open_subscriptions_property_get(self):
 
 
 def User_subscriptions_property_get(self):
+    """ “Normal” subscriptions, eg. not special (immutable) ones. """
+
+    return Subscription.objects(user=self,
+                                # Add all special feeds here.
+                                feed__nin=[self.web_import_feed])
+
+
+def User_all_subscriptions_property_get(self):
+    """ Really, all. Including special ones. """
+
     return Subscription.objects(user=self)
 
 
 def User_web_import_subscription_property_get(self):
 
     try:
-        return self.subscriptions.get(feed=self.web_import_feed)
+        return self.all_subscriptions.get(feed=self.web_import_feed)
 
     except Subscription.DoesNotExist:
 
@@ -451,6 +469,7 @@ Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Folder.open_subscriptions     = property(Folder_open_subscriptions_property_get)
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
+User.all_subscriptions        = property(User_all_subscriptions_property_get)
 User.subscriptions_by_folder  = property(
                                     User_subscriptions_by_folder_property_get)
 User.web_import_subscription  = property(
