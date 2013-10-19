@@ -356,7 +356,9 @@ def Folder_open_subscriptions_property_get(self):
 
 
 def User_subscriptions_property_get(self):
-    return Subscription.objects(user=self)
+    return Subscription.objects(user=self,
+                                # Add all special feeds here.
+                                feed__nin=[self.web_import_feed])
 
 
 def User_web_import_subscription_property_get(self):
