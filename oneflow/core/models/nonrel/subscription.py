@@ -164,7 +164,8 @@ class Subscription(Document, DocumentHelperMixin):
         self.reads.update(pull__subscriptions=self)
 
     @classmethod
-    def subscribe_user_to_feed(cls, user, feed, force=False, background=False):
+    def subscribe_user_to_feed(cls, user, feed, name=None,
+                               force=False, background=False):
 
         try:
             subscription = cls(user=user, feed=feed).save()
@@ -176,7 +177,7 @@ class Subscription(Document, DocumentHelperMixin):
                 return cls.objects.get(user=user, feed=feed)
 
         else:
-            subscription.name = feed.name
+            subscription.name = name or feed.name
             subscription.tags = feed.tags[:]
             subscription.save()
 
@@ -364,8 +365,15 @@ def User_web_import_subscription_property_get(self):
 
     except Subscription.DoesNotExist:
 
+        #
+        # NOTE: we use a shorter name than the feed's one.
+        # The user doesn't need to see his/her own name in
+        # the subscription title.
+        #
+
         return Subscription.subscribe_user_to_feed(user=self,
-                                                   feed=self.web_import_feed)
+                                                   feed=self.web_import_feed,
+                                                   name=_(u'Imported items'))
 
 
 def User_subscriptions_by_folder_property_get(self):

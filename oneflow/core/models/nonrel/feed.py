@@ -994,6 +994,12 @@ def User_web_import_feed_property_get(self):
 
     except Feed.DoesNotExist:
 
+        #
+        # NOTE: using the username in the feed name will allow other
+        # users to easily subscribe to each other's import feeds, and
+        # distinguish them if they have many.
+        #
+
         return Feed(url=WEB_IMPORT_FEED_URL.format(user=self),
                     name=_('Imported items of {0}').format(
                         self.username or (u'#%s' % self.id)),
