@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-19 18:10+0200\n"
-"PO-Revision-Date: 2013-10-19 18:13+0009\n"
+"POT-Creation-Date: 2013-10-19 21:08+0200\n"
+"PO-Revision-Date: 2013-10-19 21:09+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -3246,9 +3246,8 @@ msgstr ""
 "1flow http://blog.1flow.io/ ou sur Twitter @1flow_io."
 
 #: templatetags/coretags.py:96
-#, fuzzy
 msgid "Imported elements"
-msgstr "Éléments importés de {0}"
+msgstr "Éléments importés"
 
 #: templatetags/coretags.py:98
 #, python-brace-format
