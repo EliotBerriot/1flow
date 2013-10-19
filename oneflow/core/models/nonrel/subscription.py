@@ -127,6 +127,14 @@ class Subscription(Document, DocumentHelperMixin):
         default=subscription_bookmarked_articles_count_default,
         set_default=True, min_value=0)
 
+    meta = {
+        'indexes': [
+            'user',
+            'feed',
+            'folders',
+        ]
+    }
+
     def __unicode__(self):
         return _(u'{0}+{1} (#{2})').format(
             self.user.username, self.feed.name, self.id)
