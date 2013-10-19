@@ -424,6 +424,24 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
                 setattr(user, attr_name, count)
 
 
+def _rwep_special_update_counters(subscription, user):
+
+    if subscription == user.web_import_subscription:
+        for attr_name, count in (
+            ('unread_articles_count',
+             subscription.reads(is_read__ne=True).count()),
+                ):
+            current_count = getattr(subscription, attr_name)
+
+            if current_count != count:
+                LOGGER.info(u'Setting Import Subscription#%s.%s=%s '
+                            u'(old was: %s).', subscription.id, attr_name,
+                            count, current_count, )
+
+                # subscription is really a nonrel.subscription
+                setattr(subscription, attr_name, count)
+
+
 def _rwep_ajax_mark_all_read(subscription, folder, user):
 
     if subscription:
@@ -541,6 +559,9 @@ def read_with_endless_pagination(request, **kwargs):
 
             _rwep_ajax_update_counters(kwargs, query_kwargs,
                                        subscription, folder, user, count)
+
+            if subscription:
+                _rwep_special_update_counters(subscription, user)
 
         elif request.GET.get('mark_all_read', False):
 
