@@ -93,31 +93,31 @@ def read_status_css(read):
 
 reading_lists = {
 
-    'web_import': (_('Imported elements'),
+    'web_import': (_(u'Imported elements'),
                    #tooltip_both,
-                   _('You have {0} newly imported items.'),
+                   _(u'You have {0} newly imported items.'),
                    #tooltip_unread
-                   _('You have {0} newly imported items, out of {1} so far'),
+                   _(u'You have {0} newly imported items, out of {1} so far'),
                    #tooltip_all,
                    _(u'You imported {0} web items so far'),
                    #tooltip_none
                    _(u'You did not import anything until now'),
                    ),
 
-    'read_all':         (_('All articles'),
+    'read_all':         (_(u'All articles'),
                          _(u'You have {0} articles in 1flow'),
                          'all_articles_count'),
-    'read':             (_("All unread"),
+    'read':             (_(u"All unread"),
                          _(u'You have {0} unread articles'),
                          'unread_articles_count'),
-    'read_later':       (_("Read later"),
+    'read_later':       (_(u"Read later"),
                          _(u'You have {0} articles to read later'),
                          'bookmarked_articles_count'),
-    'read_starred':     (_('Starred'),
+    'read_starred':     (_(u'Starred'),
                          _(u'You have {0} starred articles'),
                          'starred_articles_count'),
 
-    'read_fun':         (_('Funbox'),
+    'read_fun':         (_(u'Funbox'),
                          _(u'You have {0} fun articles'),
                          'fun_articles_count'),
 
@@ -206,7 +206,7 @@ def special_subscription_list_with_count(user, special_name, css_classes=None):
         tooltip = tooltip_all.format(all_count)
 
     else:
-        tooltip = _('You have nothing in this list yet.')
+        tooltip = _(u'You have nothing in this list yet.')
 
     if make_span and user.preferences.selector.lists_show_unread_count:
         count_span = (u'&nbsp; <small class="unread-count">'
