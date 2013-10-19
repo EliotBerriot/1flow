@@ -784,6 +784,13 @@ def Subscription_create_reads_method(self, article, verbose=True, **kwargs):
         params = dict(('set__' + key, value)
                       for key, value in kwargs.items())
 
+        # If the article was already there and fetched (mutualized from
+        # another feed, for example), activate the read immediately.
+        # If we don't do this here, the only alternative is the daily
+        # global_reads_checker() task, which can be in quite a long time.
+        if article.is_good:
+            params['is_good'] = True
+
         new_read.update(set__tags=tags,
                         set__subscriptions=[self], **params)
 
