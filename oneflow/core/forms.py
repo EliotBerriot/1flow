@@ -172,11 +172,16 @@ class OnlyNameMultipleChoiceField(forms.ModelMultipleChoiceField):
 class ManageFolderForm(DocumentForm):
     parent = OnlyNameChoiceField(queryset=Folder.objects.all(),
                                  empty_label=_(u'(None)'),
+                                 label=_(u'Parent folder'),
                                  required=False, widget=Select2Widget())
 
     subscriptions = OnlyNameMultipleChoiceField(
-        queryset=Subscription.objects.none(), required=False,
-        widget=Select2MultipleWidget())
+        label=_(u'Subscriptions'), queryset=Subscription.objects.none(),
+        required=False, widget=Select2MultipleWidget(),
+        help_text=_(u'These are the ones held directly by the folder; they '
+                    u'are displayed above subfolders. There can be none, if '
+                    u'you prefer dispatching your subscriptions in subfolders '
+                    u'only.'))
 
     class Meta:
         model = Folder

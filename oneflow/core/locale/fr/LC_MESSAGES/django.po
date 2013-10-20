@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-19 21:08+0200\n"
-"PO-Revision-Date: 2013-10-19 21:09+0009\n"
+"POT-Creation-Date: 2013-10-21 00:08+0200\n"
+"PO-Revision-Date: 2013-10-21 00:11+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -84,7 +84,7 @@ msgstr "Permission"
 msgid "Parents"
 msgstr "Parents"
 
-#: admin.py:235 models/nonrel/folder.py:61
+#: admin.py:235
 msgid "Children"
 msgstr "Enfants"
 
@@ -214,32 +214,46 @@ msgstr "Confirmation"
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: forms.py:174 forms.py:353
+#: forms.py:174 forms.py:357
 msgid "(None)"
 msgstr "(aucun)"
 
-#: forms.py:345 models/nonrel/subscription.py:109
+#: forms.py:178
+msgid "Subscriptions"
+msgstr "Abonnements"
+
+#: forms.py:180
+msgid ""
+"These are the ones held directly by the folder; they are displayed above "
+"subfolders. There can be none, if you prefer dispatching your subscriptions "
+"in subfolders only."
+msgstr ""
+"Ce sont les abonnements directement inclus dans le dossier, affichés au "
+"dessus des sous-dossiers. Il peut n'y en avoir aucun, si vous préférez "
+"répartir vos abonnements uniquement en sous-dossiers."
+
+#: forms.py:349 models/nonrel/subscription.py:109
 msgid "Folders"
 msgstr "Dossiers"
 
-#: forms.py:352
+#: forms.py:356
 msgid "Folder"
 msgstr "Dossier"
 
-#: forms.py:392
+#: forms.py:396
 msgid "Search 1flow's streams"
 msgstr "Cherchez dans 1flow"
 
-#: forms.py:395
+#: forms.py:399
 msgid "Enter an URL"
 msgstr "Saississez une URL"
 
-#: forms.py:410
+#: forms.py:414
 #, python-brace-format
 msgid "Select feed(s) from the {0} referenced"
 msgstr "Sélectionnez des flux parmis les {0} référencés"
 
-#: forms.py:414
+#: forms.py:418
 #, python-brace-format
 msgid ""
 "<span class=\"muted\">NOTE: this can be long. You will be notified when "
@@ -250,19 +264,19 @@ msgstr ""
 "notifié(e) quand elle est terminée.</span>&nbsp;<a href=\"{0}\" "
 "target=\"_blank\">Comment ça marche ?</a>"
 
-#: forms.py:417
+#: forms.py:421
 msgid "#adding-subscriptions"
 msgstr "#ajout-dabonnement"
 
-#: forms.py:429
+#: forms.py:433
 msgid "You have to fill at least one of the two fields."
 msgstr "Vous devez remplir au moins un des deux champs."
 
-#: forms.py:466
+#: forms.py:470
 msgid "Enter URL(s)"
 msgstr "Entrez des URLs"
 
-#: forms.py:467
+#: forms.py:471
 msgid ""
 "Type one URL per line, as many as you want. Even if 1flow can currently "
 "display only text-pages correctly, you may import anything (websites home "
@@ -782,12 +796,27 @@ msgstr "Lier un auteur internet à un utilisateur 1flow."
 msgid " (unsure)"
 msgstr "(non confirmé)"
 
-#: models/nonrel/common.py:151
+#: models/nonrel/common.py:95
+#, python-brace-format
+msgid "Items sent by {0}"
+msgstr "Éléments envoyés par {0}"
+
+#: models/nonrel/common.py:97
+#, python-brace-format
+msgid "Imported items of {0}"
+msgstr "Éléments importés de {0}"
+
+#: models/nonrel/common.py:99
+#, python-brace-format
+msgid "Inbox of {0}"
+msgstr "Boîte de réception de {0}"
+
+#: models/nonrel/common.py:158
 #, python-brace-format
 msgid "{0} #{1} not found"
 msgstr "{0} #{1} introuvable"
 
-#: models/nonrel/common.py:301 models/nonrel/common.py:334
+#: models/nonrel/common.py:308 models/nonrel/common.py:341
 #, python-brace-format
 msgid ""
 "{0} is already in the parent chain of {1}. Setting the later parent of the "
@@ -958,20 +987,15 @@ msgstr "Description (EN)"
 msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
-#: models/nonrel/feed.py:351 models/nonrel/folder.py:85
+#: models/nonrel/feed.py:360 models/nonrel/folder.py:85
 #, python-brace-format
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel/feed.py:566
+#: models/nonrel/feed.py:576
 #, python-brace-format
 msgid "Imported item from {0}"
 msgstr "Élément importé depuis {0}"
-
-#: models/nonrel/feed.py:1004
-#, python-brace-format
-msgid "Imported items of {0}"
-msgstr "Éléments importés de {0}"
 
 #: models/nonrel/folder.py:53 models/nonrel/subscription.py:100
 msgid "Name"
@@ -982,8 +1006,12 @@ msgid "Owner"
 msgstr "Propriétaire"
 
 #: models/nonrel/folder.py:58
-msgid "Parent"
-msgstr "Parent"
+msgid "Parent folder"
+msgstr "Dossier parent"
+
+#: models/nonrel/folder.py:61
+msgid "Children folders"
+msgstr "Dossier(s) enfant(s)"
 
 #: models/nonrel/folder.py:80
 #, python-brace-format
@@ -1993,7 +2021,7 @@ msgstr ""
 msgid "Folder(s) in which this subscription appears."
 msgstr "Dossier(s) dans lesquel(s) cet abonnement apparaît."
 
-#: models/nonrel/subscription.py:131
+#: models/nonrel/subscription.py:139
 #, python-brace-format
 msgid "{0}+{1} (#{2})"
 msgstr "{0}+{1} (#{2})"
@@ -2156,7 +2184,7 @@ msgstr "PostgreSQL"
 msgid "MongoDB"
 msgstr "MongoDB"
 
-#: templates/profile.html:79 templates/snippets/selector/manage-folder.html:37
+#: templates/profile.html:79 templates/snippets/selector/manage-folder.html:39
 #: templates/snippets/selector/manage-subscription.html:120
 msgid "Save"
 msgstr "Enregistrer"
@@ -2553,7 +2581,7 @@ msgstr "Contact"
 
 #: templates/snippets/import/import-web-pages.html:27
 #: templates/snippets/selector/add-subscription.html:41
-#: templates/snippets/selector/manage-folder.html:36
+#: templates/snippets/selector/manage-folder.html:38
 #: templates/snippets/selector/manage-subscription.html:119
 msgid "Cancel"
 msgstr "Annuler"
@@ -3035,7 +3063,7 @@ msgstr "Modifier le dossier"
 msgid "Add a folder"
 msgstr "Ajouter un dossier"
 
-#: templates/snippets/selector/manage-folder.html:22
+#: templates/snippets/selector/manage-folder.html:24
 msgid ""
 "\n"
 "                If you delete this folder, all its subfolders will be moved one level up in the folder hierarchy. All its direct subscriptions will be moved to “unclassified”. Subscriptions in its subfolders will not be affected.\n"
@@ -3044,11 +3072,11 @@ msgstr ""
 "\n"
 "Si vous supprimez ce dossier, tous ses sous-dossiers seront déplacés d'un niveau vers le haut dans la hiérarchie. Tous les abonnements qu'il contient directement deviendront « non-classés ». Les abonnements des sous-dossiers ne seront pas modifiés."
 
-#: templates/snippets/selector/manage-folder.html:32
+#: templates/snippets/selector/manage-folder.html:34
 msgid "Delete this folder"
 msgstr "Supprimer ce dossier"
 
-#: templates/snippets/selector/manage-folder.html:37
+#: templates/snippets/selector/manage-folder.html:39
 msgid "Create"
 msgstr "Créer"
 
@@ -3362,6 +3390,9 @@ msgstr "k+"
 msgid "{0} articles"
 msgstr "{0} articles"
 
+#~ msgid "Parent"
+#~ msgstr "Parent"
+
 #~ msgid "Web snaps"
 #~ msgstr "Éléments importés"
 
@@ -3625,9 +3656,6 @@ msgstr "{0} articles"
 
 #~ msgid "Teams"
 #~ msgstr "Équipes"
-
-#~ msgid "Subscriptions"
-#~ msgstr "Abonnements"
 
 #~ msgid "Discovery"
 #~ msgstr "Découverte"
