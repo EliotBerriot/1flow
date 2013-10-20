@@ -249,10 +249,19 @@ class Feed(Document, DocumentHelperMixin):
     def good_feeds(cls):
         """ Return feeds suitable for use in the “add subscription”
             part of the source selector, eg feeds marked as usable by
-            the administrators, and not closed. """
+            the administrators, not closed. """
 
-        return cls.objects(good_for_use=True, closed__ne=True).filter(
-            Q(duplicate_of__exists=False) | Q(duplicate_of=None))
+        return cls.objects(restricted__ne=True).filter(
+            # not internal, still open and validated by a human.
+            (Q(is_internal__ne=True, closed__ne=True, good_for_use=True))
+
+            # And not being duplicate of any other feed.
+            & (Q(duplicate_of__exists=False) | Q(duplicate_of=None))
+
+            # or just internal; internal feeds have no duplicate by nature,
+            # and are not checked by humans.
+            | Q(is_internal=True)).filter(
+                )
 
     @property
     def latest_article(self):
