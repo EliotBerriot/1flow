@@ -55,10 +55,10 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
     owner = ReferenceField('User', verbose_name=_(u'Owner'),
                            reverse_delete_rule=CASCADE)
 
-    parent = ReferenceField('self', verbose_name=_(u'Parent'),
+    parent = ReferenceField('self', verbose_name=_(u'Parent folder'),
                             reverse_delete_rule=NULLIFY, required=False)
     children = ListField(ReferenceField('self', reverse_delete_rule=PULL),
-                         default=list, verbose_name=_(u'Children'))
+                         default=list, verbose_name=_(u'Children folders'))
 
     all_articles_count = IntRedisDescriptor(
         attr_name='f.aa_c', default=folder_all_articles_count_default,
