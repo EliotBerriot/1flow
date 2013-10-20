@@ -172,6 +172,7 @@ class OnlyNameMultipleChoiceField(forms.ModelMultipleChoiceField):
 class ManageFolderForm(DocumentForm):
     parent = OnlyNameChoiceField(queryset=Folder.objects.all(),
                                  empty_label=_(u'(None)'),
+                                 label=_(u'Parent folder'),
                                  required=False, widget=Select2Widget())
 
     subscriptions = OnlyNameMultipleChoiceField(
