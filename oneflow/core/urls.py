@@ -42,6 +42,9 @@ urlpatterns = patterns(
     'oneflow.core.views',
     url(_(r'^home/$'), login_required(never_cache(views.home)), name='home'),
 
+    url(_(r'^skip-welcome-beta/$'), login_required(
+        never_cache(views.skip_welcome_beta)), name='skip_welcome_beta'),
+
     # This is the individual preference toggling.
     url(_(r'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
         login_required(never_cache(views.set_preference)),

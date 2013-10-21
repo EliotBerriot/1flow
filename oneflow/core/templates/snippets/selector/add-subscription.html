@@ -5,6 +5,10 @@
     <form method="POST" action="{% url 'add_subscription' %}" class="form form-horizontal">
         {% csrf_token %}
 
+        {% if not mongodb_user.has_content %}
+            <p>{% trans "Please choose some news feeds to subscribe to. Just type a few letters in the field, like “CNN”, “design”, “software development”… You can subscribe to more than one." %}</p>
+        {% endif %}
+
         {% with field=form.feeds %}
             <div class="control-group">
                 <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
@@ -30,16 +34,22 @@
 
         {% endwith %}
 
+        {% if not mongodb_user.has_content %}
+        <div class="or-choice">{% trans "note:" %}</div>
+            <p>{% trans "The sources you choose will be added to what we call the <em>sources selector</em>. It's the screen that will show after you click <em>Add to my sources</em>. Next time you come to 1flow, you will be brought directly there." %}</p>
+        {% endif %}
+
         <div class="form-actions">
             <div class="pull-right">
-                <button type="submit" class="btn btn-primary">{% trans "Add to my flow" %}</a>
-
+                <button type="submit" class="btn btn-primary">{% trans "Add to my sources" %}</a>
             </div>
 
-            <div class="pull-left">
-                <a href="{% url 'source_selector' %}"
-                class="btn">{% trans "Cancel" %}</a>
-            </div>
+            {% if mongodb_user.has_content %}
+                <div class="pull-left">
+                    <a href="{% url 'source_selector' %}"
+                    class="btn">{% trans "Cancel" %}</a>
+                </div>
+            {% endif %}
 
         </div>
     </form>

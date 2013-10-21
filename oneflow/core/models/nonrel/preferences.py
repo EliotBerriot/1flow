@@ -172,6 +172,7 @@ class StaffPreferences(EmbeddedDocument):
                     u'automatically redirected to the web application.'),
         default=False)
 
+
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
     (u'TL', _(u'Tiled News')),
@@ -227,8 +228,8 @@ class HelpWizards(EmbeddedDocument):
         Special attribute is :attr:`show_all` via which the user
         can avoid them to be showed complely or not.
     """
-    show_all     = BooleanField(default=True)
-    welcome_beta = BooleanField(default=False)
+    show_all           = BooleanField(default=True)
+    welcome_beta_shown = BooleanField(default=False)
 
 
 class Preferences(Document, DocumentHelperMixin):
