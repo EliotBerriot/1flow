@@ -282,7 +282,7 @@ def add_subscription(request, **kwargs):
                           u'thanks for your patience.').format(len(added)))
 
             return HttpResponseRedirect(reverse('source_selector')
-                                        + __(u'#unclassified-streams'))
+                                        + u'#' + __(u'unclassified-streams'))
 
     else:
         form = AddSubscriptionForm(owner=request.user.mongo)
