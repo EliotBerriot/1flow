@@ -239,9 +239,9 @@ class Subscription(Document, DocumentHelperMixin):
         """ Also available as a task for background execution. """
 
         if not force:
-            LOGGER.info(u'This method is very costy and should not be needed '
-                        u'in normal conditions, please call with `force=True` '
-                        u'if you are really sure you want to run it.')
+            LOGGER.info(u'Subscription.check_reads() is very costy and should '
+                        u'not be needed in normal conditions. Call it with '
+                        u'`force=True` if you are sure you want to run it.')
             return
 
         yesterday = combine(today() - timedelta(days=1), time(0, 0, 0))

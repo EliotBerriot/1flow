@@ -284,8 +284,8 @@ class Feed(Document, DocumentHelperMixin):
     def check_subscriptions(self, force=False):
 
         if not force:
-            LOGGER.info(u'This method is very costy and should not be needed '
-                        u'in normal conditions. Please call it with '
+            LOGGER.info(u'Feed.check_subscriptions() is very costy and should '
+                        u'not be needed in normal conditions. Call it with '
                         u'`force=True` if you are sure you want to run it.')
             return
 
