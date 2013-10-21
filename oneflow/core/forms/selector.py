@@ -259,8 +259,10 @@ class AddSubscriptionForm(forms.Form):
         # LOGGER.warning(len(not_shown))
 
         # NOTE: this query is replicated in the completer view.
-        count = Feed.good_feeds(
-            id__nin=[s.feed.id for s in self.owner.subscriptions]).count()
+        self.fields['feeds'].queryset = Feed.good_feeds(
+            id__nin=[s.feed.id for s in self.owner.subscriptions])
+
+        count = self.valid_feeds.count()
 
         self.fields['feeds'].widget = HeavySelect2MultipleWidget(
                                     data_url=reverse_lazy('feeds_completer'))
