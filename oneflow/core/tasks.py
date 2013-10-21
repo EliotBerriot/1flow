@@ -809,7 +809,7 @@ def global_subscriptions_checker(force=False, limit=None, from_feeds=True,
                                                         good=True,
                                                         bad=True)
 
-                    feed.check_subscriptions()
+                    feed.check_subscriptions(force=True)
 
                     for subscription in feed.subscriptions:
 
@@ -844,7 +844,7 @@ def global_subscriptions_checker(force=False, limit=None, from_feeds=True,
 
                 for user in users:
 
-                    user.check_subscriptions()
+                    user.check_subscriptions(force=True)
 
                     if extended_check:
                         user.compute_cached_descriptors(all=True,
@@ -1006,7 +1006,7 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                 if extended_check:
                     try:
                         if read.subscriptions:
-                            read.check_subscriptions()
+                            read.check_subscriptions(force=True)
 
                         else:
                             read.set_subscriptions()
