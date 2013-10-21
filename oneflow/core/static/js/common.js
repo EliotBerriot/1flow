@@ -123,8 +123,16 @@ function find_start(parent, klass){
 
     if (parent.hasClass(klass)){
         start = parent;
+
     } else {
-        start = parent.find('.' + klass);
+        try {
+            start = parent.find('.' + klass);
+
+        } catch (err) {
+            // Previous .find() will have failed if we
+            // passed something like '[data-toggle="…"]'
+            start = parent.find(klass);
+        }
     }
 
     //console.debug('start for ' + klass + ' in ' + parent + ':');
@@ -489,6 +497,14 @@ function setup_tooltips(parent){
         parent = $('body');
     }
 
+    parent.find('[data-toggle="tooltip"]').tooltip({
+            placement: popover_placement,
+            // Since Bootstrap 2.2 http://stackoverflow.com/q/14025438/654755
+            container: 'body'
+        }).click(function(e) {
+            $(this).tooltip('toggle');
+        });
+
     // We need the "click" for touch interfaces to be able to close
     // twitter popovers. Not needed for clickovers, though, which
     // work perfectly.
@@ -669,6 +685,98 @@ function on_hovered(func_if_found, func_if_not_found){
         }
     }
 }
+
+
+function handle_modal(e) {
+
+    e.preventDefault();
+
+    var url = $(this).attr('href');
+
+    if (url.indexOf('#') == 0) {
+        $(url).modal('open');
+
+    } else {
+
+        $.get(url, function(data) {
+
+            $(data).modal().on("shown", function () {
+
+                $('body').addClass('modal-open');
+
+                console.log('SETUP');
+                setup_everything($(this));
+
+                //$('input:visible:enabled:first').focus();
+                //$first_input.select();
+
+                var $first_input = $('input:visible:enabled').first();
+
+                $first_input.focus(function() {
+                    // OMG. Thanks http://stackoverflow.com/a/10576409/654755
+                    this.selectionStart = this.selectionEnd = this.value.length;
+                });
+
+                $first_input.focus();
+
+            }).on('hidden', function () {
+
+                $('body').removeClass('modal-open');
+                $(this).remove();
+            });
+        });
+    }
+}
+
+function handle_ajax_form(event) {
+
+    var $form   = $(this);
+    var $target = $($form.attr('data-target'));
+
+    $.ajax({
+        type: $form.attr('method'),
+        url:  $form.attr('action'),
+        data: $form.serialize(),
+
+        success: function(data, status) {
+
+            // NOTE: if the result is a redirect,
+            //      the current code will no run.
+
+            if (data == 'DONE') {
+                // If there is no other data than the text "DONE", just
+                // try to close the current open modal. The server-side
+                // will have filled notifications and everything else.
+
+                try {
+                    $target.modal('hide');
+
+                } catch (err) {
+                    // do not crash if the target is not a modal.
+                    console.warning(err);
+                }
+
+            } else {
+                // replace the current element with the result of the form.
+                $target.html(data);
+
+            }
+        }
+    });
+
+    event.preventDefault();
+}
+
+function setup_modals(parent) {
+
+    // Support for AJAX loaded modal window.
+    // Focuses on first input textbox after it loads the window.
+    find_start(parent, '[data-toggle="modal"]').click(handle_modal);
+
+    // Freely inspired from https://gist.github.com/havvg/3226804
+    find_start(parent, 'form[data-async]').on('submit', handle_ajax_form);
+
+}
 function setup_everything(parent) {
 
     if (!Modernizr.touch){
@@ -684,6 +792,8 @@ function setup_everything(parent) {
     setup_clickovers(parent);
     setup_delayed_loaders(parent);
     launch_faders(parent);
+
+    setup_modals(parent);
 
     // not fully tested, and not needed yet.
     //launch_async_gets(parent);

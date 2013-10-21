@@ -215,6 +215,13 @@ class Feed(Document, DocumentHelperMixin):
                                              u'in English language. '
                                              u'As Markdown.'))
 
+    meta = {
+        'indexes': [
+            'name',
+            'site_url',
+        ]
+    }
+
     # ••••••••••••••••••••••••••••••• properties, cached descriptors & updaters
 
     # TODO: create an abstract class that will allow to not specify
@@ -595,7 +602,7 @@ class Feed(Document, DocumentHelperMixin):
         # once, but all subscribers of all feeds must be connected to
         # it to be able to read it.
         for subscription in self.subscriptions:
-            subscription.create_reads(new_article, verbose=created)
+            subscription.create_read(new_article, verbose=created)
 
         # Don't forget the parenthesis else we return ``False`` everytime.
         return created or (None if mutualized else False)
@@ -676,7 +683,7 @@ class Feed(Document, DocumentHelperMixin):
         # once, but all subscribers of all feeds must be connected to
         # it to be able to read it.
         for subscription in self.subscriptions:
-            subscription.create_reads(new_article, verbose=created)
+            subscription.create_read(new_article, verbose=created)
 
         # Don't forget the parenthesis else we return ``False`` everytime.
         return created or (None if mutualized else False)

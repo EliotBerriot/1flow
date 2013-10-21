@@ -11,6 +11,8 @@ import humanize
 
 from constance import config
 
+from mongoengine import Q
+
 from django.http import (HttpResponseRedirect,
                          HttpResponseForbidden,
                          HttpResponseBadRequest,
@@ -25,6 +27,8 @@ from django.template import add_to_builtins
 from django.contrib.auth import authenticate, login, get_user_model
 from django.utils.translation import (ugettext_lazy as _,
                                       ugettext as __, ungettext)
+
+from django_select2.views import Select2View
 
 #from infinite_pagination.paginator import InfinitePaginator
 from endless_pagination.utils import get_page_number_from_request
@@ -103,12 +107,37 @@ for attrkey, attrval in Read.status_data.items():
 # —————————————————————————————————————————————————————————————— Home / Sources
 
 
+def skip_welcome_beta(request):
+
+    user = request.user.mongo
+
+    user.preferences.wizards.welcome_beta_shown = True
+    user.preferences.save()
+
+    # NOTE: The next 3 lines of code have to
+    #       be synched with the home() view.
+
+    if user.has_content:
+        return HttpResponseRedirect(reverse('source_selector'))
+
+    return HttpResponseRedirect(reverse('add_subscription'))
+
+
 def home(request):
     """ root of the application. """
 
-    # home_style = request.user.mongo.preferences.home.style
-    # if home_style and home_style == 'T1':
-    #     return HttpResponseRedirect(reverse(u'read'))
+    user    = request.user.mongo
+    wizards = user.preferences.wizards
+
+    if wizards.welcome_beta_shown or not wizards.show_all:
+
+        # NOTE: The next 3 lines of code have to be synched
+        #       with the skip_welcome_beta() view.
+
+        if user.has_content:
+            return HttpResponseRedirect(reverse('source_selector'))
+
+        return HttpResponseRedirect(reverse('add_subscription'))
 
     return render(request, 'home.html', {
         'gr_import': GoogleReaderImport(request.user.id),
@@ -246,10 +275,14 @@ def add_subscription(request, **kwargs):
         form = AddSubscriptionForm(request.POST, owner=request.user.mongo)
 
         if form.is_valid():
-            form.save()
+            added = form.save()
 
-        return HttpResponseRedirect(reverse('source_selector')
-                                    + __(u'#unclassified-streams'))
+            messages.info(request, _(u'Successfully subscribed to {0} '
+                          u'streams. Articles are being added progressively, '
+                          u'thanks for your patience.').format(len(added)))
+
+            return HttpResponseRedirect(reverse('source_selector')
+                                        + __(u'#unclassified-streams'))
 
     else:
         form = AddSubscriptionForm(owner=request.user.mongo)
@@ -273,6 +306,25 @@ def delete_subscription(request, **kwargs):
         return HttpResponseRedirect(reverse('source_selector'))
 
     return HttpResponseForbidden()
+
+
+class FeedsCompleterView(Select2View):
+
+    def get_results(self, request, term, page, context):
+
+        return (
+            'nil',
+            False,
+            #
+            # NOTE: this query is replicated in the form,
+            #       to get the count() in the placeholder.
+            #
+            # we use unicode(id) to avoid
+            # “ObjectId('51c8a0858af8069f5bafbb5a') is not JSON serializable”
+            [(unicode(f.id), f.name) for f in Feed.good_feeds(
+                id__nin=[s.feed.id for s in request.user.mongo.subscriptions]
+                ).filter(Q(name__icontains=term) | Q(site_url__icontains=term))]
+        )
 
 
 # ———————————————————————————————————————————————————————————————————————— Read

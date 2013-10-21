@@ -262,12 +262,17 @@ class Subscription(Document, DocumentHelperMixin):
             articles = self.feed.good_articles.order_by('-id')
 
         for article in articles:
+            #
+            # NOTE: `is_good` is checked at a lower level in
+            #       `self.create_read()` because the `is_good`
+            #       status has nothing to do here with
+            #       dates-only checks.
+            #
 
             params = {}
 
             if is_older or article.date_published is None:
                 params = {
-                    'is_good':        article.is_good,
                     'is_read':        True,
                     'is_auto_read':   True,
                     'date_read':      my_now,
@@ -282,19 +287,18 @@ class Subscription(Document, DocumentHelperMixin):
                     is_older = True
 
                     params = {
-                        'is_good':        article.is_good,
                         'is_read':        True,
                         'is_auto_read':   True,
                         'date_read':      my_now,
                         'date_auto_read': my_now,
                     }
-                else:
-                    # No params == all by default == is_read is False
-                    pass
 
-            # The `create_reads()` methods is defined
+                # implicit: else: pass
+                # No params == all by default == is_read is False
+
+            # The `create_read()` methods is defined
             # in `nonrel/read.py` to avoid an import loop.
-            created = self.create_reads(article, False, **params)
+            created = self.create_read(article, False, **params)
 
             if created:
                 missing += 1
@@ -412,7 +416,7 @@ def User_subscriptions_by_folder_property_get(self):
     return by_folders
 
 
-def generic_check_subscriptions_method(self):
+def generic_check_subscriptions_method(self, extended_check=False):
     """ This one is used for `Feed`, `Read` and `User` classes. """
 
     to_keep       = []
@@ -432,7 +436,7 @@ def generic_check_subscriptions_method(self):
             if my_class_name == 'Feed':
                 attrs_to_test  = [(subscription.user, 'User')]
 
-            elif my_class_name == 'Feed':
+            elif my_class_name == 'User':
                 attrs_to_test  = [(subscription.feed, 'Feed')]
 
             else:
@@ -464,14 +468,17 @@ def generic_check_subscriptions_method(self):
         self.save()
         # No need to update cached descriptors, they should already be ok…
 
+    if extended_check:
+        for subscription in self.subscriptions:
+            subscription.check_reads(force=True, extended_check=True)
 
 Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Folder.open_subscriptions     = property(Folder_open_subscriptions_property_get)
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
 User.all_subscriptions        = property(User_all_subscriptions_property_get)
+User.check_subscriptions      = generic_check_subscriptions_method
 User.subscriptions_by_folder  = property(
                                     User_subscriptions_by_folder_property_get)
 User.web_import_subscription  = property(
                                     User_web_import_subscription_property_get)
-User.check_subscriptions      = generic_check_subscriptions_method

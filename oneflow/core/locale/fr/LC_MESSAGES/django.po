@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-21 00:08+0200\n"
-"PO-Revision-Date: 2013-10-21 00:11+0009\n"
+"POT-Creation-Date: 2013-10-21 22:58+0200\n"
+"PO-Revision-Date: 2013-10-21 23:18+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -198,98 +198,6 @@ msgstr "Le flux est ouvert"
 msgid "Closed?"
 msgstr "Fermé(e) ?"
 
-#: forms.py:37
-msgid "The two password fields didn't match."
-msgstr "Les deux mots de passe ne correspondent pas."
-
-#: forms.py:41
-msgid "Password"
-msgstr "Mot de passe"
-
-#: forms.py:43
-msgid "Password confirmation"
-msgstr "Confirmation"
-
-#: forms.py:45
-msgid "Enter the same password as above, for verification."
-msgstr "Saisissez le même mot de passe pour vérification."
-
-#: forms.py:174 forms.py:357
-msgid "(None)"
-msgstr "(aucun)"
-
-#: forms.py:178
-msgid "Subscriptions"
-msgstr "Abonnements"
-
-#: forms.py:180
-msgid ""
-"These are the ones held directly by the folder; they are displayed above "
-"subfolders. There can be none, if you prefer dispatching your subscriptions "
-"in subfolders only."
-msgstr ""
-"Ce sont les abonnements directement inclus dans le dossier, affichés au "
-"dessus des sous-dossiers. Il peut n'y en avoir aucun, si vous préférez "
-"répartir vos abonnements uniquement en sous-dossiers."
-
-#: forms.py:349 models/nonrel/subscription.py:109
-msgid "Folders"
-msgstr "Dossiers"
-
-#: forms.py:356
-msgid "Folder"
-msgstr "Dossier"
-
-#: forms.py:396
-msgid "Search 1flow's streams"
-msgstr "Cherchez dans 1flow"
-
-#: forms.py:399
-msgid "Enter an URL"
-msgstr "Saississez une URL"
-
-#: forms.py:414
-#, python-brace-format
-msgid "Select feed(s) from the {0} referenced"
-msgstr "Sélectionnez des flux parmis les {0} référencés"
-
-#: forms.py:418
-#, python-brace-format
-msgid ""
-"<span class=\"muted\">NOTE: this can be long. You will be notified when "
-"search is done.</span> <a href=\"{0}\" target=\"_blank\">How does it "
-"work?</a>"
-msgstr ""
-"<span class=\"muted\">NOTE : cette opération est longue, vous serez "
-"notifié(e) quand elle est terminée.</span>&nbsp;<a href=\"{0}\" "
-"target=\"_blank\">Comment ça marche ?</a>"
-
-#: forms.py:421
-msgid "#adding-subscriptions"
-msgstr "#ajout-dabonnement"
-
-#: forms.py:433
-msgid "You have to fill at least one of the two fields."
-msgstr "Vous devez remplir au moins un des deux champs."
-
-#: forms.py:470
-msgid "Enter URL(s)"
-msgstr "Entrez des URLs"
-
-#: forms.py:471
-msgid ""
-"Type one URL per line, as many as you want. Even if 1flow can currently "
-"display only text-pages correctly, you may import anything (websites home "
-"pages, youtube videos, etc). As soon as custom renderers are ready, the "
-"content you imported will show correctly."
-msgstr ""
-"Saississez autant d'URLs que vous le souhaitez, une par ligne. Même si 1flow"
-" est actuellement limité à l'affichage de contenu textuel, vous pouvez "
-"importer n'importe quoi (pages d'accueil de sites, vidéos youtube, etc). Dès"
-" que les visualiseurs spécifiques de contenus seront déployés, vos éléments "
-"importés apparaîtront correctement. En attendant, vous ne les aurez pas "
-"perdus."
-
 #: tasks.py:596
 msgid "Forcing all feed refresh…"
 msgstr "Déclenchement forcé du rafraîchissement de tous les flux…"
@@ -322,216 +230,390 @@ msgstr ""
 msgid "^home/$"
 msgstr "^accueil/$"
 
-#: urls.py:46
+#: urls.py:45
+msgid "^skip-welcome-beta/$"
+msgstr "^skip-welcome-beta/$"
+
+#: urls.py:49
 msgid "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 msgstr "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 
-#: urls.py:51
+#: urls.py:54
 msgid "^preferences/$"
 msgstr "^preferences/$"
 
-#: urls.py:54
+#: urls.py:57
 msgid "^profile/$"
 msgstr "^profil/$"
 
-#: urls.py:57
+#: urls.py:60
 msgid "^read/all/$"
 msgstr "^lire/tous/$"
 
-#: urls.py:60
+#: urls.py:63
 msgid "^read/all/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/tous/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:64
+#: urls.py:67
 msgid "^read/$"
 msgstr "^lire/$"
 
-#: urls.py:68
+#: urls.py:71
 msgid "^read/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:72
+#: urls.py:75
 msgid "^read/([0-9a-f]{24,24})/$"
 msgstr "^lire/([0-9a-f]{24,24})/$"
 
-#: urls.py:76
+#: urls.py:79
+msgid "^share/([0-9a-f]{24,24})/$"
+msgstr "^partager/([0-9a-f]{24,24})/$"
+
+#: urls.py:84
+msgid "^json/user-address-book/$"
+msgstr "^json/user-address-book/$"
+
+#: urls.py:88
 msgid "^selector/$"
 msgstr "^selecteur/$"
 
-#: urls.py:80
+#: urls.py:92
 msgid "^folder/new/$"
 msgstr "^dossier/nouveau/$"
 
-#: urls.py:84
+#: urls.py:96
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:88
+#: urls.py:100
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:92
+#: urls.py:104
 msgid "^subscription/new/$"
 msgstr "^abonnement/nouveau/$"
 
-#: urls.py:96
+#: urls.py:108
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:100
+#: urls.py:112
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:104
+#: urls.py:116
 msgid "^webimport/$"
 msgstr "^import-web/$"
 
-#: urls.py:108
+#: urls.py:120
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:111
+#: urls.py:123
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:113
+#: urls.py:125
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:114
+#: urls.py:126
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:119
+#: urls.py:131
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:122
+#: urls.py:134
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:125
+#: urls.py:137
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:128
+#: urls.py:140
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:133
+#: urls.py:145
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:142
+#: urls.py:154
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:144
+#: urls.py:156
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:161
+#: views.py:189
 #, python-brace-format
 msgid "Save <em>{0}</em> failed: {1}"
 msgstr "Enregistrement de <em>{0}</em> impossible : {1}"
 
-#: views.py:167
+#: views.py:195
 #, python-brace-format
 msgid "Folder <em>{0}</em> successfully {1}."
 msgstr "Dossier <em>{0}</em> {1} avec succès."
 
-#: views.py:168 models/nonrel/feed.py:187
+#: views.py:196 models/nonrel/feed.py:187
 msgid "modified"
 msgstr "modifié"
 
-#: views.py:169
+#: views.py:197
 msgid "created"
 msgstr "créé"
 
-#: views.py:173
+#: views.py:201
 #, python-brace-format
 msgid "Could not {1} folder: {0}."
 msgstr "Impossible {1} le dossier : {0}."
 
-#: views.py:174
+#: views.py:202
 msgid "modify"
 msgstr "de modifier"
 
-#: views.py:175
+#: views.py:203
 msgid "create"
 msgstr "de créer"
 
-#: views.py:219
+#: views.py:247
 #, python-brace-format
 msgid "Subscription <em>{0}</em> successfully modified."
 msgstr "Abonnement <em>{0}</em> modifié avec succès."
 
-#: views.py:224
+#: views.py:252
 #, python-brace-format
 msgid "Could not save subscription: {0}."
 msgstr "Impossible d'enregistrer l'abonnement : {0}."
 
-#: views.py:269
+#: views.py:279
+#, python-brace-format
+msgid ""
+"Successfully subscribed to {0} streams. Articles are being added "
+"progressively, thanks for your patience."
+msgstr ""
+"Abonné à {0} flux avec succès. Les articles sont en train d'être importés "
+"petit-à-petit, merci de votre patience."
+
+#: views.py:301
 #, python-brace-format
 msgid "Subscription <em>{0}</em> successfully deleted."
 msgstr "Abonnement <em>{0}</em> résilié avec succès."
 
-#: views.py:482
+#: views.py:514
 #, python-format
 msgid " (%(count)s subscription)"
 msgid_plural " (%(count)s subscriptions)"
 msgstr[0] " (%(count)s abonnement)"
 msgstr[1] " (%(count)s abonnements)"
 
-#: views.py:490
+#: views.py:522
 #, python-format
 msgid "In your <span class=\"hide\">%(count)s</span> subscription"
 msgid_plural "In your %(count)s subscriptions"
 msgstr[0] "Dans votre <span class=\"hide\">%(count)s</span> abonnement"
 msgstr[1] "Dans vos %(count)s abonnements"
 
-#: views.py:760
+#: views.py:662
+#, python-brace-format
+msgid "Share article with <code>{0}</code> failed: {1}"
+msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
+
+#: views.py:668
+#, python-brace-format
+msgid "Successfully shared <em>{0}</em> with {1} persons"
+msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
+
+#: views.py:842
 #, python-brace-format
 msgid "Import of URL <code>{0}</code> failed: {1}"
 msgstr "L'import de l'URL <code>{0}</code> a échoué : {1}"
 
-#: views.py:765
+#: views.py:847
 #, python-brace-format
 msgid "Successfully launched import of {0} web page(s)"
 msgstr "Import de {0} page(s) web lancé avec succès"
 
-#: views.py:854
+#: views.py:936
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:858
+#: views.py:940
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:862
+#: views.py:944
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:869
+#: views.py:951
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:873
+#: views.py:955
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:879
+#: views.py:961
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:882
+#: views.py:964
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
+
+#: forms/read.py:20
+msgid "Message"
+msgstr "Message"
+
+#: forms/read.py:21
+msgid ""
+"Type any text you want, in <a href=\"#share-read-fields-help\" "
+"role=\"button\" data-toggle=\"submodal\" data-target=\"#\">simple text <i "
+"class=\"icon-question-sign\"></i></a>."
+msgstr ""
+"Tapez un petit mot d'accompagnement, en <a href=\"#share-read-fields-help\" "
+"role=\"button\" data-toggle=\"submodal\" data-target=\"#\">texte simple <i "
+"class=\"icon-question-sign\"></i></a>."
+
+#: forms/read.py:35
+msgid "Share with"
+msgstr "Partager avec"
+
+#: forms/read.py:39
+msgid "Type to auto-complete, or separate new email addresses with commas."
+msgstr ""
+"Tapez pour obtenir une complétion automatique, ou séparez les nouvelles "
+"addresses e-mail par des virgules."
+
+#: forms/read.py:43
+#, python-brace-format
+msgid ""
+"Hi {{fullname}},\n"
+"\n"
+"I wanted to share this article “{{title}}” that you may find interesting. Read it on 1flow:\n"
+"\n"
+"{{link}}\n"
+"\n"
+"Cheers,\n"
+"--\n"
+"{0}"
+msgstr ""
+"Bonjour {{fullname}},\n"
+"\n"
+"Je souhaite partager l'article “{{title}}” avec toi, je pense que tu le trouveras intéressant. Lis-le sur 1flow :\n"
+"\n"
+"{{link}}\n"
+"\n"
+"Salutations,\n"
+"--\n"
+"{0}"
+
+#: forms/selector.py:26 forms/selector.py:210
+msgid "(None)"
+msgstr "(aucun)"
+
+#: forms/selector.py:27 models/nonrel/folder.py:58
+msgid "Parent folder"
+msgstr "Dossier parent"
+
+#: forms/selector.py:31
+msgid "Subscriptions"
+msgstr "Abonnements"
+
+#: forms/selector.py:33
+msgid ""
+"These are the ones held directly by the folder; they are displayed above "
+"subfolders. There can be none, if you prefer dispatching your subscriptions "
+"in subfolders only."
+msgstr ""
+"Ce sont les abonnements directement inclus dans le dossier, affichés au "
+"dessus des sous-dossiers. Il peut n'y en avoir aucun, si vous préférez "
+"répartir vos abonnements uniquement en sous-dossiers."
+
+#: forms/selector.py:202 models/nonrel/subscription.py:109
+msgid "Folders"
+msgstr "Dossiers"
+
+#: forms/selector.py:209
+msgid "Folder"
+msgstr "Dossier"
+
+#: forms/selector.py:249
+msgid "Search 1flow's streams"
+msgstr "Cherchez dans 1flow"
+
+#: forms/selector.py:252
+msgid "Enter an URL"
+msgstr "Saississez une URL"
+
+#: forms/selector.py:267
+#, python-brace-format
+msgid "Select feed(s) from the {0} referenced"
+msgstr "Sélectionnez des flux parmis les {0} référencés"
+
+#: forms/selector.py:271
+#, python-brace-format
+msgid ""
+"<span class=\"muted\">NOTE: this can be long. You will be notified when "
+"search is done.</span> <a href=\"{0}\" target=\"_blank\">How does it "
+"work?</a>"
+msgstr ""
+"<span class=\"muted\">NOTE : cette opération est longue, vous serez "
+"notifié(e) quand elle est terminée.</span>&nbsp;<a href=\"{0}\" "
+"target=\"_blank\">Comment ça marche ?</a>"
+
+#: forms/selector.py:274
+msgid "#adding-subscriptions"
+msgstr "#ajout-dabonnement"
+
+#: forms/selector.py:286
+msgid "You have to fill at least one of the two fields."
+msgstr "Vous devez remplir au moins un des deux champs."
+
+#: forms/selector.py:323
+msgid "Enter URL(s)"
+msgstr "Entrez des URLs"
+
+#: forms/selector.py:324
+msgid ""
+"Type one URL per line, as many as you want. Even if 1flow can currently "
+"display only text-pages correctly, you may import anything (websites home "
+"pages, youtube videos, etc). As soon as custom renderers are ready, the "
+"content you imported will show correctly."
+msgstr ""
+"Saississez autant d'URLs que vous le souhaitez, une par ligne. Même si 1flow"
+" est actuellement limité à l'affichage de contenu textuel, vous pouvez "
+"importer n'importe quoi (pages d'accueil de sites, vidéos youtube, etc). Dès"
+" que les visualiseurs spécifiques de contenus seront déployés, vos éléments "
+"importés apparaîtront correctement. En attendant, vous ne les aurez pas "
+"perdus."
+
+#: forms/user.py:25
+msgid "The two password fields didn't match."
+msgstr "Les deux mots de passe ne correspondent pas."
+
+#: forms/user.py:29
+msgid "Password"
+msgstr "Mot de passe"
+
+#: forms/user.py:31
+msgid "Password confirmation"
+msgstr "Confirmation"
+
+#: forms/user.py:33
+msgid "Enter the same password as above, for verification."
+msgstr "Saisissez le même mot de passe pour vérification."
 
 #: models/oldrel.py:58 models/reldb.py:214
 msgid "Categories"
@@ -1005,10 +1087,6 @@ msgstr "Nom"
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: models/nonrel/folder.py:58
-msgid "Parent folder"
-msgstr "Dossier parent"
-
 #: models/nonrel/folder.py:61
 msgid "Children folders"
 msgstr "Dossier(s) enfant(s)"
@@ -1292,31 +1370,31 @@ msgstr ""
 "faire des tests / vérifications même si vous êtes identifié(e). Les "
 "utilisateurs standards, une fois identifiés, n'ont plus accès à la landing."
 
-#: models/nonrel/preferences.py:176
+#: models/nonrel/preferences.py:177
 msgid "Reading list"
 msgstr "Liste de lecture"
 
-#: models/nonrel/preferences.py:177
+#: models/nonrel/preferences.py:178
 msgid "Tiled News"
 msgstr "News en tuiles"
 
-#: models/nonrel/preferences.py:182
+#: models/nonrel/preferences.py:183
 msgid "Unread articles"
 msgstr "Articles non-lus"
 
-#: models/nonrel/preferences.py:183
+#: models/nonrel/preferences.py:184
 msgid "Source selector"
 msgstr "Sélecteur de source"
 
-#: models/nonrel/preferences.py:195
+#: models/nonrel/preferences.py:196
 msgid "How the user wants his 1flow home to appear"
 msgstr "Comment l'utilisateur veut voir sa home page"
 
-#: models/nonrel/preferences.py:200
+#: models/nonrel/preferences.py:201
 msgid "I want to play with my life"
 msgstr "Je veux jouer avec ma vie"
 
-#: models/nonrel/preferences.py:201
+#: models/nonrel/preferences.py:202
 msgid ""
 "With this setting, you will be able to tune the 1flow interface a lot more. "
 "<strong>But BEWARE:</strong> you will gain access to features which are not "
@@ -1333,11 +1411,11 @@ msgstr ""
 "défaut, c'est désactivé : nous voulons que votre expérience utilisateur soit"
 " agréable et fluide.</span>"
 
-#: models/nonrel/preferences.py:210
+#: models/nonrel/preferences.py:211
 msgid "Clicking <code>Read</code> displays:"
 msgstr "Cliquer sur <code>Lecture</code> affiche :"
 
-#: models/nonrel/preferences.py:213
+#: models/nonrel/preferences.py:214
 msgid ""
 "Define what 1flow will display when you click on the <code>Read</code> link "
 "in the top navbar of the interface. <br /><span class=\"muted\">Default: "
@@ -2053,6 +2131,14 @@ msgstr ""
 msgid "{0} {1}⚐ (#{2})"
 msgstr "{0} {1}⚐ (#{2})"
 
+#: models/nonrel/user.py:153
+msgid "Friends"
+msgstr "Amis"
+
+#: models/nonrel/user.py:155
+msgid "Address book"
+msgstr "Carnet d'adresse"
+
 #: models/nonrel/website.py:50
 #, python-format
 msgid "(dupe of #%s)"
@@ -2062,17 +2148,19 @@ msgstr "(duplicata de #%s)"
 msgid "Add a subscription"
 msgstr "Ajouter un abonnement"
 
-#: templates/help.html:3 templates/snippets/navbar.html:189
-msgid "Help"
-msgstr "Aide"
+#: templates/help.html:3 templates/snippets/navbar.html:186
+msgid "Features"
+msgstr "Fonctionnalités"
 
 #: templates/help.html:12
-msgid "1flow help"
-msgstr "Aide 1flow"
+msgid "1flow features,"
+msgstr "Fonctionnalités de 1flow,"
 
 #: templates/help.html:13
-msgid "and frequently asked questions"
-msgstr "et questions fréquemment posées"
+msgid "frequently asked questions, and how to get the most of the app."
+msgstr ""
+"questions fréquemment posées, et comment tirer le meilleur parti de "
+"l'application."
 
 #: templates/help.html:14
 msgid ""
@@ -2084,8 +2172,8 @@ msgstr ""
 "Bienvenue dans le centre d'aide de 1flow. Si vous ne trouvez pas ce que vous êtes venu(e) chercher, merci de [nous contacter](#nous-contacter) avant d'appeler les pompiers."
 
 #: templates/help.html:30
-msgid "Help sections"
-msgstr "Sections d'aide"
+msgid "Table of contents"
+msgstr "Table des matières"
 
 #: templates/help.html:41
 #, python-format
@@ -2571,18 +2659,19 @@ msgstr "Collaborer"
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: templates/snippets/navbar.html:164
+#: templates/snippets/navbar.html:192
 msgid "About"
 msgstr "À propos"
 
-#: templates/snippets/navbar.html:165
+#: templates/snippets/navbar.html:193
 msgid "Contact"
 msgstr "Contact"
 
 #: templates/snippets/import/import-web-pages.html:27
-#: templates/snippets/selector/add-subscription.html:41
+#: templates/snippets/selector/add-subscription.html:50
 #: templates/snippets/selector/manage-folder.html:38
 #: templates/snippets/selector/manage-subscription.html:119
+#: templates/snippets/share/share-one.html:62
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -2898,13 +2987,30 @@ msgstr "Afficher sur le site d'origine"
 msgid "Read original"
 msgstr "Voir l'original"
 
-#: templates/snippets/read/read-actions.html:19
+#: templates/snippets/read/read-actions.html:21
 msgid "Assign or remove watch-related attributes"
 msgstr "Assigner ou supprimer des attributs de veille"
 
-#: templates/snippets/read/read-actions.html:23
-msgid "Watch attributes"
-msgstr "Attributs de veille"
+#: templates/snippets/read/read-actions.html:25
+msgid "Watch"
+msgstr "Veille"
+
+#: templates/snippets/read/read-actions.html:32
+msgid "Share privately with individuals or your watch-teams"
+msgstr "Partagez en privé avec des personnes ou vos équipes de veille"
+
+#: templates/snippets/read/read-actions.html:35
+msgid "Share"
+msgstr "Partager"
+
+#: templates/snippets/read/read-actions.html:44
+msgid "This feature is under development. Thanks for your patience."
+msgstr ""
+"Cette fonctionnalité est en cours de développement, merci de votre patience."
+
+#: templates/snippets/read/read-actions.html:47
+msgid "Broadcast"
+msgstr "Diffuser"
 
 #: templates/snippets/read/read-admin-informations.html:9
 msgid "Read: "
@@ -3032,17 +3138,43 @@ msgstr "Par "
 msgid "Add one or more subscriptions"
 msgstr "Ajouter un ou plusieurs abonnements"
 
-#: templates/snippets/selector/add-subscription.html:24
+#: templates/snippets/selector/add-subscription.html:9
+msgid ""
+"Please choose some news feeds to subscribe to. Just type a few letters in "
+"the field, like “CNN”, “design”, “software development”… You can subscribe "
+"to more than one."
+msgstr ""
+"Choisissez quelques flux d'informations auxquels vous abonner. Tapez "
+"simplement quelques lettres comme « monde », « architecture » ou « "
+"développement logiciel »…"
+
+#: templates/snippets/selector/add-subscription.html:28
 msgid "or"
 msgstr "ou"
 
-#: templates/snippets/selector/add-subscription.html:26
+#: templates/snippets/selector/add-subscription.html:30
 msgid "Feature not ready yet, under development."
 msgstr "Fonctionnalité pas encore utilisable, en développement."
 
-#: templates/snippets/selector/add-subscription.html:35
-msgid "Add to my flow"
-msgstr "Ajouter à mon 1flow"
+#: templates/snippets/selector/add-subscription.html:38
+msgid "note:"
+msgstr "note"
+
+#: templates/snippets/selector/add-subscription.html:39
+msgid ""
+"The sources you choose will be added to what we call the <em>sources "
+"selector</em>. It's the screen that will show after you click <em>Add to my "
+"sources</em>. Next time you come to 1flow, you will be brought directly "
+"there."
+msgstr ""
+"Les flux que vous choisissez seront ajoutés à ce que nous appelons le "
+"<em>sélecteur de sources</em>. C'est le prochain écran que vous verrez après"
+" avoir cliqué sur <em>Ajouter à mes sources</em>. La prochaine fois que vous"
+" viendrez sur 1flow, vous serez amené(e) directement là-bas."
+
+#: templates/snippets/selector/add-subscription.html:44
+msgid "Add to my sources"
+msgstr "Ajouter à mes sources"
 
 #: templates/snippets/selector/folder.html:45
 #, python-format
@@ -3202,6 +3334,64 @@ msgstr "Visitez le site web de ce flux"
 msgid "Manage the properties of this stream"
 msgstr "Gérez les propriétés de ce flux"
 
+#: templates/snippets/share/share-one.html:11
+msgid "Share this article"
+msgstr "Partager cet article"
+
+#: templates/snippets/share/share-one.html:24
+#, python-format, python-brace-format
+msgid ""
+"\n"
+" The message you type will be integrated in the mail sent to your friends or colleagues, with a small exerpt of the article, and an image if the article has one.\n"
+"\n"
+"In your message, you can use the following fields:\n"
+"\n"
+"- `{username}`: the username of the person you share the article with (yours is **@%(my_username)s**)\n"
+"- `{firstname}`: the first name of the person. If he/she has not given any, the username will be used instead.\n"
+"- `{fullname}`: usually, the first and last names of the person. If he/she has not given any, the username will be used instead.\n"
+"- `{title}`: the title of the article you want to share (here, it's *%(title)s*).\n"
+"- `{link}`: the article public link in 1flow (here, it's [%(read_link)s](%(read_link)s)).\n"
+"                    "
+msgstr ""
+"\n"
+"Le message que vous saisissez sera intégré dans l'e-mail envoyé à vos proches ou collègues, accompagné d'un extrait de l'article et d'une image si l'article en contient une.\n"
+"\n"
+"Dans votre message, vous pouvez utiliser les champs suivants :\n"
+"\n"
+"- `{username}`: le nom d'utilisateur de la personne avec qui vous partagez l'article (le votre est par exemple **@%(my_username)s**)\n"
+"- `{firstname}`: Le prénom de la personne. Si elle n'en a pas renseigné, le nom d'utilisateur sera utilisé à la place.\n"
+"- `{fullname}`: en général, c'est le prénom et le nom de la personne. Si elle n'en a renseigné aucun des deux, le nom d'utilisateur sera utilisé.\n"
+"- `{title}`: le titre de l'article que vous partagez (ici, c'est *%(title)s*).\n"
+"- `{link}`: le lien public de l'article sur 1flow (ici, c'est [%(read_link)s](%(read_link)s))."
+
+#: templates/snippets/share/share-one.html:40
+msgid "Understood. Let me play now."
+msgstr "J'ai compris. Laisse-moi faire maintenant."
+
+#: templates/snippets/share/share-one.html:46
+#, python-format
+msgid ""
+"\n"
+"                    With whom do you want to share <strong>%(title)s</strong>?\n"
+"                "
+msgstr ""
+"\n"
+"Avec qui souhaitez-vous partager <strong>%(title)s</strong>?"
+
+#: templates/snippets/share/share-one.html:58
+#, python-format
+msgid ""
+"\n"
+"                    <a href=\"%(help_url)s#sharing-features\" target=\"_blank\">What will happen when I hit “Send”?</a>\n"
+"                "
+msgstr ""
+"\n"
+" <a href=\"%(help_url)s#fonctionnalites-de-partage\" target=\"_blank\">Que va-t-il se passer quand je clique sur « Envoyer » ?</a>"
+
+#: templates/snippets/share/share-one.html:63
+msgid "Send"
+msgstr "Envoyer"
+
 #: templates/snippets/wizards/welcome-beta/welcome-beta.html:8
 #, python-format
 msgid ""
@@ -3211,13 +3401,11 @@ msgid ""
 "\n"
 "## your new home to read and write digital content.\n"
 "\n"
-"![VIDEO TUTORIAL HERE](http://lorempixel.com/360/240/abstract/video-tutorial-here/ \"VIDEO TUTORIAL HERE\")\n"
+"We hope to bring the best possible experience in these domains. Please take time to discover the interface. At any time, refer to the [features button](%(help_url)s \"Get the most of the 1flow app\") to get the most of the application.\n"
 "\n"
-"We hope to bring the best possible experience in these domains. Please take time to discover the interface, and watch the following screencast if you need guidance.\n"
+"Please keep in mind that we are a small team and a young project. Some things could feel unpolished to you. In the meantime, we fix problems very quickly. **1flow gets better everyday.** Sometimes even faster, when our developer had a kitesurfing session.\n"
 "\n"
-"While you're here, keep in mind that we are a small team and a young project. As such, some things will probably feel unpolished to you. In the meantime, we fix problems very quickly. 1flow gets better everyday. Sometimes even faster, when our developer went kitesurfing the day before.\n"
-"\n"
-"When you need help, there is the [help button](%(help_url)s \"Go to help\") (you already guessed it, didn't you?). You can reach us via the [feedback chat](%(chat_fake_url)s) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.\n"
+"If you need human help, you can reach us via the [feedback chat](%(chat_fake_url)s) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.\n"
 "\n"
 "We hope you'll enjoy 1flow as much as we enjoy building it.\n"
 "\n"
@@ -3233,13 +3421,11 @@ msgstr ""
 "\n"
 "## votre nouvelle maison pour la lecture et l'écriture de contenus numériques.\n"
 "\n"
-"![Tutoriel vidéo ici](http://lorempixel.com/360/240/abstract/tutoriel-video-ici/ \"Tutoriel vidéo ici\")\n"
+"Nous espérons vous apporter la meilleure expérience possible dans ces domaines. Prenez le temps de découvrir l'interface. À tout moment, référez-vous au [lien « Fonctionnalités »](%(help_url)s \"Obtenir le meilleur de l'application\") pour tirer le meilleur de l'application 1flow.\n"
 "\n"
-"Nous espérons vous apporter la meilleure expérience possible dans ces domaines. Prenez le temps de découvrir l'interface, et regardez l'introduction ci-contre si vous voulez être accompagné(e).\n"
+"S'il vous plait, gardez en tête que nous sommes une petite équipe et un jeune projet. Certaines fonctionnalités vous paraîtront sans doute un peu frustes. D'un autre côté, nous sommes super réactifs pour résoudre tous les problèmes. **1flow s'améliore tous les jours.** Et même plusieurs fois par jour, quand notre développeur a pu faire du kitesurf.\n"
 "\n"
-"Pendant que vous êtes là, gardez en tête que nous sommes une petite équipe et un jeune projet. En tant que tel, certaines fonctionnalités vous paraîtront sans doute un peu frustes. D'un autre côté, nous sommes super réactifs pour résoudre tous les problèmes. 1flow s'améliore tous les jours. Et même plusieurs fois par jour, quand notre développeur a pu faire du kitesurf la veille.\n"
-"\n"
-"Si vous avez besoin d'aide, il y a le [bouton d'aide](%(help_url)s \"Afficher l'aide\"), mais vous l'aviez déjà vu, pas vrai ? Vous pouvez nous joindre via le [chat](%(chat_fake_url)s), ou nous laisser une demande de fonctionnalité sur notre [forum de support](http://1flow.userecho.com/). Nous serons *enchantés* d'avoir quelques mots de votre part.\n"
+"Si vous avez besoin d'aide humaine, vous pouvez nous joindre via le [chat](%(chat_fake_url)s), ou nous laisser une demande de fonctionnalité sur notre [forum de support](http://1flow.userecho.com/). Nous serons *enchantés* d'avoir quelques mots de votre part.\n"
 "\n"
 "Nous espérons que vous profiterez autant de 1flow que nous prenons plaisir à le construire.\n"
 "\n"
@@ -3249,13 +3435,17 @@ msgstr ""
 "[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),\n"
 "Fondateurs de 1flow\n"
 
-#: templates/snippets/wizards/welcome-beta/welcome-beta.html:41
-msgid "Bring me to my news<br />and don't show this again!"
-msgstr "Emmène-moi à mes articles<br />et n'affiche plus cette introduction !"
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:39
+msgid "Bring me to my news!"
+msgstr "Amène-moi à mon contenu !"
 
-#: templates/snippets/wizards/welcome-beta/welcome-beta.html:55
-msgid "Start adding some sources"
-msgstr "Ajoutons des sources d'information"
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:41
+msgid "(Next time you'll get there directly)"
+msgstr "(À votre prochaine connexion, vous serez amené(e) directement là-bas)"
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:52
+msgid "Start adding some sources to read news from"
+msgstr "Commençons par ajouter des sources d'informations"
 
 #: templates/widgets/forms/form-actions.html:3
 msgid "Save changes"
@@ -3389,6 +3579,24 @@ msgstr "k+"
 #, python-brace-format
 msgid "{0} articles"
 msgstr "{0} articles"
+
+#~ msgid "Help"
+#~ msgstr "Aide"
+
+#~ msgid "1flow help"
+#~ msgstr "Aide 1flow"
+
+#~ msgid "and frequently asked questions"
+#~ msgstr "et questions fréquemment posées"
+
+#~ msgid "Help sections"
+#~ msgstr "Sections d'aide"
+
+#~ msgid "Watch attributes"
+#~ msgstr "Attributs de veille"
+
+#~ msgid "Bring me to my news<br />and don't show this again!"
+#~ msgstr "Emmène-moi à mes articles<br />et n'affiche plus cette introduction !"
 
 #~ msgid "Parent"
 #~ msgstr "Parent"

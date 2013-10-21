@@ -42,6 +42,9 @@ urlpatterns = patterns(
     'oneflow.core.views',
     url(_(r'^home/$'), login_required(never_cache(views.home)), name='home'),
 
+    url(_(r'^skip-welcome-beta/$'), login_required(
+        never_cache(views.skip_welcome_beta)), name='skip_welcome_beta'),
+
     # This is the individual preference toggling.
     url(_(r'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
         login_required(never_cache(views.set_preference)),
@@ -92,6 +95,11 @@ urlpatterns = patterns(
     url(_(r'^subscription/new/$'),
         login_required(never_cache(views.add_subscription)),
         name='add_subscription'),
+
+    # Required by the add_subscription autocompleter.
+    url(_(r'^json/feeds-completer/$'),
+        login_required(views.FeedsCompleterView.as_view()),
+        name='feeds_completer'),
 
     url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$'),
         login_required(never_cache(views.delete_subscription)),

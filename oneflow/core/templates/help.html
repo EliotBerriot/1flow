@@ -1,6 +1,6 @@
 {% extends 'home.html' %}
 
-{% block title %}{% trans 'Help' %}{% endblock title %}
+{% block title %}{% trans 'Features' %}{% endblock title %}
 {% block body_id %}help{% endblock body_id %}
 {% block body_data %}data-spy="scroll" data-target="#sidebar"{% endblock body_data %}
 
@@ -9,8 +9,8 @@
     <div class="container-fluid">
       <div class="row-fluid">
         <div class="span10 offset1">
-          <h1>{% trans "1flow help" %}</h1>
-          <h2>{% trans "and frequently asked questions" %}</h2>
+          <h1>{% trans "1flow features," %}</h1>
+          <h2>{% trans "frequently asked questions, and how to get the most of the app." %}</h2>
           {% filter markdown %}{% blocktrans %}
 Welcome to 1flow help center. If you don't find the answer you need here, please [contact us](#reaching-us) before calling the fire brigade.
           {% endblocktrans %}{% endfilter %}
@@ -27,7 +27,7 @@ Welcome to 1flow help center. If you don't find the answer you need here, please
         <div class="row-fluid">
           <div class="span3" id="sidebar">
             <ul class="nav nav-list side-nav affix-top" data-spy="affix" data-offset-top="200">
-              <li><h3>{% trans "Help sections" %}</h3></li>
+              <li><h3>{% trans "Table of contents" %}</h3></li>
               {% for section in help_sections %}
                 <li><a href="#{{ section.slug }}">{{ section.name }}</a></li>
               {% endfor %}
