@@ -416,7 +416,7 @@ def User_subscriptions_by_folder_property_get(self):
     return by_folders
 
 
-def generic_check_subscriptions_method(self):
+def generic_check_subscriptions_method(self, extended_check=False):
     """ This one is used for `Feed`, `Read` and `User` classes. """
 
     to_keep       = []
@@ -436,7 +436,7 @@ def generic_check_subscriptions_method(self):
             if my_class_name == 'Feed':
                 attrs_to_test  = [(subscription.user, 'User')]
 
-            elif my_class_name == 'Feed':
+            elif my_class_name == 'User':
                 attrs_to_test  = [(subscription.feed, 'Feed')]
 
             else:
@@ -468,14 +468,17 @@ def generic_check_subscriptions_method(self):
         self.save()
         # No need to update cached descriptors, they should already be ok…
 
+    if extended_check:
+        for subscription in self.subscriptions:
+            subscription.check_reads(force=True, extended_check=True)
 
 Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Folder.open_subscriptions     = property(Folder_open_subscriptions_property_get)
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
 User.subscriptions            = property(User_subscriptions_property_get)
 User.all_subscriptions        = property(User_all_subscriptions_property_get)
+User.check_subscriptions      = generic_check_subscriptions_method
 User.subscriptions_by_folder  = property(
                                     User_subscriptions_by_folder_property_get)
 User.web_import_subscription  = property(
                                     User_web_import_subscription_property_get)
-User.check_subscriptions      = generic_check_subscriptions_method
