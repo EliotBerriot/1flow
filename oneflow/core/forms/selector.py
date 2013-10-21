@@ -3,170 +3,21 @@
 import logging
 
 from django import forms
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, reverse_lazy
 
 from django.utils.translation import ugettext_lazy as _
-from django.contrib.auth import get_user_model
 from django.core.validators import URLValidator
 
 from mongodbforms import DocumentForm
 
-from django_select2.widgets import (Select2Widget,
-                                    Select2MultipleWidget, )
-                                    # HeavySelect2MultipleWidget)
+from django_select2.widgets import (Select2Widget, Select2MultipleWidget,
+                                    HeavySelect2MultipleWidget)
 
-from .models import (HomePreferences, ReadPreferences,
-                     SelectorPreferences, StaffPreferences,
-                     Folder, Subscription, Feed)
+from ..models import (Folder, Subscription, Feed)
+from .fields import OnlyNameChoiceField, OnlyNameMultipleChoiceField
+
 
 LOGGER = logging.getLogger(__name__)
-User = get_user_model()
-
-
-class FullUserCreationForm(forms.ModelForm):
-    """ Like the django UserCreationForm,
-        with optional first_name and last_name,
-        and email too.
-
-        .. note:: the ``username`` field from Django's ``UserCreationForm``
-            is overriden by our Model's one. Thus the 30 chars limit
-            doesn't apply.
-    """
-
-    error_messages = {
-        'password_mismatch': _("The two password fields didn't match."),
-    }
-
-    email = forms.EmailField()
-    password1 = forms.CharField(label=_("Password"),
-                                widget=forms.PasswordInput)
-    password2 = forms.CharField(label=_("Password confirmation"),
-                                widget=forms.PasswordInput,
-                                help_text=_("Enter the same password as "
-                                            "above, for verification."))
-
-    class Meta:
-        model  = User
-        fields = ['first_name', 'last_name',
-                  'username', 'email',
-                  'password1', 'password2', ]
-
-    def clean_password2(self):
-        password1 = self.cleaned_data.get("password1")
-        password2 = self.cleaned_data.get("password2")
-        if password1 and password2 and password1 != password2:
-            raise forms.ValidationError(
-                self.error_messages['password_mismatch'])
-        return password2
-
-    def save(self, commit=True):
-        user = super(FullUserCreationForm, self).save(commit=False)
-
-        user.set_password(self.cleaned_data["password1"])
-        user.email      = self.cleaned_data["email"]
-        user.first_name = self.cleaned_data["first_name"]
-        user.last_name  = self.cleaned_data["last_name"]
-
-        if commit:
-            user.save()
-
-        return user
-
-
-class UserProfileEditForm(forms.ModelForm):
-
-    class Meta:
-        model  = User
-        fields = ['first_name', 'last_name', ]
-
-
-class HomePreferencesForm(DocumentForm):
-
-    class Meta:
-        model = HomePreferences
-
-        # Other fields are not yet ready
-        exclude = ('style', )
-
-
-class ReadPreferencesForm(DocumentForm):
-
-    class Meta:
-        model = ReadPreferences
-
-
-class SelectorPreferencesForm(DocumentForm):
-
-    class Meta:
-        model = SelectorPreferences
-
-
-class StaffPreferencesForm(DocumentForm):
-
-    class Meta:
-        model = StaffPreferences
-
-
-class OnlyNameChoiceField(forms.ModelChoiceField):
-    """ In forms, we need something much simpler
-        than the `__unicode__()` output. """
-
-    def label_from_instance(self, obj):
-
-        root = obj.owner.root_folder
-
-        # OMG. Please don't do this anywhere else. How ugly it is.
-        if obj.parent == root:
-            prefix = u''
-        elif obj.parent.parent == root:
-            prefix = u' ' * 8
-        elif obj.parent.parent.parent == root:
-            prefix = u' ' * 16
-        elif obj.parent.parent.parent.parent == root:
-            prefix = u' ' * 24
-        elif obj.parent.parent.parent.parent.parent == root:
-            prefix = u' ' * 32
-        elif obj.parent.parent.parent.parent.parent.parent == root:
-            prefix = u' ' * 40
-        elif obj.parent.parent.parent.parent.parent.parent.parent == root:
-            prefix = u' ' * 48
-        else:
-            prefix = u' ' * 56
-
-        return prefix + obj.name
-
-
-class OnlyNameMultipleChoiceField(forms.ModelMultipleChoiceField):
-    """ In forms, we need something much simpler
-        than the `__unicode__()` output. """
-
-    def label_from_instance(self, obj):
-
-        try:
-            root = obj.owner.root_folder
-
-        except AttributeError:
-            return obj.name
-
-        # OMG. Please don't do this anywhere else. How ugly it is.
-        if obj.parent == root:
-            prefix = u''
-        elif obj.parent.parent == root:
-            prefix = u' ' * 8
-        elif obj.parent.parent.parent == root:
-            prefix = u' ' * 16
-        elif obj.parent.parent.parent.parent == root:
-            prefix = u' ' * 24
-        elif obj.parent.parent.parent.parent.parent == root:
-            prefix = u' ' * 32
-        elif obj.parent.parent.parent.parent.parent.parent == root:
-            prefix = u' ' * 40
-        elif obj.parent.parent.parent.parent.parent.parent.parent == root:
-            prefix = u' ' * 48
-        else:
-            prefix = u' ' * 56
-
-        return prefix + obj.name
 
 
 class ManageFolderForm(DocumentForm):
@@ -394,8 +245,7 @@ class AddSubscriptionForm(forms.Form):
 
     feeds = OnlyNameMultipleChoiceField(queryset=Feed.objects.none(),
                                         required=False,
-                                        label=_(u'Search 1flow\'s streams'),
-                                        widget=Select2MultipleWidget())
+                                        label=_(u'Search 1flow\'s streams'))
 
     search_for = forms.CharField(label=_(u'Enter an URL'), required=False)
 
@@ -408,12 +258,15 @@ class AddSubscriptionForm(forms.Form):
         # not_shown = [s.feed.id for s in self.owner.subscriptions]
         # LOGGER.warning(len(not_shown))
 
-        self.fields['feeds'].queryset = Feed.good_feeds(
-            id__nin=[s.feed.id for s in self.owner.subscriptions])
+        # NOTE: this query is replicated in the completer view.
+        count = Feed.good_feeds(
+            id__nin=[s.feed.id for s in self.owner.subscriptions]).count()
+
+        self.fields['feeds'].widget = HeavySelect2MultipleWidget(
+                                    data_url=reverse_lazy('feeds_completer'))
 
         self.fields['feeds'].widget.set_placeholder(
-            _(u'Select feed(s) from the {0} referenced').format(
-                self.fields['feeds'].queryset.count()))
+            _(u'Select feed(s) from the {0} referenced').format(count))
 
         self.fields['search_for'].help_text = _(
             u'<span class="muted">NOTE: this can be long. '

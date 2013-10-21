@@ -96,6 +96,11 @@ urlpatterns = patterns(
         login_required(never_cache(views.add_subscription)),
         name='add_subscription'),
 
+    # Required by the add_subscription autocompleter.
+    url(_(r'^json/feeds-completer/$'),
+        login_required(views.FeedsCompleterView.as_view()),
+        name='feeds_completer'),
+
     url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$'),
         login_required(never_cache(views.delete_subscription)),
         name='delete_subscription'),
