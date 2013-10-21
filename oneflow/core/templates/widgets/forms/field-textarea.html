@@ -12,4 +12,10 @@
     <div class="controls">
         <span class="help-block">{{ field.help_text|safe }}</span>
     </div>
+
+    <script type="text/javascript">
+        $('#{{ field.auto_id }}[data-placeholder]').each(function(index) {
+            $(this).val($(this).data('placeholder'));
+        });
+    </script>
 </div>
