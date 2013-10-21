@@ -215,6 +215,13 @@ class Feed(Document, DocumentHelperMixin):
                                              u'in English language. '
                                              u'As Markdown.'))
 
+    meta = {
+        'indexes': [
+            'name',
+            'site_url',
+        ]
+    }
+
     # ••••••••••••••••••••••••••••••• properties, cached descriptors & updaters
 
     # TODO: create an abstract class that will allow to not specify
