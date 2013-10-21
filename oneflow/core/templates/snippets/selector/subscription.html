@@ -6,12 +6,12 @@
         <div class="thumbnail">
             {% if unread_count %}
                 <a href="{% url 'read_feed' feed=subscription.id %}"
-                    data-toggle="tooltip"
+                    data-toggle="tooltip" class="popover-top"
                     title="{% blocktrans %}Click to read the {{ unread_count }} new article(s){% endblocktrans %}">
 
             {% else %}
                 <a href="{% url 'read_all_feed' feed=subscription.id %}"
-                    data-toggle="tooltip"
+                    data-toggle="tooltip" class="popover-top"
                     title="{% blocktrans %}Click to display all the {{ all_count }} articles of this subscription.{% endblocktrans %}">
 
             {% endif %}
@@ -40,45 +40,30 @@
                 {% if subscription.feed.site_url %}
                     <a href="{{ subscription.feed.site_url }}" target="_blank"
                         title="{% trans "Visit the website of this stream" %}"
-                        data-toggle="tooltip" class="manage"><i class="icon-globe"></i></a>
+                        data-toggle="tooltip" class="manage popover-top"><i class="icon-globe"></i></a>
                 {% endif %}
 
 
                 <a href="{% url 'edit_subscription' subscription=subscription.id %}"
-                data-toggle="modal" data-target="#" class="manage"><i class="icon-cog" title="{% trans "Manage the properties of this stream" %}" data-toggle="tooltip"></i></a>
+                data-toggle="modal" data-target="#" class="manage"><i class="icon-cog popover-top" title="{% trans "Manage the properties of this stream" %}" data-toggle="tooltip"></i></a>
             </span>
 
-                {% if unread_count %}
-                    <a href="{% url 'read_feed' feed=subscription.id %}"
-                        data-toggle="tooltip"
-                        title="{% blocktrans %}Click to read the {{unread_count}} new article(s){% endblocktrans %}">
-                      {{ subscription.name }}{% if titles_show_unread_count %}&nbsp; <small class="unread-count">({{ unread_count }})</small>{% endif %}
-                    </a>
-
-                {% else %}
-                    <a href="{% url 'read_all_feed' feed=subscription.id %}"
-                        data-toggle="tooltip"
-                        title="{% blocktrans %}Click to display all the {{ all_count }} articles of this subscription.{% endblocktrans %}">
-                      {{ subscription.name }}
-                    </a>
-
-                {% endif %}
-
-        </div>
-
-        {% comment %}
-
-        <div class="last-updated muted">
-            {% if subscription.feed.closed %}
-                <span title="{% blocktrans with closed_reason=subscription.feed.closed_reason %}This feed is closed, it will not receive any new update. Reason invoqued: {{ closed_reason }}{% endblocktrans %}"
-                    data-toggle="tooltip">
-    {% blocktrans with date_closed=subscription.feed.date_closed|naturaldelta %}closed {{ date_closed }} ago{% endblocktrans %}</span>
+            {% if unread_count %}
+                <a href="{% url 'read_feed' feed=subscription.id %}"
+                    data-toggle="tooltip" class="popover-top"
+                    title="{% blocktrans %}Click to read the {{unread_count}} new article(s){% endblocktrans %}">
+                  {{ subscription.name }}{% if titles_show_unread_count %}&nbsp; <small class="unread-count">({{ unread_count }})</small>{% endif %}
+                </a>
 
             {% else %}
-                {{ subscription.feed.last_fetch|naturaldelta }}
-            {% endif %}
-        </div>
-        {% endcomment %}
+                <a href="{% url 'read_all_feed' feed=subscription.id %}"
+                    data-toggle="tooltip" class="popover-top"
+                    title="{% blocktrans %}Click to display all the {{ all_count }} articles of this subscription.{% endblocktrans %}">
+                  {{ subscription.name }}
+                </a>
 
+            {% endif %}
+
+        </div>
     </div>
 {% endwith %}
