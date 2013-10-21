@@ -530,8 +530,16 @@ $folder-border-width-default: 2px;
     }
 }
 
+.modal {
+    .modal-body {
+        // override the Bootstrap default, it's a little short somethimes.
+        max-height: 500px;
+    }
+}
+
 #manage-folder.modal,
 #manage-subscription.modal,
+#share-read.modal,
 #import-web-pages.modal {
 
     form {
@@ -577,6 +585,12 @@ $folder-border-width-default: 2px;
         // `select` is already overriden in globals.
         height: 30px;
         line-height: 30px;
+    }
+
+    textarea {
+        // try to align the textarea on the
+        // select2 and other fields, if any.
+        width: 81%;
     }
 
     .thumbnail {
