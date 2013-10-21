@@ -256,6 +256,14 @@ img.centered {
     }
 }
 
+// —————————————————————————————— https://github.com/twbs/bootstrap/issues/7501
+// Avoid body scrolling while a modal is open. Note: "position:fixed" resets
+// the page to the top and produces flickering on modal teardown.
+
+body.modal-open {
+  position: relative;
+  overflow: hidden;
+}
 
 
 // ——————————————————————————————————————————————————— Any Firefox in the room?

@@ -30,6 +30,8 @@ function handle_modal(e) {
 
             $(data).modal().on("shown", function () {
 
+                $('body').addClass('modal-open');
+
                 //$('input:visible:enabled:first').focus();
                 //$first_input.select();
 
@@ -43,6 +45,8 @@ function handle_modal(e) {
                 $first_input.focus();
 
             }).on('hidden', function () {
+
+                $('body').removeClass('modal-open');
                 $(this).remove();
             });
         });
