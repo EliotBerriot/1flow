@@ -262,12 +262,17 @@ class Subscription(Document, DocumentHelperMixin):
             articles = self.feed.good_articles.order_by('-id')
 
         for article in articles:
+            #
+            # NOTE: `is_good` is checked at a lower level in
+            #       `self.create_read()` because the `is_good`
+            #       status has nothing to do here with
+            #       dates-only checks.
+            #
 
             params = {}
 
             if is_older or article.date_published is None:
                 params = {
-                    'is_good':        article.is_good,
                     'is_read':        True,
                     'is_auto_read':   True,
                     'date_read':      my_now,
@@ -282,19 +287,18 @@ class Subscription(Document, DocumentHelperMixin):
                     is_older = True
 
                     params = {
-                        'is_good':        article.is_good,
                         'is_read':        True,
                         'is_auto_read':   True,
                         'date_read':      my_now,
                         'date_auto_read': my_now,
                     }
-                else:
-                    # No params == all by default == is_read is False
-                    pass
 
-            # The `create_reads()` methods is defined
+                # implicit: else: pass
+                # No params == all by default == is_read is False
+
+            # The `create_read()` methods is defined
             # in `nonrel/read.py` to avoid an import loop.
-            created = self.create_reads(article, False, **params)
+            created = self.create_read(article, False, **params)
 
             if created:
                 missing += 1

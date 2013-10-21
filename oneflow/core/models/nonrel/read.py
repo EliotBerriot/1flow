@@ -749,7 +749,7 @@ User.reads         = property(User_reads_property_get)
 #                                            Defined here to avoid import loops
 
 
-def Subscription_create_reads_method(self, article, verbose=True, **kwargs):
+def Subscription_create_read_method(self, article, verbose=True, **kwargs):
 
     new_read = Read(article=article, user=self.user)
 
@@ -767,8 +767,9 @@ def Subscription_create_reads_method(self, article, verbose=True, **kwargs):
         cur_read.update(add_to_set__subscriptions=self)
 
         #
-        # NOTE: we do not check `is_good` here. This is done in the
-        #       article check part. Do not do everything everywhere.
+        # NOTE: we do not check `is_good` here, when the read was not
+        #       created. This is handled (indirectly) via the article
+        #       check part of Subscription.check_reads(). DRY.
         #
 
         return False
@@ -787,9 +788,11 @@ def Subscription_create_reads_method(self, article, verbose=True, **kwargs):
         # If the article was already there and fetched (mutualized from
         # another feed, for example), activate the read immediately.
         # If we don't do this here, the only alternative is the daily
-        # global_reads_checker() task, which can be in quite a long time.
+        # global_reads_checker() task, which is not acceptable for
+        # "just-added" subscriptions, whose reads are created via the
+        # current method.
         if article.is_good:
-            params['is_good'] = True
+            params['set__is_good'] = True
 
         new_read.update(set__tags=tags,
                         set__subscriptions=[self], **params)
@@ -800,4 +803,4 @@ def Subscription_create_reads_method(self, article, verbose=True, **kwargs):
 
         return True
 
-Subscription.create_reads = Subscription_create_reads_method
+Subscription.create_read = Subscription_create_read_method
