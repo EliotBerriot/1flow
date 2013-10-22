@@ -317,7 +317,7 @@ class Article(Document, DocumentHelperMixin):
         if self.feeds:
             return self.feeds
 
-        return _('Unknown source')
+        return _(u'Unknown source')
 
     @property
     def get_source_unicode(self):
