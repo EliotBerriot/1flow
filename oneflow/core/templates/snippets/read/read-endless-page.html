@@ -19,10 +19,10 @@
         asynchronously.
     {% endcomment %}
 
-    <div class="endless_container">
+    <div id="initial-endless-container" class="endless_container">
         <a class="endless_more" href="{{ request.path }}?page=1"
             rel="page"> {% trans "Load more entries" %}"</a>
-        <div class="endless_loading" style="display: none;">{% trans "Loading…" %}</div>
+        <div class="endless_loading">{% trans "Loading…" %}</div>
     </div>
 
 {% else %}
@@ -73,7 +73,7 @@
             necessary data to load the next page.
         {% endcomment %}
 
-        {% show_more _('Load more entries') _('Loading…') %}
+        {% show_more _('Load more items') _('<i class="icon-spinner icon-spin icon-large"></i>&nbsp;&nbsp;Loading more items…') %}
 
     {% endwith %}
 
