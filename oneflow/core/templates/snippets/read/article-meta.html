@@ -32,7 +32,8 @@
     <div class="meta-sub">
 
       <span class="source muted">
-        {{ article.get_source_unicode }}
+        {# read, not article: we want subscriptions names, not feed names. #}
+        {{ read.get_source_unicode }}
       </span>
 
       <span class="status-icons watch-status">
@@ -44,7 +45,11 @@
       {% endif %}
 
       <span class="date">
-        {{ article.date_published }}
+        {% if article.date_published %}
+          {{ article.date_published }}
+        {% else %}
+          <span class="no-date">{% trans "no date" %}</span>
+        {% endif %}
       </span>
 
       {% if article.authors %}
