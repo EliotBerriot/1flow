@@ -1,19 +1,23 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import simplejson as json
+
+from dateutil import parser as date_parser
 
 from django import forms
 from django.core.urlresolvers import reverse, reverse_lazy
 
 from django.utils.translation import ugettext_lazy as _
 from django.core.validators import URLValidator
+from django.contrib import messages
 
 from mongodbforms import DocumentForm
 
 from django_select2.widgets import (Select2Widget, Select2MultipleWidget,
                                     HeavySelect2MultipleWidget)
 
-from ..models import (Folder, Subscription, Feed)
+from ..models import (Folder, Subscription, Feed, Article)
 from .fields import OnlyNameChoiceField, OnlyNameMultipleChoiceField
 
 
@@ -336,42 +340,184 @@ class WebPagesImportForm(forms.Form):
 
     def __init__(self, *args, **kwargs):
 
-        self.user = kwargs.pop('user', None)
+        self.request = kwargs.pop('request', None)
+        self.user    = None \
+            if self.request is None else self.request.user.mongo
 
         super(WebPagesImportForm, self).__init__(*args, **kwargs)
 
+    def import_readability(self):
+
+        try:
+            readability_json = json.loads(self.cleaned_data['urls'])
+
+        except:
+            return False
+
+        try:
+            first_object = readability_json[0]
+
+        except:
+            return False
+
+        for attr_name in ("article__title", "article__excerpt",
+                          "article__url", "date_added",
+                          "favorite", "date_favorited",
+                          "archive", "date_archived"):
+            if attr_name not in first_object:
+                return False
+
+        # OK, now we've got a readability import file.
+        messages.info(self.request,
+                      _(u'Readability JSON export format detected.'))
+
+        for readability_object in readability_json:
+
+            url = readability_object['article__url']
+
+            if self.validate_url(url):
+                article = self.import_one_article_from_url(url)
+
+                if article is None:
+                    # article was not created, we
+                    # already have it in the database.
+                    article = Article.objects.get(url=url)
+
+                #
+                # Now comes the readability-specific part of the import,
+                # eg. get back user meta-data as much as possible in 1flow.
+                #
+
+                article_needs_save = False
+
+                if readability_object['article__title']:
+                    article.title      = readability_object['article__title']
+                    article_needs_save = True
+
+                if readability_object['article__excerpt']:
+                    article.abstract   = readability_object['article__excerpt']
+                    article_needs_save = True
+
+                if article_needs_save:
+                    article.save()
+
+                read = article.reads.get(
+                            subscriptions=self.user.web_import_subscription)
+
+                # About parsing dates:
+                # http://stackoverflow.com/q/127803/654755
+                # http://stackoverflow.com/a/18150817/654755
+
+                read_needs_save = False
+
+                date_added = readability_object['date_added']
+
+                if date_added:
+                    # We try to keep the history of date when the
+                    # user added this article to readability.
+                    try:
+                        read.date_created = date_parser.parse(date_added)
+
+                    except:
+                        LOGGER.exception(u'Parsing creation date "%s" for '
+                                         u'read #%s failed.', date_added,
+                                         read.id)
+
+                    else:
+                        read_needs_save = True
+
+                if readability_object['favorite']:
+                    read.is_starred = True
+                    read_needs_save = True
+
+                    date_favorited = readability_object['date_favorited']
+
+                    if date_favorited:
+                        try:
+                            read.date_starred = date_parser.parse(
+                                                        date_favorited)
+                        except:
+                            LOGGER.exception(u'Parsing favorited date "%s" '
+                                             u'for read #%s failed.',
+                                             date_favorited, read.id)
+
+                if read_needs_save:
+                    read.save()
+
+    def import_articles_from_urls(self, urls=None):
+
+        if urls is None:
+            urls = self.cleaned_data['urls'].splitlines()
+
+        for url in urls:
+            self.validate_url(url)
+
+        for url in self.import_to_create:
+            self.import_one_article_from_url(url)
+
+    def validate_url(self, url):
+
+        url = url.strip()
+
+        if not url:
+            return False
+
+        try:
+            self.import_validator(url)
+
+        except Exception, e:
+            self.import_failed.append((url, u', '.join(e.messages)))
+            return False
+
+        else:
+            if url in self.import_to_create:
+                return False
+
+            self.import_to_create.add(url)
+            return True
+
+    def import_one_article_from_url(self, url):
+
+        try:
+            created, article = \
+                self.user.web_import_feed.create_article_from_url(url)
+
+        except Exception, e:
+            LOGGER.exception(u'Could not create article from '
+                             u'imported URL %s', url)
+            self.import_failed.append((url, unicode(e)))
+            return None
+
+        else:
+            # We append "None" if the article was not created but
+            # already exists. This is intended, for the view to
+            # count them as "correctly imported" to the end-user.
+            # If we only append *really* created articles (in our
+            # internal DB point-of-view), this will result in:
+            #
+            #         created + failed != total_imported
+            #
+            # Which can be very confusing to the end-user, even
+            # though everything is really OK in the database and
+            # in the reading lists.
+            self.import_created.append(article)
+
+            return article
+
     def save(self):
 
-        feed = self.user.web_import_feed
+        self.import_validator = URLValidator()
+        self.import_to_create = set()
+        self.import_created   = []
+        self.import_failed    = []
 
-        validator = URLValidator()
+        if self.import_readability():
+            return self.import_created, self.import_failed
 
-        to_create = set()
-        created   = []
-        failed    = []
+        #
+        # TODO: insert other importers here.
+        #
 
-        for line in self.cleaned_data['urls'].splitlines():
-            line = line.strip()
+        self.import_articles_from_urls()
 
-            if not line:
-                continue
-
-            try:
-                validator(line)
-
-            except Exception, e:
-                failed.append((line, u', '.join(e.messages)))
-
-            else:
-                to_create.add(line)
-
-        for url in to_create:
-            try:
-                created.append(feed.create_article_from_url(url))
-
-            except Exception, e:
-                LOGGER.exception(u'Could not create article from '
-                                 u'imported URL %s', url)
-                failed.append((url, unicode(e)))
-
-        return created, failed
+        return self.import_created, self.import_failed
