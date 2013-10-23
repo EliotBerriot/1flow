@@ -198,7 +198,16 @@ class DocumentHelperMixin(object):
                     with benchmark(u'Sub-check %s %s against `%s`' % (limit,
                                    cls.__name__, defect_name)):
                         for document in get_documents_with_limit():
-                            getattr(document, defect_name)()
+                            try:
+                                getattr(document, defect_name)()
+
+                            except:
+                                # Let's roll. One fail will not stop up.
+                                sys.stderr.write(u'\n')
+                                LOGGER.exception(u'Calling %s.%s() failed '
+                                                 u'on document #%s',
+                                                 cls.__name__, defect_name,
+                                                 document.id)
 
                             done_count += 1
 
