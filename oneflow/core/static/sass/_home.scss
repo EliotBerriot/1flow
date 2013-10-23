@@ -279,12 +279,6 @@ header {
 /* ------------------------------------------------------- Endless pagination */
 
 .endless_container {
-    /*
-        We don't display the endless container,
-        it doesn't play well with isotope().
-    */
-
-    display: none;
 
     text-align: center;
     font-size: 200%;
@@ -295,8 +289,15 @@ header {
     }
 
     .endless_loading {
-        opacity: 0.25;
+        opacity: 0.5;
     }
+}
+
+#initial-endless-container {
+    // We don't display the endless container:
+    // we have our own loader, which is wayyyyyy cooler.
+
+    display: none;
 }
 
 /* -------------------------------------------------------------------- Other */

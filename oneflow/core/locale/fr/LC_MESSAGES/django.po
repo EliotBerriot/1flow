@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-22 00:33+0200\n"
-"PO-Revision-Date: 2013-10-22 00:41+0009\n"
+"POT-Creation-Date: 2013-10-23 02:27+0200\n"
+"PO-Revision-Date: 2013-10-23 02:30+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -226,131 +226,131 @@ msgstr ""
 "\n"
 "Vous pouvez manuellement ré-ouvrir n'importe lequel de ces flux directement depuis l'interface d'administration de 1flow.\n"
 
-#: urls.py:43
+#: urls.py:45
 msgid "^home/$"
 msgstr "^accueil/$"
 
-#: urls.py:45
+#: urls.py:47
 msgid "^skip-welcome-beta/$"
 msgstr "^skip-welcome-beta/$"
 
-#: urls.py:49
+#: urls.py:51
 msgid "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 msgstr "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 
-#: urls.py:54
+#: urls.py:56
 msgid "^preferences/$"
 msgstr "^preferences/$"
 
-#: urls.py:57
+#: urls.py:59
 msgid "^profile/$"
 msgstr "^profil/$"
 
-#: urls.py:60
+#: urls.py:62
 msgid "^read/all/$"
 msgstr "^lire/tous/$"
 
-#: urls.py:63
+#: urls.py:65
 msgid "^read/all/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/tous/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:67
+#: urls.py:69
 msgid "^read/$"
 msgstr "^lire/$"
 
-#: urls.py:71
+#: urls.py:73
 msgid "^read/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 msgstr "^lire/flux/(?P<feed>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:75
+#: urls.py:77
 msgid "^read/([0-9a-f]{24,24})/$"
 msgstr "^lire/([0-9a-f]{24,24})/$"
 
-#: urls.py:79
+#: urls.py:81
 msgid "^share/([0-9a-f]{24,24})/$"
 msgstr "^partager/([0-9a-f]{24,24})/$"
 
-#: urls.py:84
+#: urls.py:88
 msgid "^json/user-address-book/$"
 msgstr "^json/user-address-book/$"
 
-#: urls.py:88
+#: urls.py:92
 msgid "^selector/$"
 msgstr "^selecteur/$"
 
-#: urls.py:92
+#: urls.py:96
 msgid "^folder/new/$"
 msgstr "^dossier/nouveau/$"
 
-#: urls.py:96
+#: urls.py:100
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:100
+#: urls.py:104
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:104
+#: urls.py:108
 msgid "^subscription/new/$"
 msgstr "^abonnement/nouveau/$"
 
-#: urls.py:109
+#: urls.py:116
 msgid "^json/feeds-completer/$"
 msgstr "^json/feeds-completer/$"
 
-#: urls.py:113
+#: urls.py:121
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:117
+#: urls.py:125
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:121
+#: urls.py:129
 msgid "^webimport/$"
 msgstr "^import-web/$"
 
-#: urls.py:125
+#: urls.py:133
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:128
+#: urls.py:136
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:130
+#: urls.py:138
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:131
+#: urls.py:139
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:136
+#: urls.py:144
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:139
+#: urls.py:147
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:142
+#: urls.py:150
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:145
+#: urls.py:153
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:150
+#: urls.py:158
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:159
+#: urls.py:167
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:161
+#: urls.py:169
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
@@ -433,46 +433,46 @@ msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
 msgid "Successfully shared <em>{0}</em> with {1} persons"
 msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
 
-#: views.py:863
+#: views.py:865
 #, python-brace-format
 msgid "Import of URL <code>{0}</code> failed: {1}"
 msgstr "L'import de l'URL <code>{0}</code> a échoué : {1}"
 
-#: views.py:868
+#: views.py:870
 #, python-brace-format
 msgid "Successfully launched import of {0} web page(s)"
 msgstr "Import de {0} page(s) web lancé avec succès"
 
-#: views.py:957
+#: views.py:959
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:961
+#: views.py:963
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:965
+#: views.py:967
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:972
+#: views.py:974
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:976
+#: views.py:978
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:982
+#: views.py:984
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:985
+#: views.py:987
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -523,19 +523,19 @@ msgstr ""
 "--\n"
 "{0}"
 
-#: forms/selector.py:25 forms/selector.py:209
+#: forms/selector.py:29 forms/selector.py:213
 msgid "(None)"
 msgstr "(aucun)"
 
-#: forms/selector.py:26 models/nonrel/folder.py:58
+#: forms/selector.py:30 models/nonrel/folder.py:58
 msgid "Parent folder"
 msgstr "Dossier parent"
 
-#: forms/selector.py:30
+#: forms/selector.py:34
 msgid "Subscriptions"
 msgstr "Abonnements"
 
-#: forms/selector.py:32
+#: forms/selector.py:36
 msgid ""
 "These are the ones held directly by the folder; they are displayed above "
 "subfolders. There can be none, if you prefer dispatching your subscriptions "
@@ -545,28 +545,28 @@ msgstr ""
 "dessus des sous-dossiers. Il peut n'y en avoir aucun, si vous préférez "
 "répartir vos abonnements uniquement en sous-dossiers."
 
-#: forms/selector.py:201 models/nonrel/subscription.py:109
+#: forms/selector.py:205 models/nonrel/subscription.py:109
 msgid "Folders"
 msgstr "Dossiers"
 
-#: forms/selector.py:208
+#: forms/selector.py:212
 msgid "Folder"
 msgstr "Dossier"
 
-#: forms/selector.py:248
+#: forms/selector.py:252
 msgid "Search 1flow's streams"
 msgstr "Cherchez dans 1flow"
 
-#: forms/selector.py:250
+#: forms/selector.py:254
 msgid "Enter an URL"
 msgstr "Saississez une URL"
 
-#: forms/selector.py:271
+#: forms/selector.py:275
 #, python-brace-format
 msgid "Select feed(s) from the {0} referenced"
 msgstr "Sélectionnez des flux parmis les {0} référencés"
 
-#: forms/selector.py:274
+#: forms/selector.py:278
 #, python-brace-format
 msgid ""
 "<span class=\"muted\">NOTE: this can be long. You will be notified when "
@@ -577,19 +577,19 @@ msgstr ""
 "notifié(e) quand elle est terminée.</span>&nbsp;<a href=\"{0}\" "
 "target=\"_blank\">Comment ça marche ?</a>"
 
-#: forms/selector.py:277
+#: forms/selector.py:281
 msgid "#adding-subscriptions"
 msgstr "#ajout-dabonnement"
 
-#: forms/selector.py:289
+#: forms/selector.py:293
 msgid "You have to fill at least one of the two fields."
 msgstr "Vous devez remplir au moins un des deux champs."
 
-#: forms/selector.py:326
+#: forms/selector.py:330
 msgid "Enter URL(s)"
 msgstr "Entrez des URLs"
 
-#: forms/selector.py:327
+#: forms/selector.py:331
 msgid ""
 "Type one URL per line, as many as you want. Even if 1flow can currently "
 "display only text-pages correctly, you may import anything (websites home "
@@ -602,6 +602,10 @@ msgstr ""
 " que les visualiseurs spécifiques de contenus seront déployés, vos éléments "
 "importés apparaîtront correctement. En attendant, vous ne les aurez pas "
 "perdus."
+
+#: forms/selector.py:372
+msgid "Readability JSON export format detected."
+msgstr "Format d'export Readability détecté."
 
 #: forms/user.py:25
 msgid "The two password fields didn't match."
@@ -849,7 +853,7 @@ msgstr "{0} (#{1}) from {2}"
 msgid "Unknown source"
 msgstr "Source inconnue"
 
-#: models/nonrel/article.py:333
+#: models/nonrel/article.py:333 models/nonrel/read.py:623
 #, python-brace-format
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
@@ -1078,7 +1082,7 @@ msgstr "Public description of the feed in English language. As Markdown."
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel/feed.py:583
+#: models/nonrel/feed.py:580
 #, python-brace-format
 msgid "Imported item from {0}"
 msgstr "Élément importé depuis {0}"
@@ -2078,17 +2082,17 @@ msgstr "Supprimer des blagues"
 msgid "fun"
 msgstr "drôle"
 
-#: models/nonrel/read.py:618
+#: models/nonrel/read.py:649
 #, python-brace-format
 msgid "{0}∞{1} (#{2}) {3} {4}"
 msgstr "{0}∞{1} (#{2}) {3} {4}"
 
-#: models/nonrel/read.py:644
+#: models/nonrel/read.py:681
 #, python-brace-format
 msgid " ({feed})"
 msgstr " ({feed}) "
 
-#: models/nonrel/read.py:649
+#: models/nonrel/read.py:686
 #, python-brace-format
 msgid "{title}{source}"
 msgstr "{title}{source}"
@@ -2671,7 +2675,18 @@ msgstr "À propos"
 msgid "Contact"
 msgstr "Contact"
 
-#: templates/snippets/import/import-web-pages.html:27
+#: templates/snippets/import/import-web-pages.html:17
+msgid "importing-data-from-other-services"
+msgstr "import-de-donnees-dautres-applications-web"
+
+#: templates/snippets/import/import-web-pages.html:17
+msgid ""
+"Do you need to import data from other webservices like Readability / Pocket?"
+msgstr ""
+"Avez-vous besoin d'importer des données depuis d'autres webservices comme "
+"Readability / Pocket ?"
+
+#: templates/snippets/import/import-web-pages.html:29
 #: templates/snippets/selector/add-subscription.html:50
 #: templates/snippets/selector/manage-folder.html:38
 #: templates/snippets/selector/manage-subscription.html:119
@@ -2679,7 +2694,7 @@ msgstr "Contact"
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/snippets/import/import-web-pages.html:30
+#: templates/snippets/import/import-web-pages.html:32
 msgid "Launch import"
 msgstr "Lancer l'import"
 
@@ -2928,17 +2943,21 @@ msgstr "Plus drôle du tout.  QUE JE SUIS MALHEUREUUUUUX !!!"
 msgid "Nothing open to mark as fun. That's not fun."
 msgstr "Rien d'ouvert à ajouter aux blagues. C'EST PAS DRÔLE !!"
 
-#: templates/snippets/read/article-meta.html:53
+#: templates/snippets/read/article-meta.html:52
+msgid "no date"
+msgstr "pas de date"
+
+#: templates/snippets/read/article-meta.html:58
 msgid "by"
 msgstr "par"
 
-#: templates/snippets/read/article-meta.html:63
+#: templates/snippets/read/article-meta.html:68
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid "in"
 msgstr "dans"
 
-#: templates/snippets/read/article-meta.html:69
+#: templates/snippets/read/article-meta.html:74
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid ", rated "
@@ -3025,10 +3044,18 @@ msgid "Article: "
 msgstr "Article :"
 
 #: templates/snippets/read/read-admin-informations.html:20
+msgid "Subscriptions: "
+msgstr "Abonnements :"
+
+#: templates/snippets/read/read-admin-informations.html:27
+msgid "no subscriptions"
+msgstr "pas d'abonnement"
+
+#: templates/snippets/read/read-admin-informations.html:30
 msgid "Feeds: "
 msgstr "Flux :"
 
-#: templates/snippets/read/read-admin-informations.html:27
+#: templates/snippets/read/read-admin-informations.html:37
 msgid "no feeds"
 msgstr "pas de flux"
 
@@ -3104,14 +3131,24 @@ msgid "Hey, are you still here?"
 msgstr "Hé, vous êtes toujours là ?"
 
 #: templates/snippets/read/read-endless-page.html:25
-#: templates/snippets/read/read-endless-page.html:78
 msgid "Load more entries"
 msgstr "Charger plus d'articles"
 
 #: templates/snippets/read/read-endless-page.html:26
-#: templates/snippets/read/read-endless-page.html:78
 msgid "Loading…"
 msgstr "Chargement…"
+
+#: templates/snippets/read/read-endless-page.html:78
+msgid "Load more items"
+msgstr "Charger plus d'articles"
+
+#: templates/snippets/read/read-endless-page.html:78
+msgid ""
+"<i class=\"icon-spinner icon-spin icon-large\"></i>&nbsp;&nbsp;Loading more "
+"items…"
+msgstr ""
+"<i class=\"icon-spinner icon-spin icon-large\"></i>&nbsp;&nbsp;Chargement "
+"des éléments suivants…"
 
 #: templates/snippets/read/read-tiles-experimental-tile.html:3
 #: templates/snippets/read/read-tiles-tile.html:3

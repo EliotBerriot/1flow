@@ -587,7 +587,7 @@ class Feed(Document, DocumentHelperMixin):
             # taken care of in Article.create_article().
             LOGGER.exception(u'Article creation from URL %s failed in '
                              u'feed %s.', url, self)
-            return False
+            return (False, None)
 
         mutualized = created is None
 
@@ -605,7 +605,7 @@ class Feed(Document, DocumentHelperMixin):
             subscription.create_read(new_article, verbose=created)
 
         # Don't forget the parenthesis else we return ``False`` everytime.
-        return created or (None if mutualized else False)
+        return (created or (None if mutualized else False), new_article)
 
     def create_article_from_feedparser(self, article, feed_tags):
         """ Take a feedparser item and a list of Feed subscribers and

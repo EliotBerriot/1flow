@@ -16,17 +16,30 @@
         <tr>
           <td colspan="{{ with_index|yesno:'3,2' }}">
             <div class="centered">
-              {% if article.feeds %}
-                  {% trans "Feeds: " %}
-                    {% for feed in article.feeds %}
-                      <a href="{{ NONREL_ADMIN }}feed/{{feed.id}}/"
-                        target="_blank">{{feed.name}}</a>{% if not forloop.last %}, {% endif %}
+              {% if read.subscriptions %}
+                  {% trans "Subscriptions: " %}
+                    {% for subscription in read.subscriptions %}
+                      <a href="{{ NONREL_ADMIN }}subscription/{{subscription.id}}/"
+                        target="_blank">{{ subscription.name }}</a>{% if not forloop.last %}, {% endif %}
                     {% endfor %}
 
               {% else %}
-                {% trans "no feeds" %}
+                {% trans "no subscriptions" %}
+
+                {% if article.feeds %}
+                    {% trans "Feeds: " %}
+                      {% for feed in article.feeds %}
+                        <a href="{{ NONREL_ADMIN }}feed/{{ feed.id }}/"
+                          target="_blank">{{ feed.name }}</a>{% if not forloop.last %}, {% endif %}
+                      {% endfor %}
+
+                {% else %}
+                  {% trans "no feeds" %}
+
+                {% endif %}
 
               {% endif %}
+
             </div>
           </td>
         </tr>

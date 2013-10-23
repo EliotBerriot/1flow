@@ -593,6 +593,37 @@ class Read(Document, DocumentHelperMixin):
 
         self.update_cached_descriptors(update_only=update_only)
 
+    @property
+    def get_source(self):
+
+        if self.article.source:
+            return self.article.source
+
+        if self.subscriptions:
+            # This method displays things to the user. Don't let dead
+            # DBRefs pass through.
+            #
+            # TODO: let things pass through for administrators, though.
+            #
+            return [s for s in self.subscriptions if isinstance(s, Document)]
+
+        return self.article.get_source
+
+    @property
+    def get_source_unicode(self):
+
+        source = self.get_source
+
+        if source.__class__ in (unicode, str):
+            return source
+
+        sources_count = len(source)
+
+        if sources_count > 2:
+            return _(u'Multiple sources ({0} feeds)').format(sources_count)
+
+        return u' / '.join(x.name for x in source)
+
     @classmethod
     def signal_post_save_handler(cls, sender, document,
                                  created=False, **kwargs):
@@ -624,7 +655,13 @@ class Read(Document, DocumentHelperMixin):
         user_feeds         = [sub.feed for sub in self.user.subscriptions]
         article_feeds      = [feed for feed in self.article.feeds
                               if feed in user_feeds]
-        self.subscriptions = list(Subscription.objects(feed__in=article_feeds))
+
+        # HEADS UP: searching only for feed__in=article_feeds will lead
+        # to have other user's subscriptions attached to the read.
+        # Harmless but very confusing.
+        self.subscriptions = list(Subscription.objects(
+                                  feed__in=article_feeds,
+                                  user=self.user))
 
         if commit:
             self.save()

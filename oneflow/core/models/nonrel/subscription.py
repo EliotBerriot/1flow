@@ -440,6 +440,7 @@ def generic_check_subscriptions_method(self, extended_check=False):
                 attrs_to_test  = [(subscription.feed, 'Feed')]
 
             else:
+                # We are a Read.
                 attrs_to_test  = [(subscription.user, 'User'),
                                   (subscription.feed, 'Feed')]
 
@@ -468,9 +469,10 @@ def generic_check_subscriptions_method(self, extended_check=False):
         self.save()
         # No need to update cached descriptors, they should already be ok…
 
-    if extended_check:
+    if extended_check and my_class_name != 'Read':
         for subscription in self.subscriptions:
             subscription.check_reads(force=True, extended_check=True)
+
 
 Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Folder.open_subscriptions     = property(Folder_open_subscriptions_property_get)

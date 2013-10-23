@@ -2,7 +2,7 @@
 
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
-from django.views.decorators.cache import never_cache
+from django.views.decorators.cache import cache_page, never_cache
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
@@ -10,6 +10,8 @@ from django.contrib.admin.views.decorators import staff_member_required
 from .models.nonrel import Read
 
 import views
+
+LONG_CACHE = 3600*24
 
 
 # This builds "read_later", "read_starred" and so on.
@@ -97,8 +99,12 @@ urlpatterns = patterns(
         name='add_subscription'),
 
     # Required by the add_subscription autocompleter.
+    # TODO: once we have an expirable cache mechanism, switch to
+    # VERY_LONG_CACHE and make it expire on feeds changes (closing,
+    # creation, etc).
     url(_(r'^json/feeds-completer/$'),
-        login_required(views.FeedsCompleterView.as_view()),
+        login_required(cache_page(LONG_CACHE)(
+                       views.FeedsCompleterView.as_view())),
         name='feeds_completer'),
 
     url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$'),

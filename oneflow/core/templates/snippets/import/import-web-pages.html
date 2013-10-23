@@ -14,6 +14,8 @@
 
     {% include "widgets/forms/field-textarea.html" with field=form.urls|attr:"rows:3"|add_class:"span5" %}
 
+    <p class="controls muted"><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Do you need to import data from other webservices like Readability / Pocket?" %}</p>
+
     {% if in_modal %}
         </div>
         <div class="modal-footer">
