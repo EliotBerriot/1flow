@@ -153,18 +153,24 @@ class Read(Document, DocumentHelperMixin):
     def check_set_subscriptions_131004(self):
         """ Fix a bug where reads had too much subscriptions. """
 
-        self.set_subscriptions(commit=False)
+        if len(self.subscriptions) == 1:
+            # Don't bother doing CPU-intensive tasks,
+            # this one seems good. At least we hope.
+            self.update(set__check_set_subscriptions_131004_done=True)
 
-        # We have to update() because changing the boolean to True doesn't
-        # make MongoEngine write it to the database, because the new value
-        # is not different from the default one…
-        #
-        # Then we update subscriptions via the same mechanism to avoid two
-        # disctinct write operations on the database.
-        #
-        # No need to reload, this is a one-shot repair.
-        self.update(set__check_set_subscriptions_131004_done=True,
-                    set__subscriptions=self.subscriptions)
+        else:
+            self.set_subscriptions(commit=False)
+
+            # We have to update() because changing the boolean to True doesn't
+            # make MongoEngine write it to the database, because the new value
+            # is not different from the default one…
+            #
+            # Then we update subscriptions via the same mechanism to avoid two
+            # disctinct write operations on the database.
+            #
+            # No need to reload, this is a one-shot repair.
+            self.update(set__check_set_subscriptions_131004_done=True,
+                        set__subscriptions=self.subscriptions)
 
     # ———————————————————————————————————————————————————————— Class attributes
 
