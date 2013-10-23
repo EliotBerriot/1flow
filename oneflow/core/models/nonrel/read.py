@@ -154,34 +154,36 @@ class Read(Document, DocumentHelperMixin):
     def check_set_subscriptions_131004(self):
         """ Fix a bug where reads had too much subscriptions. """
 
+        if isinstance(self.user, DBRef) or self.user is None:
+            self.delete()
+            sys.stderr.write(u'x')
+            return
+
         if len(self.subscriptions) == 1:
             # Don't bother doing CPU-intensive tasks,
             # this one seems good. At least we hope.
             self.update(set__check_set_subscriptions_131004_done=True)
 
         else:
-            try:
-                self.set_subscriptions(commit=False)
+            subscriptions_to_keep = []
 
-            except AttributeError:
-                if isinstance(self.article, DBRef) or self.article is None:
-                    self.delete()
-                    sys.stderr.write(u'x')
+            for subscription in self.subscriptions:
+                try:
+                    if subscription.user == self.user:
+                        subscriptions_to_keep.append(subscription)
+                except:
+                    sys.stderr.write(u'-')
 
-                else:
-                    raise
-            else:
-
-                # We have to update() because changing the boolean to True
-                # doesn't make MongoEngine write it to the database, because
-                # the new value is not different from the default one…
-                #
-                # Then we update subscriptions via the same mechanism to
-                # avoid two disctinct write operations on the database.
-                #
-                # No need to reload, this is a one-shot repair.
-                self.update(set__check_set_subscriptions_131004_done=True,
-                            set__subscriptions=self.subscriptions)
+            # We have to update() because changing the boolean to True
+            # doesn't make MongoEngine write it to the database, because
+            # the new value is not different from the default one…
+            #
+            # Then we update subscriptions via the same mechanism to
+            # avoid two disctinct write operations on the database.
+            #
+            # No need to reload, this is a one-shot repair.
+            self.update(set__check_set_subscriptions_131004_done=True,
+                        set__subscriptions=subscriptions_to_keep)
 
     # ———————————————————————————————————————————————————————— Class attributes
 
