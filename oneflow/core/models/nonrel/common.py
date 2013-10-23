@@ -174,6 +174,7 @@ class DocumentHelperMixin(object):
             Q2_params    = {defect_name + '_done': False}
             done_count   = 0
             failed_count = 0
+            failed_ids   = []
 
             def get_count():
                 return cls.objects(Q(**Q1_params)
@@ -188,9 +189,10 @@ class DocumentHelperMixin(object):
 
             count = get_count()
 
-            LOGGER.info(u'Starting check of %s %s against `%s` (each dot: '
-                        u'%s done)…', count, cls.__name__,
-                        defect_name, progress)
+            if count:
+                LOGGER.info(u'Starting check of %s %s against `%s` '
+                            u'(each dot: %s done)…', count, cls.__name__,
+                            defect_name, progress)
 
             with benchmark(u'Check %s %s against %s' % (
                            count, cls.__name__, defect_name)):
@@ -204,12 +206,19 @@ class DocumentHelperMixin(object):
 
                             except:
                                 # Let's roll. One fail will not stop up.
-                                failed_count += 1
-                                sys.stderr.write(u'\n')
-                                LOGGER.exception(u'Calling %s.%s() failed '
-                                                 u'on document #%s',
-                                                 cls.__name__, defect_name,
-                                                 document.id)
+
+                                if document.id in failed_ids:
+                                    # Don't "continue", we need done_count to
+                                    # be updated, and dots to be outputed.
+                                    pass
+
+                                else:
+                                    failed_ids.add(document.id)
+                                    failed_count += 1
+                                    sys.stderr.write(u'\n')
+                                    LOGGER.exception(u'SKIP: self.%s() failed '
+                                                     u'on %s #%s', defect_name,
+                                                     cls.__name__, document.id)
 
                             done_count += 1
 
@@ -221,6 +230,10 @@ class DocumentHelperMixin(object):
                                     sys.stderr.write(u'\n')
 
                         count = get_count()
+
+                        if done_count % limit != 0:
+                            # Last line deserves a newline.
+                            sys.stderr.write(u'\n')
 
         else:
             LOGGER.error(u'Defect `%s` has not the required class '
