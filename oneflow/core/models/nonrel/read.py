@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+import sys
 import logging
 import operator
 import feedparser
@@ -12,7 +13,7 @@ from mongoengine import Document, Q, CASCADE
 from mongoengine.fields import (StringField, BooleanField,
                                 FloatField, DateTimeField,
                                 ListField, ReferenceField,
-                                GenericReferenceField)
+                                GenericReferenceField, DBRef)
 from mongoengine.errors import NotUniqueError, ValidationError
 
 from django.conf import settings
@@ -159,18 +160,28 @@ class Read(Document, DocumentHelperMixin):
             self.update(set__check_set_subscriptions_131004_done=True)
 
         else:
-            self.set_subscriptions(commit=False)
+            try:
+                self.set_subscriptions(commit=False)
 
-            # We have to update() because changing the boolean to True doesn't
-            # make MongoEngine write it to the database, because the new value
-            # is not different from the default one…
-            #
-            # Then we update subscriptions via the same mechanism to avoid two
-            # disctinct write operations on the database.
-            #
-            # No need to reload, this is a one-shot repair.
-            self.update(set__check_set_subscriptions_131004_done=True,
-                        set__subscriptions=self.subscriptions)
+            except AttributeError:
+                if isinstance(self.article, DBRef) or self.article is None:
+                    self.delete()
+                    sys.stderr.write(u'x')
+
+                else:
+                    raise
+            else:
+
+                # We have to update() because changing the boolean to True
+                # doesn't make MongoEngine write it to the database, because
+                # the new value is not different from the default one…
+                #
+                # Then we update subscriptions via the same mechanism to
+                # avoid two disctinct write operations on the database.
+                #
+                # No need to reload, this is a one-shot repair.
+                self.update(set__check_set_subscriptions_131004_done=True,
+                            set__subscriptions=self.subscriptions)
 
     # ———————————————————————————————————————————————————————— Class attributes
 
