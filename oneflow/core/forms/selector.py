@@ -479,7 +479,7 @@ class WebPagesImportForm(forms.Form):
     def import_one_article_from_url(self, url):
 
         try:
-            created, article = \
+            article, created = \
                 self.user.web_import_feed.create_article_from_url(url)
 
         except Exception, e:
