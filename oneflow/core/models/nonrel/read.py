@@ -655,7 +655,13 @@ class Read(Document, DocumentHelperMixin):
         user_feeds         = [sub.feed for sub in self.user.subscriptions]
         article_feeds      = [feed for feed in self.article.feeds
                               if feed in user_feeds]
-        self.subscriptions = list(Subscription.objects(feed__in=article_feeds))
+
+        # HEADS UP: searching only for feed__in=article_feeds will lead
+        # to have other user's subscriptions attached to the read.
+        # Harmless but very confusing.
+        self.subscriptions = list(Subscription.objects(
+                                  feed__in=article_feeds,
+                                  user=self.user))
 
         if commit:
             self.save()
