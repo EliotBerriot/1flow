@@ -191,7 +191,7 @@ class DocumentHelperMixin(object):
 
             if count:
                 LOGGER.info(u'Starting check of %s %s against `%s` '
-                            u'(each dot: %s done)…', count, cls.__name__,
+                            u'(each star: %s done)…', count, cls.__name__,
                             defect_name, progress)
 
             with benchmark(u'Check %s %s against %s' % (
@@ -223,7 +223,7 @@ class DocumentHelperMixin(object):
                             done_count += 1
 
                             if done_count % progress == 0:
-                                sys.stderr.write(u'.')
+                                sys.stderr.write(u'*')
                                 sys.stderr.flush()
 
                                 if done_count % limit == 0:
