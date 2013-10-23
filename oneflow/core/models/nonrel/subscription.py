@@ -417,7 +417,14 @@ def User_subscriptions_by_folder_property_get(self):
 
 
 def generic_check_subscriptions_method(self, extended_check=False):
-    """ This one is used for `Feed`, `Read` and `User` classes. """
+    """ This one is used for `Read` and `User` classes. """
+
+    # if not force:
+    #     LOGGER.info(u'%s.check_subscriptions() is very costy and should '
+    #                 u'not be needed in normal conditions. Call it with '
+    #                 u'`force=True` if you are sure you want to run it.',
+    #                 self.__class__.__name__)
+    #     return
 
     to_keep       = []
     my_class_name = self.__class__.__name__
@@ -469,9 +476,40 @@ def generic_check_subscriptions_method(self, extended_check=False):
         self.save()
         # No need to update cached descriptors, they should already be ok…
 
+    # avoid checking supbscriptions of a read, this will dead-loop if
+    # Article.activate_reads(extended_check=True).
     if extended_check and my_class_name != 'Read':
+
+        reads     = 0
+        failed    = 0
+        unreads   = 0
+        missing   = 0
+        rechecked = 0
+
+        if my_class_name == 'Feed':
+            articles = self.good_articles.order_by('-id')
+
+        else:
+            articles = None
+
         for subscription in self.subscriptions:
-            subscription.check_reads(force=True, extended_check=True)
+            smissing, srecheck, sreads, sunreads, sfailed = \
+                subscription.check_reads(articles, extended_check=True)
+
+            reads     += sreads
+            failed    += sfailed
+            missing   += smissing
+            unreads   += sunreads
+            rechecked += srecheck
+
+        LOGGER.info(u'Checked %s #%s with %s subscriptions%s. '
+                    u'Totals: %s/%s non-existing/re-checked reads, '
+                    u'%s/%s read/unread and %s not created.',
+                    self.__class__.__name__, self.id,
+                    self.subscriptions.count(),
+                    u'' if articles is None
+                    else (u'and %s articles' % articles.count()),
+                    missing, rechecked, reads, unreads, failed)
 
 
 Folder.subscriptions          = property(Folder_subscriptions_property_get)

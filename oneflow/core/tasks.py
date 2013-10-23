@@ -809,7 +809,9 @@ def global_subscriptions_checker(force=False, limit=None, from_feeds=True,
                                                         good=True,
                                                         bad=True)
 
-                    feed.check_subscriptions(force=True)
+                    # Do not extended_check=True, this would double-do
+                    # the subscription.check_reads() already called below.
+                    feed.check_subscriptions()
 
                     for subscription in feed.subscriptions:
 
@@ -844,7 +846,9 @@ def global_subscriptions_checker(force=False, limit=None, from_feeds=True,
 
                 for user in users:
 
-                    user.check_subscriptions(force=True)
+                    # Do not extended_check=True, this would double-do
+                    # the subscription.check_reads() already called below.
+                    user.check_subscriptions()
 
                     if extended_check:
                         user.compute_cached_descriptors(all=True,
@@ -1007,9 +1011,11 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                     try:
                         if read.subscriptions:
 
-                            # TODO: remove this transient check.
+                            # TODO: remove this
+                            #       check_set_subscriptions_131004_done
+                            #       transient check.
                             if read.check_set_subscriptions_131004_done:
-                                read.check_subscriptions(force=True)
+                                read.check_subscriptions()
 
                             else:
                                 read.check_set_subscriptions_131004()

@@ -281,38 +281,6 @@ class Feed(Document, DocumentHelperMixin):
         except:
             return None
 
-    def check_subscriptions(self, force=False):
-
-        if not force:
-            LOGGER.info(u'Feed.check_subscriptions() is very costy and should '
-                        u'not be needed in normal conditions. Call it with '
-                        u'`force=True` if you are sure you want to run it.')
-            return
-
-        reads     = 0
-        failed    = 0
-        unreads   = 0
-        missing   = 0
-        rechecked = 0
-
-        articles = self.good_articles.order_by('-id')
-
-        for subscription in self.subscriptions:
-            smissing, srecheck, sreads, sunreads, sfailed = \
-                subscription.check_reads(force, articles)
-
-            reads     += sreads
-            failed    += sfailed
-            missing   += smissing
-            unreads   += sunreads
-            rechecked += srecheck
-
-        LOGGER.info(u'Checked feed #%s with %s subscriptions and %s articles. '
-                    u'Totals: %s/%s non-existing/re-checked reads, '
-                    u'%s/%s read/unread and %s not created.', self.id,
-                    self.subscriptions.count(), articles.count(),
-                    missing, rechecked, reads, unreads, failed)
-
     def update_latest_article_date_published(self):
         """ This seems simple, but this operations costs a lot in MongoDB. """
 
