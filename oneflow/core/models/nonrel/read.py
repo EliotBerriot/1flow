@@ -142,6 +142,21 @@ class Read(Document, DocumentHelperMixin):
     # until the user sets it manually.
     rating = FloatField()
 
+    # ————————————————————————————————————————————————————————— Temporary space
+    # items here will have a limited lifetime.
+
+    # At the time this is created, set_subscriptions() does the right thing.
+    # Don't let new reads be checked more than once, the database is already
+    # overloaded with post-processing and normal end-users related usage.
+    check_set_subscriptions_131004_done = BooleanField(default=True)
+
+    def check_set_subscriptions_131004(self):
+        """ Fix a bug where reads had too much subscriptions. """
+
+        self.set_subscriptions(commit=False)
+        self.check_set_subscriptions_131004_done = True
+        self.save()
+
     # ———————————————————————————————————————————————————————— Class attributes
 
     watch_attributes = (
