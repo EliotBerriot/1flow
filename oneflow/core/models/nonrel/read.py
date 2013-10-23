@@ -652,7 +652,8 @@ class Read(Document, DocumentHelperMixin):
                 if self.is_read else _p(u'adjective', u'unread'), self.rating)
 
     def set_subscriptions(self, commit=True):
-        user_feeds         = [sub.feed for sub in self.user.subscriptions]
+        # @all_subscriptions, because here internal feeds count.
+        user_feeds         = [sub.feed for sub in self.user.all_subscriptions]
         article_feeds      = [feed for feed in self.article.feeds
                               if feed in user_feeds]
 
