@@ -154,7 +154,8 @@ class Read(Document, DocumentHelperMixin):
     def check_set_subscriptions_131004(self):
         """ Fix a bug where reads had too much subscriptions. """
 
-        if isinstance(self.user, DBRef) or self.user is None:
+        if isinstance(self.user, DBRef) or self.user is None \
+                or isinstance(self.article, DBRef) or self.article is None:
             self.delete()
             sys.stderr.write(u'x')
             return
