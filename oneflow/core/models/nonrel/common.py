@@ -213,7 +213,7 @@ class DocumentHelperMixin(object):
                                     pass
 
                                 else:
-                                    failed_ids.add(document.id)
+                                    failed_ids.append(document.id)
                                     failed_count += 1
                                     sys.stderr.write(u'\n')
                                     LOGGER.exception(u'SKIP: self.%s() failed '
