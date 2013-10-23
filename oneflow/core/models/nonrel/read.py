@@ -142,8 +142,31 @@ class Read(Document, DocumentHelperMixin):
     # until the user sets it manually.
     rating = FloatField()
 
-    # For free users, fix a limit ?
-    #meta = {'max_documents': 1000, 'max_size': 2000000}
+    # ————————————————————————————————————————————————————————— Temporary space
+    # items here will have a limited lifetime.
+
+    # At the time this is created, set_subscriptions() does the right thing.
+    # Don't let new reads be checked more than once, the database is already
+    # overloaded with post-processing and normal end-users related usage.
+    check_set_subscriptions_131004_done = BooleanField(default=True)
+
+    def check_set_subscriptions_131004(self):
+        """ Fix a bug where reads had too much subscriptions. """
+
+        self.set_subscriptions(commit=False)
+
+        # We have to update() because changing the boolean to True doesn't
+        # make MongoEngine write it to the database, because the new value
+        # is not different from the default one…
+        #
+        # Then we update subscriptions via the same mechanism to avoid two
+        # disctinct write operations on the database.
+        #
+        # No need to reload, this is a one-shot repair.
+        self.update(set__check_set_subscriptions_131004_done=True,
+                    set__subscriptions=self.subscriptions)
+
+    # ———————————————————————————————————————————————————————— Class attributes
 
     watch_attributes = (
         'is_fact',
@@ -462,6 +485,8 @@ class Read(Document, DocumentHelperMixin):
         ]
     }
 
+    # ——————————————————————————————————————————————————————————— Class methods
+
     @classmethod
     def get_status_attributes(cls):
         try:
@@ -476,6 +501,29 @@ class Read(Document, DocumentHelperMixin):
 
             return cls._status_attributes_cache
 
+    # ———————————————————————————————————— Class methods & Mongo/Django related
+
+    @classmethod
+    def signal_post_save_handler(cls, sender, document,
+                                 created=False, **kwargs):
+
+        read = document
+
+        if created:
+            if read._db_name != settings.MONGODB_NAME_ARCHIVE:
+                read_post_create_task.delay(read.id)
+
+    def post_create_task(self):
+        """ Method meant to be run from a celery task. """
+
+        self.rating = self.article.default_rating
+
+        self.set_subscriptions(commit=False)
+
+        self.save()
+
+        self.update_cached_descriptors()
+
     @classmethod
     def signal_pre_delete_handler(cls, sender, document, **kwargs):
 
@@ -487,8 +535,164 @@ class Read(Document, DocumentHelperMixin):
 
         read.update_cached_descriptors(operation='-')
 
+    def validate(self, *args, **kwargs):
+        try:
+            super(Read, self).validate(*args, **kwargs)
+
+        except ValidationError as e:
+            tags_error = e.errors.get('tags', None)
+
+            if tags_error and 'GenericReferences can only contain documents' \
+                    in str(tags_error):
+
+                good_tags  = set()
+                to_replace = set()
+
+                for tag in self.tags:
+                    if isinstance(tag, Document):
+                        good_tags.add(tag)
+
+                    else:
+                        to_replace.add(tag)
+
+                new_tags = Tag.get_tags_set([t for t in to_replace
+                                            if t not in (u'', None)])
+
+                self.tags = good_tags | new_tags
+                e.errors.pop('tags')
+
+            if e.errors:
+                raise e
+
+    def __unicode__(self):
+        return _(u'{0}∞{1} (#{2}) {3} {4}').format(
+            self.user, self.article, self.id,
+            _p(u'adjective', u'read')
+                if self.is_read else _p(u'adjective', u'unread'), self.rating)
+
+    # —————————————————————————————————————————————————————————————— Properties
+
+    @property
+    def title(self):
+
+        article = self.article
+        feed    = article.feed
+
+        if feed:
+            source = _(u' ({feed})').format(feed=feed.name)
+
+        else:
+            source = u''
+
+        return _(u'{title}{source}').format(title=article.title,
+                                            source=source)
+
+    @property
+    def get_source(self):
+
+        if self.article.source:
+            return self.article.source
+
+        if self.subscriptions:
+            # This method displays things to the user. Don't let dead
+            # DBRefs pass through.
+            #
+            # TODO: let things pass through for administrators, though.
+            #
+            return [s for s in self.subscriptions if isinstance(s, Document)]
+
+        return self.article.get_source
+
+    @property
+    def get_source_unicode(self):
+
+        source = self.get_source
+
+        if source.__class__ in (unicode, str):
+            return source
+
+        sources_count = len(source)
+
+        if sources_count > 2:
+            return _(u'Multiple sources ({0} feeds)').format(sources_count)
+
+        return u' / '.join(x.name for x in source)
+
+    # ————————————————————————————————————————————————————————————————— Methods
+
     # HEADS UP: this method come from the subscription module.
     check_subscriptions = generic_check_subscriptions_method
+
+    def set_subscriptions(self, commit=True):
+        # @all_subscriptions, because here internal feeds count.
+        user_feeds         = [sub.feed for sub in self.user.all_subscriptions]
+        article_feeds      = [feed for feed in self.article.feeds
+                              if feed in user_feeds]
+
+        # HEADS UP: searching only for feed__in=article_feeds will lead
+        # to have other user's subscriptions attached to the read.
+        # Harmless but very confusing.
+        self.subscriptions = list(Subscription.objects(
+                                  feed__in=article_feeds,
+                                  user=self.user))
+
+        if commit:
+            self.save()
+
+            # TODO: only for the new subscriptions.
+            #self.update_cached_descriptors( … )
+
+        return self.subscriptions
+
+    def activate(self, force=False):
+        """ This method will mark the Read ``.is_good=True``
+            and do whatever in consequence. """
+
+        if not force and not self.article.is_good:
+            LOGGER.error(u'Cannot activate read %s, whose article '
+                         u'is not ready for public use!', self)
+            return
+
+        self.is_good = True
+        self.save()
+
+        update_only = ['all']
+
+        if self.is_starred:
+            update_only.append('starred')
+
+        if self.is_bookmarked:
+            update_only.append('bookmarked')
+
+        if not self.is_read:
+            update_only.append('unread')
+
+        self.update_cached_descriptors(update_only=update_only)
+
+    def remove_tags(self, tags=[]):
+        """ If the user remove his own tags from a Read, it will get back the
+            default tags from the article it comes from. """
+
+        if tags:
+            for tag in Tag.get_tags_set(tags, origin=self):
+                self.update(pull__tags=tag)
+
+            self.safe_reload()
+
+        if self.tags == []:
+            self.tags = self.article.tags.copy()
+            self.save()
+            # NO update_cached_descriptors() here.
+
+    def add_tags(self, tags):
+
+        for tag in Tag.get_tags_set(tags, origin=self):
+            self.update(add_to_set__tags=tag)
+
+        self.safe_reload()
+        # NO update_cached_descriptors() here.
+
+    # ————————————————————————————————————————————— Update subscriptions caches
 
     def update_cached_descriptors(self, operation=None, update_only=None):
 
@@ -538,179 +742,6 @@ class Read(Document, DocumentHelperMixin):
         for attr_name in to_change:
             setattr(self.user, attr_name,
                     op(getattr(self.user, attr_name), 1))
-
-    def validate(self, *args, **kwargs):
-        try:
-            super(Read, self).validate(*args, **kwargs)
-
-        except ValidationError as e:
-            tags_error = e.errors.get('tags', None)
-
-            if tags_error and 'GenericReferences can only contain documents' \
-                    in str(tags_error):
-
-                good_tags  = set()
-                to_replace = set()
-
-                for tag in self.tags:
-                    if isinstance(tag, Document):
-                        good_tags.add(tag)
-
-                    else:
-                        to_replace.add(tag)
-
-                new_tags = Tag.get_tags_set([t for t in to_replace
-                                            if t not in (u'', None)])
-
-                self.tags = good_tags | new_tags
-                e.errors.pop('tags')
-
-            if e.errors:
-                raise e
-
-    def activate(self, force=False):
-        """ This method will mark the Read ``.is_good=True``
-            and do whatever in consequence. """
-
-        if not force and not self.article.is_good:
-            LOGGER.error(u'Cannot activate read %s, whose article '
-                         u'is not ready for public use!', self)
-            return
-
-        self.is_good = True
-        self.save()
-
-        update_only = ['all']
-
-        if self.is_starred:
-            update_only.append('starred')
-
-        if self.is_bookmarked:
-            update_only.append('bookmarked')
-
-        if not self.is_read:
-            update_only.append('unread')
-
-        self.update_cached_descriptors(update_only=update_only)
-
-    @property
-    def get_source(self):
-
-        if self.article.source:
-            return self.article.source
-
-        if self.subscriptions:
-            # This method displays things to the user. Don't let dead
-            # DBRefs pass through.
-            #
-            # TODO: let things pass through for administrators, though.
-            #
-            return [s for s in self.subscriptions if isinstance(s, Document)]
-
-        return self.article.get_source
-
-    @property
-    def get_source_unicode(self):
-
-        source = self.get_source
-
-        if source.__class__ in (unicode, str):
-            return source
-
-        sources_count = len(source)
-
-        if sources_count > 2:
-            return _(u'Multiple sources ({0} feeds)').format(sources_count)
-
-        return u' / '.join(x.name for x in source)
-
-    @classmethod
-    def signal_post_save_handler(cls, sender, document,
-                                 created=False, **kwargs):
-
-        read = document
-
-        if created:
-            if read._db_name != settings.MONGODB_NAME_ARCHIVE:
-                read_post_create_task.delay(read.id)
-
-    def post_create_task(self):
-        """ Method meant to be run from a celery task. """
-
-        self.rating = self.article.default_rating
-
-        self.set_subscriptions(commit=False)
-
-        self.save()
-
-        self.update_cached_descriptors()
-
-    def __unicode__(self):
-        return _(u'{0}∞{1} (#{2}) {3} {4}').format(
-            self.user, self.article, self.id,
-            _p(u'adjective', u'read')
-                if self.is_read else _p(u'adjective', u'unread'), self.rating)
-
-    def set_subscriptions(self, commit=True):
-        # @all_subscriptions, because here internal feeds count.
-        user_feeds         = [sub.feed for sub in self.user.all_subscriptions]
-        article_feeds      = [feed for feed in self.article.feeds
-                              if feed in user_feeds]
-
-        # HEADS UP: searching only for feed__in=article_feeds will lead
-        # to have other user's subscriptions attached to the read.
-        # Harmless but very confusing.
-        self.subscriptions = list(Subscription.objects(
-                                  feed__in=article_feeds,
-                                  user=self.user))
-
-        if commit:
-            self.save()
-
-            # TODO: only for the new subscriptions.
-            #self.update_cached_descriptors( … )
-
-        return self.subscriptions
-
-    @property
-    def title(self):
-
-        article = self.article
-        feed    = article.feed
-
-        if feed:
-            source = _(u' ({feed})').format(feed=feed.name)
-
-        else:
-            source = u''
-
-        return _(u'{title}{source}').format(title=article.title,
-                                            source=source)
-
-    def remove_tags(self, tags=[]):
-        """ If the user remove his own tags from a Read, it will get back the
-            default tags from the article it comes from. """
-
-        if tags:
-            for tag in Tag.get_tags_set(tags, origin=self):
-                self.update(pull__tags=tag)
-
-            self.safe_reload()
-
-        if self.tags == []:
-            self.tags = self.article.tags.copy()
-            self.save()
-            # NO update_cached_descriptors() here.
-
-    def add_tags(self, tags):
-
-        for tag in Tag.get_tags_set(tags, origin=self):
-            self.update(add_to_set__tags=tag)
-
-        self.safe_reload()
-        # NO update_cached_descriptors() here.
-
-    # ————————————————————————————————————————————— update subscriptions caches
 
     def is_read_changed(self):
 

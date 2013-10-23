@@ -799,7 +799,9 @@ def toggle(request, klass, oid, key):
 def import_web_pages(request):
 
     if request.POST:
-        form = WebPagesImportForm(request.POST, user=request.user.mongo)
+        form = WebPagesImportForm(request.POST,
+                                  # This is our own kwargs parameter.
+                                  request=request)
 
         if form.is_valid():
             created, failed = form.save()
