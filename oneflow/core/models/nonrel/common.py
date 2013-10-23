@@ -33,6 +33,7 @@
 """
 
 import os
+import sys
 import errno
 import logging
 import requests
@@ -41,11 +42,13 @@ from statsd import statsd
 from operator import attrgetter
 from constance import config
 
+from mongoengine import Q
+
 from django.conf import settings
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
 
-#from ....base.utils.dateutils import benchmark
+from ....base.utils.dateutils import benchmark
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••• constants and setup
 
@@ -154,6 +157,63 @@ class DocumentHelperMixin(object):
             LOGGER.exception(u'Exception while getting %s #%s',
                              cls.__name__, oid)
             raise
+
+    @classmethod
+    def check_temporary_defect(cls, defect_name, limit=None, progress=None):
+
+        if limit is None:
+            # Don't let "Cursor … invalid at server" errors stop us.
+            limit = 10000
+
+        if progress is None:
+            progress = 100
+
+        if hasattr(cls, defect_name) and hasattr(cls, defect_name + '_done'):
+
+            Q1_params  = {defect_name + '_done__exists': False}
+            Q2_params  = {defect_name + '_done': False}
+            done_count = 0
+
+            def get_count():
+                return cls.objects(Q(**Q1_params)
+                                   | Q(**Q2_params)).no_cache().count()
+
+            def get_documents_with_limit():
+                return cls.objects(Q(**Q1_params)
+                                   | Q(**Q2_params)).limit(limit).no_cache()
+
+            LOGGER.info(u'Counting initial `%s` defects on %s…',
+                        defect_name, cls.__name__)
+
+            count = get_count()
+
+            LOGGER.info(u'Starting check of %s %s against `%s` (each dot: '
+                        u'%s done)…', count, cls.__name__,
+                        defect_name, progress)
+
+            with benchmark(u'Check %s %s against %s' % (
+                           count, cls.__name__, defect_name)):
+
+                while count > 0:
+                    with benchmark(u'Sub-check %s %s against `%s`' % (limit,
+                                   cls.__name__, defect_name)):
+                        for document in get_documents_with_limit():
+                            getattr(document, defect_name)()
+
+                            done_count += 1
+
+                            if done_count % progress == 0:
+                                sys.stderr.write(u'.')
+                                sys.stderr.flush()
+
+                                if done_count % limit == 0:
+                                    sys.stderr.write(u'\n')
+
+                        count = get_count()
+
+        else:
+            LOGGER.error(u'Defect `%s` has not the required class '
+                         u'attributes on %s.', defect_name, cls.__name__)
 
     def register_duplicate(self, duplicate, force=False):
 
