@@ -672,11 +672,11 @@ def global_checker_task(*args, **kwargs):
         # HEADS UP: all subtasks are immutable, we just want them to run
         # chained to avoid dead times, without any link between them.
 
-        # begin by archiving everything we can, for subsequent
-        # tasks to work on the smallest documents-set possible.
+        # Begin by checking duplicates and archiving as much as we can,
+        # for next tasks to work on the smallest-possible objects set.
+        global_duplicates_checker.si(),
         archive_documents.si(),
 
-        global_duplicates_checker.si(),
         global_subscriptions_checker.si(),
         global_reads_checker.si(),
     )
