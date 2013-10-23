@@ -170,9 +170,10 @@ class DocumentHelperMixin(object):
 
         if hasattr(cls, defect_name) and hasattr(cls, defect_name + '_done'):
 
-            Q1_params  = {defect_name + '_done__exists': False}
-            Q2_params  = {defect_name + '_done': False}
-            done_count = 0
+            Q1_params    = {defect_name + '_done__exists': False}
+            Q2_params    = {defect_name + '_done': False}
+            done_count   = 0
+            failed_count = 0
 
             def get_count():
                 return cls.objects(Q(**Q1_params)
@@ -194,7 +195,7 @@ class DocumentHelperMixin(object):
             with benchmark(u'Check %s %s against %s' % (
                            count, cls.__name__, defect_name)):
 
-                while count > 0:
+                while count > failed_count:
                     with benchmark(u'Sub-check %s %s against `%s`' % (limit,
                                    cls.__name__, defect_name)):
                         for document in get_documents_with_limit():
@@ -203,6 +204,7 @@ class DocumentHelperMixin(object):
 
                             except:
                                 # Let's roll. One fail will not stop up.
+                                failed_count += 1
                                 sys.stderr.write(u'\n')
                                 LOGGER.exception(u'Calling %s.%s() failed '
                                                  u'on document #%s',
