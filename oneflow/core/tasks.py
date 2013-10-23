@@ -1006,7 +1006,14 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                 if extended_check:
                     try:
                         if read.subscriptions:
-                            read.check_subscriptions(force=True)
+
+                            # TODO: remove this transient check.
+                            if read.check_set_subscriptions_131004_done:
+                                read.check_subscriptions(force=True)
+
+                            else:
+                                read.check_set_subscriptions_131004()
+                                read.safe_reload()
 
                         else:
                             read.set_subscriptions()
