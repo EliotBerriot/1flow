@@ -251,7 +251,7 @@ class ArticleAdmin(admin.DocumentAdmin):
     list_display_links = ('id', 'title', )
     search_fields = ('title', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
-    ordering = ('-date_published', '-date_added', )
+    #ordering = ('-date_published', '-date_added', )
     #date_hierarchy = ('date_published', )
 
     raw_id_fields = ('tags', 'authors', 'publishers',
