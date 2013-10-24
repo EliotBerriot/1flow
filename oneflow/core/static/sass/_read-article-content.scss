@@ -123,29 +123,58 @@
     }
 }
 
-/* NOTE: .no-content must come AFTER .article-content
-        for proper CSS overriding. */
-.no-content {
+// NOTE: These must come AFTER .article-content for proper CSS overriding.
+.no-content,
+.excerpt-content {
     text-align: left;
-
     margin-top: 2em;
 
-    /* Oh my bad… the image has transparent content at the bottom.
-        As I didn't find a way to crop it (animated GIFs…), I
-        fix this directly in the hero-unit… Which is not a good
-        idea if teh image changes. Thus noticed in the template. */
-    padding-bottom: 30px;
+    h3 {
+        // cancel this from .article-content, else there is too much.
+        margin-top: 0;
+    }
 
+    // Make it take its place, else the whole block
+    // gets bigger on hover, which is bad-looking.
+    .css-hover-muted {
+        height: auto;
+    }
 
-    p {
-        /* reset the font-size from read-item
-           which is bigger, for reading. */
-        font-size: 120%;
-        margin-top: 2em;
+    &:hover {
+        .css-hover-muted {
+            opacity: 1;
+        }
     }
 
     img {
         box-shadow: none;
+        margin: 0 auto;
+    }
+}
+
+.excerpt-content {
+    // make more equilibrium between start and end spaces.
+    // eat the .article-content margin.
+    margin-bottom: -5em;
+
+    .why-no-full-content {
+        font-size: 125%;
+        margin-top: 0.5em;
+    }
+}
+
+.no-content {
+    // Oh my bad… the image has transparent content at the bottom.
+    // As I didn't find a way to crop it (animated GIFs…), I
+    // fix this directly in the hero-unit… Which is not a good
+    // idea if the image changes. Thus noticed in the template.
+    padding-bottom: 30px;
+
+    p {
+        // Reset the font-size from read-item which is bigger for reading.
+        // We are in a .hero-unit, everything is naturally bigger.
+        font-size: 120%;
+        margin-top: 2em;
     }
 }
 
