@@ -1,0 +1,33 @@
+<div class="excerpt-content">
+    <div class="row-fluid">
+        <div class="span4">
+            <p><p>
+                <img src="{{ STATIC_URL }}img/read/543bad763c8f11e3ae0020c9d083a4d1.png" />
+            </p></p>
+
+            {% comment %}
+                Image [not] courtesy of http://www.rockettshirts.com/LNR/borvoid.html
+                because the contact form gives an error 500 + 403.
+            {% endcomment %}
+
+        </div>
+        <div class="span8">
+
+            {% if content %}
+                {{ content|safe }}
+
+            {% else %}
+                {% trans "No abstract has been fetched for this article. We are sorry for that." %}
+
+            {% endif %}
+
+            <p><a href="{{ article_url }}" target="_blank" class="read-full-content">
+                {% trans 'Read the full content <span class="nowrap">on original website</span>' %}</a>&nbsp;≫
+            </p>
+            <p class="css-hover-muted muted why-no-full-content">
+                {% trans "Why isn't full content available in 1flow?" %}
+            </p>
+
+        </div>
+    </div>
+</div>

@@ -1,0 +1,17 @@
+<div class="hero-unit no-content">
+  <h2>{% trans "Non-textual content" %}</h2>
+  <p>{% with article_url=article.url %}{% blocktrans %}
+This article contains non-textual content (eg. music, video, direct image link…). 1flow cannot render it correctly yet.<br />
+Alternatively, you can <a href="{{ article_url }}" target="_blank">visualize it on the original website</a>.<br /> We are sorry for the inconvenience.
+{% endblocktrans %}{% endwith %}</p>
+
+  {% if user.is_superuser and preferences.staff.super_powers_enabled %}
+      <p>Admin stuff:<br />
+      {# —— {{ article.content|safe }} <br /> #}
+      —— Content type: {{ article.content_type }} ——<br />
+      —— Content: {{ article.content|length }} characters long ——
+      </p>
+  {% endif %}
+</div>
+
+
