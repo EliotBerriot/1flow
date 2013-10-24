@@ -47,10 +47,15 @@ urlpatterns = patterns(
     url(_(r'^skip-welcome-beta/$'), login_required(
         never_cache(views.skip_welcome_beta)), name='skip_welcome_beta'),
 
-    # This is the individual preference toggling.
+    # This is the individual preference assignment.
     url(_(r'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
         login_required(never_cache(views.set_preference)),
         name='set_preference'),
+
+    # This is the individual preference toggling.
+    url(_(r'^preference/toggle/(?P<base>\w+)[\./](?P<sub>\w+)/?$'),
+        login_required(never_cache(views.preference_toggle)),
+        name='preference_toggle'),
 
     # This is the user preferences view, where he can change them graphically.
     url(_(r'^preferences/$'), login_required(never_cache(views.preferences)),
