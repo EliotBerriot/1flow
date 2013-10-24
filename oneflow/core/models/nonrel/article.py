@@ -198,11 +198,6 @@ class Article(Document, DocumentHelperMixin):
 
     image_url     = StringField(verbose_name=_(u'image URL'))
 
-    # TODO: remove abstract in favor of exerpt
-    abstract      = StringField(verbose_name=_(u'abstract'),
-                                help_text=_(u'Small exerpt of content, '
-                                            u'if applicable.'))
-
     excerpt       = StringField(verbose_name=_(u'Excerpt'),
                                 help_text=_(u'Small exerpt of content, '
                                             u'if applicable.'))

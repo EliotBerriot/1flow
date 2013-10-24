@@ -336,9 +336,7 @@ def article_full_content_display(article):
 
 def article_excerpt_content_display(article):
 
-    # TODO: remove "or article.abstract" when
-    # attribute rename is done in production.
-    excerpt = article.excerpt or article.abstract
+    excerpt = article.excerpt
 
     if excerpt:
         if len(excerpt) > config.READ_ARTICLE_MIN_LENGTH:

@@ -395,7 +395,7 @@ class WebPagesImportForm(forms.Form):
                     article_needs_save = True
 
                 if readability_object['article__excerpt']:
-                    article.abstract   = readability_object['article__excerpt']
+                    article.excerpt    = readability_object['article__excerpt']
                     article_needs_save = True
 
                 if article_needs_save:

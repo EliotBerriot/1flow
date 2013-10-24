@@ -620,7 +620,7 @@ class Feed(Document, DocumentHelperMixin):
                 # it must be language independant as much as possible.
                 title=getattr(article, 'title', u' '),
 
-                content=content, date_published=date_published,
+                excerpt=content, date_published=date_published,
                 feeds=[self], tags=tags, origin_type=ORIGIN_TYPE_FEEDPARSER)
 
         except:
