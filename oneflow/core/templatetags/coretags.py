@@ -2,10 +2,15 @@
 
 import re
 import logging
+import difflib
 
 from math import pow
 
+from constance import config
+from markdown_deux import markdown
+
 from django import template
+from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -13,7 +18,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
 
-from ..models.nonrel import Read
+from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN
 
 LOGGER = logging.getLogger(__name__)
 
@@ -288,6 +293,110 @@ def read_action_toggle_url(read):
                         any_key, u'@@KEY@@')
 
     return u'data-url-action-toggle={0}'.format(url_base)
+
+
+def article_full_content_display(article):
+
+    if article.content_type == CONTENT_TYPE_MARKDOWN:
+
+        if len(article.content) > config.READ_ARTICLE_MIN_LENGTH:
+
+            # START temporary measure.
+            # TODO: please get rid of this…
+
+            title_len = len(article.title)
+
+            transient_content = article.content
+
+            if title_len > 10:
+                search_len = title_len * 2
+
+                diff = difflib.SequenceMatcher(None,
+                                               article.content[:search_len],
+                                               article.title)
+
+                if diff.ratio() > 0.51:
+                    for blk in reversed(diff.matching_blocks):
+                        # Sometimes, last match is the empty string… Skip it.
+                        if blk[-1] != 0:
+                            transient_content = article.content[
+                                                        blk[0] + blk[2]:]
+                            break
+
+            # END temporary measure.
+
+            try:
+                return markdown(transient_content)
+
+            except Exception:
+                LOGGER.exception(u'Live Markdown to HTML conversion '
+                                 u'failed for article %s', article)
+                return None
+
+
+def article_excerpt_content_display(article):
+
+    # TODO: remove "or article.abstract" when
+    # attribute rename is done in production.
+    excerpt = article.excerpt or article.abstract
+
+    if excerpt:
+        if len(excerpt) > config.READ_ARTICLE_MIN_LENGTH:
+            # HTML content…
+            # if re.search(r'<[^>]+>', excerpt):
+
+            return excerpt
+
+            # try:
+            #     return markdown(excerpt)
+            # except Exception:
+            #     LOGGER.exception(u'Live Markdown to HTML conversion '
+            #                      u'failed for article %s', article)
+            #     return None
+
+    #
+    # Now, if we don't have any excerpt, just cut down the content a lot
+    # to be sure WE are not cut down by repressive laws from another age.
+    #
+
+    if article.content_type == CONTENT_TYPE_MARKDOWN:
+
+        try:
+            # Save it for next time / user to cool CPU usage.    save=True
+            return article.make_excerpt()
+
+        except Exception:
+            LOGGER.exception(u'Live Markdown to HTML conversion '
+                             u'failed for article %s', article)
+            return None
+
+
+@register.inclusion_tag('snippets/read/read-content.html', takes_context=True)
+def read_content(context, read, django_user):
+
+    user_prefs = read.user.preferences
+
+    if django_user.is_superuser and user_prefs.staff.super_powers_enabled:
+        content = article_full_content_display(read.article)
+        excerpt = False
+
+    else:
+        content = article_excerpt_content_display(read.article)
+        excerpt = True
+
+    return {
+        # Make these up, because the context is not forwarded
+        # to the final template. And that's a Django feature.
+        # http://stackoverflow.com/q/5842538/654755
+        'article_url': read.article.url,
+        'STATIC_URL': settings.STATIC_URL,
+
+        # We don't mark_safe() here, else mark_safe(None) outputs "None"
+        # in the templates, and "if content" tests fail because content
+        # is "None" instead of plain `None`.
+        'content': content,
+        'excerpt': excerpt
+    }
 
 
 @register.inclusion_tag('snippets/read/read-action.html')

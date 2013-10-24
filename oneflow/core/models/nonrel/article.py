@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-import difflib
 import logging
 import feedparser
 
@@ -198,9 +197,16 @@ class Article(Document, DocumentHelperMixin):
                                  default=u'ltr', max_length=3)
 
     image_url     = StringField(verbose_name=_(u'image URL'))
+
+    # TODO: remove abstract in favor of exerpt
     abstract      = StringField(verbose_name=_(u'abstract'),
                                 help_text=_(u'Small exerpt of content, '
                                             u'if applicable.'))
+
+    excerpt       = StringField(verbose_name=_(u'Excerpt'),
+                                help_text=_(u'Small exerpt of content, '
+                                            u'if applicable.'))
+
     content       = StringField(default=CONTENT_NOT_PARSED,
                                 verbose_name=_(u'Content'),
                                 help_text=_(u'Article content'))
@@ -335,38 +341,6 @@ class Article(Document, DocumentHelperMixin):
         return u' / '.join(x.name for x in source)
 
     @property
-    def content_display(self):
-
-        if len(self.content) > config.READ_ARTICLE_MIN_LENGTH:
-
-            # TODO: temporary measure, please get rid of this…
-
-            title_len  = len(self.title)
-
-            transient_content = self.content
-
-            if title_len > 10:
-                search_len = title_len * 2
-
-                diff = difflib.SequenceMatcher(None,
-                                               self.content[:search_len],
-                                               self.title)
-
-                if diff.ratio() > 0.51:
-                    for blk in reversed(diff.matching_blocks):
-                        # Sometimes, last match is the empty string… Skip it.
-                        if blk[-1] != 0:
-                            transient_content = self.content[blk[0] + blk[2]:]
-                            break
-
-            try:
-                return markdown(transient_content)
-
-            except Exception:
-                LOGGER.exception(u'Live Markdown to HTML conversion '
-                                 u'failed for article %s', self)
-
-    @property
     def original_data(self):
         try:
             return OriginalData.objects.get(article=self)
@@ -391,6 +365,104 @@ class Article(Document, DocumentHelperMixin):
 
         else:
             od.save()
+
+    def make_excerpt(self, save=False):
+        """ This method assumes a markdown content. Test it before calling.
+
+            References:
+
+            http://fr.wikipedia.org/wiki/Droit_de_courte_citation
+        """
+
+        if self.content:
+            content_length = len(self.content)
+
+            if content_length < config.READ_ARTICLE_MIN_LENGTH:
+                return None
+
+            min_threshold = config.EXCERPT_PARAGRAPH_MIN_LENGTH
+            ten_percent   = content_length / 10
+            paragraphs    = [p for p in self.content.split('\n') if p]
+            skipped_text  = False
+
+            for index, paragraph in enumerate(paragraphs):
+                paragraph = paragraph.strip()
+
+                if paragraph.startswith(u'[') or paragraph.startswith(u'!['):
+                    continue
+
+                if len(paragraph) < min_threshold:
+                    skipped_text = True
+                    continue
+
+                retest_lenght = True
+
+                # Strip out images, then links, if any.
+                # Striping images before links is mandatory to
+                # avoid RE clash on images contained in links.
+                try:
+                    paragraph = re.sub(ur'\![[]([^]]+)[]][(][^)]+[)]',
+                                       # Don't miss the “r” on repl,
+                                       # else \1 group doesn't work.
+                                       ur'\1', paragraph)
+                except IndexError:
+                    # No image.
+                    pass
+
+                try:
+                    paragraph = re.sub(ur'[[]([^]]+)[]][(][^)]+[)]',
+                                       # Don't miss the “r” on repl,
+                                       # else \1 group doesn't work.
+                                       ur'\1', paragraph)
+                except IndexError:
+                    # No link found in this paragraph.
+                    retest_lenght = False
+
+                try:
+                    while paragraph[0] == u'#':
+                        paragraph = paragraph[1:]
+
+                except IndexError:
+                    # The paragraph is empty.
+                    continue
+
+                # Re-test the length now that we don't have any link anymore.
+                if retest_lenght and len(paragraph) < min_threshold:
+                    skipped_text = True
+                    continue
+
+                while len(paragraph) > ten_percent:
+                    paragraph = u' '.join(paragraph.split(u' ')[:-1])
+
+                try:
+                    final_excerpt = markdown(paragraph).strip()
+
+                except:
+                    return None
+
+                else:
+                    if skipped_text:
+                        if final_excerpt.startswith(u'<p>'):
+                            final_excerpt = final_excerpt[3:]
+
+                        # Beware the intended ending space
+                        final_excerpt = (u'<p><span class="muted">[…]</span> '
+                                         + final_excerpt)
+
+                    if index < len(paragraphs):
+                        if final_excerpt.endswith(u'</p>'):
+                            final_excerpt = final_excerpt[:-4]
+
+                        # Beware the intended starting space
+                        final_excerpt += u' <span class="muted">[…]</span></p>'
+
+                    if save:
+                        self.excerpt = final_excerpt
+                        self.save()
+
+                    return final_excerpt
+
+        return None
 
     def absolutize_url_must_abort(self, force=False, commit=True):
 

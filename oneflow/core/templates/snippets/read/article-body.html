@@ -21,23 +21,9 @@
   <div class="read-content-wrapper {{ read_in_list|yesno:'hide,' }}"
       id="content-{{ read.id }}">
     <div class="article-content ">
-        {% if article.content_type == 3 %}
-          {% with content=article.content_display %}
-            {% if content %}
-              {{ content|safe }}
-            {% else %}
-              {% include 'snippets/read/no-content.html' %}
 
-            {% endif %}
-          {% endwith %}
+      {% read_content read user %}
 
-        {% elif article.content_type == 1 %}
-              {% include 'snippets/read/not-safe.html' %}
-
-        {% else %}
-          {% include 'snippets/read/no-content.html' %}
-
-        {% endif %}
     </div><!-- .article-content -->
 
     <div class="end-meta clicker-muter-constrainer">

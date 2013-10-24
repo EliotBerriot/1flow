@@ -168,6 +168,13 @@ CONSTANCE_CONFIG = {
                              u'`is_good` attribute. Default: let it run '
                              u'(=enabled).')),
 
+    # ——————————————————————————————————————————————————————— Exerpt generation
+
+    'EXCERPT_PARAGRAPH_MIN_LENGTH': (64, ugettext(u'Number of characters '
+                                     u'below which a paragraph does not '
+                                     u'have enough data (words) to be '
+                                     u'considered informational.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••• Google Reader Import
 
     # GR_LOAD_LIMIT * GR_WAVE_LIMIT must equals GR_MAX_ARTICLES:
