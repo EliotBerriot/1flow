@@ -14,66 +14,6 @@
       {% if user.is_authenticated %}
         <ul class="nav pull-right">
 
-          {% if user.is_staff or user.is_superuser %}
-            {# Life or Death: do not hide, even if not super_powers_enabled #}
-
-            {% if MAINTENANCE_MODE %}
-              <li>
-                <a href="#" disabled="disabled">
-                  <span class="badge badge-warning badge-beta"><i
-                      class="icon-cogs icon-2x"></i> {% trans "Maintenance" %}</span>
-                </a>
-              </li>
-
-            {% endif %}
-
-            {% if preferences.staff.super_powers_enabled %}
-
-              <li id="system-informations" class="visible-desktop"><a href="#"
-                data-toggle="popover" data-placement="bottom"
-                data-original-title="System Informations" data-html="true"
-                data-content="
-              <table class='table table-hover table-stripped table-condensed'>
-                <!--<thead>
-                  <tr>
-                    <th>Setting</th>
-                    <th>Value</th>
-                  </tr>
-                </thead>-->
-                <tbody>
-                  <tr>
-                    <td>PostgreSQL</td>
-                    <td>{{settings.DATABASES.default.HOST}}
-                      <strong>{{settings.DATABASES.default.NAME}}</strong></td>
-                  </tr>
-                  <tr>
-                    <td>MongoDB</td>
-                    <td>{{settings.MONGODB_HOST}}
-                      <strong>{{settings.MONGODB_NAME}}</strong></td>
-                  </tr>
-                  <tr>
-                    <td>Mongo Archive</td>
-                    <td>{{settings.MONGODB_HOST_ARCHIVE}}
-                      <strong>{{settings.MONGODB_NAME_ARCHIVE}}</strong></td>
-                  </tr>
-                  <tr>
-                    <td></td>
-                    <td></td>
-                  </tr>
-                </tbody>
-              </table>"
-                >v{{ VERSION }}</a></li>
-
-                <script type="text/javascript">
-                $(document).ready(function(){
-                  $("#system-informations").popover();
-                });
-                </script>
-
-            {% endif %}
-
-          {% endif %}
-
           {# nowrap is necessary, else the username gets to next line on Safari+iPad@portrait #}
           <li class="dropdown nowrap">
             <a class="dropdown-toggle {% reverse_active 'profile' %} {% reverse_active 'preferences' %}"
@@ -159,6 +99,110 @@
               </form>
           </li>
 
+        </ul>
+        <ul class="nav pull-right">
+
+
+          {% if user.is_staff or user.is_superuser %}
+            {# Life or Death: do not hide, even if not super_powers_enabled #}
+
+            {% if MAINTENANCE_MODE %}
+              <li>
+                <a href="#" disabled="disabled">
+                  <span class="badge badge-warning badge-beta"><i
+                      class="icon-cogs icon-2x"></i> {% trans "Maintenance" %}</span>
+                </a>
+              </li>
+
+            {% endif %}
+
+            {% if preferences.staff.super_powers_enabled %}
+
+              <li id="system-informations" class="visible-desktop"><a href="#"
+                data-toggle="popover" data-placement="bottom"
+                data-original-title="System Informations" data-html="true"
+                data-content="
+              <table class='table table-hover table-stripped table-condensed'>
+                <!--<thead>
+                  <tr>
+                    <th>Setting</th>
+                    <th>Value</th>
+                  </tr>
+                </thead>-->
+                <tbody>
+                  <tr>
+                    <td>PostgreSQL</td>
+                    <td>{{settings.DATABASES.default.HOST}}
+                      <strong>{{settings.DATABASES.default.NAME}}</strong></td>
+                  </tr>
+                  <tr>
+                    <td>MongoDB</td>
+                    <td>{{settings.MONGODB_HOST}}
+                      <strong>{{settings.MONGODB_NAME}}</strong></td>
+                  </tr>
+                  <tr>
+                    <td>Mongo Archive</td>
+                    <td>{{settings.MONGODB_HOST_ARCHIVE}}
+                      <strong>{{settings.MONGODB_NAME_ARCHIVE}}</strong></td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                </tbody>
+              </table>"
+                >v{{ VERSION }}</a></li>
+
+                <script type="text/javascript">
+                $(document).ready(function(){
+                  $("#system-informations").popover();
+                });
+                </script>
+
+              <li>
+                <a href="{% url 'preference_toggle' base='staff' sub='super_powers_enabled' %}">
+                  <span class="badge badge-warning">
+
+            {% else %}
+
+              <li style="opacity: 0.1">
+                <a href="{% url 'preference_toggle' base='staff' sub='super_powers_enabled' %}">
+                  <span class="badge muted">
+
+            {% endif %}{# superpowers #}
+
+                    <i class="icon-bolt"></i>
+                  </span>
+                </a>
+              </li>
+
+          {% endif %}{# superuser #}
+
+          <li class="nowrap visible-phone">
+            {% if preferences.home.read_shows == 1 %}
+                <a href="{% url 'read' %}"
+            {% else %}
+                <a href="{% url 'source_selector' %}"
+            {% endif %}
+                class="{% reverse_active 'read' %} align-icon-phone-lower">
+              <i class="icon-rss icon-2x"></i>
+            </a>
+          </li>
+
+          <li class="visible-phone nowrap">
+            <a href="{% url 'help' %}"
+                class="{% reverse_active 'help' %} align-icon-phone">
+              <i class="icon-question icon-2x"></i>
+            </a>
+          </li>
+
+          <li class="hidden-phone nowrap">
+            <a href="{% url 'help' %}"
+                class="{% reverse_active 'help' %}">
+              {% trans 'Features' %}
+            </a>
+          </li>
+
         {% else %}
           <!--
             <li><a href="#">{% trans 'About' %}</a></li>
@@ -166,29 +210,6 @@
           -->
 
         {% endif %}
-      </ul>
-
-      <ul class="nav pull-right">
-
-        <li class="nowrap visible-phone">
-          <a href="{% url 'read' %}"
-              class="{% reverse_active 'read' %} align-icon-phone-lower">
-            <i class="icon-rss icon-2x"></i>
-          </a>
-        </li>
-
-        <li class="visible-phone nowrap">
-          <a href="{% url 'help' %}"
-              class="{% reverse_active 'help' %} align-icon-phone">
-            <i class="icon-question icon-2x"></i>
-          </a>
-        </li>
-        <li class="hidden-phone nowrap">
-          <a href="{% url 'help' %}"
-              class="{% reverse_active 'help' %}">
-            {% trans 'Features' %}
-          </a>
-        </li>
       </ul>
 
     </div><!-- .container -->

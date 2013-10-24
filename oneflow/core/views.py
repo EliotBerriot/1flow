@@ -744,6 +744,20 @@ def set_preference(request, base, sub, value):
                                 reverse('home')))
 
 
+def preference_toggle(request, base, sub):
+    """ Handy for boolean preferences. """
+
+    try:
+        base_pref = getattr(request.user.mongo.preferences, base)
+        value     = not getattr(base_pref, sub)
+
+    except:
+        return HttpResponseBadRequest(u'Bad preference name or value.')
+
+    else:
+        return set_preference(request, base, sub, value)
+
+
 def toggle(request, klass, oid, key):
 
     #
