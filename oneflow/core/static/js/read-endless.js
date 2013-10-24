@@ -307,14 +307,16 @@ function toggle_content(oid, callback) {
 }
 function open_next_read() {
 
+    var $items = $('.read-list-item');
+
     function open_next_internal(which) {
 
-        var next = $("#" + which)
+        var $next = $("#" + which)
             .closest('.read-list-item')
             .next('.read-list-item');
 
-        if (next.length) {
-            toggle_content(next.attr('id'));
+        if ($next.length) {
+            toggle_content($next.attr('id'));
 
         } else {
             notify({
@@ -334,8 +336,6 @@ function open_next_read() {
             open_next_internal(last_opened);
 
         } else {
-
-            $items = $('.read-list-item');
 
             if ($items.length) {
                 notify({
