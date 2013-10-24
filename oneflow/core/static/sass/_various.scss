@@ -192,6 +192,18 @@ img.centered {
 // }
 
 .css-hover-muted {
+    // the opacity has to be changed directly
+    // in the parent &:hover definition. Just put:
+    //
+    // #whatever-you-want, .whatever-you-want {
+    //     &:hover {
+    //         .css-hover-muted {
+    //             opacity: 1;
+    //             height: auto;
+    //         }
+    //     }
+    // }
+
     @include single-transition(opacity, 0.5s, ease-out, 0.3s);
     opacity: 0;
     height: 0;
