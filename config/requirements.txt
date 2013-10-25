@@ -1,5 +1,6 @@
 -e git+https://github.com/gregmuellegger/django-reset.git@e8bbc9286849a16adcc664ef3c0943be75af90a8#egg=django_reset
 -e git+https://github.com/Karmak23/django-jsonfield.git@master#egg=jsonfield
+-e git+https://github.com/Karmak23/django-writingfield.git@master#egg=writingfield
 -e git+https://github.com/Karmak23/humanize.git@master#egg=humanize
 -e git+https://github.com/Karmak23/libgreader.git@master#egg=libgreader
 -e git+https://github.com/Karmak23/soup-strainer.git@master#egg=strainer
