@@ -13,6 +13,9 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
+#from django_markdown.widgets import MarkdownWidget
+from writingfield import FullScreenTextarea
+
 from .models.nonrel import Tag, Feed, Article, Read, CONTENT_TYPE_MARKDOWN
 from .models.reldb import HelpContent
 
@@ -239,8 +242,32 @@ class TagAdmin(admin.DocumentAdmin):
 admin.site.register(Tag, TagAdmin)
 
 
+class ArticleAdminForm(DocumentForm):
+    class Meta:
+        model = Article
+        widgets = {
+            'image_url': TextInput(attrs={'class': 'vURLField'}),
+            #'content': MarkdownWidget(attrs={'class': 'markdown-editor'}),
+            'content': FullScreenTextarea(),
+            'url_error': TextInput(attrs={'class': 'vURLField'}),
+            'content_error': TextInput(attrs={'class': 'vURLField'}),
+        }
+
+
 class ArticleAdmin(admin.DocumentAdmin):
 
+    class Media:
+        js = (settings.STATIC_URL + 'writingfield/mousetrap.min.js',
+              settings.STATIC_URL + 'writingfield/writingfield.js',)
+        css = {
+            'all': (
+                '//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css', # NOQA
+                settings.STATIC_URL + 'writingfield/writingfield.css',
+                # settings.STATIC_URL + 'admin/admin.css',
+            )
+        }
+
+    form = ArticleAdminForm
     list_display = ('id', 'title', 'language', 'url_absolute',
                     'date_published', 'tags_display',
                     'orphaned', 'duplicate_of_display',
