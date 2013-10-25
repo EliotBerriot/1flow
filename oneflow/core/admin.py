@@ -13,7 +13,7 @@ from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
 from django.core.urlresolvers import reverse
 
-from .models.nonrel import Tag, Feed, Article, CONTENT_TYPE_MARKDOWN
+from .models.nonrel import Tag, Feed, Article, Read, CONTENT_TYPE_MARKDOWN
 from .models.reldb import HelpContent
 
 from django.contrib import admin as django_admin
@@ -247,15 +247,41 @@ class ArticleAdmin(admin.DocumentAdmin):
                     'content_type_display',
                     'content_error_display',
                     'url_error_display', )
-    #list_editable = ('language', )
     list_display_links = ('id', 'title', )
     search_fields = ('title', 'slug', )
     change_list_filter_template = "admin/filter_listing.html"
-    #ordering = ('-date_published', '-date_added', )
-    #date_hierarchy = ('date_published', )
-
     raw_id_fields = ('tags', 'authors', 'publishers',
                      'source', 'duplicate_of', 'feeds', )
+    fieldsets = (
+        ('Main', {
+            'fields': (
+                'title',
+                ('language', 'text_direction', 'content_type', ),
+                'content',
+                ('word_count', 'tags', 'default_rating'),
+                ('authors', 'publishers', ),
+            ),
+        }),
+        ('URL & status', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : (
+                'url',
+                ('url_absolute', 'orphaned', 'duplicate_of'),
+                ('date_added', 'date_published', ),
+                'url_error',
+                'content_error',
+            ),
+        }),
+        ('Other', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : (
+                'image_url',
+                'slug', 'pages_urls',
+                'excerpt',
+                ('source', 'origin_type', 'comments_feed'),
+            ),
+        }),
+    )
 
     def tags_display(self, obj):
 
@@ -327,6 +353,93 @@ class ArticleAdmin(admin.DocumentAdmin):
 admin.site.register(Article, ArticleAdmin)
 
 
+class ReadAdmin(admin.DocumentAdmin):
+
+    list_display = ('id', 'article_display',
+                    'user_display',
+                    'subscriptions_display',
+                    'date_created', 'is_good',
+                    'is_read', 'date_read',
+                    'is_auto_read', 'date_auto_read', )
+    list_display_links = ('id', )
+    change_list_filter_template = "admin/filter_listing.html"
+    raw_id_fields = ('article', 'user', 'subscriptions', )
+    fieldsets = (
+        ('Main', {
+            'fields': (
+                'article',
+                ('user', 'tags', ),
+                ('is_good', 'date_created', 'rating', ),
+                ('is_read', 'date_read', ),
+                ('is_starred', 'date_starred', ),
+                ('is_bookmarked', 'date_bookmarked', 'bookmark_type'),
+                ('is_auto_read', 'date_auto_read', ),
+            ),
+        }),
+        ('Watch attributes', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : (
+                ('is_fact', 'date_fact', ),
+                ('is_number', 'date_number', ),
+                ('is_quote', 'date_quote', ),
+                ('is_prospective', 'date_prospective', ),
+                ('is_rules', 'date_rules', ),
+                ('is_analysis', 'date_analysis', ),
+                ('is_knowhow', 'date_knowhow', ),
+                ('is_knowledge', 'date_knowledge', 'knowledge_type', ),
+                ('is_fun', 'date_fun', ),
+            ),
+        }),
+    )
+
+    def user_display(self, obj):
+
+        try:
+            return u'<a href="{0}user/{1}" target="_blank">{2}</a>'.format(
+                        settings.NONREL_ADMIN, obj.user.id, obj.user.username)
+
+        except Exception, e:
+            return unicode(e)
+
+    user_display.allow_tags        = True
+    user_display.short_description = _(u'User')
+    user_display.admin_order_field = 'user'
+
+    def article_display(self, obj):
+
+        art = obj.article
+
+        try:
+            return u'<a href="{0}article/{1}" target="_blank">{2}</a>'.format(
+                        settings.NONREL_ADMIN, art.id,
+                        art.title[:40] + (art.title[:40] and u'…'))
+
+        except Exception, e:
+            return unicode(e)
+
+    article_display.allow_tags        = True
+    article_display.short_description = _(u'Article')
+    article_display.admin_order_field = 'article'
+
+    def subscriptions_display(self, obj):
+
+        try:
+            return u', '.join(u'<a href="{0}subscription/{1}" '
+                              u'target="_blank">{2}</a>'.format(
+                                  settings.NONREL_ADMIN,
+                                  sub.id, sub.name)
+                              for sub in obj.subscriptions)
+        except Exception, e:
+            return unicode(e)
+
+    subscriptions_display.allow_tags        = True
+    subscriptions_display.short_description = _(u'Subscriptions')
+    subscriptions_display.admin_order_field = 'subscriptions'
+
+
+admin.site.register(Read, ReadAdmin)
+
+
 class HorizontalCheckbox(CheckboxSelectMultiple):
     def render(self, *args, **kwargs):
         output = super(HorizontalCheckbox,
@@ -353,9 +466,18 @@ class FeedAdminForm(DocumentForm):
 
 
 class FeedAdmin(admin.DocumentAdmin):
+
+    class Media:
+        css = {
+            'all': (
+                '//netdna.bootstrapcdn.com/font-awesome/4.0.0/css/font-awesome.min.css', # NOQA
+            )
+        }
+
     form = FeedAdminForm
-    list_display = ('id', 'name', 'url_display',
+    list_display = ('id_display', 'name', 'url_display',
                     'good_for_use_display', 'restricted_display',
+                    'is_internal_display',
                     'duplicate_of_display', 'errors_display',
                     'closed_display', 'fetch_interval_display',
                     'last_fetch_display',
@@ -367,7 +489,7 @@ class FeedAdmin(admin.DocumentAdmin):
     # Doesn't work with mongoadmin yet
     #list_editable      = ('good_for_use', )
 
-    list_display_links = ('id', 'name', )
+    list_display_links = ('name', )
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
     search_fields = ('name', 'url', 'site_url', 'closed', )
     exclude = ('tags', )
@@ -386,7 +508,7 @@ class FeedAdmin(admin.DocumentAdmin):
         ('Main', {
             'fields': (('name', 'site_url', ),
                        'thumbnail_url',
-                       ('good_for_use', 'restricted', ),
+                       ('good_for_use', 'restricted', 'is_internal', ),
                        'languages',
                        'description_en', 'description_fr',
                        'notes', ),
@@ -413,13 +535,24 @@ class FeedAdmin(admin.DocumentAdmin):
     # name_display.allow_tags = True
     # name_display.admin_order_field = 'name'
 
+    def id_display(self, obj):
+
+        return (u'<a href="{0}feed/{1}" target="_blank" title="{1}"><i '
+                u'class="fa fa-barcode fa-2x"></i></a>').format(
+                    settings.NONREL_ADMIN, obj.id)
+
+    id_display.short_description = _(u'ID')
+    id_display.allow_tags = True
+    id_display.admin_order_field = 'id'
+
     def url_display(self, obj):
 
-        return (u'<a href="{0}" target="_blank" {2}>RSS</a> '
-                u'<a href="{1}" target="_blank" {1}>www</a>'.format(
+        return (u'<a href="{0}" target="_blank" {2}>'
+                u'<i class="fa fa-rss-square fa-lg fa-fw"></i></a>&nbsp;'
+                u'<a href="{1}" target="_blank" {1}>'
+                u'<i class="fa fa-globe fa-lg fa-fw"></i></a>'.format(
                     obj.url, obj.site_url,
-                    u'style="text-decoration: line-through;"'
-                    if obj.closed else ''))
+                    u'style="opacity: 0.5"' if obj.closed else u''))
 
     url_display.short_description = _(u'URLs')
     url_display.allow_tags = True
@@ -428,15 +561,14 @@ class FeedAdmin(admin.DocumentAdmin):
     def duplicate_of_display(self, obj):
 
         if obj.duplicate_of:
-            return (u'<a href="{0}feed/{1}" '
-                    u'style="cursor: pointer; font-size: 300%;" '
-                    u'target="_blank">∃</a>').format(
+            return (u'<a href="{0}feed/{1}" target="_blank"><i '
+                    u'class="fa fa-link fa-2x fa-rotate-90"></i></a>').format(
                         settings.NONREL_ADMIN, obj.duplicate_of.id)
 
         return u''
 
     duplicate_of_display.allow_tags        = True
-    duplicate_of_display.short_description = _(u'Duplicate of')
+    duplicate_of_display.short_description = _(u'Dupe of')
     duplicate_of_display.admin_order_field = 'duplicate_of'
 
     def errors_display(self, obj):
@@ -465,9 +597,17 @@ class FeedAdmin(admin.DocumentAdmin):
 
         return obj.restricted
 
-    restricted_display.short_description = _(u'Private?')
+    restricted_display.short_description = _(u'Restr.?')
     restricted_display.admin_order_field = 'restricted'
     restricted_display.boolean = True
+
+    def is_internal_display(self, obj):
+
+        return obj.restricted
+
+    is_internal_display.short_description = _(u'Sys?')
+    is_internal_display.admin_order_field = 'is_internal'
+    is_internal_display.boolean = True
 
     def good_for_use_display(self, obj):
 
@@ -544,16 +684,21 @@ class FeedAdmin(admin.DocumentAdmin):
 
     def closed_display(self, obj):
 
-        return u'<a title="{2}" href="{0}">{1}</a>'.format(
-                    reverse('feed_closed_toggle',
-                            kwargs={'feed_id': obj.id}), _(u'reopen')
-                            if obj.closed else _(u'close'),
-                            u'Closed on {0} because of: {1}'.format(
-                                obj.date_closed,
-                                obj.closed_reason) if obj.closed
-                                else _(u'The feed is open'))
+        #
+        # NOTE: using "fa-spin" on open feeds brings firefox to 100% CPU.
+        #
 
-    closed_display.short_description = _(u'Closed?')
+        return (u'<a title="{2}" href="{0}"><i class="fa {1}">'
+                u'</i></a>').format(reverse('feed_closed_toggle',
+                                            kwargs={'feed_id': obj.id}),
+                                    u'fa-power-off fa-lg'
+                                    if obj.closed else u'fa-refresh fa-2x',
+                                    u'Closed on {0} because of: {1}'.format(
+                                        obj.date_closed,
+                                        obj.closed_reason) if obj.closed
+                                    else _(u'The feed is open'))
+
+    closed_display.short_description = _(u'Run?')
     closed_display.allow_tags = True
     closed_display.admin_order_field = 'closed'
 
