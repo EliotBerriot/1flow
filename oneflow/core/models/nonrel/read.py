@@ -589,8 +589,10 @@ class Read(Document, DocumentHelperMixin):
                 raise e
 
     def __unicode__(self):
-        return _(u'{0}∞{1} (#{2}) {3} {4}').format(
-            self.user, self.article, self.id,
+        return _(u'{0}∞{1} (#{2}∞#{3}→#{4}) {5} @{6}').format(
+            self.user.username,
+            self.article.title[:40] + (self.article.title[40:] and u'…'),
+            self.user.id, self.article.id, self.id,
             _p(u'adjective', u'read')
                 if self.is_read else _p(u'adjective', u'unread'), self.rating)
 
