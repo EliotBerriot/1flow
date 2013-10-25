@@ -231,7 +231,21 @@ class User(Document, DocumentHelperMixin):
                                             self.id, self.django_user)
 
     def get_full_name(self):
-        return '%s %s' % (self.first_name, self.last_name)
+
+        if self.first_name or self.last_name:
+            return u'%s %s' % (self.first_name, self.last_name)
+
+        return self.username
+
+    @property
+    def display_name(self):
+
+        if self.firstname or self.lastname:
+            return u'{0} {1} @{2}'.format(self.firstname,
+                                          self.lastname,
+                                          self.username)
+
+        return u'@{0}'.format(self.username)
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
