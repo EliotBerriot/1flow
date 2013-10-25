@@ -437,6 +437,8 @@ INSTALLED_APPS = (
     'tastypie_mongoengine',
     'overextends',
     'redis_sessions',
+    #'django_markdown',
+    'writingfield',
     #'redisboard',
     'djcelery',
     'memcache_status',

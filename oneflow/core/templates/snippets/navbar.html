@@ -64,7 +64,7 @@
       {% endif %}
 
       <ul class="nav">
-        {% if user.is_authenticated %}
+        {% if user.is_authenticated and wizards.welcome_beta_shown %}
 
           <li class="nowrap hidden-phone">
             {% if preferences.home.read_shows == 1 %}

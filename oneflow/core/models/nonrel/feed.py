@@ -150,8 +150,7 @@ class Feed(Document, DocumentHelperMixin):
                                            u'language to help article '
                                            u'language detection if none '
                                            u'is set in articles.'))
-    date_added     = DateTimeField(default=datetime(2013, 07, 01),
-                                   verbose_name=_(u'date added'))
+    date_added     = DateTimeField(default=now, verbose_name=_(u'date added'))
     restricted     = BooleanField(default=False, verbose_name=_(u'restricted'),
                                   help_text=_(u'Is this feed available only to '
                                               u'paid subscribers on its '
