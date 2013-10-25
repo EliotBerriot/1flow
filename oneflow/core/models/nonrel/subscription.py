@@ -416,7 +416,7 @@ def User_subscriptions_by_folder_property_get(self):
     return by_folders
 
 
-def generic_check_subscriptions_method(self, extended_check=False):
+def generic_check_subscriptions_method(self, commit=True, extended_check=False):
     """ This one is used for `Read` and `User` classes. """
 
     # if not force:
@@ -441,15 +441,15 @@ def generic_check_subscriptions_method(self, extended_check=False):
             # TODO: code a not-hard-coded way to do this test,
             #       eg. get the values via class attributes?
             if my_class_name == 'Feed':
-                attrs_to_test  = [(subscription.user, 'User')]
+                attrs_to_test = [(subscription.user, 'User')]
 
             elif my_class_name == 'User':
-                attrs_to_test  = [(subscription.feed, 'Feed')]
+                attrs_to_test = [(subscription.feed, 'Feed')]
 
             else:
                 # We are a Read.
-                attrs_to_test  = [(subscription.user, 'User'),
-                                  (subscription.feed, 'Feed')]
+                attrs_to_test = [(subscription.user, 'User'),
+                                 (subscription.feed, 'Feed')]
 
             keep_it = True
 
@@ -473,7 +473,9 @@ def generic_check_subscriptions_method(self, extended_check=False):
 
     if len(to_keep) != len(self.subscriptions):
         self.subscriptions = to_keep
-        self.save()
+
+        if commit:
+            self.save()
         # No need to update cached descriptors, they should already be ok…
 
     # avoid checking supbscriptions of a read, this will dead-loop if
