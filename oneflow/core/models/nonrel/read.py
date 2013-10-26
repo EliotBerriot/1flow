@@ -870,6 +870,9 @@ def Subscription_create_read_method(self, article, verbose=True, **kwargs):
         return False
 
     except:
+        # We must not fail here, because often this method is called in
+        # a loop 'for subscription in ….subscriptions:'. All other read
+        # creations need to succeed.
         LOGGER.exception(u'Could not save read %s!', new_read)
 
     else:

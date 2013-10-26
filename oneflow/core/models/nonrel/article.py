@@ -971,7 +971,7 @@ class Article(Document, DocumentHelperMixin):
 
         return False
 
-    def fetch_content(self, force=False, commit=True):
+    def fetch_content(self, force=False, verbose=False, commit=True):
 
         # In tasks, doing this is often useful, if
         # the task waited a long time before running.
@@ -1025,7 +1025,7 @@ class Article(Document, DocumentHelperMixin):
             LOGGER.exception(u'Extraction failed for article %s.', self)
             return
 
-        self.activate_reads()
+        self.activate_reads(verbose=verbose)
 
     @property
     def is_good(self):
@@ -1053,7 +1053,14 @@ class Article(Document, DocumentHelperMixin):
     def activate_reads(self, force=False, verbose=False, extended_check=False):
 
         if self.is_good or force:
-            for read in self.bad_reads:
+
+            bad_reads = self.bad_reads
+
+            if verbose:
+                LOGGER.info(u'Article %s activating %s bad reads…',
+                            self, bad_reads.count())
+
+            for read in bad_reads:
                 try:
                     if extended_check:
                         read.check_subscriptions()
@@ -1064,11 +1071,11 @@ class Article(Document, DocumentHelperMixin):
 
                 except:
                     # During a check, we cannot activate all reads at once
-                    # if some of them have dnagling subscriptions references.
+                    # if some of them have dangling subscriptions references.
                     # But this is harmless, because they will be corrected
                     # later in the global check.
-                    LOGGER.warning(u'Activation failed for Read #%s from '
-                                   u'Article #%s.', read.id, self.id)
+                    LOGGER.exception(u'Activation failed for Read #%s from '
+                                     u'Article #%s.', read.id, self.id)
 
         else:
             if verbose:
