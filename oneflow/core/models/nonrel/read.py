@@ -221,17 +221,13 @@ class Read(Document, DocumentHelperMixin):
         #
 
         'all': {
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles')),
+            'list_headers':  (_(u'%(count)s article'),
+                              _(u'%(count)s articles')),
         },
 
         'is_unread': {
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'unread article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'unread articles')),
+            'list_headers':  (_(u'%(count)s unread article'),
+                              _(u'%(count)s unread articles')),
         },
 
         # —————————————————————————————————————————————————————————————————————
@@ -241,10 +237,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'read',
             'list_url':      _(ur'^read/read/$'),
             'do_title':      _(u'Mark as read'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'read article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'read articles')),
+            'list_headers':  (_(u'%(count)s read article'),
+                              _(u'%(count)s read articles')),
             'undo_title':    _(u'Mark as unread'),
             'do_label' :     _(u'Mark read'),
             'undo_label':    _(u'Mark unread'),
@@ -259,10 +253,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'starred',
             'list_url':      _(ur'^read/starred/$'),
             'do_title':      _(u'Star (add to favorites)'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'starred article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'starred articles')),
+            'list_headers':  (_(u'%(count)s starred article'),
+                              _(u'%(count)s starred articles')),
             'undo_title':    _(u'Remove from starred/favorites'),
             'do_label' :     pgettext_lazy(u'verb', u'Star'),
             'undo_label':    _(u'Unstar'),
@@ -277,10 +269,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'later',
             'list_url':      _(ur'^read/later/$'),
             'do_title':      _(u'Keep for reading later'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article to read later'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles to read later')),
+            'list_headers':  (_(u'%(count)s article to read later'),
+                              _(u'%(count)s articles to read later')),
             'undo_title':    _(u'Remove from reading list'),
             'do_label':      _(u'Read later'),
             'undo_label':    _(u'Do not read later'),
@@ -296,10 +286,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'facts',
             'list_url':      _(ur'^read/facts/$'),
             'do_title':      _(u'Mark as fact / important event'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article containing fact(s)'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles containing fact(s)')),
+            'list_headers':  (_(u'%(count)s article containing fact(s)'),
+                              _(u'%(count)s articles containing fact(s)')),
             'undo_title':    _(u'Remove from facts / important events'),
             'status_title':  _(u'This article contains one or '
                                u'more important facts'),
@@ -317,10 +305,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'numbers',
             'list_url':      _(ur'^read/numbers/$'),
             'do_title':      _(u'Mark as valuable number'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article containing number(s)'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles containing number(s)')),
+            'list_headers':  (_(u'%(count)s article containing number(s)'),
+                              _(u'%(count)s articles containing number(s)')),
             'undo_title':    _(u'Remove from valuable numbers'),
             'status_title':  _(u'This article contains quantified '
                                u'numbers for a watch.'),
@@ -341,10 +327,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'analysis',
             'list_url':      _(ur'^read/analysis/$'),
             'do_title':      _(u'Mark as analysis / study / research'),
-            'list_headers':  (pgettext_lazy(u'singular', u'<span id="reads-number">%(count)s</span> ' # NOQA
-                              u'analysis'),
-                              pgettext_lazy(u'plural', u'<span id="reads-number">%(count)s</span> ' # NOQA
-                                 u'analysis')),
+            'list_headers':  (pgettext_lazy(u'singular', u'%(count)s analysis'),
+                              pgettext_lazy(u'plural', u'%(count)s analysis')),
             'undo_title':    _(u'Unmark analysis / study / research'),
             'status_title':  _(u'This article contains an analysis, '
                                u'an in-depth study or a research '
@@ -366,10 +350,8 @@ class Read(Document, DocumentHelperMixin):
             'list_url':      _(ur'^read/quotes/$'),
             'do_title':      _(u'Mark as containing quote(s) from people '
                                u'you consider important'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'article containing quote(s)'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'articles containing quote(s)')),
+            'list_headers':  (_(u'%(count)s article containing quote(s)'),
+                              _(u'%(count)s articles containing quote(s)')),
             'undo_title':    _(u'Unmark as containing quotes '
                                u'(people are not famous anymore?)'),
             'status_title':  _(u'This article contains one or more quote '
@@ -390,10 +372,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'prospective',
             'list_url':      _(ur'^read/prospective/$'),
             'do_title':      _(u'Mark as prospective-related content'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'prospective article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'prospective articles')),
+            'list_headers':  (_(u'%(count)s prospective article'),
+                              _(u'%(count)s prospective articles')),
             'undo_title':    _(u'Unmark as prospective-related content'),
             'status_title':  _(u'This article contains prospective element(s) '
                                u'or must-remember hypothesis.'),
@@ -413,10 +393,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'rules',
             'list_url':      _(ur'^read/rules/$'),
             'do_title':      _(u'Mark as legal/regulations-related content'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'regulation-related article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'regulation-related articles')),
+            'list_headers':  (_(u'%(count)s regulation-related article'),
+                              _(u'%(count)s regulation-related articles')),
             'undo_title':    _(u'Unmark as legal content (overriden laws?)'),
             'status_title':  _(u'This article contains regulations/'
                                u'law/rules element(s)'),
@@ -424,11 +402,11 @@ class Read(Document, DocumentHelperMixin):
             'undo_label':    _(u'Unmark law/regul.'),
             'status_label':  _(u'regulations'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
-                                u'legal icon-flip-horizontal'),
+                                           u'legal icon-flip-horizontal'),
             'undo_icon':     pgettext_lazy(u'awesome-font icon name',
-                                u'legal icon-rotate-180'),
+                                           u'legal icon-rotate-180'),
             'status_icon':   pgettext_lazy(u'awesome-font icon name',
-                                u'legal icon-flip-horizontal'),
+                                           u'legal icon-flip-horizontal'),
         },
 
         'is_knowhow': {
@@ -438,10 +416,8 @@ class Read(Document, DocumentHelperMixin):
             'list_url':      _(ur'^read/best-practices/$'),
             'do_title':      _(u'Mark as best-practices / state of art '
                                u'content'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'best-practices article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'best-practices articles')),
+            'list_headers':  (_(u'%(count)s best-practices article'),
+                              _(u'%(count)s best-practices articles')),
             'undo_title':    _(u'Unmark as best-practices / state of art '
                                u'(has it become obsolete?)'),
             'status_title':  _(u'This article contains best-practices / '
@@ -463,10 +439,8 @@ class Read(Document, DocumentHelperMixin):
             'list_url':      _(ur'^read/knowledge/$'),
             'do_title':      _(u'Mark as a valuable piece of '
                                u'knowlegde for your brain or life'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'knowledge article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'knowledge articles')),
+            'list_headers':  (_(u'%(count)s knowledge article'),
+                              _(u'%(count)s knowledge articles')),
             'undo_title':    _(u'Unmark as neuronal-exciting '
                                u'element(s)'),
             'status_title':  _(u'This article contains a valuable '
@@ -476,7 +450,7 @@ class Read(Document, DocumentHelperMixin):
             'status_label':  _(u'knowledge'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name', u'globe'),
             'undo_icon':     pgettext_lazy(u'awesome-font icon name',
-                                u'globe icon-rotate-180'),
+                                           u'globe icon-rotate-180'),
             'status_icon':   pgettext_lazy(u'awesome-font icon name', u'globe'),
         },
 
@@ -485,10 +459,8 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'fun',
             'list_url':      _(ur'^read/fun/$'),
             'do_title':      _(u'Mark as being fun. Are you sure?'),
-            'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
-                              u'fun article'),
-                              _(u'<span id="reads-number">%(count)s</span> '
-                                u'fun articles')),
+            'list_headers':  (_(u'%(count)s fun article'),
+                              _(u'%(count)s fun articles')),
             'undo_title':    _(u'Not fun anymore, sadly.'),
             'status_title':  _(u'OMG, this thing is sooooooooo fun! LMAO!'),
             'do_label' :     _(u'Mark as fun'),
