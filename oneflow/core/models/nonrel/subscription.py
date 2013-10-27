@@ -516,7 +516,10 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
 
 Folder.subscriptions          = property(Folder_subscriptions_property_get)
 Folder.open_subscriptions     = property(Folder_open_subscriptions_property_get)
+
 Feed.subscriptions            = property(Feed_subscriptions_property_get)
+Feed.check_subscriptions      = generic_check_subscriptions_method
+
 User.subscriptions            = property(User_subscriptions_property_get)
 User.all_subscriptions        = property(User_all_subscriptions_property_get)
 User.check_subscriptions      = generic_check_subscriptions_method
