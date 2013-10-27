@@ -238,14 +238,15 @@ def special_subscription_list_with_count(user, special_name, css_classes=None):
 
 
 @register.simple_tag
-def feed_reading_list_with_count(view_name, subscription, attrname,
-                                 translation, css_classes=None,
-                                 always_show=False):
+def container_reading_list_with_count(view_name, container_type, container,
+                                      attrname, translation, css_classes=None,
+                                      always_show=False):
 
     # u'<a href="{0}" class="{1} {2} async-get" data-async-get="count">{3}'
     # u'<span class="count"></span></a>'
 
-    count = getattr(subscription, attrname + '_articles_count')
+    count      = getattr(container, attrname + '_articles_count')
+    view_name += u'_' + container_type
 
     if always_show or count > 0:
         count_as_digits = unicode(count)
@@ -271,7 +272,7 @@ def feed_reading_list_with_count(view_name, subscription, attrname,
             u'&nbsp;<span class="unread-count count muted {small}">'
             u'({count})</span></a>'
         ).format(
-            url=reverse(view_name, kwargs={'feed': subscription.id}),
+            url=reverse(view_name, kwargs={container_type: container.id}),
             class1=view_name,
             class2=css_classes or u'nowrap',
             title=(u'title="%s" data-toggle="tooltip"' %
