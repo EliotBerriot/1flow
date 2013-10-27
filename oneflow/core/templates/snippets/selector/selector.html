@@ -1,18 +1,23 @@
 <div id="header" class="clearfix">
     <div class="ctrls">
         <div class="btn-group pull-right">
-            <a href="{% url 'add_subscription' %}" class="btn">{% trans "Add a stream" %}</a>
+            <a href="{% url 'add_subscription' %}" id="add-subscription-trigger"
+                class="btn">{% trans "Add a stream" %}</a>
             <button class="btn dropdown-toggle" data-toggle="dropdown">
                 <span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
                 <li><a href="{% url 'add_subscription' %}">{% trans "Add a stream" %}</a></li>
                 <li><a href="{% url 'add_folder' %}"
-                        data-toggle="modal">{% trans "Add a folder" %}</a></li>
+                        id="add-folder-trigger"
+                        data-toggle="modal"
+                        data-target="#">{% trans "Add a folder" %}</a></li>
 
                 {% if user.is_superuser and preferences.staff.super_powers_enabled %}
-                    <li><a href="{% url 'import_web_pages' %}"
-                            data-toggle="modal">{% trans "Import web item(s)" %}</a></li>
+                    <li><a id="import-web-item-trigger"
+                            href="{% url 'import_web_pages' %}"
+                            data-toggle="modal"
+                            data-target="#">{% trans "Import web item(s)" %}</a></li>
 
                 {% else %}
                     <li class="muted not-ready" {% feature_not_ready %}>
