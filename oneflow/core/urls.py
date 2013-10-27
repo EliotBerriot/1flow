@@ -3,7 +3,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page, never_cache
-from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -29,8 +29,8 @@ read_patterns = tuple(
 # This builds all feeds and folders related URLs, and there are a lot.
 for url_trans, url_untrans in (
             # HEADS UP: sync this list with views.py
-            (_p(u'part of url regex', u'feed'), u'feed'),
-            (_p(u'part of url regex', u'folder'), u'folder')):
+            (pgettext_lazy(u'part of url regex', u'feed'), u'feed'),
+            (pgettext_lazy(u'part of url regex', u'folder'), u'folder')):
 
     suffix = u'_' + url_untrans
 
