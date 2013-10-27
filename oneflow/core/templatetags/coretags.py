@@ -255,12 +255,12 @@ def feed_reading_list_with_count(view_name, subscription, attrname,
 
         if len(count_as_digits) > 6:
             small_class     = u'small'
-            count_as_digits = count_as_digits[0] + unicode(_(u'M+'))
+            count_as_digits = count_as_digits[:-6] + unicode(_(u'M+'))
             add_title       = True
 
         elif len(count_as_digits) > 3:
             small_class     = u'small'
-            count_as_digits = count_as_digits[0] + unicode(_(u'k+'))
+            count_as_digits = count_as_digits[:-3] + unicode(_(u'k+'))
             add_title       = True
 
         elif len(count_as_digits) > 2:
