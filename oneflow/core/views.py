@@ -431,16 +431,16 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
     #LOGGER.info(query_kwargs)
 
     if kwargs.get('all', False):
-        attr_name = 'all_articles_count'
+        attr_name = u'all_articles_count'
 
     elif query_kwargs.get('is_starred', False):
-        attr_name = 'starred_articles_count'
+        attr_name = u'starred_articles_count'
 
     elif query_kwargs.get('is_bookmarked', False):
-        attr_name = 'bookmarked_articles_count'
+        attr_name = u'bookmarked_articles_count'
 
     elif query_kwargs.get('is_read__ne', None) is True:
-        attr_name = 'unread_articles_count'
+        attr_name = u'unread_articles_count'
 
     if attr_name:
         if subscription:
@@ -449,8 +449,8 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
             if current_count != count:
                 LOGGER.info(u'Setting Subscription#%s.%s=%s for '
                             u'Read.%s (old was: %s).',
-                            subscription.id, attr_name, count, query_kwargs,
-                            current_count, )
+                            subscription.id, attr_name, count,
+                            unicode(query_kwargs), current_count, )
 
                 # subscription is really a nonrel.subscription
                 setattr(subscription, attr_name, count)
