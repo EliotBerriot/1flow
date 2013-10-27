@@ -191,8 +191,20 @@ $folder-border-width-default: 2px;
         color: rgba(44, 55, 66, $subscription-opacity-default);
         padding: 0 0.5em 0.5em;
 
+        .links.css-hover-muted {
+            // reset the font-size so it's not as huge as title.
+            font-size: 16px;
+            font-family: inherit;
+            height: auto;
+        }
+
         &:hover {
             .css-hover-muted {
+                opacity: 1;
+                height: auto;
+            }
+
+            .links.css-hover-muted {
                 opacity: 1;
                 height: auto;
             }
@@ -379,10 +391,8 @@ $folder-border-width-default: 2px;
     }
 }
 
+.folder,
 .subscription {
-    position: relative;
-    float: left;
-
     a {
         color: $subscription-link-color;
         text-decoration: none;
@@ -391,6 +401,22 @@ $folder-border-width-default: 2px;
             color: $subscription-link-hover;
         }
     }
+
+    .links {
+
+        a {
+            padding: 0 4px;
+        }
+
+        .count.small {
+            font-size: 80%;
+        }
+    }
+}
+
+.subscription {
+    position: relative;
+    float: left;
 
     min-height: $subscription-image-size;
 
@@ -456,14 +482,6 @@ $folder-border-width-default: 2px;
         position: absolute;
         top: $subscription-name-height + $subscription-padding;
         left: $subscription-image-size + $subscription-padding * 2;
-
-        a {
-            padding: 0 4px;
-        }
-
-        .count.small {
-            font-size: 80%;
-        }
     }
 
     .last-updated {

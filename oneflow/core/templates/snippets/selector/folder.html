@@ -27,7 +27,15 @@
             {% endif %}
 
             {# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}
+
+            <div class="links css-hover-muted">
+                {% container_reading_list_with_count 'read' 'folder' folder 'unread' _('unread') %}
+                {% container_reading_list_with_count 'read_later' 'folder' folder 'bookmarked' _('for later') %}
+                {% container_reading_list_with_count 'read_starred' 'folder' folder 'starred' _('starred') %}
+                {% container_reading_list_with_count 'read_all' 'folder' folder 'all' _('all') %}
+            </div>
         </div>
+
         {# Operators priorities https://docs.djangoproject.com/en/dev/ref/templates/builtins/#boolean-operators #}
         {% if folder.open_subscriptions or show_closed_streams and folder.subscriptions %}
             <div class="subscriptions clearfix level-{{ level }}">

@@ -76,32 +76,53 @@ if settings.TEMPLATE_DEBUG:
 #
 
 
-def read_all_feed_with_endless_pagination(request, **kwargs):
-
-    kwargs[u'all'] = True
-    return read_with_endless_pagination(request, **kwargs)
-
-
 def read_feed_with_endless_pagination(request, **kwargs):
 
     kwargs.update({'is_read': False})  # , 'is_bookmarked': False})
     return read_with_endless_pagination(request, **kwargs)
 
 
-def make_read_wrapper(attrkey, view_name):
+def read_all_feed_with_endless_pagination(request, **kwargs):
+
+    kwargs[u'all'] = True
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def read_folder_with_endless_pagination(request, **kwargs):
+
+    kwargs.update({'is_read': False})  # , 'is_bookmarked': False})
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def read_all_folder_with_endless_pagination(request, **kwargs):
+
+    kwargs[u'all'] = True
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def make_read_wrapper(attrkey, typekey, view_name):
     """ See http://stackoverflow.com/a/3431699/654755 for why."""
 
     def func(request, **kwargs):
         kwargs[attrkey] = True
         return read_with_endless_pagination(request, **kwargs)
 
-    globals()['read_{0}_feed_with_endless_pagination'.format(view_name)] = func
+    final_func_name = 'read_{0}_{1}_with_endless_pagination'.format(view_name,
+                                                                    typekey)
+
+    #LOGGER.info(u'registered %s', final_func_name)
+
+    globals()[final_func_name] = func
 
 
-# This builds "read_later_feed_with_endless_pagination" and so on.
+# This builds "read_later_feed_with_endless_pagination",
+# 'read_later_folder_with_endless_pagination' and so on.
+
 for attrkey, attrval in Read.status_data.items():
-    if 'list_url_feed' in attrval:
-        make_read_wrapper(attrkey, attrval.get('view_name'))
+    if 'list_url' in attrval:
+        # HEADS UP: sync the second argument with urls.py
+        make_read_wrapper(attrkey, 'feed', attrval.get('view_name'))
+        make_read_wrapper(attrkey, 'folder', attrval.get('view_name'))
 
 
 # —————————————————————————————————————————————————————————————— Home / Sources
@@ -431,16 +452,16 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
     #LOGGER.info(query_kwargs)
 
     if kwargs.get('all', False):
-        attr_name = 'all_articles_count'
+        attr_name = u'all_articles_count'
 
     elif query_kwargs.get('is_starred', False):
-        attr_name = 'starred_articles_count'
+        attr_name = u'starred_articles_count'
 
     elif query_kwargs.get('is_bookmarked', False):
-        attr_name = 'bookmarked_articles_count'
+        attr_name = u'bookmarked_articles_count'
 
     elif query_kwargs.get('is_read__ne', None) is True:
-        attr_name = 'unread_articles_count'
+        attr_name = u'unread_articles_count'
 
     if attr_name:
         if subscription:
@@ -449,8 +470,8 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
             if current_count != count:
                 LOGGER.info(u'Setting Subscription#%s.%s=%s for '
                             u'Read.%s (old was: %s).',
-                            subscription.id, attr_name, count, query_kwargs,
-                            current_count, )
+                            subscription.id, attr_name, count,
+                            unicode(query_kwargs), current_count, )
 
                 # subscription is really a nonrel.subscription
                 setattr(subscription, attr_name, count)

@@ -704,20 +704,30 @@ function handle_modal(e) {
 
                 $('body').addClass('modal-open');
 
-                console.log('SETUP');
                 setup_everything($(this));
-
-                //$('input:visible:enabled:first').focus();
-                //$first_input.select();
 
                 var $first_input = $('input:visible:enabled').first();
 
-                $first_input.focus(function() {
-                    // OMG. Thanks http://stackoverflow.com/a/10576409/654755
-                    this.selectionStart = this.selectionEnd = this.value.length;
-                });
+                if ($first_input.length) {
 
-                $first_input.focus();
+                    $first_input.focus(function() {
+                        // OMG. Thanks http://stackoverflow.com/a/10576409/654755
+                        this.selectionStart = this.selectionEnd = this.value.length;
+                    });
+
+                    $first_input.focus();
+
+                } else {
+                    // If there is no input, try with textarea.
+                    // For example in the web import form…
+
+                    var $first_textarea = $('textarea:visible:enabled').first();
+                    if ($first_textarea.length) {
+
+                        $first_textarea.focus();
+                    }
+                }
+
 
             }).on('hidden', function () {
 

@@ -29,10 +29,10 @@
         </div>
 
         <div class="links css-hover-muted">
-            {% feed_reading_list_with_count 'read_feed' subscription 'unread' _('unread') %}
-            {% feed_reading_list_with_count 'read_later_feed' subscription 'bookmarked' _('for later') %}
-            {% feed_reading_list_with_count 'read_starred_feed' subscription 'starred' _('starred') %}
-            {% feed_reading_list_with_count 'read_all_feed' subscription 'all' _('all') %}
+            {% container_reading_list_with_count 'read' 'feed' subscription 'unread' _('unread') %}
+            {% container_reading_list_with_count 'read_later' 'feed' subscription 'bookmarked' _('for later') %}
+            {% container_reading_list_with_count 'read_starred' 'feed' subscription 'starred' _('starred') %}
+            {% container_reading_list_with_count 'read_all' 'feed' subscription 'all' _('all') %}
         </div>
 
         <div class="name">
