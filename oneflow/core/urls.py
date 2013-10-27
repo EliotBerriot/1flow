@@ -72,56 +72,56 @@ for url_trans, url_untrans in (
 
 urlpatterns = patterns(
     'oneflow.core.views',
-    url(_(r'^home/$'), login_required(never_cache(views.home)), name='home'),
+    url(_(ur'^home/$'), login_required(never_cache(views.home)), name='home'),
 
-    url(_(r'^skip-welcome-beta/$'), login_required(
+    url(_(ur'^skip-welcome-beta/$'), login_required(
         never_cache(views.skip_welcome_beta)), name='skip_welcome_beta'),
 
     # This is the individual preference assignment.
-    url(_(r'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
+    url(_(ur'^preference/(?P<base>\w+)[\./](?P<sub>\w+)/(?P<value>\w+)/?$'),
         login_required(never_cache(views.set_preference)),
         name='set_preference'),
 
     # This is the individual preference toggling.
-    url(_(r'^preference/toggle/(?P<base>\w+)[\./](?P<sub>\w+)/?$'),
+    url(_(ur'^preference/toggle/(?P<base>\w+)[\./](?P<sub>\w+)/?$'),
         login_required(never_cache(views.preference_toggle)),
         name='preference_toggle'),
 
     # This is the user preferences view, where he can change them graphically.
-    url(_(r'^preferences/$'), login_required(never_cache(views.preferences)),
+    url(_(ur'^preferences/$'), login_required(never_cache(views.preferences)),
         name='preferences'),
 
-    url(_(r'^profile/$'), login_required(never_cache(views.profile)),
+    url(_(ur'^profile/$'), login_required(never_cache(views.profile)),
         name='profile'),
 
-    url(_(r'^read/all/$'), never_cache(views.read_with_endless_pagination),
+    url(_(ur'^read/all/$'), never_cache(views.read_with_endless_pagination),
         name='read_all', kwargs={'all': True}),
 
-    url(_(r'^read/$'), login_required(never_cache(
+    url(_(ur'^read/$'), login_required(never_cache(
         views.read_with_endless_pagination)), name='read',
         kwargs={'is_read': False}),  # , 'is_bookmarked': False}),
 
-    url(_(r'^read/([0-9a-f]{24,24})/$'),
+    url(_(ur'^read/([0-9a-f]{24,24})/$'),
         login_required(views.read_one),
         name='read_one'),
 
-    url(_(r'^selector/$'),
+    url(_(ur'^selector/$'),
         login_required(never_cache(views.source_selector)),
         name='source_selector'),
 
-    url(_(r'^folder/new/$'),
+    url(_(ur'^folder/new/$'),
         login_required(never_cache(views.manage_folder)),
         name='add_folder'),
 
-    url(_(r'^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$'),
+    url(_(ur'^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$'),
         login_required(never_cache(views.delete_folder)),
         name='delete_folder'),
 
-    url(_(r'^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$'),
+    url(_(ur'^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$'),
         login_required(never_cache(views.manage_folder)),
         name='edit_folder'),
 
-    url(_(r'^subscription/new/$'),
+    url(_(ur'^subscription/new/$'),
         login_required(never_cache(views.add_subscription)),
         name='add_subscription'),
 
@@ -129,49 +129,49 @@ urlpatterns = patterns(
     # TODO: once we have an expirable cache mechanism, switch to
     # VERY_LONG_CACHE and make it expire on feeds changes (closing,
     # creation, etc).
-    url(_(r'^json/feeds-completer/$'),
+    url(_(ur'^json/feeds-completer/$'),
         login_required(cache_page(LONG_CACHE)(
                        views.FeedsCompleterView.as_view())),
         name='feeds_completer'),
 
-    url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$'),
+    url(_(ur'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$'),
         login_required(never_cache(views.delete_subscription)),
         name='delete_subscription'),
 
-    url(_(r'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$'),
+    url(_(ur'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$'),
         login_required(never_cache(views.edit_subscription)),
         name='edit_subscription'),
 
-    url(_(r'^webimport/$'),
+    url(_(ur'^webimport/$'),
         login_required(never_cache(views.import_web_pages)),
         name='import_web_pages'),
 
-    url(_(r'^(?P<klass>\w+)/(?P<oid>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
+    url(_(ur'^(?P<klass>\w+)/(?P<oid>\w+)/toggle/(?P<key>\w+.\w+)/?$'),
         login_required(never_cache(views.toggle)), name='toggle'),
 
-    url(_(r'^help/$'), login_required(views.help), name='help'),
+    url(_(ur'^help/$'), login_required(views.help), name='help'),
 
-    url(_(r'^register/$'), views.register, name='register'),
-    url(_(r'^signin_error/$'), TemplateView.as_view(
+    url(_(ur'^register/$'), views.register, name='register'),
+    url(_(ur'^signin_error/$'), TemplateView.as_view(
         template_name='signin_error.html'), name='signin_error'),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••  Google Reader
 
-    url(_(r'^grimport/(?:(?P<user_id>\d+)/)?$'),
+    url(_(ur'^grimport/(?:(?P<user_id>\d+)/)?$'),
         login_required(views.google_reader_import),
         name='google_reader_import'),
-    url(_(r'^grstop/(?P<user_id>\d+)/$'),
+    url(_(ur'^grstop/(?P<user_id>\d+)/$'),
         staff_member_required(views.google_reader_import_stop),
         name='google_reader_import_stop'),
-    url(_(r'^grtoggle/(?P<user_id>\d+)/$'),
+    url(_(ur'^grtoggle/(?P<user_id>\d+)/$'),
         staff_member_required(views.google_reader_can_import_toggle),
         name='google_reader_can_import_toggle'),
-    url(_(r'^grstatus/$'), login_required(views.google_reader_import_status),
+    url(_(ur'^grstatus/$'), login_required(views.google_reader_import_status),
         name='google_reader_import_status'),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Staff only
 
-    url(_(r'^feed/(?P<feed_id>\w+)/close/toggle/$'),
+    url(_(ur'^feed/(?P<feed_id>\w+)/close/toggle/$'),
         staff_member_required(views.feed_closed_toggle),
         name='feed_closed_toggle'),
 
@@ -180,8 +180,8 @@ urlpatterns = patterns(
 
 urlpatterns += patterns(
     'django.contrib.auth.views',
-    url(_(r'^signin/$'), 'login',
+    url(_(ur'^signin/$'), 'login',
         {'template_name': 'signin.html'}, name='signin'),
-    url(_(r'^signout/$'), 'logout',
+    url(_(ur'^signout/$'), 'logout',
         {'template_name': 'signout.html'}, name='signout'),
 )
