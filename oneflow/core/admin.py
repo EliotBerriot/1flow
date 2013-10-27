@@ -7,7 +7,7 @@ from humanize.i18n import django_language
 from constance import config
 from django.forms import TextInput, CheckboxSelectMultiple
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.utils.safestring import mark_safe
 from django.contrib.auth import get_user_model
 from django.contrib.auth.admin import UserAdmin
@@ -96,7 +96,8 @@ class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
 
         return u'%s/%s' % (number, total)
 
-    gri_reads_display.short_description = _p(u'noun, plural', u'reads')
+    gri_reads_display.short_description = pgettext_lazy(u'noun, plural',
+                                                        u'reads')
 
     def gri_starred_display(self, obj):
 

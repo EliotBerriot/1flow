@@ -17,7 +17,7 @@ from mongoengine.fields import (StringField, BooleanField,
 from mongoengine.errors import NotUniqueError, ValidationError
 
 from django.conf import settings
-from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
 from ....base.utils.dateutils import now
 
@@ -237,7 +237,7 @@ class Read(Document, DocumentHelperMixin):
         # —————————————————————————————————————————————————————————————————————
 
         'is_read': {
-            'list_name':     _p(u'past participle, plural', u'read'),
+            'list_name':     pgettext_lazy(u'past participle, plural', u'read'),
             'view_name':     u'read',
             'list_url':      _(ur'^read/read/$'),
             'do_title':      _(u'Mark as read'),
@@ -248,9 +248,10 @@ class Read(Document, DocumentHelperMixin):
             'undo_title':    _(u'Mark as unread'),
             'do_label' :     _(u'Mark read'),
             'undo_label':    _(u'Mark unread'),
-            'status_label':  _p(u'adjective', u'read'),
-            'do_icon':       _p(u'awesome-font icon name', u'check-empty'),
-            'undo_icon':     _p(u'awesome-font icon name', u'check'),
+            'status_label':  pgettext_lazy(u'adjective', u'read'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'check-empty'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name', u'check'),
         },
 
         'is_starred': {
@@ -263,11 +264,12 @@ class Read(Document, DocumentHelperMixin):
                               _(u'<span id="reads-number">%(count)s</span> '
                                 u'starred articles')),
             'undo_title':    _(u'Remove from starred/favorites'),
-            'do_label' :     _p(u'verb', u'Star'),
+            'do_label' :     pgettext_lazy(u'verb', u'Star'),
             'undo_label':    _(u'Unstar'),
             'status_label':  _(u'starred'),
-            'do_icon':       _p(u'awesome-font icon name', u'star-empty'),
-            'undo_icon':     _p(u'awesome-font icon name', u'star'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'star-empty'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name', u'star'),
         },
 
         'is_bookmarked': {
@@ -283,8 +285,10 @@ class Read(Document, DocumentHelperMixin):
             'do_label':      _(u'Read later'),
             'undo_label':    _(u'Do not read later'),
             'status_label':  _(u'kept for later'),
-            'do_icon':       _p(u'awesome-font icon name', u'bookmark-empty'),
-            'undo_icon':     _p(u'awesome-font icon name', u'bookmark'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'bookmark-empty'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'bookmark'),
         },
 
         'is_fact': {
@@ -302,8 +306,10 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :     _(u'Mark as fact'),
             'undo_label':    _(u'Unmark fact'),
             'status_label':  _(u'fact'),
-            'do_icon':       _p(u'awesome-font icon name', u'circle-blank'),
-            'undo_icon':     _p(u'awesome-font icon name', u'bullseye'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'circle-blank'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'bullseye'),
         },
 
         'is_number': {
@@ -321,10 +327,12 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :     _(u'Mark as number'),
             'undo_label':    _(u'Unmark number'),
             'status_label':  _(u'number'),
-            'do_icon':       _p(u'awesome-font icon name', u'bar-chart'),
-            'undo_icon':     _p(u'awesome-font icon name',
-                               u'bar-chart icon-flip-horizontal'),
-            'status_icon':   _p(u'awesome-font icon name', u'bar-chart'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'bar-chart'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'bar-chart icon-flip-horizontal'),
+            'status_icon':   pgettext_lazy(u'awesome-font icon name',
+                                           u'bar-chart'),
             #'undo_icon_stack': True,
         },
 
@@ -333,9 +341,9 @@ class Read(Document, DocumentHelperMixin):
             'view_name':     u'analysis',
             'list_url':      _(ur'^read/analysis/$'),
             'do_title':      _(u'Mark as analysis / study / research'),
-            'list_headers':  (_p(u'singular', u'<span id="reads-number">%(count)s</span> ' # NOQA
+            'list_headers':  (pgettext_lazy(u'singular', u'<span id="reads-number">%(count)s</span> ' # NOQA
                               u'analysis'),
-                              _p(u'plural', u'<span id="reads-number">%(count)s</span> ' # NOQA
+                              pgettext_lazy(u'plural', u'<span id="reads-number">%(count)s</span> ' # NOQA
                                  u'analysis')),
             'undo_title':    _(u'Unmark analysis / study / research'),
             'status_title':  _(u'This article contains an analysis, '
@@ -344,10 +352,12 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :     _(u'Mark as analysis'),
             'undo_label':    _(u'Unmark analysis'),
             'status_label':  _(u'analysis'),
-            'do_icon':       _p(u'awesome-font icon name', u'beaker'),
-            'undo_icon':     _p(u'awesome-font icon name',
-                                u'beaker icon-rotate-90'),
-            'status_icon':   _p(u'awesome-font icon name', u'beaker'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'beaker'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'beaker icon-rotate-90'),
+            'status_icon':   pgettext_lazy(u'awesome-font icon name',
+                                           u'beaker'),
         },
 
         'is_quote': {
@@ -366,12 +376,13 @@ class Read(Document, DocumentHelperMixin):
                                u'from people you care about.'),
             'do_label' :     _(u'Mark as quote'),
             'undo_label':    _(u'Unmark quote'),
-            'status_label':  _p(u'noun', u'quote'),
-            'do_icon':       _p(u'awesome-font icon name',
-                                u'quote-left icon-flip-vertical'),
-            'undo_icon':     _p(u'awesome-font icon name', u'quote-right'),
-            'status_icon':   _p(u'awesome-font icon name',
-                                u'quote-left icon-flip-vertical'),
+            'status_label':  pgettext_lazy(u'noun', u'quote'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'quote-left icon-flip-vertical'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'quote-right'),
+            'status_icon':   pgettext_lazy(u'awesome-font icon name',
+                                           u'quote-left icon-flip-vertical'),
         },
 
         'is_prospective': {
@@ -389,10 +400,12 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :     _(u'Mark as prospective'),
             'undo_label':    _(u'Unmark prospective'),
             'status_label':  _(u'prospective'),
-            'do_icon':       _p(u'awesome-font icon name', u'lightbulb'),
-            'undo_icon':     _p(u'awesome-font icon name',
-                               u'lightbulb icon-rotate-180'),
-            'status_icon':   _p(u'awesome-font icon name', u'lightbulb'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'lightbulb'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'lightbulb icon-rotate-180'),
+            'status_icon':   pgettext_lazy(u'awesome-font icon name',
+                                           u'lightbulb'),
         },
 
         'is_rules': {
@@ -410,11 +423,11 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :     _(u'Mark as law/regul.'),
             'undo_label':    _(u'Unmark law/regul.'),
             'status_label':  _(u'regulations'),
-            'do_icon':       _p(u'awesome-font icon name',
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
                                 u'legal icon-flip-horizontal'),
-            'undo_icon':     _p(u'awesome-font icon name',
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
                                 u'legal icon-rotate-180'),
-            'status_icon':   _p(u'awesome-font icon name',
+            'status_icon':   pgettext_lazy(u'awesome-font icon name',
                                 u'legal icon-flip-horizontal'),
         },
 
@@ -435,11 +448,13 @@ class Read(Document, DocumentHelperMixin):
                                u' state of art element(s).'),
             'do_label' :     _(u'Mark as best-practice'),
             'undo_label':    _(u'Unmark best-practice'),
-            'status_label':  _p(u'noun', u'know-how'),
-            'do_icon':       _p(u'awesome-font icon name', u'trophy'),
-            'undo_icon':     _p(u'awesome-font icon name',
-                                u'trophy icon-flip-vertical'),
-            'status_icon':   _p(u'awesome-font icon name', u'trophy'),
+            'status_label':  pgettext_lazy(u'noun', u'know-how'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'trophy'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'trophy icon-flip-vertical'),
+            'status_icon':   pgettext_lazy(u'awesome-font icon name',
+                                           u'trophy'),
         },
 
         'is_knowledge': {
@@ -459,10 +474,10 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :     _(u'Mark as Knowledge'),
             'undo_label':    _(u'Unmark knowlegde'),
             'status_label':  _(u'knowledge'),
-            'do_icon':       _p(u'awesome-font icon name', u'globe'),
-            'undo_icon':     _p(u'awesome-font icon name',
+            'do_icon':       pgettext_lazy(u'awesome-font icon name', u'globe'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
                                 u'globe icon-rotate-180'),
-            'status_icon':   _p(u'awesome-font icon name', u'globe'),
+            'status_icon':   pgettext_lazy(u'awesome-font icon name', u'globe'),
         },
 
         'is_fun': {
@@ -479,9 +494,9 @@ class Read(Document, DocumentHelperMixin):
             'do_label' :     _(u'Mark as fun'),
             'undo_label':    _(u'Mark as boring'),
             'status_label':  _(u'fun'),
-            'do_icon':       _p(u'awesome-font icon name', u'smile'),
-            'undo_icon':     _p(u'awesome-font icon name', u'frown'),
-            'status_icon':   _p(u'awesome-font icon name', u'smile'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name', u'smile'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name', u'frown'),
+            'status_icon':   pgettext_lazy(u'awesome-font icon name', u'smile'),
         },
     }
 
@@ -581,8 +596,10 @@ class Read(Document, DocumentHelperMixin):
             self.user.username,
             self.article.title[:40] + (self.article.title[40:] and u'…'),
             self.user.id, self.article.id, self.id,
-            _p(u'adjective', u'read')
-                if self.is_read else _p(u'adjective', u'unread'), self.rating)
+            pgettext_lazy(u'adjective', u'read')
+                if self.is_read
+                else pgettext_lazy(u'adjective', u'unread'),
+            self.rating)
 
     # —————————————————————————————————————————————————————————————— Properties
 
