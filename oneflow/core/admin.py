@@ -750,6 +750,32 @@ if settings.FULL_ADMIN:
         search_fields      = ('label', ) + name_fields_names + content_fields_names # NOQA
         ordering           = ('ordering', 'label', )
         save_as            = True
+        fieldsets = (
+            (_(u'Main'), {
+                'fields': (
+                    ('label', 'active', 'ordering', ),
+                ),
+            }),
+            (_(u'Translators notes'), {
+                'classes': ('grp-collapse grp-closed', ),
+                'fields' : (
+                    'name_nt',
+                    'content_nt',
+                )
+            }),
+            (_(u'Contents (English)'), {
+                'fields' : (
+                    'name_en',
+                    'content_en',
+                )
+            }),
+            (_(u'Contents (French)'), {
+                'fields' : (
+                    'name_fr',
+                    'content_fr',
+                )
+            }),
+        )
 
     for attr, attr_name in zip(name_fields_names,
                                name_fields_displays):
