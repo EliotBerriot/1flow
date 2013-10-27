@@ -247,7 +247,7 @@ def feed_reading_list_with_count(view_name, subscription, attrname,
 
     count = getattr(subscription, attrname + '_articles_count')
 
-    if always_show or count:
+    if always_show or count > 0:
         count_as_digits = unicode(count)
 
         small_class = u''
