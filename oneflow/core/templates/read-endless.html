@@ -11,7 +11,7 @@
         <div class="h1-wrapper">
             <div class="h1-background"></div>
             <h1 class="left-side">{{ read_page_header_text_left|safe }}</h1>
-            <h1 class="right-side">{{ read_page_header_text_right|safe }}</h1>
+            <h1 class="right-side"><span id="reads-number">{{ read_page_header_text_right|safe }}</span></h1>
         </div>
     </div>
 
@@ -92,24 +92,18 @@
 
         {% include "snippets/read/actions-messages.js.html" %}
 
-        function hide_initial_loading(show_number) {
-
-            if (typeof show_number == 'undefined') {
-                var show_number = true;
-            }
+        function hide_initial_loading() {
 
             try {
                 $(".initial-loading").stop(true, true).slideUp(function(){
-                    if (show_number) {
-                        // WARNING: do not use sole document.location.
-                        // In case of a '#' inside it will loop all the
-                        // articles in the counter span!!
-                        $.get(document.location.pathname + '?count=1',
-                            function(data){
-                                $('#reads-number').html(data);
-                            }
-                        );
-                    }
+                    // WARNING: do not use sole document.location.
+                    // In case of a '#' inside it will loop all the
+                    // articles in the counter span!!
+                    $.get(document.location.pathname + '?count=1',
+                        function(data){
+                            $('#reads-number').html(data);
+                        }
+                    );
                 }).delete();
 
             } catch (err) {
@@ -158,7 +152,7 @@
 
             if (nr_items == 0 && next_page == null) {
 
-                hide_initial_loading(false);
+                hide_initial_loading();
 
                 // no item at all in this list.
                 show_no_items();

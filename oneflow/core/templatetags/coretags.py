@@ -15,6 +15,7 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
+from cache_utils.decorators import cached
 
 from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
 
@@ -22,8 +23,12 @@ from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN
 
 LOGGER = logging.getLogger(__name__)
 
-register = template.Library()
+CACHE_ONE_HOUR  = 3600
+CACHE_ONE_DAY   = CACHE_ONE_HOUR * 24
+CACHE_ONE_WEEK  = CACHE_ONE_DAY * 7
+CACHE_ONE_MONTH = CACHE_ONE_DAY * 30
 
+register = template.Library()
 
 # http://www.christianfaur.com/color/
 # http://www.christianfaur.com/color/Site/Picking%20Colors.html
@@ -296,6 +301,7 @@ def read_action_toggle_url(read):
     return u'data-url-action-toggle={0}'.format(url_base)
 
 
+@cached(CACHE_ONE_WEEK)
 def article_full_content_display(article):
 
     if article.content_type == CONTENT_TYPE_MARKDOWN:
@@ -335,6 +341,7 @@ def article_full_content_display(article):
                 return None
 
 
+@cached(CACHE_ONE_WEEK)
 def article_excerpt_content_display(article):
 
     excerpt = article.excerpt

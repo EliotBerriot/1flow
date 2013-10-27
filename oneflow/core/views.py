@@ -473,8 +473,9 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
                             subscription.id, attr_name, count,
                             unicode(query_kwargs), current_count, )
 
-                # subscription is really a nonrel.subscription
                 setattr(subscription, attr_name, count)
+
+                # TODO: update folder with diff.
 
         elif folder:
             current_count = getattr(folder, attr_name)
@@ -485,6 +486,8 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
                             count, query_kwargs, current_count)
 
                 setattr(folder, attr_name, count)
+
+                # TODO: recount()/update all subscriptions counters…
 
         else:
             current_count = getattr(user, attr_name)
@@ -627,14 +630,39 @@ def read_with_endless_pagination(request, **kwargs):
     if request.is_ajax():
 
         if request.GET.get('count', False):
-            template = u'snippets/read/read-endless-count.html'
-            count = context[u'reads_count'] = reads.count()
+            count = reads.count()
+
+            #
+            # Check and update cache counters
+            #
 
             _rwep_ajax_update_counters(kwargs, query_kwargs,
                                        subscription, folder, user, count)
 
             if subscription:
                 _rwep_special_update_counters(subscription, user)
+
+            #
+            # prepare the "inline mini-template" for ajax update.
+            #
+
+            mode, negated = primary_mode
+
+            if mode == 'is_read' and not negated:
+                mode = 'is_unread'
+
+            singular_text, plural_text = Read.status_data[mode]['list_headers']
+
+            if count == 0:
+                rendered_text = _(u'no item')
+
+            elif count == 1:
+                rendered_text = singular_text % {'count': count}
+
+            else:
+                rendered_text = plural_text % {'count': count}
+
+            return HttpResponse(rendered_text)
 
         elif request.GET.get('mark_all_read', False):
 
