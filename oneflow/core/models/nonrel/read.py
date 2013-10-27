@@ -240,7 +240,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _p(u'past participle, plural', u'read'),
             'view_name':     u'read',
             'list_url':      _(ur'^read/read/$'),
-            'list_url_feed': _(ur'^read/read/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as read'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'read article'),
@@ -258,7 +257,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'starred'),
             'view_name':     u'starred',
             'list_url':      _(ur'^read/starred/$'),
-            'list_url_feed': _(ur'^read/starred/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Star (add to favorites)'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'starred article'),
@@ -276,7 +274,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'later'),
             'view_name':     u'later',
             'list_url':      _(ur'^read/later/$'),
-            'list_url_feed': _(ur'^read/later/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Keep for reading later'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'article to read later'),
@@ -294,7 +291,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'facts'),
             'view_name':     u'facts',
             'list_url':      _(ur'^read/facts/$'),
-            'list_url_feed': _(ur'^read/facts/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as fact / important event'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'article containing fact(s)'),
@@ -314,7 +310,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'numbers'),
             'view_name':     u'numbers',
             'list_url':      _(ur'^read/numbers/$'),
-            'list_url_feed': _(ur'^read/numbers/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as valuable number'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'article containing number(s)'),
@@ -337,7 +332,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'analysis'),
             'view_name':     u'analysis',
             'list_url':      _(ur'^read/analysis/$'),
-            'list_url_feed': _(ur'^read/analysis/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as analysis / study / research'),
             'list_headers':  (_p(u'singular', u'<span id="reads-number">%(count)s</span> ' # NOQA
                               u'analysis'),
@@ -360,7 +354,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'quotes'),
             'view_name':     u'quotes',
             'list_url':      _(ur'^read/quotes/$'),
-            'list_url_feed': _(ur'^read/quotes/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as containing quote(s) from people '
                                u'you consider important'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
@@ -385,7 +378,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'prospective'),
             'view_name':     u'prospective',
             'list_url':      _(ur'^read/prospective/$'),
-            'list_url_feed': _(ur'^read/prospective/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as prospective-related content'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'prospective article'),
@@ -407,7 +399,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'rules'),
             'view_name':     u'rules',
             'list_url':      _(ur'^read/rules/$'),
-            'list_url_feed': _(ur'^read/rules/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as legal/regulations-related content'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'regulation-related article'),
@@ -432,7 +423,6 @@ class Read(Document, DocumentHelperMixin):
             # WARNING: there  is a '_' in the view name, and a '-' in the URL.
             'view_name':     u'know_how',
             'list_url':      _(ur'^read/best-practices/$'),
-            'list_url_feed': _(ur'^read/best-practices/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as best-practices / state of art '
                                u'content'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
@@ -456,7 +446,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'knowlegde'),
             'view_name':     u'knowledge',
             'list_url':      _(ur'^read/knowledge/$'),
-            'list_url_feed': _(ur'^read/knowledge/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as a valuable piece of '
                                u'knowlegde for your brain or life'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
@@ -480,7 +469,6 @@ class Read(Document, DocumentHelperMixin):
             'list_name':     _(u'funbox'),
             'view_name':     u'fun',
             'list_url':      _(ur'^read/fun/$'),
-            'list_url_feed': _(ur'^read/fun/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'), # NOQA
             'do_title':      _(u'Mark as being fun. Are you sure?'),
             'list_headers':  (_(u'<span id="reads-number">%(count)s</span> '
                               u'fun article'),

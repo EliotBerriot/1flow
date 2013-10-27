@@ -76,32 +76,53 @@ if settings.TEMPLATE_DEBUG:
 #
 
 
-def read_all_feed_with_endless_pagination(request, **kwargs):
-
-    kwargs[u'all'] = True
-    return read_with_endless_pagination(request, **kwargs)
-
-
 def read_feed_with_endless_pagination(request, **kwargs):
 
     kwargs.update({'is_read': False})  # , 'is_bookmarked': False})
     return read_with_endless_pagination(request, **kwargs)
 
 
-def make_read_wrapper(attrkey, view_name):
+def read_all_feed_with_endless_pagination(request, **kwargs):
+
+    kwargs[u'all'] = True
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def read_folder_with_endless_pagination(request, **kwargs):
+
+    kwargs.update({'is_read': False})  # , 'is_bookmarked': False})
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def read_all_folder_with_endless_pagination(request, **kwargs):
+
+    kwargs[u'all'] = True
+    return read_with_endless_pagination(request, **kwargs)
+
+
+def make_read_wrapper(attrkey, typekey, view_name):
     """ See http://stackoverflow.com/a/3431699/654755 for why."""
 
     def func(request, **kwargs):
         kwargs[attrkey] = True
         return read_with_endless_pagination(request, **kwargs)
 
-    globals()['read_{0}_feed_with_endless_pagination'.format(view_name)] = func
+    final_func_name = 'read_{0}_{1}_with_endless_pagination'.format(view_name,
+                                                                    typekey)
+
+    #LOGGER.info(u'registered %s', final_func_name)
+
+    globals()[final_func_name] = func
 
 
-# This builds "read_later_feed_with_endless_pagination" and so on.
+# This builds "read_later_feed_with_endless_pagination",
+# 'read_later_folder_with_endless_pagination' and so on.
+
 for attrkey, attrval in Read.status_data.items():
-    if 'list_url_feed' in attrval:
-        make_read_wrapper(attrkey, attrval.get('view_name'))
+    if 'list_url' in attrval:
+        # HEADS UP: sync the second argument with urls.py
+        make_read_wrapper(attrkey, 'feed', attrval.get('view_name'))
+        make_read_wrapper(attrkey, 'folder', attrval.get('view_name'))
 
 
 # —————————————————————————————————————————————————————————————— Home / Sources

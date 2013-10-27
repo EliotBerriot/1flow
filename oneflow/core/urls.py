@@ -3,7 +3,7 @@
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
 from django.views.decorators.cache import cache_page, never_cache
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy as _p
 from django.contrib.auth.decorators import login_required
 from django.contrib.admin.views.decorators import staff_member_required
 
@@ -26,19 +26,49 @@ read_patterns = tuple(
         if 'list_url' in attrval
 )
 
-# This builds "read_later_feed", "read_starred_feed" and so on.
-read_patterns += tuple(
-    url(attrval.get('list_url_feed'),
-        login_required(never_cache(
-            getattr(views, 'read_{0}_feed_with_endless_pagination'.format(
-                attrval.get('view_name')))
-            )
-        ),
-        name=u'read_' + attrval.get('view_name') + u'_feed')
-    for attrkey, attrval
-        in Read.status_data.items()
-        if 'list_url_feed' in attrval
-)
+# This builds all feeds and folders related URLs, and there are a lot.
+for url_trans, url_untrans in (
+            # HEADS UP: sync this list with views.py
+            (_p(u'part of url regex', u'feed'), u'feed'),
+            (_p(u'part of url regex', u'folder'), u'folder')):
+
+    suffix = u'_' + url_untrans
+
+    type_url = ur'%s/(?P<%s>(?:[0-9a-f]{24,24})+)$' % (url_trans, url_untrans)
+
+    read_patterns += tuple((
+        url(
+            _(ur'^read/') + type_url,
+            login_required(
+                never_cache(
+                    getattr(views, 'read_%s_with_endless_pagination'
+                            % url_untrans)
+                )
+            ),
+            name=u'read' + suffix),
+        url(
+            _(ur'^read/all/') + type_url,
+            login_required(
+                never_cache(
+                    getattr(views, 'read_all_%s_with_endless_pagination'
+                            % url_untrans)
+                )
+            ),
+            name='read_all' + suffix),
+        ))
+
+    read_patterns += tuple(
+        url(attrval.get('list_url').replace(u'$', type_url),
+            login_required(never_cache(
+                getattr(views, 'read_{0}_feed_with_endless_pagination'.format(
+                    attrval.get('view_name')))
+                )
+            ),
+            name=u'read_' + attrval.get('view_name') + suffix)
+        for attrkey, attrval
+            in Read.status_data.items()
+            if 'list_url' in attrval
+    )
 
 urlpatterns = patterns(
     'oneflow.core.views',
@@ -67,17 +97,9 @@ urlpatterns = patterns(
     url(_(r'^read/all/$'), never_cache(views.read_with_endless_pagination),
         name='read_all', kwargs={'all': True}),
 
-    url(_(r'^read/all/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'),
-        never_cache(views.read_all_feed_with_endless_pagination),
-        name='read_all_feed'),
-
     url(_(r'^read/$'), login_required(never_cache(
         views.read_with_endless_pagination)), name='read',
         kwargs={'is_read': False}),  # , 'is_bookmarked': False}),
-
-    url(_(r'^read/feed/(?P<feed>(?:[0-9a-f]{24,24})+)$'),
-        login_required(never_cache(views.read_feed_with_endless_pagination)),
-        name='read_feed'),
 
     url(_(r'^read/([0-9a-f]{24,24})/$'),
         login_required(views.read_one),
