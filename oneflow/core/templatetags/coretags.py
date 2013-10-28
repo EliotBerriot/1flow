@@ -274,7 +274,7 @@ def container_reading_list_with_count(view_name, container_type, container,
 
         return mark_safe((
             u'<a href="{url}" class="{class1} {class2}" {title}>{trans}'
-            u'&nbsp;<span class="unread-count count muted {small}">'
+            u'&nbsp;<span class="unread-count count {small}">'
             u'({count})</span></a>'
         ).format(
             url=reverse(view_name, kwargs={container_type: container.id}),
