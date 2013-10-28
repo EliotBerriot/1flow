@@ -468,12 +468,12 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
             current_count = getattr(subscription, attr_name)
 
             if current_count != count:
-                LOGGER.info(u'Setting Subscription#%s.%s=%s for '
+                setattr(subscription, attr_name, count)
+
+                LOGGER.info(u'Updated Subscription#%s.%s=%s for '
                             u'Read.%s (old was: %s).',
                             subscription.id, attr_name, count,
-                            unicode(query_kwargs), current_count, )
-
-                setattr(subscription, attr_name, count)
+                            unicode(query_kwargs), current_count)
 
                 # TODO: update folder with diff.
 
@@ -481,11 +481,12 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
             current_count = getattr(folder, attr_name)
 
             if current_count != count:
-                LOGGER.info(u'Setting Folder#%s.%s=%s for Read.%s '
-                            u'(old was: %s).', folder.id, attr_name,
-                            count, query_kwargs, current_count)
-
                 setattr(folder, attr_name, count)
+
+                LOGGER.info(u'Updated Folder#%s.%s=%s for Read.%s '
+                            u'(old was: %s).', folder.id, attr_name,
+                            count, unicode(query_kwargs), current_count)
+
 
                 # TODO: recount()/update all subscriptions counters…
 
@@ -493,11 +494,11 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
             current_count = getattr(user, attr_name)
 
             if current_count != count:
-                LOGGER.info(u'Setting User#%s.%s=%s for Read.%s '
+                setattr(user, attr_name, count)
+
+                LOGGER.info(u'Updated User#%s.%s=%s for Read.%s '
                             u'(old was: %s).', user.id, attr_name,
                             count, query_kwargs, current_count)
-
-                setattr(user, attr_name, count)
 
 
 def _rwep_special_update_counters(subscription, user):
@@ -636,8 +637,11 @@ def read_with_endless_pagination(request, **kwargs):
             # Check and update cache counters
             #
 
-            _rwep_ajax_update_counters(kwargs, query_kwargs,
-                                       subscription, folder, user, count)
+            try:
+                _rwep_ajax_update_counters(kwargs, query_kwargs,
+                                           subscription, folder, user, count)
+            except UnicodeDecodeError:
+                pass
 
             if subscription:
                 _rwep_special_update_counters(subscription, user)
