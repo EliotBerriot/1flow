@@ -604,7 +604,7 @@ def read_with_endless_pagination(request, **kwargs):
     if folder:
         folder = Folder.get_or_404(folder)
 
-        if folder.user != user and not (
+        if folder.owner != user and not (
                 djuser.is_superuser and preferences.staff.super_powers_enabled):
             return HttpResponseForbidden('Not Owner')
 
