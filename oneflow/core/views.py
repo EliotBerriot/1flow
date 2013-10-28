@@ -487,7 +487,6 @@ def _rwep_ajax_update_counters(kwargs, query_kwargs,
                             u'(old was: %s).', folder.id, attr_name,
                             count, unicode(query_kwargs), current_count)
 
-
                 # TODO: recount()/update all subscriptions counters…
 
         else:
@@ -579,8 +578,9 @@ def read_with_endless_pagination(request, **kwargs):
     (query_kwargs,
      primary_mode) = _rwep_generate_query_kwargs(request, **kwargs)
     order_by       = _rwep_generate_order_by(request, **kwargs)
-    user           = request.user.mongo
-    # preferences = user.preferences
+    djuser         = request.user
+    user           = djuser.mongo
+    preferences    = user.preferences
 
     # —————————————————————————————————————————————————— subscription or folder
 
@@ -589,17 +589,27 @@ def read_with_endless_pagination(request, **kwargs):
     subscription = kwargs.get('feed', None)
 
     if subscription:
-        subscription = Subscription.objects.get(id=subscription)
+        subscription = Subscription.get_or_404(subscription)
+
+        if subscription.user != user and not (
+                djuser.is_superuser and preferences.staff.super_powers_enabled):
+            return HttpResponseForbidden('Not Owner')
 
         #LOGGER.info(u'Refining reads by subscription %s', subscription)
+
         query_kwargs[u'subscriptions__contains'] = subscription
 
     folder = kwargs.get('folder', None)
 
     if folder:
-        folder = Folder.objects.get(id=folder)
+        folder = Folder.get_or_404(folder)
+
+        if folder.user != user and not (
+                djuser.is_superuser and preferences.staff.super_powers_enabled):
+            return HttpResponseForbidden('Not Owner')
 
         # LOGGER.info(u'Refining reads by folder %s', folder)
+
         query_kwargs[u'subscriptions__in'] = \
             Subscription.objects(folders=folder)
 
