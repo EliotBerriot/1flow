@@ -8,12 +8,16 @@ from models.nonrel import (CONTENT_TYPE_NONE, CONTENT_TYPE_HTML,
 def mongodb_user(request):
     """ not the most usefull context manager in the world. """
 
-    if request.user.is_anonymous():
-        return {
-            u'mongodb_user': None,
-            u'preferences': None,
-            u'wizards': None,
-        }
+    try:
+        if request.user.is_anonymous():
+            return {
+                u'mongodb_user': None,
+                u'preferences': None,
+                u'wizards': None,
+            }
+    except AttributeError:
+        # Most probably “'WSGIRequest' object has no attribute 'user'”
+        return {}
 
     return {
         u'mongodb_user': request.user.mongo,
