@@ -213,7 +213,6 @@ def manage_folder(request, **kwargs):
                                extra_tags=u'safe')
 
             else:
-
                 messages.info(request, _(u'Folder <em>{0}</em> successfully '
                               u'{1}.').format(folder.name, _(u'modified')
                                               if edit_mode else _(u'created')),
@@ -222,9 +221,9 @@ def manage_folder(request, **kwargs):
         else:
             messages.warning(request, _(u'Could not {1} folder: {0}.').format(
                              form.errors, _(u'modify') if edit_mode
-                             else _(u'create')), extra_tags=u'safe')
+                             else _(u'create')), extra_tags=u'safe sticky')
 
-            LOGGER.error(form.errors)
+            LOGGER.error(u'%s: %s', form.errors, form.cleaned_data)
 
         return HttpResponseRedirect(reverse('source_selector')
                                     + (u"#{0}".format(folder.id)
