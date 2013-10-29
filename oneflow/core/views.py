@@ -205,7 +205,7 @@ def manage_folder(request, **kwargs):
         if form.is_valid():
 
             try:
-                folder = form.save(user)
+                folder = form.save()
 
             except TreeCycleException, e:
                 messages.error(request, _(u'Save <em>{0}</em> '
@@ -267,12 +267,12 @@ def edit_subscription(request, **kwargs):
 
             messages.info(request, _(u'Subscription <em>{0}</em> successfully '
                           u'modified.').format(subscription.name),
-                          extra_tags=u'safe')
+                          extra_tags='safe')
 
         else:
             messages.warning(request, _(u'Could not save '
                              u'subscription: {0}.').format(form.errors),
-                             extra_tags=u'safe')
+                             extra_tags='safe')
 
             LOGGER.error(form.errors)
 
@@ -551,7 +551,7 @@ def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
 
     elif folder:
         count     = getattr(folder, attr_name)
-        sub_count = len(folder.subscriptions)
+        sub_count = folder.subscriptions.count()
 
         header_text_left = folder.name + ungettext(
             u' (%(count)s subscription)',
@@ -559,7 +559,7 @@ def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
 
     else:
         count     = getattr(user, attr_name)
-        sub_count = len(user.subscriptions)
+        sub_count = user.subscriptions.count()
 
         header_text_left = ungettext(
             u'In your <span class="hide">%(count)s</span> subscription',
