@@ -551,7 +551,7 @@ def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
 
     elif folder:
         count     = getattr(folder, attr_name)
-        sub_count = len(folder.subscriptions)
+        sub_count = folder.subscriptions.count()
 
         header_text_left = folder.name + ungettext(
             u' (%(count)s subscription)',
@@ -559,7 +559,7 @@ def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
 
     else:
         count     = getattr(user, attr_name)
-        sub_count = len(user.subscriptions)
+        sub_count = user.subscriptions.count()
 
         header_text_left = ungettext(
             u'In your <span class="hide">%(count)s</span> subscription',
