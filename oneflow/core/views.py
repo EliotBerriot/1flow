@@ -205,7 +205,7 @@ def manage_folder(request, **kwargs):
         if form.is_valid():
 
             try:
-                folder = form.save(user)
+                folder = form.save()
 
             except TreeCycleException, e:
                 messages.error(request, _(u'Save <em>{0}</em> '
