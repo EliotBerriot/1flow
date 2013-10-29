@@ -351,21 +351,22 @@ class Subscription(Document, DocumentHelperMixin):
 
 def Feed_subscriptions_property_get(self):
 
-    return Subscription.objects(feed=self)
+    return Subscription.objects(feed=self).no_cache()
 
 
 def Folder_subscriptions_property_get(self):
 
     # No need to query on the user, it's already common to folder and
     # subscription. The "duplicate folder name" problem doesn't exist.
-    return Subscription.objects(folders=self)
+    return Subscription.objects(folders=self).no_cache()
 
 
 def Folder_open_subscriptions_property_get(self):
 
     # No need to query on the user, it's already common to folder and
     # subscription. The "duplicate folder name" problem doesn't exist.
-    return [s for s in Subscription.objects(folders=self) if not s.feed.closed]
+    return [s for s in Subscription.objects(folders=self).no_cache()
+            if not s.feed.closed]
 
 
 def User_subscriptions_property_get(self):
@@ -379,7 +380,7 @@ def User_subscriptions_property_get(self):
 def User_all_subscriptions_property_get(self):
     """ Really, all. Including special ones. """
 
-    return Subscription.objects(user=self)
+    return Subscription.objects(user=self).no_cache()
 
 
 def User_web_import_subscription_property_get(self):
