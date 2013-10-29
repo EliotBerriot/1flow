@@ -236,7 +236,7 @@ class Subscription(Document, DocumentHelperMixin):
 
         self.compute_cached_descriptors(unread=True)
 
-    def check_reads(self, force=False, articles=None, extended_check=False):
+    def check_reads(self, articles=None, force=False, extended_check=False):
         """ Also available as a task for background execution. """
 
         if not force:
