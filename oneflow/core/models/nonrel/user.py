@@ -274,43 +274,6 @@ class User(Document, DocumentHelperMixin):
         self.first_name = django_user.first_name
         self.save()
 
-    def check_subscriptions(self, force=False):
-        """
-            .. note:: running this method from the feeds is more database
-                friendly because the feeds will compute their articles
-                QuerySet once and for all the subscriptions.
-        """
-
-        if not force:
-            LOGGER.info(u'User.check_subscriptions() is very costy and should '
-                        u'not be needed in normal conditions. Call it with '
-                        u'`force=True` if you are sure you want to run it.')
-            return
-
-        reads     = 0
-        failed    = 0
-        unreads   = 0
-        missing   = 0
-        rechecked = 0
-
-        for subscription in self.subscriptions:
-            smissing, srecheck, sreads, sunreads, sfailed = \
-                subscription.check_reads(force)
-
-            reads     += sreads
-            failed    += sfailed
-            missing   += smissing
-            unreads   += sunreads
-            rechecked += srecheck
-
-            subscription.pre_compute_cached_descriptors()
-
-        LOGGER.info(u'Checked user #%s with %s subscriptions. '
-                    u'Totals: %s/%s non-existing/re-checked reads, '
-                    u'%s/%s read/unread and %s not created.', self.id,
-                    self.subscriptions.count(),
-                    missing, rechecked, reads, unreads, failed)
-
     @property
     def nofolder_subscriptions(self):
 
