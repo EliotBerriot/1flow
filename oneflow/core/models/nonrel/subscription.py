@@ -190,10 +190,11 @@ class Subscription(Document, DocumentHelperMixin):
             subscription.save()
 
         if background:
+            # 'True' is for the 'force' argument.
             subscription_check_reads.delay(subscription.id, True)
 
         else:
-            subscription.check_reads(True)
+            subscription.check_reads(force=True)
 
         LOGGER.info(u'Subscribed %s to %s via %s.', user, feed, subscription)
 
@@ -496,7 +497,8 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
 
         for subscription in self.subscriptions:
             smissing, srecheck, sreads, sunreads, sfailed = \
-                subscription.check_reads(articles, extended_check=True)
+                subscription.check_reads(articles, force=True,
+                                         extended_check=True)
 
             reads     += sreads
             failed    += sfailed
