@@ -267,12 +267,12 @@ def edit_subscription(request, **kwargs):
 
             messages.info(request, _(u'Subscription <em>{0}</em> successfully '
                           u'modified.').format(subscription.name),
-                          extra_tags=u'safe')
+                          extra_tags='safe')
 
         else:
             messages.warning(request, _(u'Could not save '
                              u'subscription: {0}.').format(form.errors),
-                             extra_tags=u'safe')
+                             extra_tags='safe')
 
             LOGGER.error(form.errors)
 
