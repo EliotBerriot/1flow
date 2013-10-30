@@ -194,12 +194,12 @@ def manage_folder(request, **kwargs):
     edit_mode = folder is not None
     user      = request.user.mongo
 
-    messages.info(request, u'TEST0', extra_tags='safe')
-
     if request.POST:
-        messages.info(request, u'TEST1', extra_tags='safe')
+        messages.info(request, u'manage folder POST', extra_tags='safe')
 
         if edit_mode:
+            messages.info(request, u'manage folder EDIT %s' % folder,
+                          extra_tags='safe')
             form = ManageFolderForm(request.POST, instance=folder,
                                     owner=user)
 
