@@ -396,15 +396,33 @@ def User_web_import_subscription_property_get(self):
         # the subscription title.
         #
 
-        return Subscription.subscribe_user_to_feed(user=self,
-                                                   feed=self.web_import_feed,
+        return Subscription.subscribe_user_to_feed(user=user,
+                                                   feed=special_feed,
                                                    name=__(u'Imported items'),
                                                    background=True)
 
 
+def User_received_items_subscription_property_get(self):
+
+    return get_or_create_special_subscription(self, self.received_items_feed,
+                                              __(u'Received items'))
+
+
+def User_sent_items_subscription_property_get(self):
+
+    return get_or_create_special_subscription(self, self.sent_items_feed,
+                                              __(u'Sent items'))
+
+
+def User_web_import_subscription_property_get(self):
+
+    return get_or_create_special_subscription(self, self.web_import_feed,
+                                              __(u'Imported items'))
+
+
 def User_subscriptions_by_folder_property_get(self):
 
-    subscriptions = Subscription.objects(user=self)
+    subscriptions = Subscription.objects(user=self).no_cache()
     by_folders    = {}
 
     for subscription in subscriptions:
