@@ -492,11 +492,16 @@ class Read(Document, DocumentHelperMixin):
             return cls._status_attributes_cache
 
         except AttributeError:
-            cls._status_attributes_cache = [fname for fname, field
-                                            in cls._fields.items()
-                                            if fname.startswith('is_')
-                                            and isinstance(field,
-                                                           BooleanField)]
+            # cls._status_attributes_cache = [fname for fname, field
+            #                                 in cls._fields.items()
+            #                                 if fname.startswith('is_')
+            #                                 and isinstance(field,
+            #                                                BooleanField)]
+
+            cls._status_attributes_cache = [
+                k for k in cls.status_data.keys()
+                if 'list_url' in cls.status_data[k]
+            ]
 
             return cls._status_attributes_cache
 
