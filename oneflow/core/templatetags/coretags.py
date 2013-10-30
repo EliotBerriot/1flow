@@ -430,6 +430,28 @@ def read_action_status(read, action_name, with_text=False):
 
 
 @register.simple_tag
+def read_status_css_styles():
+    """ Just in case we add/remove/change read status/attributes in the
+        future, the CSS are auto-generated from the list, in a “as DRY
+        as possible” attitude.
+
+        .. warning:: ``display: inherit`` was making our ``<span>``s
+            display as block, thus I forced ``inline-block``. But it
+            could break things in the future if HTML structure changes
+            deeply.
+    """
+
+    return u' '.join((
+                     u'.{0} .action-mark-not_{0}{{display:inline-block}} '
+                     u'.{0} .action-mark-{0}{{display:none}}'
+                     u'.not_{0} .action-mark-not_{0}{{display:none}} '
+                     u'.not_{0} .action-mark-{0}{{display:inline-block}}'
+                     ).format(status)
+                     for status in Read.status_data.keys()
+                     if 'list_url' in Read.status_data[status])
+
+
+@register.simple_tag
 def html_first_letters(name, number=1):
 
     try:

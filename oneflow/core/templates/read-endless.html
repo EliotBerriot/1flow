@@ -1,8 +1,14 @@
 {% extends 'home.html' %}
-{% load endless %}
 
 {% block title %}{% trans 'Read' %}{% endblock title %}
 {% block body_id %}read{% endblock body_id %}
+
+{% block extrajs_header %}
+    {{block.super}}
+    {% cache 86400 read_status_css_styles %}
+        <style type="text/css">{% read_status_css_styles %}</style>
+    {% endcache %}
+{% endblock extrajs_header %}
 
 {% block application_content %}
 {% with home_style=preferences.home.style %}
