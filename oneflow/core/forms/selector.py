@@ -97,6 +97,37 @@ class ManageFolderForm(DocumentForm):
 
         return parent
 
+    def is_valid(self):
+
+        res = super(ManageFolderForm, self).is_valid()
+
+        if not res:
+            return False
+
+        if self.instance.id is None:
+
+            parent_folder = self.cleaned_data['parent']
+
+            try:
+                Folder.objects.get(
+                    owner=self.folder_owner, name=self.cleaned_data['name'],
+                    parent=parent_folder)
+            except Folder.DoesNotExist:
+                return True
+
+            else:
+                if parent_folder == self.folder_owner.root_folder:
+                    self._errors['already_exists'] = \
+                        _(u'A top folder by that name already exists.')
+                else:
+                    self._errors['already_exists'] = \
+                        _(u'A folder by that name already exists '
+                          u'at the same place.')
+
+                return False
+
+        return True
+
     def save(self, commit=True):
 
         parent_folder  = self.cleaned_data.get('parent')
