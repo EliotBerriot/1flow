@@ -404,7 +404,7 @@ def User_web_import_subscription_property_get(self):
 
 def User_subscriptions_by_folder_property_get(self):
 
-    subscriptions = Subscription.objects(user=self)
+    subscriptions = Subscription.objects(user=self).no_cache()
     by_folders    = {}
 
     for subscription in subscriptions:
