@@ -378,11 +378,9 @@ def article_excerpt_content_display(article):
 
 
 @register.inclusion_tag('snippets/read/read-content.html', takes_context=True)
-def read_content(context, read, django_user):
+def read_content(context, read, user):
 
-    user_prefs = read.user.preferences
-
-    if django_user.is_superuser and user_prefs.staff.super_powers_enabled:
+    if user.has_permission('read.full_text', read=read):
         content = article_full_content_display(read.article)
         excerpt = False
 
