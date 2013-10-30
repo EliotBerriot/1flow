@@ -474,7 +474,7 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
                            u'from %s %s. ', subscription,
                            my_class_name, self.id)
 
-    if len(to_keep) != len(self.subscriptions):
+    if len(to_keep) != self.subscriptions.count():
         self.subscriptions = to_keep
 
         if commit:
