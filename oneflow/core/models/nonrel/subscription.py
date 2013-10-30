@@ -435,8 +435,8 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
         if isinstance(subscription, DBRef) or subscription is None:
             # We need to catch DBRef on its own.
             LOGGER.warning(u'Clearing dangling Subscription reference %s '
-                           u'from %s %s. ', subscription.id,
-                           my_class_name, self.id)
+                           u'from %s %s. ', subscription.id if subscription
+                           else u'`None`', my_class_name, self.id)
 
         elif isinstance(subscription, Subscription):
 
@@ -460,8 +460,9 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
                     LOGGER.warning(u'Clearing Subscription #%s from %s #%s, it '
                                    u'has a dangling reference to non-existing '
                                    u'%s #%s.', subscription.id,
-                                   my_class_name, self.id,
-                                   class_to_test, attr_to_test.id)
+                                   my_class_name, self.id, class_to_test,
+                                   attr_to_test.id if attr_to_test
+                                   else u'`None`')
                     keep_it = False
                     break
 
