@@ -16,7 +16,8 @@ from django.core.urlresolvers import reverse
 #from django_markdown.widgets import MarkdownWidget
 from writingfield import FullScreenTextarea
 
-from .models.nonrel import Tag, Feed, Article, Read, CONTENT_TYPE_MARKDOWN
+from .models.nonrel import (Tag, Feed, Article, Read, CONTENT_TYPE_MARKDOWN,
+                            User as MongoUser, Group as MongoGroup)
 from .models.reldb import HelpContent
 
 from django.contrib import admin as django_admin
@@ -32,9 +33,13 @@ from .gr_import import GoogleReaderImport
 
 # NOTE: using "from base.models import User" will generate
 # a "cannot proxy swapped model base.User" when creating the
-# GriUser class. Using `get_user_model()` works.
+# GriUser class. Using `get_user_model()` works and is the
+# Django recommended way of doing it.
 User = get_user_model()
 
+
+# —————————————————————————————————————————————————— Google Reader Import users
+#                              (obsolete as of 20130701, but kept as reference)
 
 class GriUser(User):
     """ Just a proxy to User model, to be able to build a list against it. """
@@ -195,6 +200,9 @@ class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
 admin.site.register(GriUser, GriOneFlowUserAdmin)
 
 
+# ——————————————————————————————————————————————————————————— pure Core objects
+
+
 class TagAdmin(admin.DocumentAdmin):
 
     list_display = ('id', 'name', 'language', 'duplicate_of',
@@ -241,6 +249,69 @@ class TagAdmin(admin.DocumentAdmin):
 
 
 admin.site.register(Tag, TagAdmin)
+
+
+class MongoUserAdminForm(DocumentForm):
+    class Meta:
+        model = MongoUser
+        widgets = {
+            'username': TextInput(attrs={'class': 'vURLField'}),
+            'first_name': TextInput(attrs={'class': 'vURLField'}),
+            'last_name': TextInput(attrs={'class': 'vURLField'}),
+        }
+
+
+class MongoUserAdmin(admin.DocumentAdmin):
+    list_display = ('id', 'username', 'first_name', 'last_name', 'django_user',
+                    'is_staff_display', 'is_superuser_display', )
+    list_display_links = ('id', 'username', )
+    search_fields = ('username', 'first_name', 'last_name', )
+    change_list_filter_template = "admin/filter_listing.html"
+    #filter_horizontal = ('parents', 'children', )
+    form = MongoUserAdminForm
+    raw_id_fields = ('friends', )
+    fieldsets = (
+        ('Main', {
+            'fields': (
+                'username',
+                ('first_name', 'last_name', ),
+                ('is_staff', 'is_superuser', 'django_user', ),
+                #'permissions'
+            ),
+        }),
+        ('Friends', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields' : (
+                'friends',
+                'address_book',
+            ),
+        }),
+    )
+
+    def is_staff_display(self, obj):
+
+        return obj.is_staff
+
+    is_staff_display.short_description = _(u'Staff?')
+    is_staff_display.admin_order_field = 'is_staff'
+    is_staff_display.boolean = True
+
+    def is_superuser_display(self, obj):
+
+        return obj.is_superuser
+
+    is_superuser_display.short_description = _(u'Superuser?')
+    is_superuser_display.admin_order_field = 'is_superuser'
+    is_superuser_display.boolean = True
+
+
+admin.site.register(MongoUser, MongoUserAdmin)
+
+
+class MongoGroupAdmin(admin.DocumentAdmin):
+    pass
+
+admin.site.register(MongoGroup, MongoGroupAdmin)
 
 
 class ArticleAdminForm(DocumentForm):
