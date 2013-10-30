@@ -514,16 +514,27 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
         else:
             articles = None
 
-        for subscription in self.subscriptions:
-            smissing, srecheck, sreads, sunreads, sfailed = \
-                subscription.check_reads(articles, force=True,
-                                         extended_check=True)
+        # Convert the subscriptions QuerySet to a list to avoid
+        # "cursor #… not valid at server" on very long operations.
+        subscriptions = [s for s in self.subscriptions]
 
-            reads     += sreads
-            failed    += sfailed
-            missing   += smissing
-            unreads   += sunreads
-            rechecked += srecheck
+        for subscription in subscriptions:
+            try:
+                smissing, srecheck, sreads, sunreads, sfailed = \
+                    subscription.check_reads(articles, force=True,
+                                             extended_check=True)
+            except:
+                # In case the subscription was unsubscribed during the
+                # check operation, this is probably harmless.
+                LOGGER.exception(u'Checking subscription #%s failed',
+                                 subscription.id)
+
+            else:
+                reads     += sreads
+                failed    += sfailed
+                missing   += smissing
+                unreads   += sunreads
+                rechecked += srecheck
 
         LOGGER.info(u'Checked %s #%s with %s subscriptions%s. '
                     u'Totals: %s/%s non-existing/re-checked reads, '
