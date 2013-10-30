@@ -76,31 +76,6 @@ letters_colors = {
 html_letters_re = re.compile(ur'[^\w]', re.UNICODE | re.IGNORECASE)
 
 
-@register.filter
-def naturaldelta(the_datetime):
-
-    return onef_naturaldelta(now() - the_datetime)
-
-
-@register.simple_tag
-def feature_not_ready():
-
-    return mark_safe(u' title="{0}" data-toggle="tooltip" '.format(
-                     _(u'Feature coming soon. More information on the '
-                       u'1flow blog http://blog.1flow.io/ or Twitter '
-                       u'@1flow_io.')))
-
-
-@register.simple_tag
-def read_status_css(read):
-
-    css = []
-
-    for attr in Read.get_status_attributes():
-        css.append(attr if getattr(read, attr) else (u'not_'+attr))
-
-    return u' '.join(css)
-
 reading_lists = {
 
     'web_import': (_(u'Imported elements'),
@@ -156,6 +131,32 @@ reading_lists = {
                          _(u'You have {0} articles marked as knowledge'),
                          'knowledge_articles_count'),
 }
+
+
+@register.filter
+def naturaldelta(the_datetime):
+
+    return onef_naturaldelta(now() - the_datetime)
+
+
+@register.simple_tag
+def feature_not_ready():
+
+    return mark_safe(u' title="{0}" data-toggle="tooltip" '.format(
+                     _(u'Feature coming soon. More information on the '
+                       u'1flow blog http://blog.1flow.io/ or Twitter '
+                       u'@1flow_io.')))
+
+
+@register.simple_tag
+def read_status_css(read):
+
+    css = []
+
+    for attr in Read.get_status_attributes():
+        css.append(attr if getattr(read, attr) else (u'not_' + attr))
+
+    return u' '.join(css)
 
 
 @register.simple_tag
