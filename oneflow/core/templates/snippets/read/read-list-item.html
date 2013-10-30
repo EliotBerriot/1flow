@@ -16,7 +16,10 @@
   </div>
 
   {% with article=read.article with_index=1 read_in_list=1 %}
-    {% include "snippets/read/article-body.html" %}
+
+        {% cache 86400 article_body article with_full_text %}
+            {% include "snippets/read/article-body.html" %}
+        {% endcache %}
   {% endwith %}
 
 </li>
