@@ -1,7 +1,6 @@
 
 //'use strict';
 
-var change_selector_ids   = []; // not used anymore, thus empty.
 var read_actions_messages = {};
 
 function mark_something(read_id, mark_what, mark_inverse, send_notify, message, callback) {
@@ -47,13 +46,10 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message, 
             //console.debug(read.find(".action-mark-" + klass));
             //console.debug(read.find(".action-mark-" + inverse));
 
-            read.find(".action-mark-" + klass).fadeOut('fast', function(){
-                read.find(".action-mark-" + inverse).fadeIn('fast');
-            });
-
-            _.each(change_selector_ids, function(sel) {
-                $(sel + read_id).removeClass(inverse).addClass(klass);
-            });
+            // This is done automatically via CSS now.
+            // read.find(".action-mark-" + klass).fadeOut('fast', function(){
+            //     read.find(".action-mark-" + inverse).fadeIn('fast');
+            // });
 
             read.removeClass(inverse).addClass(klass);
 
