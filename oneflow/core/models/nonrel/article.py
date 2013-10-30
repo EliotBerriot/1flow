@@ -159,6 +159,13 @@ class Article(Document, DocumentHelperMixin):
     # not yet.
     #short_url  = URLField(unique=True, verbose_name=_(u'1flow URL'))
 
+    is_restricted = BooleanField(default=False, verbose_name=_(u'restricted'),
+                                 help_text=_(u'This article comes from a paid '
+                                             u'paid subscription and cannot '
+                                             u'be shared like others inside '
+                                             u'the platform.'))
+
+    # TODO: rename this field to `is_orphaned`.
     orphaned   = BooleanField(default=False, verbose_name=_(u'Orphaned'),
                               help_text=_(u'This article has no public URL '
                                           u'anymore, or is unfetchable for '
