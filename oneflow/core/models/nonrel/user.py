@@ -11,7 +11,7 @@ from pymongo.errors import DuplicateKeyError
 
 from mongoengine import Q, Document, NULLIFY, CASCADE, PULL
 from mongoengine.fields import (IntField, StringField, URLField,
-                                ListField, ReferenceField)
+                                BooleanField, ListField, ReferenceField)
 from mongoengine.errors import NotUniqueError
 
 from django.conf import settings
@@ -142,6 +142,12 @@ def user_post_create_task(user_id, *args, **kwargs):
 
 
 class User(Document, DocumentHelperMixin):
+
+    # Attributes synchronized between the Django User class and this one.
+    SYNCHRONIZED_ATTRS = ('is_staff', 'is_superuser',
+                          'first_name', 'last_name',
+                          'username')
+
     django_user = IntField(unique=True)
     username    = StringField()
     first_name  = StringField()
@@ -149,6 +155,9 @@ class User(Document, DocumentHelperMixin):
     avatar_url  = URLField()
     preferences_data = ReferenceField(Preferences,
                                       reverse_delete_rule=NULLIFY)
+    is_superuser = BooleanField(default=False)
+    is_staff     = BooleanField(default=False)
+
 
     all_articles_count = IntRedisDescriptor(
         attr_name='u.aa_c', default=user_all_articles_count_default,
@@ -226,6 +235,17 @@ class User(Document, DocumentHelperMixin):
 
         return self.preferences_data
 
+    @property
+    def django(self):
+        """ Cached property that returns the PostgreSQL counterpart
+            of the current MongoDB user account. """
+        try:
+            return self.__django_user__
+
+        except AttributeError:
+            self.__django_user__ = DjangoUser.objects.get(id=self.django_user)
+            return self.__django_user__
+
     def __unicode__(self):
         return u'%s #%s (Django ID: %s)' % (self.username or u'<UNKNOWN>',
                                             self.id, self.django_user)
@@ -257,6 +277,24 @@ class User(Document, DocumentHelperMixin):
             if user._db_name != settings.MONGODB_NAME_ARCHIVE:
                 user_post_create_task.delay(user.id)
                 pass
+
+        else:
+            if user._db_name != settings.MONGODB_NAME_ARCHIVE:
+
+                django_user   = user.django
+                update_fields = []
+
+                for attr in User.SYNCHRONIZED_ATTRS:
+                    current_value = getattr(user, attr)
+                    if getattr(django_user, attr) != current_value:
+                        setattr(django_user, attr, current_value)
+                        update_fields.append(attr)
+
+                # The Django doc states that if ``update_fields`` is empty,
+                # the save is avoided. No need for "if update_fields", then.
+                django_user.save(update_fields=update_fields,
+                                 # Avoid the back-synchronization cycle.
+                                 mongo_django_sync=False)
 
     @classmethod
     def signal_pre_save_post_validation_handler(cls, sender,
@@ -325,8 +363,34 @@ def __mongo_user(self):
 
         return self.__mongo_user_cache__
 
+
+# Override the Django save() method so that MongoDB and PostgreSQL are
+# synchronized on specific fields, without producing post-save signal
+# cycles in either direction.
+def DjangoUser__save__method(self, *args, **kwargs):
+
+    back_sync = kwargs.pop('mongo_django_sync', True)
+
+    result = super(self.__class__, self).save(*args, **kwargs)
+
+    if back_sync:
+        params = dict(('set__' + attr, getattr(self, attr))
+                      for attr in User.SYNCHRONIZED_ATTRS)
+
+        # In the PostgreSQL > MongoDB direction, the cycle is avoided
+        # with a signal bypass. We write directly the new data in the
+        # DB and trigger a reload. This is at the expense of potentially
+        # useless writes, but modifying users in the Django admin occurs
+        # very infrequently anyway so the real cost is nothing.
+        self.mongo.update(**params)
+        self.mongo.safe_reload()
+
+    return result
+
+
 # Auto-link the DjangoUser to the mongo one
 DjangoUser.mongo = property(__mongo_user)
+DjangoUser.save  = DjangoUser__save__method
 
 
 class Group(Document, DocumentHelperMixin):
