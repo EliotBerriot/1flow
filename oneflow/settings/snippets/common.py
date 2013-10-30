@@ -395,7 +395,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
     'django.contrib.messages.context_processors.messages',
 
-    # TODO: activate one of these when needed.
+    # Only one of them is needed.
     #'social_auth.context_processors.social_auth_by_name_backends',
     'social_auth.context_processors.social_auth_backends',
     #'social_auth.context_processors.social_auth_login_redirect',
@@ -409,7 +409,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'oneflow.core.context_processors.mongodb_user',
     'oneflow.core.context_processors.social_things',
 )
-
 
 INSTALLED_APPS = (
     'raven.contrib.django.raven_compat',
