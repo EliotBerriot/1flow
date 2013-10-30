@@ -53,12 +53,24 @@
     }
 
     img {
-        display: block;
         max-width: 100%;
-        margin: 1.5em auto;
-        /* @include border-radius(2px); */
-        border-radius: 2px;
+        @include border-radius(2px);
+        //border-radius: 2px;
         box-shadow: 0 0 3px #bbb;
+    }
+
+    p img {
+        display: block;
+        margin: 1.5em auto;
+    }
+
+    li img {
+        display: inline-block;
+        margin: 0.5em;
+    }
+
+    li {
+        display: inline-block;
     }
 
     .img-legend {

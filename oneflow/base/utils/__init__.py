@@ -16,6 +16,7 @@ from bs4 import BeautifulSoup
 from requests.packages import charade
 
 from mongoengine import Document, signals
+
 from django.conf import settings
 from django.db import models
 from django.template import Context
@@ -278,6 +279,7 @@ class ro_classproperty(object):
 
     def __get__(self, obj, owner):
         return self.f(owner)
+
 
 class JsContextSerializer(ContextSerializer):
     """ This class should probably move into sparks some day. """

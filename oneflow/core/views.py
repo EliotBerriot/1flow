@@ -194,7 +194,11 @@ def manage_folder(request, **kwargs):
     edit_mode = folder is not None
     user      = request.user.mongo
 
+    messages.info(request, u'TEST0', extra_tags='safe')
+
     if request.POST:
+        messages.info(request, u'TEST1', extra_tags='safe')
+
         if edit_mode:
             form = ManageFolderForm(request.POST, instance=folder,
                                     owner=user)
@@ -219,9 +223,10 @@ def manage_folder(request, **kwargs):
                               extra_tags=u'safe')
 
         else:
-            messages.warning(request, _(u'Could not {1} folder: {0}.').format(
-                             form.errors, _(u'modify') if edit_mode
-                             else _(u'create')), extra_tags=u'safe sticky')
+            messages.info(request, u'TEST2', extra_tags='safe')
+            messages.warning(request, _(u'Could not {0} folder: {1}.').format(
+                             _(u'modify') if edit_mode else _(u'create'),
+                             form.errors), extra_tags='sticky safe')
 
             LOGGER.error(u'%s: %s', form.errors, form.cleaned_data)
 
