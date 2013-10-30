@@ -1003,7 +1003,7 @@ def global_reads_checker(limit=None, force=False, verbose=False,
                     wiped_reads_count += 1
                     LOGGER.error(u'Read #%s has dangling reference to '
                                  u'non-existing article #%s, removing.',
-                                 read.id, article.id)
+                                 read.id, article.id if article else u'`None`')
                     read.delete()
                     continue
 
