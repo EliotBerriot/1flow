@@ -68,6 +68,9 @@
     .article-meta-bottom {
         padding-top: 2em;
 
+        padding-left: $article-padding-side;
+        padding-right: $article-padding-side;
+
         // this one starts hidden and
         // will be shown by .open_content.
         display: none;

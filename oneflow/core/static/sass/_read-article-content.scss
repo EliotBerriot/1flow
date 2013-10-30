@@ -8,7 +8,7 @@
     font-family: georgia, times, serif;
     text-align: justify;
 
-    padding: 0 4em 5em;
+    padding: 0 $article-padding-side 5em;
 
     a {
         color: inherit;
@@ -44,7 +44,7 @@
 
     p, ul, ol {
         font-size: 1.75em;
-        line-height: 1.35em;
+        line-height: 1.45em;
         margin: 1.5em 0;
     }
 
