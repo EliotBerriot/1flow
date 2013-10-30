@@ -646,7 +646,7 @@ LOGGING = {
         #     'address': '/dev/log',
         #     'formatter': 'verbose',
         # },
-        # Warning messages are sent to admin emails
+        # ERROR messages are sent to admin emails
         'mail_admins': {
             # We don't want any mail for every warning on earth.
             #'level': 'WARNING',
