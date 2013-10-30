@@ -14,9 +14,11 @@ CACHES = {
     }
 }
 
-# In development environement we completely
-# bypass the cache to see changes in reatime.
-#if DEBUG:
+# In development, I now use a cache for enhanced reading speed
+# and production-like behaviour check. But in case I need to
+# disable it, just uncomment the next two lines.
+#
+# if DEBUG:
 #    CACHES['default']['BACKEND']  = 'django.core.cache.backends.dummy.DummyCache'
 
 SELECT2_MEMCACHE_HOST = '127.0.0.1'
