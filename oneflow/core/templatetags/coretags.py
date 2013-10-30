@@ -19,14 +19,9 @@ from cache_utils.decorators import cached
 
 from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
 
-from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN
+from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN, CACHE_ONE_WEEK
 
 LOGGER = logging.getLogger(__name__)
-
-CACHE_ONE_HOUR  = 3600
-CACHE_ONE_DAY   = CACHE_ONE_HOUR * 24
-CACHE_ONE_WEEK  = CACHE_ONE_DAY * 7
-CACHE_ONE_MONTH = CACHE_ONE_DAY * 30
 
 register = template.Library()
 

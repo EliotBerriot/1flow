@@ -89,6 +89,11 @@ ORIGIN_TYPE_STANDALONE    = 3
 ORIGIN_TYPE_TWITTER       = 4
 ORIGIN_TYPE_WEBIMPORT     = 5
 
+CACHE_ONE_HOUR  = 3600
+CACHE_ONE_DAY   = CACHE_ONE_HOUR * 24
+CACHE_ONE_WEEK  = CACHE_ONE_DAY * 7
+CACHE_ONE_MONTH = CACHE_ONE_DAY * 30
+
 ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
                         settings.SITE_DOMAIN)
 USER_FEEDS_SITE_URL   = u'http://{0}'.format(settings.SITE_DOMAIN
