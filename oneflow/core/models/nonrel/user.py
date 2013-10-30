@@ -9,9 +9,10 @@ from celery import task
 
 from pymongo.errors import DuplicateKeyError
 
-from mongoengine import Q, Document, NULLIFY, CASCADE, PULL
+from mongoengine import Q, Document, EmbeddedDocument, NULLIFY, CASCADE, PULL
 from mongoengine.fields import (IntField, StringField, URLField,
-                                BooleanField, ListField, ReferenceField)
+                                BooleanField, ListField,
+                                ReferenceField, EmbeddedDocumentField)
 from mongoengine.errors import NotUniqueError
 
 from django.conf import settings
@@ -67,6 +68,23 @@ def user_django_user_random_default():
                 LOGGER.warning(u'user_django_user_random_default() is starting '
                                u'to slow down things (more than 10 cycles to '
                                u' generate a not-taken random ID)…')
+
+
+# ————————————————————————————————————————————————————————————————— Permissions
+#                                                    (common to User and Group)
+
+
+class ReadPermissions(EmbeddedDocument):
+    full_text = BooleanField(default=False,
+                             verbose_name=_(u'Can read full-text articles?'))
+
+    def __unicode__(self):
+        return u'ReadPermissions: full_text=%s' % (self.full_text)
+
+
+class Permissions(EmbeddedDocument):
+    read = EmbeddedDocumentField(ReadPermissions, default=ReadPermissions,
+                                 verbose_name=_(u'Read-related permissions'))
 
 
 def user_all_articles_count_default(user):
@@ -155,8 +173,20 @@ class User(Document, DocumentHelperMixin):
     avatar_url  = URLField()
     preferences_data = ReferenceField(Preferences,
                                       reverse_delete_rule=NULLIFY)
-    is_superuser = BooleanField(default=False)
-    is_staff     = BooleanField(default=False)
+    permissions  = EmbeddedDocumentField(Permissions, default=Permissions,
+                                         verbose_name=_(u'User Permissions'),
+                                         help_text=_(u'NOTE: any user will '
+                                                     u'benefit the permissions '
+                                                     u'of its groups if they '
+                                                     u'are more permissive '
+                                                     u'than his/her current '
+                                                     u'permissions.'))
+    is_superuser = BooleanField(default=False, verbose_name=_(u'Staff member'),
+                                help_text=_(u'The user has staff permissions '
+                                            u'(see Django documentation).'))
+    is_staff     = BooleanField(default=False, verbose_name=_(u'Superuser'),
+                                help_text=_(u'The user has super user related '
+                                            u'permissions (see Django doc.).'))
 
 
     all_articles_count = IntRedisDescriptor(
@@ -249,6 +279,41 @@ class User(Document, DocumentHelperMixin):
     def __unicode__(self):
         return u'%s #%s (Django ID: %s)' % (self.username or u'<UNKNOWN>',
                                             self.id, self.django_user)
+
+    @property
+    def is_staff_or_superuser_and_enabled(self):
+        return ((self.is_staff or self.is_superuser)
+                and self.preferences.staff.super_powers_enabled)
+
+    def has_permission(self, permission, **kwargs):
+
+        if self.is_staff_or_superuser_and_enabled:
+            # Staff and super users always have all permissions, except when
+            # they disable their super powers for demonstration purposes. In
+            # this case, the models/views/templates should test .is_superuser
+            # or .is_staff manually for emergency permissions.
+            return True
+
+        try:
+            try:
+                # first, see if we have a dedicated method for the permission.
+                # Methods are used to combine permissions into meta-perms or
+                # to test permissions on given objects for fine grained ones.
+                return getattr(self, 'has_permission__'
+                               + permission.replace(u'.', u'__'))(**kwargs)
+
+            except AttributeError:
+                # Second: no dedicated method, try
+                # the traditional boolean permission.
+                base, sub = permission.split(u'.')
+
+                return getattr(getattr(self.permissions, base), sub)
+
+        except:
+            LOGGER.exception(u'Could not determine `%s` permission of user %s '
+                             u'on %s.', permission, self, kwargs)
+
+        return False
 
     def get_full_name(self):
 
@@ -394,11 +459,42 @@ DjangoUser.save  = DjangoUser__save__method
 
 
 class Group(Document, DocumentHelperMixin):
-    name = StringField(unique_with='creator')
-    creator = ReferenceField('User', reverse_delete_rule=CASCADE)
+    name           = StringField(unique_with='creator')
+    is_system      = BooleanField(default=False,
+                                  verbose_name=_(u'System group?'))
+    creator        = ReferenceField('User', reverse_delete_rule=CASCADE)
     administrators = ListField(ReferenceField('User',
                                reverse_delete_rule=PULL))
     members = ListField(ReferenceField('User',
                         reverse_delete_rule=PULL))
-    guests = ListField(ReferenceField('User',
-                       reverse_delete_rule=PULL))
+    guests  = ListField(ReferenceField('User',
+                        reverse_delete_rule=PULL))
+    permissions = EmbeddedDocumentField(Permissions, default=Permissions,
+                                        verbose_name=_(u'Group permissions'))
+
+    def has_permission(self, permission, **kwargs):
+        """ This method is copied after `User.has_permission()`, but a little
+            different internally to match Group specificities. """
+
+        if self.is_system:
+            # TODO: this is probably a bad idea to mimic
+            #       user behaviour here. Please review.
+            return True
+
+        try:
+            try:
+                return getattr(self, 'has_permission__'
+                               + permission.replace(u'.', u'__'))(**kwargs)
+
+            except AttributeError:
+                # Second: no dedicated method, try
+                # the traditional boolean permission.
+                base, sub = permission.split(u'.')
+
+                return getattr(getattr(self.permissions, base), sub)
+
+        except:
+            LOGGER.exception(u'Could not determine `%s` permission of '
+                             u'group %s on %s.', permission, self, kwargs)
+
+        return False
