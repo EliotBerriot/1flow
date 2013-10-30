@@ -1,7 +1,7 @@
 
 {% if read_in_list %}
   {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 meta_class='top only_when_collapsed' %}
-    {% include "snippets/read/article-meta.html" %}
+        {% include "snippets/read/article-meta.html" %}
   {% endwith %}
 {% endif %}
 
@@ -13,10 +13,12 @@
     {% endif %}
     >
 
-  {% include 'snippets/read/read-admin-informations.html' %}
+    {% include 'snippets/read/read-admin-informations.html' %}
 
-  {# No with_{metahX,action,title_first,tags,ratings,meta_muted}. This is intended. #}
-  {% include "snippets/read/article-meta.html" with meta_class='bottom only_when_open' %}
+  {% with meta_class='bottom only_when_open' %}
+      {# other variables are unset, this is intended for `False` values. #}
+      {% include "snippets/read/article-meta.html" %}
+  {% endwith %}
 
   <div class="read-content-wrapper {{ read_in_list|yesno:'hide,' }}"
       id="content-{{ read.id }}">
