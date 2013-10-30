@@ -164,7 +164,7 @@ class Read(Document, DocumentHelperMixin):
             sys.stderr.write(u'a')
             return
 
-        if len(self.subscriptions) == 1:
+        if self.subscriptions.count() == 1:
             # Don't bother doing CPU-intensive tasks,
             # this one seems good. At least we hope.
             self.update(set__check_set_subscriptions_131004_done=True)
