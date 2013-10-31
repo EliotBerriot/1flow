@@ -3,6 +3,10 @@
 {% block title %}{% trans "Sources" %}{% endblock title %}
 {% block body_id %}selector{% endblock body_id %}
 
+{% block web_item_importer %}
+    {# Intentionally empty. See import-web-items-trigger.html for details. #}
+{% endblock web_item_importer %}
+
 {% block application_content %}
     {% include 'snippets/selector/selector.html' %}
 {% endblock application_content %}
