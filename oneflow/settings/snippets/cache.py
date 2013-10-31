@@ -2,7 +2,7 @@
 CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.PyLibMCCache',
-        'LOCATION': '127.0.0.1:11211',
+        'LOCATION': os.environ.get('CACHE_DEFAULT'),
         'TIMEOUT': 3600,
 
         # Only for locmem, filesystem and database backends
@@ -11,6 +11,14 @@ CACHES = {
         #     'MAX_ENTRIES': 65535,
         #     'CULL_FREQUENCY': 10,
         # }
+    },
+    'persistent': {
+        'BACKEND': 'redis_cache.cache.RedisCache',
+        # Don't set any fallback, we *need* to have this configured in `.env`.
+        'LOCATION': os.environ.get('REDIS_PERSISTENT_DB'),
+        'OPTIONS': {
+            'CLIENT_CLASS': 'redis_cache.client.DefaultClient',
+        }
     }
 }
 
