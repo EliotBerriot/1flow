@@ -33,6 +33,8 @@ from mongoengine.errors import NotUniqueError, ValidationError
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 from django.utils.text import slugify
+from django.template.loader import render_to_string
+from django.template.loader import add_to_builtins
 
 from ....base.utils.http import clean_url
 from ....base.utils.dateutils import now
@@ -1033,6 +1035,29 @@ class Article(Document, DocumentHelperMixin):
             return
 
         self.activate_reads(verbose=verbose)
+        self.prefill_cache()
+
+    def prefill_cache(self):
+        """ Make 1flow reading lists fly. """
+
+        # We cannot do this outside, this would create an import loop.
+        add_to_builtins('django.templatetags.cache')
+        add_to_builtins('django.templatetags.i18n')
+        add_to_builtins('oneflow.core.templatetags.coretags')
+
+        context = {
+            'article': self,
+            'with_index': 1,
+            'read_in_list': 1,
+        }
+
+        # check if cache is already present or not:
+        # https://docs.djangoproject.com/en/dev/topics/cache/#django.core.cache.utils.make_template_fragment_key # NOQA
+
+        # pre-render both versions.
+        for full_text_value in (True, False):
+            context['with_full_text'] = full_text_value
+            render_to_string('snippets/read/article-body.html', context)
 
     @property
     def is_good(self):
