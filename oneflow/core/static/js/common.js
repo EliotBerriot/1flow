@@ -741,7 +741,9 @@ function handle_modal(e) {
 function handle_ajax_form(event) {
 
     var $form   = $(this);
-    var $target = $($form.attr('data-target'));
+    var $target = $($form.data('target'));
+
+    var $simple_notify = $($form.data('simple-notify'));
 
     $.ajax({
         type: $form.attr('method'),
@@ -753,7 +755,7 @@ function handle_ajax_form(event) {
             // NOTE: if the result is a redirect,
             //      the current code will no run.
 
-            if (data == 'DONE') {
+            if (data == 'DONE' || $simple_notify.length) {
                 // If there is no other data than the text "DONE", just
                 // try to close the current open modal. The server-side
                 // will have filled notifications and everything else.
@@ -766,10 +768,13 @@ function handle_ajax_form(event) {
                     console.warning(err);
                 }
 
+                if ($simple_notify.length) {
+                    notify(data);
+                }
+
             } else {
                 // replace the current element with the result of the form.
                 $target.html(data);
-
             }
         }
     });
