@@ -4,27 +4,37 @@
 
 {% else %}
   <div class="read-actions actions start-actions hover-muted hide hidden-phone"
-    data-hover-muter-block="actions-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
+    data-hover-muter-block="actions-{{ end_actions|yesno:"end,start" }}-{{ article.id }}">
 
 {% endif %}
 
-  {% read_action read 'is_bookmarked' with_text %}
-  {% read_action read 'is_read' with_text %}
+  {% read_action article 'is_bookmarked' with_text %}
+  {% read_action article 'is_read' with_text %}
 
   {% if end_actions %}
 
-    {% read_action read 'is_starred' with_text %}
+    {% read_action article 'is_starred' with_text %}
 
-    <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+    {# ——————————————————————————————— WATCH ——————————————————————————————— #}
+
+    <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top" data-toggle="tooltip"
         title="{% trans "Assign or remove watch-related attributes" %}">
       <a class="clicker-muter-toggle nowrap" href="#"
-          data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
+          data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ article.id }}">
         <i class="icon-eye-open"></i>{% if with_text %}<span
-            class="hidden-phone">&nbsp;{% trans "Watch attributes" %}</span>{% endif %}
+            class="hidden-phone">&nbsp;{% trans "Watch" %}</span>{% endif %}
       </a>
     </span>
 
-    {% include 'snippets/read/read-action-original.html' %}
+    {# ——————————————————————————— READ ORIGINAL ——————————————————————————— #}
+
+    <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-top"
+      title="{% trans "Display on the original website" %}">
+    <a href="{{ article.url }}" target="_blank" class="nowrap">
+      {% if with_text %}<span
+          class="hidden-phone">{% trans "Read original" %}&nbsp;</span>{% endif %}<i class="icon-double-angle-right"></i>
+    </a>
+    </span>
 
   {% endif %}
 

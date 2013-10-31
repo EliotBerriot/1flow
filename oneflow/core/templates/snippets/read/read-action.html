@@ -1,4 +1,4 @@
-<span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-not_{{ action_name }} {{ undo_start_hidden }}"
+<span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-not_{{ action_name }}"
     title="{{ action_data.undo_title }}">
     {% spaceless %}
     <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
@@ -16,7 +16,7 @@
           class="hidden-phone"> {{ action_data.undo_label }}</span>{% endif %}</a>
     {% endspaceless %}
 </span>
-<span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-{{ action_name }} {{ do_start_hidden }}"
+<span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-{{ action_name }}"
     title="{{ action_data.do_title }}">
     {% spaceless %}
     <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">

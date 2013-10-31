@@ -19,14 +19,9 @@ from cache_utils.decorators import cached
 
 from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
 
-from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN
+from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN, CACHE_ONE_WEEK
 
 LOGGER = logging.getLogger(__name__)
-
-CACHE_ONE_HOUR  = 3600
-CACHE_ONE_DAY   = CACHE_ONE_HOUR * 24
-CACHE_ONE_WEEK  = CACHE_ONE_DAY * 7
-CACHE_ONE_MONTH = CACHE_ONE_DAY * 30
 
 register = template.Library()
 
@@ -75,31 +70,6 @@ letters_colors = {
 
 html_letters_re = re.compile(ur'[^\w]', re.UNICODE | re.IGNORECASE)
 
-
-@register.filter
-def naturaldelta(the_datetime):
-
-    return onef_naturaldelta(now() - the_datetime)
-
-
-@register.simple_tag
-def feature_not_ready():
-
-    return mark_safe(u' title="{0}" data-toggle="tooltip" '.format(
-                     _(u'Feature coming soon. More information on the '
-                       u'1flow blog http://blog.1flow.io/ or Twitter '
-                       u'@1flow_io.')))
-
-
-@register.simple_tag
-def read_status_css(read):
-
-    css = []
-
-    for attr in Read.get_status_attributes():
-        css.append(attr if getattr(read, attr) else (u'not_'+attr))
-
-    return u' '.join(css)
 
 reading_lists = {
 
@@ -156,6 +126,32 @@ reading_lists = {
                          _(u'You have {0} articles marked as knowledge'),
                          'knowledge_articles_count'),
 }
+
+
+@register.filter
+def naturaldelta(the_datetime):
+
+    return onef_naturaldelta(now() - the_datetime)
+
+
+@register.simple_tag
+def feature_not_ready():
+
+    return mark_safe(u' title="{0}" data-toggle="tooltip" '.format(
+                     _(u'Feature coming soon. More information on the '
+                       u'1flow blog http://blog.1flow.io/ or Twitter '
+                       u'@1flow_io.')))
+
+
+@register.simple_tag
+def read_status_css(read):
+
+    css = []
+
+    for attr in Read.get_status_attributes():
+        css.append(attr if getattr(read, attr) else (u'not_' + attr))
+
+    return u' '.join(css)
 
 
 @register.simple_tag
@@ -377,22 +373,23 @@ def article_excerpt_content_display(article):
             return None
 
 
-@register.inclusion_tag('snippets/read/read-content.html', takes_context=True)
-def read_content(context, read, user):
+@register.inclusion_tag('snippets/read/article-content.html',
+                        takes_context=True)
+def article_content(context, article, with_full_text):
 
-    if user.has_permission('read.full_text', read=read):
-        content = article_full_content_display(read.article)
+    if with_full_text:
+        content = article_full_content_display(article)
         excerpt = False
 
     else:
-        content = article_excerpt_content_display(read.article)
+        content = article_excerpt_content_display(article)
         excerpt = True
 
     return {
         # Make these up, because the context is not forwarded
         # to the final template. And that's a Django feature.
         # http://stackoverflow.com/q/5842538/654755
-        'article_url': read.article.url,
+        'article_url': article.url,
         'STATIC_URL': settings.STATIC_URL,
 
         # We don't mark_safe() here, else mark_safe(None) outputs "None"
@@ -404,9 +401,7 @@ def read_content(context, read, user):
 
 
 @register.inclusion_tag('snippets/read/read-action.html')
-def read_action(read, action_name, with_text=True, popover_direction=None):
-
-    action_value = getattr(read, action_name)
+def read_action(article, action_name, with_text=True, popover_direction=None):
 
     return {
         'with_text': with_text,
@@ -414,23 +409,41 @@ def read_action(read, action_name, with_text=True, popover_direction=None):
         'action_name': action_name,
         'action_data' : Read.status_data.get(action_name),
         'popover_class': '' if with_text else 'popover-tooltip',
-        'do_start_hidden' : 'hide' if action_value else '',
-        'undo_start_hidden' : '' if action_value else 'hide',
         'js_func': "toggle_status('{0}', '{1}')".format(
-                   read.id, action_name)
-
+                   article.id, action_name)
     }
 
 
 @register.inclusion_tag('snippets/read/read-action-status.html')
-def read_action_status(read, action_name, with_text=False):
+def read_action_status(action_name, with_text=False):
 
     return {
         'with_text': with_text,
         'action_name': action_name,
         'action_data' : Read.status_data.get(action_name),
-        'status_hidden' : '' if getattr(read, action_name) else 'hide',
     }
+
+
+@register.simple_tag
+def read_status_css_styles():
+    """ Just in case we add/remove/change read status/attributes in the
+        future, the CSS are auto-generated from the list, in a “as DRY
+        as possible” attitude.
+
+        .. warning:: ``display: inherit`` was making our ``<span>``s
+            display as block, thus I forced ``inline-block``. But it
+            could break things in the future if HTML structure changes
+            deeply.
+    """
+
+    return u' '.join((
+                     u'.{0} .action-mark-not_{0}{{display:inline-block}} '
+                     u'.{0} .action-mark-{0}{{display:none}}'
+                     u'.not_{0} .action-mark-not_{0}{{display:none}} '
+                     u'.not_{0} .action-mark-{0}{{display:inline-block}}'
+                     ).format(status)
+                     for status in Read.status_data.keys()
+                     if 'list_url' in Read.status_data[status])
 
 
 @register.simple_tag

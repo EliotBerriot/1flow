@@ -46,7 +46,9 @@ from .forms import (FullUserCreationForm,
                     AddSubscriptionForm,
                     WebPagesImportForm)
 from .tasks import import_google_reader_trigger
-from .models.nonrel import Feed, Subscription, Read, Folder, TreeCycleException
+from .models.nonrel import (Feed, Subscription,
+                            Article, Read,
+                            Folder, TreeCycleException)
 from .models.reldb import HelpContent
 from ..base.utils.dateutils import now
 
@@ -57,11 +59,13 @@ User = get_user_model()
 
 # Avoid repetitive {% load … %} in templates.
 add_to_builtins('django.templatetags.i18n')
+add_to_builtins('django.templatetags.cache')
 add_to_builtins('djangojs.templatetags.js')
 add_to_builtins('pipeline.templatetags.compressed')
 add_to_builtins('absolute.templatetags.absolute_future')
 add_to_builtins('markdown_deux.templatetags.markdown_deux_tags')
 add_to_builtins('widget_tweaks.templatetags.widget_tweaks')
+add_to_builtins('endless_pagination.templatetags.endless')
 add_to_builtins('oneflow.base.templatetags.base_utils')
 add_to_builtins('oneflow.core.templatetags.coretags')
 
@@ -195,11 +199,13 @@ def manage_folder(request, **kwargs):
     user      = request.user.mongo
 
     if request.POST:
-        messages.info(request, u'manage folder POST', extra_tags='safe')
+        messages.info(request, u'manage folder POST "%s"' % request.POST,
+                      extra_tags='safe')
 
         if edit_mode:
             messages.info(request, u'manage folder EDIT %s' % folder,
                           extra_tags='safe')
+
             form = ManageFolderForm(request.POST, instance=folder,
                                     owner=user)
 

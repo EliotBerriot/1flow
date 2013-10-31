@@ -1,5 +1,3 @@
-{% load endless %}
-
 {% if initial %}
 
     {% include "snippets/read/read-endless-initial-loading.html" %}
@@ -33,6 +31,7 @@
 
             {% for read in reads %}
                 {% if read.article.url_absolute and not read.article.duplicate_of %}
+
                     {% include preferences.home.get_template %}
 
                 {% elif user.is_superuser and preferences.staff.super_powers_enabled and preferences.staff.reading_lists_show_bad_articles %}

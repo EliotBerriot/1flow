@@ -29,9 +29,10 @@
 {% endblock extrajs_header %}
 
 {% block body %}
-
-{% include 'snippets/navbar.html' %}
-{% include 'snippets/help-arrows.html' %}
+    {% cache 86400 base_body_includes %}
+        {% include 'snippets/navbar.html' %}
+        {% include 'snippets/help-arrows.html' %}
+    {% endcache %}
 
   {% block application_header %}{% endblock application_header %}
 
@@ -73,6 +74,9 @@
 {% endblock body %}
 
 {% block extrajs_footer %}
+
+    {% cache 86400 base_extrajs_footer_immutable %}
+
     {{ block.super }}
 
     <script type="text/javascript"
@@ -123,7 +127,11 @@
     {% compressed_js 'vendor-all' %}
     {#{% compressed_js 'core' %}#}
 
+    {% endcache %}
+
     {% csrf_token %}
+
+    {% cache 86400 base_extrajs_footer_lang LANGUAGE_CODE %}
 
     <script type="text/javascript">
         {# This must stay here (in the template) to get the server-side language. #}
@@ -144,5 +152,7 @@
             }
         });
     </script>
+
+    {% endcache %}
 
 {% endblock extrajs_footer %}

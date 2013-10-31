@@ -2,7 +2,9 @@
 
 from django.conf import settings
 from models.nonrel import (CONTENT_TYPE_NONE, CONTENT_TYPE_HTML,
-                           CONTENT_TYPE_MARKDOWN, CONTENT_TYPES_FINAL)
+                           CONTENT_TYPE_MARKDOWN, CONTENT_TYPES_FINAL,
+                           CACHE_ONE_HOUR, CACHE_ONE_DAY,
+                           CACHE_ONE_WEEK, CACHE_ONE_MONTH, )
 
 
 def mongodb_user(request):
@@ -19,10 +21,17 @@ def mongodb_user(request):
         # Most probably “'WSGIRequest' object has no attribute 'user'”
         return {}
 
+    mongodb_user = request.user.mongo
+
     return {
-        u'mongodb_user': request.user.mongo,
-        u'preferences': request.user.mongo.preferences,
-        u'wizards': request.user.mongo.preferences.wizards,
+        u'mongodb_user': mongodb_user,
+        u'preferences': mongodb_user.preferences,
+        u'wizards': mongodb_user.preferences.wizards,
+
+        # Special permissions, that can't be queried directly in templates
+        # because this would imply a dedicated template tag for calling
+        # the has_permission() method with arguments…
+        u'with_full_text': mongodb_user.has_permission('read.full_text'),
 
         u'NONREL_ADMIN': settings.NONREL_ADMIN,
     }
@@ -37,6 +46,11 @@ def content_types(request):
         u'CONTENT_TYPE_HTML':     CONTENT_TYPE_HTML,
         u'CONTENT_TYPE_MARKDOWN': CONTENT_TYPE_MARKDOWN,
         u'CONTENT_TYPES_FINAL':   CONTENT_TYPES_FINAL,
+
+        u'CACHE_ONE_HOUR':        CACHE_ONE_HOUR,
+        u'CACHE_ONE_DAY':         CACHE_ONE_DAY,
+        u'CACHE_ONE_WEEK':        CACHE_ONE_WEEK,
+        u'CACHE_ONE_MONTH':       CACHE_ONE_MONTH,
     }
 
 
