@@ -42,6 +42,7 @@ from ....base.utils import (detect_encoding_from_requests_response,
                             RedisExpiringLock,
                             StopProcessingException)
 
+from sparks.foundations.classes import SimpleObject
 
 from .common import (DocumentHelperMixin,
                      NotTextHtmlException,
@@ -1045,10 +1046,15 @@ class Article(Document, DocumentHelperMixin):
         add_to_builtins('django.templatetags.i18n')
         add_to_builtins('oneflow.core.templatetags.coretags')
 
+        # build a fake permissions object for the template to be happy.
+        perms = SimpleObject()
+        perms.core = SimpleObject()
+
         context = {
             'article': self,
             'with_index': 1,
             'read_in_list': 1,
+            'perms': perms,
         }
 
         # TODO: with Django 1.6, check if cache is already present or not:
@@ -1056,7 +1062,7 @@ class Article(Document, DocumentHelperMixin):
 
         # pre-render both versions.
         for full_text_value in (True, False):
-            context['with_full_text'] = full_text_value
+            context['perms'].core.can_read_full_text = full_text_value
             render_to_string('snippets/read/article-body.html', context)
 
     @property

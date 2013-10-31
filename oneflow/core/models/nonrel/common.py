@@ -44,6 +44,7 @@ from constance import config
 
 from mongoengine import Q
 
+from django.db import models
 from django.conf import settings
 from django.http import Http404
 from django.utils.translation import ugettext_lazy as _
@@ -524,3 +525,18 @@ class PseudoQuerySet(list):
         new_pqs[:] = [res for res in results if res in self]
 
         return new_pqs
+
+
+class CorePermissions(models.Model):
+    """ This Django Model holds no data, but allows to create standard Django
+        permissions for MongoEngine documents. These permissions are manageable
+        via the Django admin like any other. """
+
+    class Meta:
+        app_label   = 'core'
+        permissions = (
+            ('can_read_full_text',
+             _(u'User can read articles with full-text contents')),
+            ('can_import_web_items',
+             _(u'User can import any web items')),
+        )
