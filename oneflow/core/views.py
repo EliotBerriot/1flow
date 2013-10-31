@@ -885,6 +885,9 @@ def toggle(request, klass, oid, key):
 
 def import_web_pages(request):
 
+    if not request.is_ajax():
+        return HttpResponseBadRequest('This request needs Ajax')
+
     if request.POST:
         form = WebPagesImportForm(request.POST,
                                   # This is our own kwargs parameter.
@@ -893,31 +896,18 @@ def import_web_pages(request):
         if form.is_valid():
             created, failed = form.save()
 
-        if request.is_ajax():
-            return HttpResponse('DONE %s/%s' % (created, failed))
-
-        if failed:
-            for url, reason in failed:
-                messages.warning(request, _(u'Import of URL <code>{0}</code> '
-                                 u'failed: {1}').format(url, reason),
-                                 extra_tags='sticky safe')
-
-        if created:
-            messages.info(request, _(u'Successfully launched import of '
-                          u'{0} web page(s)').format(len(created)))
-
-        return HttpResponseRedirect(reverse('source_selector'))
+        #
+        # TODO: return a JSON when request comes from browser extensions.
+        #
+        return render(request,
+                      'snippets/selector/import-web-items-result.html',
+                      {'created': created, 'failed': failed})
 
     else:
         form = WebPagesImportForm()
 
-    if request.is_ajax():
-        template = 'snippets/selector/import-web-pages.html'
-
-    else:
-        template = 'import-web-pages.html'
-
-    return render(request, template, {'form': form})
+    return render(request, 'snippets/selector/import-web-pages.html',
+                  {'form': form})
 
 
 def profile(request):

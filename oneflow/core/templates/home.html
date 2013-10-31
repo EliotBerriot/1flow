@@ -71,6 +71,12 @@
 
   {% block application_footer %}{% endblock application_footer %}
 
+{% block web_item_importer %}
+    {% cache 86400 base_web_item_importer perms.core.can_import_web_items %}
+        {% include 'snippets/selector/import-web-items-trigger.html' %}
+    {% endcache %}
+
+{% endblock web_item_importer %}
 {% endblock body %}
 
 {% block extrajs_footer %}
@@ -151,6 +157,22 @@
                 }
             }
         });
+
+        // —————————————————————————————————————————— common keyboard shortcuts
+
+        // “Add Item”, “Import Item”
+        Mousetrap.bind(['a i', 'i i'], function() {
+            $("#import-web-item-trigger").click();
+            return false;
+        });
+
+        // “Goto Selector”, “Goto Sources”
+        Mousetrap.bind(['g s'], function() {
+            notify("{% trans "Returning to source selector…" %}");
+            document.location = "{% url 'source_selector' %}";
+            return false;
+        });
+
     </script>
 
     {% endcache %}

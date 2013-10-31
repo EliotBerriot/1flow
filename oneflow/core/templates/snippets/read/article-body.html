@@ -1,6 +1,6 @@
 {# make sure you have the add_to_builtins(…cache) else this will fail. #}
 {# HEADS UP: with Django 1.6, replace 0 by None and set using="persistent" #}
-{% cache 0 article_body article with_full_text %}
+{% cache 0 article_body article perms.core.can_read_full_text %}
 
 {% if read_in_list %}
   {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 meta_class='top only_when_collapsed' %}
@@ -30,7 +30,7 @@
       id="content-{{ article.id }}">
     <div class="article-content ">
 
-      {% article_content article with_full_text %}
+      {% article_content article perms.core.can_read_full_text %}
 
     </div><!-- .article-content -->
 

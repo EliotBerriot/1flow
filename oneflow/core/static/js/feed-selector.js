@@ -17,13 +17,6 @@ function update_needed() {
 
 // —————————————————————————————————————————— Keyboard shortcuts & touch events
 
-
-// “Add Item”, “Import Item”
-Mousetrap.bind(['a i', 'i i'], function() {
-    $("#import-web-item-trigger").click();
-    return false;
-});
-
 // “Add Folder”
 Mousetrap.bind(['a f'], function() {
     $("#add-folder-trigger").click();

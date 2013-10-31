@@ -28,11 +28,6 @@ def mongodb_user(request):
         u'preferences': mongodb_user.preferences,
         u'wizards': mongodb_user.preferences.wizards,
 
-        # Special permissions, that can't be queried directly in templates
-        # because this would imply a dedicated template tag for calling
-        # the has_permission() method with arguments…
-        u'with_full_text': mongodb_user.has_permission('read.full_text'),
-
         u'NONREL_ADMIN': settings.NONREL_ADMIN,
     }
 
