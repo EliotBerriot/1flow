@@ -61,6 +61,7 @@
     {% endif %}
 
     <div class="application" id="application">
+
     {% block application_content %}
 
         {% include 'snippets/wizards/welcome-beta/welcome-beta.html' %}
@@ -141,7 +142,7 @@
 
     <script type="text/javascript">
         {# This must stay here (in the template) to get the server-side language. #}
-        moment.lang('{{ LANGUAGE_CODE }}');
+        //moment.lang('{{ LANGUAGE_CODE }}');
 
         function csrfSafeMethod(method) {
             // these HTTP methods do not require CSRF protection
