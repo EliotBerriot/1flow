@@ -822,7 +822,14 @@ class FoldersTest(TestCase):
         self.assertTrue(ftest3 in ftest2.children)
         self.assertFalse(ftest3 in ftest1.children)
 
+        # HEADS UP: the result of this test depends on a user preference.
+        self.assertFalse(ftest3 in user.folders_tree)
+
+        user.preferences.selector.extended_folders_depth = True
+        user.preferences.save()
+
         self.assertTrue(ftest3 in user.folders_tree)
+
         self.assertTrue(ftest3 in ftest2.children_tree)
         self.assertTrue(ftest3 in ftest1.children_tree)
         self.assertTrue(ftest3 in root.children_tree)

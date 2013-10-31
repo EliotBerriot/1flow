@@ -1039,7 +1039,10 @@ class Article(Document, DocumentHelperMixin):
         self.prefill_cache()
 
     def prefill_cache(self):
-        """ Make 1flow reading lists fly. """
+        """ Make 1flow reading lists fly. Pre-render all possible versions
+            of the article template but still, limited to language(s) the
+            feed or the article have.
+        """
 
         # We cannot do this outside, this would create an import loop.
         add_to_builtins('django.templatetags.cache')
@@ -1057,13 +1060,34 @@ class Article(Document, DocumentHelperMixin):
             'perms': perms,
         }
 
+        languages = set()
+        dj_langs = [l[0] for l in settings.LANGUAGES]
+
+        if self.language is None:
+            for feed in self.feeds:
+                for lang in feed.languages:
+                    for dj_lang in dj_langs:
+                        if lang.startswith(dj_lang):
+                            # we add the Django language code, because the
+                            # templates / cache switch on this particular
+                            # value, not the potentially full language code
+                            # from the article / feed.
+                            languages.add(dj_lang)
+        else:
+            languages = [self.language]
+
+        if languages == set():
+            languages = dj_langs
+
         # TODO: with Django 1.6, check if cache is already present or not:
         # https://docs.djangoproject.com/en/dev/topics/cache/#django.core.cache.utils.make_template_fragment_key # NOQA
 
-        # pre-render both versions.
         for full_text_value in (True, False):
             context['perms'].core.can_read_full_text = full_text_value
-            render_to_string('snippets/read/article-body.html', context)
+
+            for lang in languages:
+                context['LANGUAGE_CODE'] = lang
+                render_to_string('snippets/read/article-body.html', context)
 
     @property
     def is_good(self):

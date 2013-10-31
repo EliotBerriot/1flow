@@ -191,7 +191,6 @@ class HomePreferences(EmbeddedDocument):
     style_templates = {
         u'RL': 'snippets/read/read-list-item.html',
         u'TL': 'snippets/read/read-tiles-tile.html',
-        u'T1': 'snippets/read/read-tiles-experimental-tile.html',
     }
     style = StringField(verbose_name=_(u'How the user wants his 1flow '
                         u'home to appear'), max_length=2,
