@@ -1,0 +1,38 @@
+    {% comment %}
+        This item is present (but invisible) in all pages via
+        the home.html template.
+
+        In the source selector, the home block is emptied, and
+        this item shows in the top-left "add" menu.
+    {% endcomment %}
+
+    {% if perms.core.can_import_web_items %}
+        {% if in_list %}
+            <li>
+
+        {% else %}
+            <span class="hide">
+
+        {% endif %}
+
+        <a id="import-web-item-trigger"
+                href="{% url 'import_web_pages' %}"
+                data-toggle="modal"
+                data-target="#">{% trans "Import web item(s)" %}</a>
+
+        {% if in_list %}
+            </li>
+
+        {% else %}
+            </span>
+
+        {% endif %}
+
+    {% else %}
+        {% if in_list %}
+            <li class="muted not-ready" {% feature_not_ready %}>
+                {% trans "Import web item(s)" %}</li>
+
+        {% endif %}
+
+    {% endif %}

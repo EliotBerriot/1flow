@@ -1,0 +1,29 @@
+<script type="text/javascript">
+
+    $("#import-web-pages").modal('hide');
+
+    notify("{% spaceless %}
+        {% if created %}
+
+        {% blocktrans with count=created|length %}
+            Successfully launched import of {{count}} web page(s).
+        {% endblocktrans %}
+
+        {% else %}
+            {% trans "No item imported" %}
+
+        {% endif %}
+    {% endspaceless %}");
+
+    {% if failed %}
+        {% for failed_url, failed_reason in failed %}
+            notify("{% spaceless %}
+                {% blocktrans %}
+                    Import of URL <code>{{failed_url}}</code> failed: {{failed_reason}}
+                {% endblocktrans %}
+                {% endspaceless %}");
+
+        {% endfor %}
+    {% endif %}
+
+</script>

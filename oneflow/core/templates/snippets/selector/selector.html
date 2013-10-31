@@ -13,17 +13,7 @@
                         data-toggle="modal"
                         data-target="#">{% trans "Add a folder" %}</a></li>
 
-                {% if user.is_superuser and preferences.staff.super_powers_enabled %}
-                    <li><a id="import-web-item-trigger"
-                            href="{% url 'import_web_pages' %}"
-                            data-toggle="modal"
-                            data-target="#">{% trans "Import web item(s)" %}</a></li>
-
-                {% else %}
-                    <li class="muted not-ready" {% feature_not_ready %}>
-                        {% trans "Import web item(s)" %}</li>
-
-                {% endif %}
+                {% include 'snippets/selector/import-web-items-trigger.html' with in_list=1 %}
             </ul>
         </div>
     </div>
@@ -40,7 +30,7 @@
                             <li class="muted not-ready" {% feature_not_ready %}>
                                 {% trans "Inbox" %}</li>
 
-                            {% if user.is_superuser and preferences.staff.super_powers_enabled %}
+                            {% if perms.core.can_import_web_items %}
                                 <li>{% special_subscription_list_with_count mongodb_user 'web_import' %}</li>
 
                             {% else %}
