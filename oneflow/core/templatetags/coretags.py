@@ -373,22 +373,23 @@ def article_excerpt_content_display(article):
             return None
 
 
-@register.inclusion_tag('snippets/read/read-content.html', takes_context=True)
-def read_content(context, read, user):
+@register.inclusion_tag('snippets/read/article-content.html',
+                        takes_context=True)
+def article_content(context, article, with_full_text):
 
-    if user.has_permission('read.full_text', read=read):
-        content = article_full_content_display(read.article)
+    if with_full_text:
+        content = article_full_content_display(article)
         excerpt = False
 
     else:
-        content = article_excerpt_content_display(read.article)
+        content = article_excerpt_content_display(article)
         excerpt = True
 
     return {
         # Make these up, because the context is not forwarded
         # to the final template. And that's a Django feature.
         # http://stackoverflow.com/q/5842538/654755
-        'article_url': read.article.url,
+        'article_url': article.url,
         'STATIC_URL': settings.STATIC_URL,
 
         # We don't mark_safe() here, else mark_safe(None) outputs "None"
@@ -400,7 +401,7 @@ def read_content(context, read, user):
 
 
 @register.inclusion_tag('snippets/read/read-action.html')
-def read_action(read, action_name, with_text=True, popover_direction=None):
+def read_action(article, action_name, with_text=True, popover_direction=None):
 
     return {
         'with_text': with_text,
@@ -409,7 +410,7 @@ def read_action(read, action_name, with_text=True, popover_direction=None):
         'action_data' : Read.status_data.get(action_name),
         'popover_class': '' if with_text else 'popover-tooltip',
         'js_func': "toggle_status('{0}', '{1}')".format(
-                   read.id, action_name)
+                   article.id, action_name)
     }
 
 

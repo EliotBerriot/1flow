@@ -3,16 +3,16 @@
 
 var read_actions_messages = {};
 
-function mark_something(read_id, mark_what, mark_inverse, send_notify, message, callback) {
+function mark_something(article_id, mark_what, mark_inverse, send_notify, message, callback) {
 
     var run_callback = function() {
         //console.debug('trying to run callback ' + callback + '(' + oid + ')');
-        typeof callback === 'function' && callback(read_id, mark_what, mark_inverse, send_notify, message);
+        typeof callback === 'function' && callback(article_id, mark_what, mark_inverse, send_notify, message);
     };
 
-    var read = $("#" + read_id);
+    var $article = $("#" + article_id);
 
-    // console.debug('mark_something(' + read_id + ', ' + mark_what + ', ' + mark_inverse + ');');
+    // console.debug('mark_something(' + article_id + ', ' + mark_what + ', ' + mark_inverse + ');');
 
     //
     // CSS classes are defined in a template-tag.
@@ -41,17 +41,22 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message, 
         var send_notify = false;
     }
 
-    $.get(read.data('url-action-toggle').replace('@@KEY@@', mark_what),
+    //
+    // HEADS UP: the *row* uses article.id to ease its caching.
+    //           But the `url-action-toggle` is *really* the URL
+    //           of the User's **Read**.
+    //
+    $.get($article.data('url-action-toggle').replace('@@KEY@@', mark_what),
         function(){
-            //console.debug(read.find(".action-mark-" + klass));
-            //console.debug(read.find(".action-mark-" + inverse));
+            //console.debug($article.find(".action-mark-" + klass));
+            //console.debug($article.find(".action-mark-" + inverse));
 
             // This is done automatically via CSS now.
-            // read.find(".action-mark-" + klass).fadeOut('fast', function(){
-            //     read.find(".action-mark-" + inverse).fadeIn('fast');
+            // $article.find(".action-mark-" + klass).fadeOut('fast', function(){
+            //     $article.find(".action-mark-" + inverse).fadeIn('fast');
             // });
 
-            read.removeClass(inverse).addClass(klass);
+            $article.removeClass(inverse).addClass(klass);
 
             if (send_notify) {
                 notify({
@@ -72,65 +77,65 @@ function mark_something(read_id, mark_what, mark_inverse, send_notify, message, 
     return false;
 }
 
-function post_mark_triggers(read_id, attr_name, send_notify) {
+function post_mark_triggers(article_id, attr_name, send_notify) {
 
-    var $read = $("#" + read_id);
+    var $article = $("#" + article_id);
 
     if (attr_name == 'is_bookmarked') {
 
         if (preferences.bookmarked_marks_unread) {
 
-            //console.debug('item ' + read_id + ' bookmarked.');
-            //console.debug($read.hasClass('is_bookmarked'));
-            //console.debug($read.hasClass('is_read'));
+            //console.debug('item ' + article_id + ' bookmarked.');
+            //console.debug($article.hasClass('is_bookmarked'));
+            //console.debug($article.hasClass('is_read'));
 
-            if($read.hasClass('is_bookmarked')
-                    && $read.hasClass('is_read')) {
+            if($article.hasClass('is_bookmarked')
+                    && $article.hasClass('is_read')) {
 
                 // 'true' means mark 'inverse' of is_read.
-                mark_something(read_id, 'is_read', true, send_notify);
+                mark_something(article_id, 'is_read', true, send_notify);
 
-                // console.log('item ' + read_id + ' bookmarked; marked as unread too.');
+                // console.log('item ' + article_id + ' bookmarked; marked as unread too.');
             }
         }
 
     } else if (attr_name == 'is_starred') {
 
-        // console.debug('item ' + read_id + ' starred.');
+        // console.debug('item ' + article_id + ' starred.');
 
         if (preferences.starred_marks_read) {
 
-            if($read.hasClass('is_starred')
-                    && $read.hasClass('not_is_read')) {
+            if($article.hasClass('is_starred')
+                    && $article.hasClass('not_is_read')) {
 
-                mark_something(read_id, 'is_read', false, send_notify);
+                mark_something(article_id, 'is_read', false, send_notify);
 
-                // console.log('item ' + read_id + ' starred; marked as read too.');
+                // console.log('item ' + article_id + ' starred; marked as read too.');
             }
         }
 
         if (preferences.starred_removes_bookmarked) {
 
-            if($read.hasClass('is_starred')
-                    && $read.hasClass('is_bookmarked')) {
+            if($article.hasClass('is_starred')
+                    && $article.hasClass('is_bookmarked')) {
 
-                mark_something(read_id, 'is_bookmarked', true, send_notify);
+                mark_something(article_id, 'is_bookmarked', true, send_notify);
 
-                // console.log('item ' + read_id + ' starred; unbookmarked too.');
+                // console.log('item ' + article_id + ' starred; unbookmarked too.');
             }
         }
     }
 }
 
-function toggle_status(read_id, attr_name, send_notify) {
+function toggle_status(article_id, attr_name, send_notify) {
 
-    var $read = $("#" + read_id);
+    var $article = $("#" + article_id);
 
-    mark_something(read_id, attr_name,
-                   !!$read.hasClass(attr_name),
+    mark_something(article_id, attr_name,
+                   !!$article.hasClass(attr_name),
                    send_notify, null,
                    function() {
-                        post_mark_triggers(read_id, attr_name, send_notify);
+                        post_mark_triggers(article_id, attr_name, send_notify);
                    }
                 );
 

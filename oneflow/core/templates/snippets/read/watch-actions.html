@@ -1,15 +1,15 @@
 
 <div class="read-actions watch-actions actions clicker-muted hide"
-  data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ read.id }}">
+  data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ article.id }}">
 
-  {% read_action read 'is_fact'        with_text "bottom" %}
-  {% read_action read 'is_number'      with_text "bottom" %}
-  {% read_action read 'is_analysis'    with_text "bottom" %}
-  {% read_action read 'is_knowhow'     with_text "bottom" %}
-  {% read_action read 'is_prospective' with_text "bottom" %}
-  {% read_action read 'is_rules'       with_text "bottom" %}
-  {% read_action read 'is_quote'       with_text "bottom" %}
-  {% read_action read 'is_knowledge'   with_text "bottom" %}
-  {% read_action read 'is_fun'         with_text "bottom" %}
+  {% read_action article 'is_fact'        with_text "bottom" %}
+  {% read_action article 'is_number'      with_text "bottom" %}
+  {% read_action article 'is_analysis'    with_text "bottom" %}
+  {% read_action article 'is_knowhow'     with_text "bottom" %}
+  {% read_action article 'is_prospective' with_text "bottom" %}
+  {% read_action article 'is_rules'       with_text "bottom" %}
+  {% read_action article 'is_quote'       with_text "bottom" %}
+  {% read_action article 'is_knowledge'   with_text "bottom" %}
+  {% read_action article 'is_fun'         with_text "bottom" %}
 
 </div>

@@ -1,25 +1,34 @@
-<li id="{{ read.id }}" class="read-list-item row-fluid hover-unmute-children {% read_status_css read %}"
-    {% read_action_toggle_url read %} data-index="{{ tenths_counter|add:forloop.counter }}">
+{% comment %}
 
-  <div class="top-marker only_when_open">
-    <div class="top-horizontal-rule"></div>
-  </div>
+    Using the cache, we need to use the article as pivot ID everywhere.
+    Via this pivot, we still get the **Read** URL and toggle Read
+    attributes directly.
 
-  <div class="top-closer only_when_open">
-    <a href="#" class="content-toggle"
-      data-toggle-id="{{ read.id }}"
-      data-toggle-function="toggle_content"
-      data-toggle-callback="notice_element"
-        >
-      <i class="icon-remove-sign"></i>
-    </a>
-  </div>
+    BUT, we cannot cache this beginning part, rightly because of the
+    Read toggle URL and the `read_status_css`, which depend on the
+    User's Read attributes. The tenth's counter counts, too.
 
-  {% with article=read.article with_index=1 read_in_list=1 %}
+{% endcomment %}
 
-        {% cache 86400 article_body article with_full_text %}
-            {% include "snippets/read/article-body.html" %}
-        {% endcache %}
-  {% endwith %}
+{% with article=read.article %}
 
-</li>
+  <li id="{{ article.id }}"
+      class="read-list-item row-fluid hover-unmute-children {% read_status_css read %}"
+      {% read_action_toggle_url read %} data-index="{{ tenths_counter|add:forloop.counter }}">
+
+    <div class="top-marker only_when_open">
+      <div class="top-horizontal-rule"></div>
+    </div>
+
+    <div class="top-closer only_when_open">
+      <a href="#" class="content-toggle"
+        data-toggle-id="{{ article.id }}"
+        data-toggle-function="toggle_content"
+        data-toggle-callback="notice_element">
+        <i class="icon-remove-sign"></i>
+      </a>
+    </div>
+
+      {% include "snippets/read/article-body.html" with with_index=1 read_in_list=1 %}
+  </li>
+{% endwith %}

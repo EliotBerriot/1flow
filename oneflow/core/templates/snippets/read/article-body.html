@@ -1,3 +1,5 @@
+{# make sure you have the add_to_builtins(…cache) else this will fail. #}
+{% cache 86400 article_body article with_full_text %}
 
 {% if read_in_list %}
   {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 meta_class='top only_when_collapsed' %}
@@ -7,13 +9,16 @@
 
 <div class="article {{ read_in_list|yesno:'slide-togglable slide-toggle-notice,' }}"
     {% if read_in_list %}
-      data-toggle-id="{{ read.id }}"
+      data-toggle-id="{{ article.id }}"
       data-toggle-function="toggle_content"
       data-toggle-callback="notice_element"
     {% endif %}
     >
 
-    {% include 'snippets/read/read-admin-informations.html' %}
+    {% comment %}
+        Invalid now that we have the whole item in cache.
+        {% include 'snippets/read/read-admin-informations.html' %}
+    {% endcomment %}
 
   {% with meta_class='bottom only_when_open' %}
       {# other variables are unset, this is intended for `False` values. #}
@@ -21,10 +26,10 @@
   {% endwith %}
 
   <div class="read-content-wrapper {{ read_in_list|yesno:'hide,' }}"
-      id="content-{{ read.id }}">
+      id="content-{{ article.id }}">
     <div class="article-content ">
 
-      {% read_content read mongodb_user %}
+      {% article_content article with_full_text %}
 
     </div><!-- .article-content -->
 
@@ -40,3 +45,5 @@
     </div>
   </div><!-- .article-content-wrapper -->
 </div><!-- .article -->
+
+{% endcache %}
