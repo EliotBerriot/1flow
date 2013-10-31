@@ -326,7 +326,7 @@ def delete_subscription(request, **kwargs):
     subscription_id = kwargs.pop('subscription', None)
     subscription    = Subscription.get_or_404(subscription_id)
 
-    if request.user.is_superuser or subscription.owner == request.user.mongo:
+    if request.user.is_superuser or subscription.user == request.user.mongo:
 
         subscription.delete()
 
