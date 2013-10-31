@@ -71,10 +71,17 @@ def subscription_post_create_task(subscription_id, *args, **kwargs):
 
 
 @task(name='Subscription.post_delete', queue='clean')
-def subscription_post_delete_task(subscription_id, *args, **kwargs):
+def subscription_post_delete_task(subscription, *args, **kwargs):
+    """ HEADS UP: we get a real object (not an ID) as first argument.
+        Without this, we have no way to get any reference to the
+        deleted instance.
 
-    subscription = Subscription.objects.get(id=subscription_id)
-    return subscription.post_delete_task(*args, **kwargs)
+        This is an heavy operation for the database, that can be long.
+        Thus done in a task, not in a `reverse_delete_rule` nor directly
+        in the signal handler.
+    """
+
+    subscription.reads.update(pull__subscriptions=subscription)
 
 
 @task(name='Subscription.mark_all_read_in_database', queue='low')
@@ -162,14 +169,11 @@ class Subscription(Document, DocumentHelperMixin):
         subscription = document
 
         if subscription._db_name != settings.MONGODB_NAME_ARCHIVE:
-            subscription_post_delete_task.delay(subscription.id)
 
-    def post_delete_task(self):
-        """ This is an heavy operation for the database. Thus done
-            in a task, not in a `reverse_delete_rule` nor directly
-            in the signal handler. """
-
-        self.reads.update(pull__subscriptions=self)
+            # HEADS UP: we don't pass an ID, else the .get() fails
+            # in the task for a good reason: the subscription doesn't
+            # exist anymore.
+            subscription_post_delete_task.delay(subscription)
 
     @classmethod
     def subscribe_user_to_feed(cls, user, feed, name=None,
