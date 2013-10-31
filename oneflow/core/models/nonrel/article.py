@@ -1051,7 +1051,7 @@ class Article(Document, DocumentHelperMixin):
             'read_in_list': 1,
         }
 
-        # check if cache is already present or not:
+        # TODO: with Django 1.6, check if cache is already present or not:
         # https://docs.djangoproject.com/en/dev/topics/cache/#django.core.cache.utils.make_template_fragment_key # NOQA
 
         # pre-render both versions.
