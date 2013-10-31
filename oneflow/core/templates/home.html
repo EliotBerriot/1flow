@@ -29,10 +29,10 @@
 {% endblock extrajs_header %}
 
 {% block body %}
-    {% cache 86400 base_body_includes %}
+    {#{% cache 86400 base_body_includes %}#}
         {% include 'snippets/navbar.html' %}
         {% include 'snippets/help-arrows.html' %}
-    {% endcache %}
+    {#{% endcache %}#}
 
   {% block application_header %}{% endblock application_header %}
 
