@@ -143,7 +143,10 @@
 
             if (nr_items > 15 || next_page == null) {
                 hide_initial_loading();
-                setup_snappers();
+
+                {% if mongodb_user.is_staff_or_superuser_and_enabled %}
+                    setup_snappers();
+                {% endif %}
             }
 
             if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
