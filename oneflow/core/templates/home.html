@@ -58,7 +58,13 @@
                         text: {% if 'safe' in tags %}"{{ message|safe }}"{% else %}"{{ message }}"{% endif %},
                         type: "{% if 'warning' in tags %}warning{% elif 'success' in tags %}success{% else %}info{% endif %}",
                         icon: false,
-                        sticker: {% if 'sticky' in tags %}true{% else %}false{% endif %}
+
+                        // The play/pause button, to keep auto-hiding
+                        //notifications on screen before they disappear.
+                        sticker: false,
+
+                        // auto-hide or not.
+                        hide: {% if 'sticky' in tags %}false{% else %}true{% endif %}
                     });
 
                 {% endwith %}
@@ -80,11 +86,12 @@
 
   {% block application_footer %}{% endblock application_footer %}
 
-{% block web_item_importer %}
+  {% block web_item_importer %}
     {% cache 86400 base_web_item_importer perms.core.can_import_web_items %}
-        {% include 'snippets/selector/import-web-items-trigger.html' %}
+      {% include 'snippets/selector/import-web-items-trigger.html' %}
     {% endcache %}
-{% endblock web_item_importer %}
+  {% endblock web_item_importer %}
+
 {% endblock body %}
 
 {% block extrajs_footer %}
@@ -146,7 +153,10 @@
 
     {% cache 3600 home_extrajs_footer_mutable LANGUAGE_CODE %}
 
-    {# {% compressed_js 'core' %} #}
+    {% comment %}
+        Each special section has its own JS pipeline.
+        The one who haven't benefit from the default "core".
+    {% endcomment %}
 
     <script type="text/javascript">
         {% comment %}
@@ -168,9 +178,41 @@
 
         // “Goto Selector”, “Goto Sources”
         Mousetrap.bind(['g s'], function() {
-            notify({text: "{% trans "Returning to source selector…" %}",
-                   icon: false});
+            notify({
+                text: "{% trans "Returning to source selector…" %}",
+                icon: false
+            });
             document.location = "{% url 'source_selector' %}";
+            return false;
+        });
+
+        // “Goto Features
+        Mousetrap.bind(['g f'], function() {
+            notify({
+                text: "{% trans "Heading to features / help…" %}",
+                icon: false
+            });
+            document.location = "{% url 'help' %}";
+            return false;
+        });
+
+        // “Goto Preferences”
+        Mousetrap.bind(['g p'], function() {
+            notify({
+                text: "{% trans "Opening your preferences…" %}",
+                icon: false
+            });
+            document.location = "{% url 'preferences' %}";
+            return false;
+        });
+
+        // “Goto Account”
+        Mousetrap.bind(['g a'], function() {
+            notify({
+                text: "{% trans "Opening your account…" %}",
+                icon: false
+            });
+            document.location = "{% url 'profile' %}";
             return false;
         });
 

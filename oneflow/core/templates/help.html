@@ -57,3 +57,8 @@ Welcome to 1flow help center. If you don't find the answer you need here, please
       <div class="span12 spacer100"> </div>
     </div>
 {% endblock application_content %}
+
+{% block extrajs_footer %}
+    {{ block.super }}
+    {% compressed_js 'core' %}
+{% endblock extrajs_footer %}

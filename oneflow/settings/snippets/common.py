@@ -310,6 +310,7 @@ PIPELINE_JS = {
         'source_filenames': (
             'js/utils/*.js',
             'js/common.js',
+            'js/core-init.js',
         ),
         'output_filename': 'js/min/core.js',
     },
