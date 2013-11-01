@@ -16,7 +16,21 @@
     <div id="reads-list-header" class="span8 offset2">
         <div class="h1-wrapper">
             <div class="h1-background"></div>
-            <h1 class="left-side">{{ read_page_header_text_left|safe }}</h1>
+            <h1 class="left-side">
+                <a id="back-to-selector" data-toggle="tooltip" class="popover-top"
+                title="{% trans "Go back to source selector" %}"
+                href="{% url 'source_selector' %}{% spaceless %}
+
+                {% if folder %}
+                    #{{ folder.id }}
+
+                {% elif subscription %}
+                    #{{ subscription.id }}
+
+                {% endif %}
+
+                {% endspaceless %}"><i class="icon-arrow-left"></i>&nbsp;
+                {{ read_page_header_text_left|safe }}</a></h1>
             <h1 class="right-side"><span id="reads-number">{{ read_page_header_text_right|safe }}</span></h1>
         </div>
     </div>

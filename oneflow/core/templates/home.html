@@ -178,11 +178,21 @@
 
         // “Goto Selector”, “Goto Sources”
         Mousetrap.bind(['g s'], function() {
+
+            var $back_to_selector = $("a#back-to-selector");
+
             notify({
                 text: "{% trans "Returning to source selector…" %}",
                 icon: false
             });
-            document.location = "{% url 'source_selector' %}";
+
+            if ($back_to_selector.length) {
+                document.location = $back_to_selector.attr('href');
+
+            } else {
+                document.location = "{% url 'source_selector' %}";
+            }
+
             return false;
         });
 
