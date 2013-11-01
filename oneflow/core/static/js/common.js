@@ -59,6 +59,11 @@ try {
     var hammertime = null;
 }
 
+function csrfSafeMethod(method) {
+    // these HTTP methods do not require CSRF protection
+    return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
+}
+
 function notify(params){
     // did you ever see a that-simple wrapper?
     $.pnotify(params);
@@ -651,7 +656,6 @@ function launch_async_gets(parent) {
         });
 }
 
-
 // bindable_hovered NOT USED YET
 function setup_hover_notifiers(parent) {
     // cf. http://stackoverflow.com/questions/3479849/jquery-how-do-i-get-the-element-underneath-my-cursor
@@ -685,7 +689,6 @@ function on_hovered(func_if_found, func_if_not_found){
         }
     }
 }
-
 
 function handle_modal(e) {
 
@@ -790,14 +793,21 @@ function setup_modals(parent) {
 
     // Freely inspired from https://gist.github.com/havvg/3226804
     find_start(parent, 'form[data-async]').on('submit', handle_ajax_form);
-
 }
+
+// ———————————————————————————————————————————————— reusable setup_everything()
+
 function setup_everything(parent) {
+    // It will be called by common_init() on <body> at page load.
+    // You can call it safely on any ajax-incoming DOM fragment
+    // to setup the same things on "new" parts of the page without
+    // re-walking the whole page.
 
     if (!Modernizr.touch){
         setup_tooltips(parent);
         setup_hover_muters(parent);
     }
+
     setup_popovers(parent);
     setup_clicker_muters(parent);
 
@@ -814,8 +824,8 @@ function setup_everything(parent) {
     //launch_async_gets(parent);
 
     try {
-        // if we are in body#home, try to run home_setup(), and so on.
-        // Don't use eval. Thanks
+        // Given we are in <body#home>, try to run home_setup(), and so on.
+        // Don't use the nasty eval if it's not strictly required. Thanks
         // https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/eval
 
         var func_name = $('body').attr('id') + '_setup';
@@ -827,11 +837,15 @@ function setup_everything(parent) {
                       + func_name + '(): ' + err);
     }
 }
+
+// ————————————————————————————————————————————————————————————— one-time setup
+
 function setup_auto_cleaner() {
     // every 10 minutes, the page is cleaned from old and orphaned elements.
 
     page_cleaner_interval = setInterval(page_cleaner, 600000);
 }
+
 function setup_keyboard() {
 
     $(document).keydown(function(ev) {
@@ -852,6 +866,22 @@ function setup_keyboard() {
         }
     });
 }
+
+function setup_ajax() {
+    $.ajaxSetup({
+        crossDomain: false,
+        beforeSend: function(xhr, settings) {
+            if (!csrfSafeMethod(settings.type)) {
+                xhr.setRequestHeader("X-CSRFToken",
+                    $("input[name='csrfmiddlewaretoken']").val());
+            }
+        }
+    });
+}
+
+// ————————————————————————————————————————————————————————————— initialization
+//                        (you have to cal this function in app-specific pages)
+
 function common_init() {
 
     setup_everything();
@@ -871,8 +901,10 @@ function common_init() {
     }
 
     //setup_table_sorter();
+
     setup_auto_cleaner();
 
     setup_keyboard();
 
+    setup_ajax();
 }
