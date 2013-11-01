@@ -1,18 +1,22 @@
 {% with unread_count=subscription.unread_articles_count all_count=subscription.all_articles_count later_count=subscription.bookmarked_articles_count %}
-    <div class="subscription {{ unread_count|yesno:'has-unread,' }} {{ subscription.feed.closed|yesno:'is_closed,' }}">
+
+{# I don't bother pivoting on the thumbnail, it can wait until cache expiry. #}
+{% cache 86400 subscription_block_start subscription.id subscription.name subscription.has_unread subscription.is_closed %}
+
+    <div class="subscription {% if subscription.has_unread %}has-unread{% endif %} {% if subscription.is_closed %}is_closed{% endif %}">
 
         <a id="{{ subscription.id }}"></a>
 
         <div class="thumbnail">
-            {% if unread_count %}
+            {% if subscription.has_unread %}
                 <a href="{% url 'read_feed' feed=subscription.id %}"
                     data-toggle="tooltip" class="popover-top"
-                    title="{% blocktrans %}Click to read the {{ unread_count }} new article(s){% endblocktrans %}">
+                    title="{% blocktrans with subscription_name=subscription.name %}Click to read new items in {{subscription_name}}{% endblocktrans %}">
 
             {% else %}
                 <a href="{% url 'read_all_feed' feed=subscription.id %}"
                     data-toggle="tooltip" class="popover-top"
-                    title="{% blocktrans %}Click to display all the {{ all_count }} articles of this subscription.{% endblocktrans %}">
+                    title="{% blocktrans with subscription_name=subscription.name %}Click to display all items in {{subscription_name}}{% endblocktrans %}">
 
             {% endif %}
 
@@ -27,6 +31,8 @@
             </a>
 
         </div>
+
+{% endcache %}
 
         <div class="links css-hover-muted">
             {% container_reading_list_with_count 'read' 'feed' subscription 'unread' _('unread') %}
