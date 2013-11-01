@@ -57,7 +57,7 @@
     {% endcomment %}
 
     {# HOW UGLY IS THIS… When calling a function would be so simple… #}
-    {% captureas user_echo_page %}{% reverse_active 'home' %}{% reverse_active 'profile' %}{% reverse_active 'help' %}{% endcaptureas %}
+    {% captureas user_echo_page %}{% reverse_active 'home' %}{% reverse_active 'source_selector' %}{% reverse_active 'profile' %}{% reverse_active 'help' %}{% endcaptureas %}
     {% if not debug and user_echo_page %}
       {% include 'snippets/userecho.html' %}
       {% if user.is_anonymous or not user.is_superuser %}
