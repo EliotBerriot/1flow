@@ -9,10 +9,13 @@
 
 {% endcomment %}
 
+{# HEADS UP: these 4 pivot values are important to not miss any changes #}
+{% cache 86400 folder_block_start folder.id folder.name folder.has_content level %}
+
 <div class="folder-wrapper clearfix level-{{ level }}"
     style="border-{{ level|divisibleby:'2'|yesno:'left,right' }}-color: {{ folder_color_border }}">
     <div class="folder-border-top" style="background-color: {{ folder_color_border }}"></div>
-    <div class="folder {% if folder.subscriptions or folder.children %}has_content{% endif %}">
+    <div class="folder {% if folder.has_content %}has_content{% endif %}">
 
         <a id="{{ folder.id }}"></a>
 
@@ -27,7 +30,7 @@
             {% endif %}
 
             {# {% if debug %}<span class="muted">#{{forloop.counter}}</span>{% endif %} #}
-
+{% endcache %}
             <div class="links css-hover-muted">
                 {% container_reading_list_with_count 'read' 'folder' folder 'unread' _('unread') %}
                 {% container_reading_list_with_count 'read_later' 'folder' folder 'bookmarked' _('for later') %}
