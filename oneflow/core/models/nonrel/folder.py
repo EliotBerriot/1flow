@@ -184,6 +184,12 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
                 child.unset_parent()
 
     @property
+    def has_content(self):
+
+        # PERF: it's faster to test for children than query for subscriptions.
+        return self.children or self.subscriptions
+
+    @property
     def max_depth(self):
 
         return 4 \

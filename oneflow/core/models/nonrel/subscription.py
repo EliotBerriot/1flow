@@ -204,6 +204,17 @@ class Subscription(Document, DocumentHelperMixin):
 
         return subscription
 
+    @property
+    def has_unread(self):
+
+        # We need a boolean value for accurate template caching.
+        return self.unread_articles_count != 0
+
+    @property
+    def is_closed(self):
+
+        return self.feed.closed
+
     def mark_all_read(self, latest_displayed_read=None):
 
         if self.unread_articles_count == 0:
