@@ -98,35 +98,6 @@
 
         {% include "snippets/read/actions-messages.js.html" %}
 
-        function hide_initial_loading() {
-
-            try {
-                $(".initial-loading").stop(true, true).slideUp(function(){
-                    // WARNING: do not use sole document.location.
-                    // In case of a '#' inside it will loop all the
-                    // articles in the counter span!!
-                    $.get(document.location.pathname + '?count=1',
-                        function(data){
-                            $('#reads-number').html(data);
-                        }
-                    );
-                }).delete();
-
-            } catch (err) {
-                // nothing, just don't crash if it's not here.
-            }
-        }
-
-        function show_initial_loading() {
-
-            $(".initial-loading").stop(true, true).fadeIn();
-        }
-
-        function show_no_items() {
-
-            $("#no-items").fadeIn();
-        }
-
         function endless_load_next_if_needed() {
 
             {% comment %}
@@ -172,6 +143,7 @@
 
             if (nr_items > 15 || next_page == null) {
                 hide_initial_loading();
+                setup_snappers();
             }
 
             if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {

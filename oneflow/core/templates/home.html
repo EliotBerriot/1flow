@@ -29,10 +29,18 @@
 {% endblock extrajs_header %}
 
 {% block body %}
-    {#{% cache 86400 base_body_includes %}#}
+    {% if user.is_superuser %}
+      {# Never cache the navbar for admins, we must know about maintenance mode #}
+      {% include 'snippets/navbar.html' %}
+      {% include 'snippets/help-arrows.html' %}
+
+    {% else %}
+      {% cache 86400 home_navbar user %}
         {% include 'snippets/navbar.html' %}
         {% include 'snippets/help-arrows.html' %}
-    {#{% endcache %}#}
+      {% endcache %}
+
+    {% endif %}
 
   {% block application_header %}{% endblock application_header %}
 
@@ -48,7 +56,7 @@
 
                     notify({
                         text: {% if 'safe' in tags %}"{{ message|safe }}"{% else %}"{{ message }}"{% endif %},
-                        type: {% if 'warning' in tags %}"warning"{% else %}"info"{% endif %},
+                        type: "{% if 'warning' in tags %}warning{% elif 'success' in tags %}success{% else %}info{% endif %}",
                         icon: false,
                         sticker: {% if 'sticky' in tags %}true{% else %}false{% endif %}
                     });
@@ -76,15 +84,16 @@
     {% cache 86400 base_web_item_importer perms.core.can_import_web_items %}
         {% include 'snippets/selector/import-web-items-trigger.html' %}
     {% endcache %}
-
 {% endblock web_item_importer %}
 {% endblock body %}
 
 {% block extrajs_footer %}
 
-    {% cache 86400 base_extrajs_footer_immutable %}
+    {% csrf_token %}
 
-    {{ block.super }}
+    {% cache 86400 home_extrajs_footer_immutable %}
+
+    {# block is empty in base.html {{ block.super }} #}
 
     <script type="text/javascript"
         src="//cdnjs.cloudflare.com/ajax/libs/raven.js/1.0.8/raven.min.js"></script>
@@ -132,32 +141,22 @@
     {% import_django_select2_js %}
 
     {% compressed_js 'vendor-all' %}
-    {#{% compressed_js 'core' %}#}
 
     {% endcache %}
 
-    {% csrf_token %}
+    {% cache 3600 home_extrajs_footer_mutable LANGUAGE_CODE %}
 
-    {% cache 86400 base_extrajs_footer_lang LANGUAGE_CODE %}
+    {# {% compressed_js 'core' %} #}
 
     <script type="text/javascript">
-        {# This must stay here (in the template) to get the server-side language. #}
-        //moment.lang('{{ LANGUAGE_CODE }}');
+        {% comment %}
+            This must stay here (in the template, not an
+            external JS file) to get the server-side language.
 
-        function csrfSafeMethod(method) {
-            // these HTTP methods do not require CSRF protection
-            return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-        }
+            Moment is disabled, we do not use it yet client-side.
 
-        $.ajaxSetup({
-            crossDomain: false,
-            beforeSend: function(xhr, settings) {
-                if (!csrfSafeMethod(settings.type)) {
-                    xhr.setRequestHeader("X-CSRFToken",
-                        $("input[name='csrfmiddlewaretoken']").val());
-                }
-            }
-        });
+            moment.lang('{{ LANGUAGE_CODE }}');
+        {% endcomment %}
 
         // —————————————————————————————————————————— common keyboard shortcuts
 
@@ -169,7 +168,8 @@
 
         // “Goto Selector”, “Goto Sources”
         Mousetrap.bind(['g s'], function() {
-            notify("{% trans "Returning to source selector…" %}");
+            notify({text: "{% trans "Returning to source selector…" %}",
+                   icon: false});
             document.location = "{% url 'source_selector' %}";
             return false;
         });

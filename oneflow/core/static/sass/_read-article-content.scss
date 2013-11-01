@@ -10,6 +10,8 @@
 
     padding: 0 $article-padding-side 5em;
 
+    .selected { background: #ff9; }
+
     a {
         color: inherit;
         text-decoration: none;
@@ -190,6 +192,6 @@
     }
 }
 
-.content-toggle {
-    cursor: pointer;
-}
+// .content-toggle {
+//     cursor: pointer;
+// }
