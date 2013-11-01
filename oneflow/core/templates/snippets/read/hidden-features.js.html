@@ -5,11 +5,21 @@
 
     // “Mark All Read”
     Mousetrap.bind(['shift+m shift+a shift+r'], function() {
-        $.get(document.location.pathname + '?mark_all_read=1', function(data) {
-            notify(read_actions_messages.all_marked_read);
-        });
 
-        $('.read-list-item.not_is_read').each(function() {
+        var selector = '.read-list-item.not_is_read';
+        var first_id = $('.read-list-item').first().attr('id');
+
+        $.get(document.location.pathname + '?mark_all_read=' + first_id,
+            function(data) {
+                notify(read_actions_messages.all_marked_read);
+            }
+        );
+
+        if (preferences.bookmarked_marks_unread) {
+            selector += '.not_is_bookmarked';
+        }
+
+        $(selector).each(function() {
             $this = $(this);
             $this.removeClass('not_is_read').addClass('is_read');
             $this.find('.action-mark-is_read').hide();
