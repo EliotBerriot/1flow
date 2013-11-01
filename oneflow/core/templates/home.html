@@ -56,7 +56,7 @@
 
                     notify({
                         text: {% if 'safe' in tags %}"{{ message|safe }}"{% else %}"{{ message }}"{% endif %},
-                        type: {% if 'warning' in tags %}"warning"{% else %}"info"{% endif %},
+                        type: "{% if 'warning' in tags %}warning{% elif 'success' in tags %}success{% else %}info{% endif %}",
                         icon: false,
                         sticker: {% if 'sticky' in tags %}true{% else %}false{% endif %}
                     });
@@ -168,7 +168,8 @@
 
         // “Goto Selector”, “Goto Sources”
         Mousetrap.bind(['g s'], function() {
-            notify("{% trans "Returning to source selector…" %}");
+            notify({text: "{% trans "Returning to source selector…" %}",
+                   icon: false});
             document.location = "{% url 'source_selector' %}";
             return false;
         });

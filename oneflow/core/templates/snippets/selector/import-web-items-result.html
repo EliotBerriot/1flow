@@ -2,7 +2,7 @@
 
     $("#import-web-pages").modal('hide');
 
-    notify("{% spaceless %}
+    notify({text: "{% spaceless %}
         {% if created %}
 
         {% blocktrans with count=created|length %}
@@ -13,15 +13,21 @@
             {% trans "No item imported" %}
 
         {% endif %}
-    {% endspaceless %}");
+    {% endspaceless %}",
+        type: "{% if created %}success{% else %}info{% endif %}",
+        icon: false
+    });
 
     {% if failed %}
         {% for failed_url, failed_reason in failed %}
-            notify("{% spaceless %}
+            notify({text: "{% spaceless %}
                 {% blocktrans %}
                     Import of URL <code>{{failed_url}}</code> failed: {{failed_reason}}
                 {% endblocktrans %}
-                {% endspaceless %}");
+                {% endspaceless %}",
+                icon: false,
+                sticker: true
+            });
 
         {% endfor %}
     {% endif %}
