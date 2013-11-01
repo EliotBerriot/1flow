@@ -151,3 +151,8 @@ find back the spaceport.
   </div>
 
 {% endblock application_content %}
+
+{% block extrajs_footer %}
+    {{ block.super }}
+    {% compressed_js 'core' %}
+{% endblock extrajs_footer %}
