@@ -204,24 +204,33 @@ class Subscription(Document, DocumentHelperMixin):
 
         return subscription
 
-    def mark_all_read(self):
+    def mark_all_read(self, latest_displayed_read=None):
 
         if self.unread_articles_count == 0:
             return
 
-        count = self.unread_articles_count
+        # count = self.unread_articles_count
 
-        self.unread_articles_count = 0
+        # self.unread_articles_count = 0
 
-        for folder in self.folders:
-            folder.unread_articles_count -= count
+        # for folder in self.folders:
+        #     folder.unread_articles_count -= count
 
-        self.user.unread_articles_count -= count
+        # self.user.unread_articles_count -= count
 
         # Marking all read is not a database-friendly operation,
         # thus it's run via a task to be able to return now immediately,
         # with cache numbers updated.
-        subscription_mark_all_read_in_database.delay(self.id, now())
+        subscription_mark_all_read_in_database.delay(
+            self.id, now() if latest_displayed_read is None
+            #
+            # TRICK: we use self.user.reads for 2 reasons:
+            #       - avoid importing `Read`, which would create a loop.
+            #       - in case of a folder/global initiated mark_all_read(),
+            #         the ID can be one of a read in another subscription
+            #         and in this case, self.reads.get() will fail.
+            #
+            else latest_displayed_read.date_created)
 
     def mark_all_read_in_database(self, prior_datetime):
         """ To avoid marking read the reads that could have been created
@@ -232,13 +241,31 @@ class Subscription(Document, DocumentHelperMixin):
             Also available as a task for background execution.
         """
 
-        currently_unread = self.reads.filter(is_read__ne=True,
-                                             date_created__lt=prior_datetime)
+        params = {'is_read__ne': True, 'date_created__lte': prior_datetime}
 
-        currently_unread.update(set__is_read=True,
-                                set__date_read=prior_datetime)
+        if self.user.preferences.read.bookmarked_marks_unread:
+            # Let bookmarked reads stay unread.
+            params['is_bookmarked__ne'] = True
 
-        self.compute_cached_descriptors(unread=True)
+        impacted_unread = self.reads.filter(**params)
+        impacted_count  = impacted_unread.count()
+
+        impacted_unread.update(set__is_read=True,
+                               set__is_auto_read=True,
+                               set__date_read=prior_datetime,
+                               set__date_auto_read=prior_datetime)
+
+        # If our caches are correctly computed, doing
+        # one more full query just for this is too much.
+        #
+        #self.compute_cached_descriptors(unread=True)
+
+        self.unread_articles_count -= impacted_count
+
+        for folder in self.folders:
+            folder.unread_articles_count -= impacted_count
+
+        self.user.unread_articles_count -= impacted_count
 
     def check_reads(self, articles=None, force=False, extended_check=False):
         """ Also available as a task for background execution. """

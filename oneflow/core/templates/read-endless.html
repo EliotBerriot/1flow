@@ -16,7 +16,21 @@
     <div id="reads-list-header" class="span8 offset2">
         <div class="h1-wrapper">
             <div class="h1-background"></div>
-            <h1 class="left-side">{{ read_page_header_text_left|safe }}</h1>
+            <h1 class="left-side">
+                <a id="back-to-selector" data-toggle="tooltip" class="popover-top"
+                title="{% trans "Go back to source selector" %}"
+                href="{% url 'source_selector' %}{% spaceless %}
+
+                {% if folder %}
+                    #{{ folder.id }}
+
+                {% elif subscription %}
+                    #{{ subscription.id }}
+
+                {% endif %}
+
+                {% endspaceless %}"><i class="icon-arrow-left"></i>&nbsp;
+                {{ read_page_header_text_left|safe }}</a></h1>
             <h1 class="right-side"><span id="reads-number">{{ read_page_header_text_right|safe }}</span></h1>
         </div>
     </div>
@@ -143,7 +157,10 @@
 
             if (nr_items > 15 || next_page == null) {
                 hide_initial_loading();
-                setup_snappers();
+
+                {% if mongodb_user.is_staff_or_superuser_and_enabled %}
+                    setup_snappers();
+                {% endif %}
             }
 
             if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
@@ -193,7 +210,7 @@
         var reads_container = $('#reads-container');
         var last_scroll     = 0;
         var navbar_hidden   = false;
-        var preferences = {
+        var preferences     = {
             auto_mark_read_delay:       {{ preferences.read.auto_mark_read_delay }},
 
             {# |lower because JS doesn't like Python's booleans at all. #}
@@ -222,6 +239,10 @@
             onCompleted: endless_new_page_load_completed
         });
 
+        {% comment %}
+
+            not working properly. to be reviewed.
+
         reads_container.on('scroll', function() {
             var st = $(this).scrollTop();
 
@@ -243,6 +264,7 @@
             last_scroll = st;
         });
 
+        {% endcomment %}
 
         endless_load_next_if_needed();
 

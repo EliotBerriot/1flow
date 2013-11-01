@@ -528,18 +528,18 @@ def _rwep_special_update_counters(subscription, user):
                 setattr(subscription, attr_name, count)
 
 
-def _rwep_ajax_mark_all_read(subscription, folder, user):
+def _rwep_ajax_mark_all_read(subscription, folder, user, latest_displayed_read):
 
     if subscription:
-        subscription.mark_all_read()
+        subscription.mark_all_read(latest_displayed_read)
 
     elif folder:
         for subscription in folder.subscriptions:
-            subscription.mark_all_read()
+            subscription.mark_all_read(latest_displayed_read)
 
     else:
         for subscription in user.subscriptions:
-            subscription.mark_all_read()
+            subscription.mark_all_read(latest_displayed_read)
 
 
 def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
@@ -690,7 +690,12 @@ def read_with_endless_pagination(request, **kwargs):
 
         elif request.GET.get('mark_all_read', False):
 
-            _rwep_ajax_mark_all_read(subscription, folder, user)
+            latest_displayed_read = user.reads.get(
+                article=Article.objects.get(
+                    id=request.GET.get('mark_all_read')))
+
+            _rwep_ajax_mark_all_read(subscription, folder, user,
+                                     latest_displayed_read)
 
             return HttpResponse('DONE')
 

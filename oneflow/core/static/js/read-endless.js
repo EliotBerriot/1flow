@@ -864,9 +864,8 @@ function setup_snappers() {
 
     // http://www.sitepoint.com/forums/showthread.php?779582-Choose-whole-sentences-and-ONLY-whole-sentences-RELIABLY-with-regex
 
-    //$('.article-meta-bottom h1').on('click', function(){ $(this).toggleClass('selected') });
-    //$('.article-content p, .article-content pre, .article-content ul li, .article-content h1, .article-content h2, .article-content h3, .article-content img').on('click', function(){ $(this).toggleClass('selected') });
-
+    $('.article-meta-bottom h1').on('click', function(){ $(this).toggleClass('selected') });
+    $('.article-content p, .article-content pre, .article-content ul li, .article-content h1, .article-content h2, .article-content h3, .article-content img').on('click', function(){ $(this).toggleClass('selected') });
 }
 
 function hide_initial_loading() {

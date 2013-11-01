@@ -146,7 +146,7 @@ class DocumentHelperMixin(object):
         return self._get_db().name
 
     @classmethod
-    def get_or_404(cls, oid):
+    def get_or_404(cls, oid=None, **kwargs):
         """ Rough equivalent of Django's get_object_or_404() shortcut.
             Not as powerful, though.
 
@@ -154,10 +154,21 @@ class DocumentHelperMixin(object):
         """
 
         try:
-            return cls.objects.get(id=oid)
+            if oid:
+                return cls.objects.get(id=oid)
+
+            else:
+                return cls.objects.get(**kwargs)
 
         except cls.DoesNotExist:
-            raise Http404(_(u'{0} #{1} not found').format(cls.__name__, oid))
+            if oid:
+                raise Http404(_(u'{0} #{1} not found').format(
+                              cls.__name__, oid))
+
+            else:
+                raise Http404(_(u'{0}({1}) not found').format(cls.__name__,
+                              u','.join(u'{0}={1}'.format(k, v)
+                                        for k, v in kwargs)))
 
         except:
             LOGGER.exception(u'Exception while getting %s #%s',
