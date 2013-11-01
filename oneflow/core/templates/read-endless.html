@@ -193,7 +193,7 @@
         var reads_container = $('#reads-container');
         var last_scroll     = 0;
         var navbar_hidden   = false;
-        var preferences = {
+        var preferences     = {
             auto_mark_read_delay:       {{ preferences.read.auto_mark_read_delay }},
 
             {# |lower because JS doesn't like Python's booleans at all. #}
@@ -222,6 +222,10 @@
             onCompleted: endless_new_page_load_completed
         });
 
+        {% comment %}
+
+            not working properly. to be reviewed.
+
         reads_container.on('scroll', function() {
             var st = $(this).scrollTop();
 
@@ -243,6 +247,7 @@
             last_scroll = st;
         });
 
+        {% endcomment %}
 
         endless_load_next_if_needed();
 
