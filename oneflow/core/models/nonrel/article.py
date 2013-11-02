@@ -1060,24 +1060,35 @@ class Article(Document, DocumentHelperMixin):
             'perms': perms,
         }
 
-        languages = set()
-        dj_langs = [l[0] for l in settings.LANGUAGES]
+        # NOTE: this is a wrong (incomplete) approach. We should gather the
+        # distinct languages of all subscribers. As a french reader, I find
+        # it very *strange* to get english footers for articles in
+        # english-only feeds (“Hey, is this a bug… or what?”).
+        #
+        # Thus, while we don't have this information yet (it should be
+        # computed in the feed, and cached because it will be heavy to
+        # get), just generate everything. We have 2 langs, it's not that
+        # horrible, besides the fact that it eats RAM.
+        languages = [l[0] for l in settings.LANGUAGES]
 
-        if self.language is None:
-            for feed in self.feeds:
-                for lang in feed.languages:
-                    for dj_lang in dj_langs:
-                        if lang.startswith(dj_lang):
-                            # we add the Django language code, because the
-                            # templates / cache switch on this particular
-                            # value, not the potentially full language code
-                            # from the article / feed.
-                            languages.add(dj_lang)
-        else:
-            languages = [self.language]
-
-        if languages == set():
-            languages = dj_langs
+        # languages = set()
+        # dj_langs = [l[0] for l in settings.LANGUAGES]
+        #
+        # if self.language is None:
+        #     for feed in self.feeds:
+        #         for lang in feed.languages:
+        #             for dj_lang in dj_langs:
+        #                 if lang.startswith(dj_lang):
+        #                     # we add the Django language code, because the
+        #                     # templates / cache switch on this particular
+        #                     # value, not the potentially full language code
+        #                     # from the article / feed.
+        #                     languages.add(dj_lang)
+        # else:
+        #     languages = [self.language]
+        #
+        #if languages == set():
+        #    languages = dj_langs
 
         # TODO: with Django 1.6, check if cache is already present or not:
         # https://docs.djangoproject.com/en/dev/topics/cache/#django.core.cache.utils.make_template_fragment_key # NOQA
