@@ -383,7 +383,17 @@ class RedisExpiringLock(object):
         val = self.REDIS.get(self.lock_id)
 
         if val == self.lock_value:
-            self.REDIS.delete(self.lock_id)
+            try:
+                self.REDIS.delete(self.lock_id)
+
+            except ValueError:
+                # When used as a simple lock, the 'locked' value we use
+                # produces “ValueError: invalid literal for int() with
+                # base 10: 'locked'”. This is completely harmless. Other
+                # values and exceptions must raise, though.
+                if val != 'locked':
+                    raise
+
             return True
 
         return False
