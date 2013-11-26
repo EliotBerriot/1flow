@@ -15,6 +15,20 @@ compass:
 run:
 	honcho -f Procfile.development start --quiet flower,shell,celery_beat
 
+runweb:
+	honcho -f Procfile.development start web
+
+runworkers:
+	honcho -f Procfile.development start flower celery_beat --quiet flower,celery_beat
+
+	#,worker_high,worker_medium,worker_low,worker_fetch,worker_background,worker_swarm,worker_clean
+
+runshell:
+	honcho -f Procfile.development --quiet shell start shell
+
+clean:
+	ps ax | grep manage.py | grep -v grep | awk '{print $$1}' | xargs kill -9
+
 test:
 	# REUSE fails with
 	# "AttributeError: 'DatabaseCreation' object has no attribute '_rollback_works'"

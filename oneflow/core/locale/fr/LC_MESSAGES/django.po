@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-10-31 17:08+0100\n"
-"PO-Revision-Date: 2013-10-31 17:13+0009\n"
+"POT-Creation-Date: 2013-11-26 09:51+0100\n"
+"PO-Revision-Date: 2013-11-26 09:54+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -41,8 +41,8 @@ msgid "reads"
 msgstr "lectures"
 
 #: admin.py:118 models/nonrel/read.py:252 models/nonrel/read.py:261
-#: templates/snippets/selector/folder.html:34
-#: templates/snippets/selector/subscription.html:34
+#: templates/snippets/selector/folder.html:37
+#: templates/snippets/selector/subscription.html:40
 msgid "starred"
 msgstr "favoris"
 
@@ -486,46 +486,46 @@ msgstr[1] "Dans vos %(count)s abonnements"
 msgid "no item"
 msgstr "aucun élément"
 
-#: views.py:757
+#: views.py:766
 #, python-brace-format
 msgid "Share article with <code>{0}</code> failed: {1}"
 msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
 
-#: views.py:763
+#: views.py:772
 #, python-brace-format
 msgid "Successfully shared <em>{0}</em> with {1} persons"
 msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
 
-#: views.py:1037
+#: views.py:1046
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:1041
+#: views.py:1050
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:1045
+#: views.py:1054
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:1052
+#: views.py:1061
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:1056
+#: views.py:1065
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:1062
+#: views.py:1071
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:1065
+#: views.py:1074
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -543,17 +543,7 @@ msgstr ""
 "role=\"button\" data-toggle=\"submodal\" data-target=\"#\">texte simple <i "
 "class=\"icon-question-sign\"></i></a>."
 
-#: forms/read.py:35
-msgid "Share with"
-msgstr "Partager avec"
-
-#: forms/read.py:38
-msgid "Type to auto-complete, or separate new email addresses with commas."
-msgstr ""
-"Tapez pour obtenir une complétion automatique, ou séparez les nouvelles "
-"addresses e-mail par des virgules."
-
-#: forms/read.py:42
+#: forms/read.py:34
 #, python-brace-format
 msgid ""
 "Hi {{fullname}},\n"
@@ -575,6 +565,23 @@ msgstr ""
 "Salutations,\n"
 "--\n"
 "{0}"
+
+#: forms/read.py:44
+msgid "Share with"
+msgstr "Partager avec"
+
+#: forms/read.py:47
+msgid "Type to auto-complete, or separate new email addresses with commas."
+msgstr ""
+"Tapez pour obtenir une complétion automatique, ou séparez les nouvelles "
+"addresses e-mail par des virgules."
+
+#: forms/read.py:72
+#, python-format
+msgid ""
+"Your message does not validate. Please check for missing brackets or typos "
+"in fields names; raw error: %s."
+msgstr ""
 
 #: forms/selector.py:29 forms/selector.py:244
 msgid "(None)"
@@ -970,12 +977,17 @@ msgstr "Éléments importés de {0}"
 msgid "Inbox of {0}"
 msgstr "Boîte de réception de {0}"
 
-#: models/nonrel/common.py:167
+#: models/nonrel/common.py:172
 #, python-brace-format
 msgid "{0} #{1} not found"
 msgstr "{0} #{1} introuvable"
 
-#: models/nonrel/common.py:398 models/nonrel/common.py:431
+#: models/nonrel/common.py:176
+#, python-brace-format
+msgid "{0}({1}) not found"
+msgstr "{0}({1}) introuvable"
+
+#: models/nonrel/common.py:409 models/nonrel/common.py:442
 #, python-brace-format
 msgid ""
 "{0} is already in the parent chain of {1}. Setting the later parent of the "
@@ -984,11 +996,11 @@ msgstr ""
 "{0} est déjà dans la chaine de parents de {1}. Enregistrer ce dernier comme "
 "parent du premier cité provoquerait un cycle et ce n'est pas autorisé."
 
-#: models/nonrel/common.py:546
+#: models/nonrel/common.py:557
 msgid "User can read articles with full-text contents"
 msgstr "L'utilisateur peut lire le contenu complet (full-text) de l'article."
 
-#: models/nonrel/common.py:548
+#: models/nonrel/common.py:559
 msgid "User can import any web items"
 msgstr "L'utilisateur peut importer n'importe quel élément web"
 
@@ -1150,12 +1162,12 @@ msgstr "Description (EN)"
 msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
-#: models/nonrel/feed.py:334 models/nonrel/folder.py:85
+#: models/nonrel/feed.py:336 models/nonrel/folder.py:85
 #, python-brace-format
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel/feed.py:547
+#: models/nonrel/feed.py:549
 #, python-brace-format
 msgid "Imported item from {0}"
 msgstr "Élément importé depuis {0}"
@@ -1451,31 +1463,35 @@ msgstr ""
 "faire des tests / vérifications même si vous êtes identifié(e). Les "
 "utilisateurs standards, une fois identifiés, n'ont plus accès à la landing."
 
-#: models/nonrel/preferences.py:177
+#: models/nonrel/preferences.py:182
+msgid "Default share message"
+msgstr ""
+
+#: models/nonrel/preferences.py:186
 msgid "Reading list"
 msgstr "Liste de lecture"
 
-#: models/nonrel/preferences.py:178
+#: models/nonrel/preferences.py:187
 msgid "Tiled News"
 msgstr "News en tuiles"
 
-#: models/nonrel/preferences.py:183
+#: models/nonrel/preferences.py:192
 msgid "Unread articles"
 msgstr "Articles non-lus"
 
-#: models/nonrel/preferences.py:184
+#: models/nonrel/preferences.py:193
 msgid "Source selector"
 msgstr "Sélecteur de source"
 
-#: models/nonrel/preferences.py:196
+#: models/nonrel/preferences.py:204
 msgid "How the user wants his 1flow home to appear"
 msgstr "Comment l'utilisateur veut voir sa home page"
 
-#: models/nonrel/preferences.py:201
+#: models/nonrel/preferences.py:209
 msgid "I want to play with my life"
 msgstr "Je veux jouer avec ma vie"
 
-#: models/nonrel/preferences.py:202
+#: models/nonrel/preferences.py:210
 msgid ""
 "With this setting, you will be able to tune the 1flow interface a lot more. "
 "<strong>But BEWARE:</strong> you will gain access to features which are not "
@@ -1492,11 +1508,11 @@ msgstr ""
 "défaut, c'est désactivé : nous voulons que votre expérience utilisateur soit"
 " agréable et fluide.</span>"
 
-#: models/nonrel/preferences.py:211
+#: models/nonrel/preferences.py:219
 msgid "Clicking <code>Read</code> displays:"
 msgstr "Cliquer sur <code>Lecture</code> affiche :"
 
-#: models/nonrel/preferences.py:214
+#: models/nonrel/preferences.py:222
 msgid ""
 "Define what 1flow will display when you click on the <code>Read</code> link "
 "in the top navbar of the interface. <br /><span class=\"muted\">Default: "
@@ -2390,9 +2406,21 @@ msgstr ""
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/home.html:173
+#: templates/home.html:189
 msgid "Returning to source selector…"
 msgstr "Retour au sélecteur de source…"
+
+#: templates/home.html:206
+msgid "Heading to features / help…"
+msgstr "Affichage des fonctionnalités & de l'aide…"
+
+#: templates/home.html:216
+msgid "Opening your preferences…"
+msgstr "Ouverture de vos préférences…"
+
+#: templates/home.html:226
+msgid "Opening your account…"
+msgstr "Ouverture de votre compte…"
 
 #: templates/preferences.html:5 templates/preferences.html.py:13
 #: templates/snippets/navbar.html:38
@@ -2532,7 +2560,11 @@ msgstr "Associer des comptes"
 msgid "Read"
 msgstr "Lecture"
 
-#: templates/read-endless.html:76
+#: templates/read-endless.html:21
+msgid "Go back to source selector"
+msgstr "Retourner au sélecteur de source"
+
+#: templates/read-endless.html:90
 msgid "Nothing to read yet. Buy a book?"
 msgstr "Rien à lire. Achetez-vous un livre ;-)"
 
@@ -3289,23 +3321,15 @@ msgstr "Chargement des articles…"
 msgid "Thanks for your patience."
 msgstr "Merci de votre patience."
 
-#: templates/snippets/read/read-endless-initial-loading.html:6
-msgid "Oh my GOD, Djangooooo!?"
-msgstr "Allo ?! Djangoooooo !?"
+#: templates/snippets/read/read-endless-initial-loading.html:7
+msgid "Oh my god, is this <strong>that</strong> long?!"
+msgstr "Mon dieu, c'est <strong>si long</strong> que ça ?!"
 
-#: templates/snippets/read/read-endless-initial-loading.html:8
-msgid "Oh my god, something must be wrong?!"
-msgstr "Sacrebleu, il y a un serpent dans ma botte !"
-
-#: templates/snippets/read/read-endless-initial-loading.html:11
-msgid "Or do <em>you</em> have <strong>soooo</strong> much to read?"
-msgstr "Ou alors vous avez <em>tant</em> de lecture que ça à charger ?"
-
-#: templates/snippets/read/read-endless-initial-loading.html:14
+#: templates/snippets/read/read-endless-initial-loading.html:10
 msgid "Anyway, thanks again for you patience."
 msgstr "En tous les cas, merci encore de votre patience."
 
-#: templates/snippets/read/read-endless-initial-loading.html:16
+#: templates/snippets/read/read-endless-initial-loading.html:12
 msgid ""
 "You shouldn't have waited so long, there must be something wrong with the "
 "servers. Could you please contact us to report the problem?"
@@ -3444,22 +3468,22 @@ msgstr ""
 msgid "Add to my sources"
 msgstr "Ajouter à mes sources"
 
-#: templates/snippets/selector/folder.html:32
-#: templates/snippets/selector/subscription.html:32
+#: templates/snippets/selector/folder.html:35
+#: templates/snippets/selector/subscription.html:38
 msgid "unread"
 msgstr "non-lu"
 
-#: templates/snippets/selector/folder.html:33
-#: templates/snippets/selector/subscription.html:33
+#: templates/snippets/selector/folder.html:36
+#: templates/snippets/selector/subscription.html:39
 msgid "for later"
 msgstr "plus tard"
 
-#: templates/snippets/selector/folder.html:35
-#: templates/snippets/selector/subscription.html:35
+#: templates/snippets/selector/folder.html:38
+#: templates/snippets/selector/subscription.html:41
 msgid "all"
 msgstr "tous"
 
-#: templates/snippets/selector/folder.html:53
+#: templates/snippets/selector/folder.html:56
 #, python-format
 msgid "No subscription in “%(folder_name)s”."
 msgstr "Pas d'abonnement dans « %(folder_name)s »."
@@ -3478,7 +3502,7 @@ msgstr ""
 msgid "No item imported"
 msgstr "Aucun élément importé"
 
-#: templates/snippets/selector/import-web-items-result.html:21
+#: templates/snippets/selector/import-web-items-result.html:24
 #, python-format
 msgid ""
 "\n"
@@ -3614,25 +3638,33 @@ msgstr "flux-non-classes"
 msgid "closed-streams"
 msgstr "flux-fermes"
 
-#: templates/snippets/selector/subscription.html:10
+#: templates/snippets/selector/subscription.html:14
+#, python-format
+msgid "Click to read new items in %(subscription_name)s"
+msgstr "Cliquez pour lire les nouveaux éléments dans %(subscription_name)s"
+
+#: templates/snippets/selector/subscription.html:19
+#, python-format
+msgid "Click to display all items in %(subscription_name)s"
+msgstr "Cliquez pour afficher tous les articles dans %(subscription_name)s"
+
+#: templates/snippets/selector/subscription.html:48
+msgid "Visit the website of this stream"
+msgstr "Visitez le site web de ce flux"
+
 #: templates/snippets/selector/subscription.html:54
+msgid "Manage the properties of this stream"
+msgstr "Gérez les propriétés de ce flux"
+
+#: templates/snippets/selector/subscription.html:60
 #, python-format
 msgid "Click to read the %(unread_count)s new article(s)"
 msgstr "Cliquez pour lire le(s) %(unread_count)s nouveau(x) article(s)"
 
-#: templates/snippets/selector/subscription.html:15
-#: templates/snippets/selector/subscription.html:61
+#: templates/snippets/selector/subscription.html:67
 #, python-format
 msgid "Click to display all the %(all_count)s articles of this subscription."
 msgstr "Cliquez pour afficher les %(all_count)s articles de cet abonnement."
-
-#: templates/snippets/selector/subscription.html:42
-msgid "Visit the website of this stream"
-msgstr "Visitez le site web de ce flux"
-
-#: templates/snippets/selector/subscription.html:48
-msgid "Manage the properties of this stream"
-msgstr "Gérez les propriétés de ce flux"
 
 #: templates/snippets/share/share-one.html:11
 msgid "Share this article"
@@ -3875,6 +3907,12 @@ msgstr "k+"
 #, python-brace-format
 msgid "{0} articles"
 msgstr "{0} articles"
+
+#~ msgid "Oh my GOD, Djangooooo!?"
+#~ msgstr "Allo ?! Djangoooooo !?"
+
+#~ msgid "Or do <em>you</em> have <strong>soooo</strong> much to read?"
+#~ msgstr "Ou alors vous avez <em>tant</em> de lecture que ça à charger ?"
 
 #~ msgid "Import of URL <code>{0}</code> failed: {1}"
 #~ msgstr "L'import de l'URL <code>{0}</code> a échoué : {1}"
