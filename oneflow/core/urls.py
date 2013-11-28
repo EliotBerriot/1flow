@@ -102,7 +102,7 @@ urlpatterns = patterns(
         kwargs={'is_read': False}),  # , 'is_bookmarked': False}),
 
     url(_(ur'^read/([0-9a-f]{24,24})/$'),
-        login_required(views.read_one),
+        login_required(never_cache(views.read_one)),
         name='read_one'),
 
     url(_(ur'^selector/$'),
