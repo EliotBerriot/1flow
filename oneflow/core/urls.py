@@ -101,6 +101,10 @@ urlpatterns = patterns(
         views.read_with_endless_pagination)), name='read',
         kwargs={'is_read': False}),  # , 'is_bookmarked': False}),
 
+    url(_(ur'^article/([0-9a-f]{24,24})/$'),
+        login_required(never_cache(views.article_content)),
+        name='article_content'),
+
     url(_(ur'^read/([0-9a-f]{24,24})/$'),
         login_required(never_cache(views.read_one)),
         name='read_one'),

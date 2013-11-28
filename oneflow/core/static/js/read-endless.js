@@ -28,7 +28,7 @@ function eventually_toggle(event) {
 
     //console.log('toggled: ' + event.target);
 
-    debug_notify('eventually_toggle ' + event);
+    //debug_notify('eventually_toggle ' + event);
 
     if ($(event.target).attr('href') == undefined) {
         var togglable   = $(this).closest('.slide-togglable');
@@ -129,7 +129,12 @@ function toggle_content(oid, callback) {
 
         open_auxilliary = function ($on_what) {
 
+            var $content  = $on_what.find('.article-content').first();
+            var async_url = $content.data('async');
+
             //console.debug('open_aux on ' + oid + ', '+ auto_mark_read_timers[oid]);
+            //console.debug($content);
+            //console.debug(async_url);
 
             // no need bothering testing !is(':visible'). It costs
             // a lot, and if it's not, slideDown() will do nothing.
@@ -152,6 +157,16 @@ function toggle_content(oid, callback) {
                 }, preferences.auto_mark_read_delay);
 
                 //console.debug('mark read timer set at ' + oid + ', '+ auto_mark_read_timers[oid]);
+            }
+
+            if (async_url) {
+                $.get(async_url, function(data){
+                    $content.html(data);
+
+                    // be sure we don't call it next time, it's already loaded.
+                    // DOESN'T WORK: $content.removeData('async');
+                    $content.attr('data-async', '');
+                });
             }
         },
 
@@ -247,6 +262,14 @@ function toggle_content(oid, callback) {
                 $(this).slideUp();
             });
 
+            // clear the content, for the page to stay light.
+            // NOTE: in fact, NO. keep it to avoid useless round-trips
+            // with the server, and make recently-read articles fast.
+            //$on_what.find('.article-content').first().html('');
+            //
+            // TODO: unload the content after a few minute, remake the
+            // data-async OK, and disable the timer on re-open to avoid
+            // shortening the contents while the user is reading it ;-)
         };
 
     if ($content.is(':visible')) {

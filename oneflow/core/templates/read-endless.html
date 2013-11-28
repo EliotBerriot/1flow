@@ -155,7 +155,9 @@
                 show_initial_loading();
             }
 
-            if (nr_items > 15 || next_page == null) {
+            if (nr_items >= {{ config.READ_INFINITE_ITEMS_PER_FETCH }}
+                    || next_page == null) {
+
                 hide_initial_loading();
 
                 {% if mongodb_user.is_staff_or_superuser_and_enabled %}
@@ -163,7 +165,7 @@
                 {% endif %}
             }
 
-            if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }}) {
+            if (nr_items < {{ config.READ_INFINITE_ITEMS_PER_FETCH }} * 2) {
                 if (next_page != null && next_page <= 5) {
                     console.debug('fetching next page ('
                                   + next_page + ') to fill the view…');
