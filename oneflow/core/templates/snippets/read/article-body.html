@@ -26,9 +26,8 @@
       {% include "snippets/read/article-meta.html" %}
   {% endwith %}
 
-  <div class="read-content-wrapper {{ read_in_list|yesno:'hide,' }}"
-      id="content-{{ article.id }}">
-    <div class="article-content ">
+  <div class="read-content-wrapper only_when_open" id="content-{{ article.id }}">
+    <div class="article-content">
 
       {% article_content article perms.core.can_read_full_text %}
 
