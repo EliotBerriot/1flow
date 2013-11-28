@@ -1,4 +1,5 @@
-<main id="{{ read.id }}" class="read-individual-item open_content row-fluid {% read_status_css read %}"
+<main id="{{ read.article.id }}"
+    class="read-individual-item open_content row-fluid {% read_status_css read %}"
     {% read_action_toggle_url read %}>
 
   {% include "snippets/read/article-body.html" with article=read.article %}
