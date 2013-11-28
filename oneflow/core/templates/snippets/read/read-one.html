@@ -2,6 +2,7 @@
     class="read-individual-item open_content row-fluid {% read_status_css read %}"
     {% read_action_toggle_url read %}>
 
-  {% include "snippets/read/article-body.html" with article=read.article %}
+  {# HEADS UP: read_in_list is neccesary for the 'cache' call not to crash. #}
+  {% include "snippets/read/article-body.html" with article=read.article read_in_list=0 %}
 
 </main>

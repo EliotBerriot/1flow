@@ -719,6 +719,21 @@ def read_with_endless_pagination(request, **kwargs):
 
     return render(request, template, context)
 
+def article_content(request, article_id):
+
+    try:
+        article = Article.get_or_404(article_id)
+
+    except:
+        return HttpResponseTemporaryServerError()
+
+    if not request.is_ajax():
+        return HttpResponseBadRequest('Must be called via Ajax')
+
+    return render(request,
+                  'snippets/read/article-content-async.html',
+                  {'article': article})
+
 
 def read_one(request, read_id):
 
