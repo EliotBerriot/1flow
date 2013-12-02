@@ -1,4 +1,105 @@
 
+@mixin fainted-anchors() {
+    a {
+        padding: 0;
+        margin: 0;
+        color: #aaa;
+        opacity: 0.5;
+
+        &:hover {
+            text-decoration: none;
+            opacity: 0.5;
+        }
+    }
+}
+
+#sidebars-wrapper {
+    position: fixed;
+    top: 50px;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    background-color: 000;
+
+    //z-index: 0;
+
+    &:hover .reading-sidebar {
+        opacity: 1;
+    }
+}
+
+.reading-sidebar {
+    position: fixed;
+    top: 70px;
+    bottom: 20px;
+    overflow: hidden;
+    opacity: 0;
+
+    @include single-transition(opacity, 0.25s, ease-out, 0.25s);
+
+    @include thumbnail($size: 64px, $absolute: 0, $bwbase: 0);
+
+    // &:hover {
+    //     opacity: 1;
+    //     //background-color: #fff;
+    // }
+
+    .watch-status {
+        min-height: 20px;
+
+        span {
+            font-size: 15px;
+            margin-right: 5px;
+        }
+
+    }
+
+    h3.source {
+        line-height: 1.1em;
+    }
+
+    .subscription-meta .management {
+        font-size: 200%;
+    }
+
+    .paddle {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 100%;
+        margin-left: auto;
+        margin-right: auto;
+        font-size: 200%;
+
+        td {
+            padding: 0;
+            margin: 0;
+            text-align: center;
+        }
+
+        .next {
+            text-align: left;
+        }
+        .previous {
+            text-align: right;
+        }
+
+        @include fainted-anchors();
+    }
+}
+
+#article-meta-left {
+    left: 20px;
+    text-align: right;
+
+    @include fainted-anchors();
+}
+
+#article-meta-right {
+    right: 20px;
+}
+
 .read-list-item {
     position: relative;
     padding: 15px 10px;

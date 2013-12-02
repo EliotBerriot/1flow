@@ -63,6 +63,13 @@
     // be sure we fill the parent li/div
     min-height: 3.5em;
 
+    .freshness {
+        position: absolute;
+        top: 33%;
+        right: 0;
+        //text-align: right;
+    }
+
     .meta {
         position: absolute;
         top: 0;
@@ -213,6 +220,41 @@
 
     a {
         width: inherit;
+    }
+}
+
+.side-actions {
+
+    // cancel all other *-actions CSS
+    background-color: transparent;
+    padding-top: 0;
+    text-align: left;
+
+    .read-actions i {
+        font-size: 15px;
+        margin-right: 5px;
+    }
+
+    .status-icons {
+        margin-bottom: 20px;
+
+        span {
+            margin-left: 10px;
+        }
+    }
+
+    .action {
+        // one per line.
+        display: block;
+
+        text-align: left;
+        padding: 5px 0;
+
+        a {
+            height: auto;
+            text-align: left;
+            padding-top: 0;
+        }
     }
 }
 
