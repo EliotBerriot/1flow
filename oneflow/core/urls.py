@@ -97,6 +97,10 @@ urlpatterns = patterns(
     url(_(ur'^read/all/$'), never_cache(views.read_with_endless_pagination),
         name='read_all', kwargs={'all': True}),
 
+    url(_(ur'^read/meta/([0-9a-f]{24,24})/$'),
+        login_required(never_cache(views.read_meta)),
+        name='read_meta'),
+
     url(_(ur'^read/$'), login_required(never_cache(
         views.read_with_endless_pagination)), name='read',
         kwargs={'is_read': False}),  # , 'is_bookmarked': False}),

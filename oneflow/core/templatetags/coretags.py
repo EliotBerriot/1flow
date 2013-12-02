@@ -15,11 +15,11 @@ from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 
-#from cache_utils.decorators import cached
+from cache_utils.decorators import cached
 
 from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
 
-from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN  # , CACHE_ONE_WEEK
+from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN, CACHE_ONE_WEEK
 
 LOGGER = logging.getLogger(__name__)
 
@@ -335,6 +335,21 @@ def article_full_content_display(article):
                 LOGGER.exception(u'Live Markdown to HTML conversion '
                                  u'failed for article %s', article)
                 return None
+
+
+@register.simple_tag
+@cached(CACHE_ONE_WEEK)
+def read_original(article, with_text=None):
+
+    return u'''<span class="action {0} popover-top"
+      title="{1}"><a href="{2}" target="_blank" class="nowrap">
+      {3}<i class="icon-double-angle-right"></i></a></span>'''.format(
+        u'popover-tooltip' if with_text else u'',
+        _(u"Display on the original website"), article.url,
+        u'<span class="hidden-phone">{0}&nbsp;</span>'.format(
+            _(u'Read original')
+        )
+    )
 
 
 #@cached(CACHE_ONE_WEEK)

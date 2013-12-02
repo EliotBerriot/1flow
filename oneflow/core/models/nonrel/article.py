@@ -22,6 +22,9 @@ from markdown_deux import markdown
 from celery import task, chain as tasks_chain
 from celery.exceptions import SoftTimeLimitExceeded
 
+from humanize.time import naturaldelta
+from humanize.i18n import django_language
+
 from pymongo.errors import DuplicateKeyError
 
 from mongoengine import Document, NULLIFY, PULL, CASCADE
@@ -319,6 +322,12 @@ class Article(Document, DocumentHelperMixin):
 
     def is_origin(self):
         return isinstance(self.source, Source)
+
+    @property
+    def date_published_delta(self):
+
+        with django_language():
+            return _(u'{0} ago').format(naturaldelta(self.date_published))
 
     @property
     def get_source(self):
@@ -1036,10 +1045,19 @@ class Article(Document, DocumentHelperMixin):
             return
 
         self.activate_reads(verbose=verbose)
-        self.prefill_cache()
+
+        # No more needed now that Markdown
+        # contents are generated asynchronously.
+        #self.prefill_cache()
 
     def prefill_cache(self):
-        """ Make 1flow reading lists fly. Pre-render all possible versions
+        """
+            As of 20131129, this method is not used anymore. We do not
+            pre-generate Markdown contents anymore, now that reading lists
+            call them one by one.
+
+            // before:
+            Make 1flow reading lists fly. Pre-render all possible versions
             of the article template but still, limited to language(s) the
             feed or the article have.
         """
