@@ -735,6 +735,22 @@ def article_content(request, article_id):
                   {'article': article})
 
 
+def read_meta(request, read_id):
+
+    try:
+        read = Read.get_or_404(read_id)
+
+    except:
+        return HttpResponseTemporaryServerError()
+
+    if not request.is_ajax():
+        return HttpResponseBadRequest('Must be called via Ajax')
+
+    return render(request,
+                  'snippets/read/read-meta-async.html',
+                  {'read': read, 'article': read.article})
+
+
 def read_one(request, read_id):
 
     try:

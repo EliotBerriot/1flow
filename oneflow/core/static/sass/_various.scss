@@ -111,6 +111,7 @@
 
 // ———————————————————————————————————————————————————————— Bootstrap overrides
 
+
 a.brand {
     text-transform: none;
 }
@@ -127,6 +128,80 @@ a.brand {
   margin-right: 0;
 }
 
+
+// ————————————————————————————————————————————————————————————————— Our mixins
+
+@mixin thumbnail-img-styles($size) {
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    img, .generic-img {
+        max-width: $size;
+        max-height: $size;
+        @include border-radius(3px);
+    }
+
+    .generic-img {
+        width: $size;
+        height: $size;
+        line-height: $size;
+        font-size: $size / 5 * 3;
+        text-align: center;
+        opacity: 0.75;
+    }
+}
+
+@mixin thumbnail($size: 40px, $opacity: 1, $padding: 0, $absolute: 1, $bwbase: 1) {
+
+    .thumbnail {
+
+        @if $absolute == 1 {
+            position: absolute;
+            top: $padding;
+            left: $padding;
+
+        } @else {
+            padding-top: $padding;
+            padding-left: $padding;
+        }
+
+        border: 0;
+        padding: 0;
+        margin: 0;
+        max-width: $size;
+        max-height: $size;
+
+        opacity: $opacity;
+
+        // blurring icon:
+        //filter: url("/static/img/filters.svg#blur2px");
+        //@include filter(blur(2px));
+
+        @if $bwbase == 1 {
+            @include black-and-white(100%);
+        }
+
+        @include thumbnail-img-styles($size);
+
+        img, .generic-img {
+            max-width: $size;
+            max-height: $size;
+            margin: 0;
+            @include border-radius(3px);
+        }
+
+        .generic-img {
+            width: $size;
+            height: $size;
+            line-height: $size;
+            font-size: $size / 2.5;
+            text-align: center;
+            opacity: 0.75;
+        }
+    }
+}
 
 .spinner-wrapper {
     text-align: center;
@@ -293,7 +368,7 @@ select {
     height: 2.2em;
 }
 
-/* ------------------------------------------------------- Isotope animations */
+// ————————————————————————————————————————————————————————  Isotope animations
 
 .isotope,
 .isotope .isotope-item {

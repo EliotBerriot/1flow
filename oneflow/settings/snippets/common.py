@@ -417,6 +417,11 @@ INSTALLED_APPS = (
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     #'django.contrib.sites',
+
+    # We could use Django's `humanize`, it produces more
+    # detailled `*delta()` than the external `humanize` module.
+    #'django.contrib.humanize',
+
     'django.contrib.messages',
     'django.contrib.staticfiles',
     #'grappelli.dashboard',

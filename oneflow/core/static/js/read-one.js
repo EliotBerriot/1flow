@@ -58,6 +58,14 @@ function mark_something(article_id, mark_what, mark_inverse, send_notify, messag
 
             $article.removeClass(inverse).addClass(klass);
 
+            // in case the sidebars are not yet loaded while toggle_read()
+            // occurs, we need to delay this a little. This problem happens
+            // only when the user sets "mark read immediately" in his
+            // preferences, this is a corner case.
+            setTimeout(function() {
+                $("#meta-" + article_id).removeClass(inverse).addClass(klass);
+            }, 250);
+
             if (send_notify) {
                 notify({
                     text: notifmsg,
@@ -143,4 +151,13 @@ function toggle_status(article_id, attr_name, send_notify) {
     //     ev.stopPropagation();
     // }
     return false;
+}
+
+function momentFromNow() {
+    //return moment(string_date, "YYYYMMDD").fromNow();
+    // Django's ISO produces: 2013-11-29T18:33:40+01:00
+    // This is "YYYY-MM-DDTHH:mm:ssZZ" but Moment parses
+    // ISO dates corectly without specifying them.
+
+    $(this).html(moment($(this).html()).fromNow(true));
 }

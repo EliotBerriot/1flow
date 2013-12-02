@@ -1,0 +1,169 @@
+{% comment %}
+  We use id="article-meta-*-data" to avoid any eventual DOM collision
+  while manipulating the data on the client side via Ajax. Over there,
+  it will be inserted in id="article-meta-*", without the '-data' suffix.
+{% endcomment %}
+
+{% spaceless %}
+<div class="wrapper-div-for-easy-jquery-sub-selection">
+  <div id="article-meta-left-data">
+
+    <div class="spacer50"></div>
+
+    {% with read.subscriptions|first as subscription %}
+
+    <div class="subscription-meta" style="text-align:right">
+      <span class="management">
+        {% if subscription.feed.site_url %}
+            <a href="{{ subscription.feed.site_url }}" target="_blank"
+                title="{% trans "Visit the website of this stream" %}"
+                data-toggle="tooltip" class="manage popover-top"><i class="icon-globe"></i></a>
+        {% endif %}
+
+        {% comment %}
+
+          We need a fully async implementation, first, to avoid re-jumping to
+          the current page: if it's a reading list, the user's experience will
+          be interupted / restarted by the final redirection of the form.n
+
+        <a href="{% url 'edit_subscription' subscription=subscription.id %}"
+        data-toggle="modal" data-target="#" class="manage"><i class="icon-cog popover-top" title="{% trans "Manage the properties of this stream" %}" data-toggle="tooltip"></i></a>
+
+        {% endcomment %}
+      </span>
+      <br />
+      <span class="thumbnail" style="margin-left: auto">
+          {% if subscription.feed.thumbnail_url %}
+              <img src="{{ subscription.feed.thumbnail_url }}" />
+
+          {% else %}
+            {% cache 86400 feed_icon subscription.feed %}
+                <div class="generic-img"
+                    style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
+              {% endcache %}
+
+          {% endif %}
+      </span>
+    </div>
+
+    {% endwith %}
+
+    <h3 class="source muted">
+      {% for source in read.get_source %}
+        {{ source.name }}<br/>
+      {% endfor %}
+    </h3>
+
+    <div class="spacer50"></div>
+
+    <h4 class="article-title">
+      {{ article.title }}
+    </h4>
+
+    <div class="spacer50"></div>
+
+    <h4 class="date">
+      {% if article.date_published %}
+        {{ article.date_published }} ({{ article.date_published_delta }})
+      {% else %}
+        <span class="no-date">{% trans "no date" %}</span>
+      {% endif %}
+    </h4>
+
+    {% if article.authors %}
+      <h5n class="author">
+          <span class="muted">{% trans "by" %}</span>
+          {% for author in article.authors %}
+              {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+          {% endfor %}
+      </h5n>
+    {% endif %}
+
+    {% if with_tags %}
+      {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
+      {% if article.tags %}
+        <span class="tags">
+          <span class="muted">{% trans "in" %}</span> {% for tag in article.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+        </span>
+      {% endif %}
+    {% endif %}
+
+    {% if with_rating %}
+      {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
+    {% endif %}
+
+  </div><!-- #article-meta-left-data -->
+
+  <div id="article-meta-right-data">
+
+    {# NOTE: id and class have to be in sync with 'read-{one,list-item}.html' #}
+    <div id="meta-{{ article.id }}"
+        class="clicker-muter-constrainer {% read_status_css read %}"
+        {% read_action_toggle_url read %}>
+
+      <div class="spacer50"></div>
+
+      <h4 class="status-icons watch-status">
+        {% include "snippets/read/watch-status.html" %}
+      </h4>
+
+      {% with with_admin_actions=1 side_actions=1 with_text=1 %}
+          {% include "snippets/read/read-actions.html" %}
+      {% endwith %}
+
+    </div><!-- #meta-article.id -->
+
+    <table class="paddle">
+      <tr>
+        <td>&nbsp;</td>
+        <td class="up"><a href="javascript: open_previous_read(); return false;"
+          data-toggle="tooltip" title="{% trans "Open posterior item" %}"><i class="icon-long-arrow-up icon-2x"></i></a></td>
+        <td>&nbsp;</td></tr>
+      <tr>
+        <td>&nbsp;</td>
+        <!--<td class="previous"><a href="javascript: open_previous_read(); return false;"><i class="icon-long-arrow-left icon-2x"></i></a></td>-->
+        <td class="closer"><a href="javascript: close_current_read(); return false;"
+          data-toggle="tooltip" title="{% trans "Close current item" %}"><i class="icon-remove-sign"></i></a></td>
+        <!--<td class="next"><a href="javascript: open_next_read(); return false;"><i class="icon-long-arrow-right icon-2x"></i></a></td>-->
+        <td>&nbsp;</td>
+      </tr>
+      <tr>
+        <td>&nbsp;</td>
+        <td class="down"><a href="javascript: open_next_read(); return false;"
+          data-toggle="tooltip" title="{% trans "Open anterior item" %}"><i class="icon-long-arrow-down icon-2x"></i></a></td>
+        <td>&nbsp;</td></tr>
+    </table>
+
+    <script type="text/javascript">
+
+      $(function () {
+          // $('ul.nav a').bind('click', function (event) {
+          //     var $anchor = $(this);
+          //     $('html, body').stop().animate({
+          //         scrollLeft: $($anchor.attr('href')).offset().left
+          //     }, 1000);
+          //     event.preventDefault();
+          // });
+          $('.paddle .up').on('mouseenter', scroll_up);
+          $('.paddle .down').on('mouseenter', scroll_down);
+          $('.paddle .up,.down').on('mouseleave', function () {
+              $('body').stop();
+          });
+
+          function scroll_up() {
+              $('body').animate({
+                  scrollUp: '+=25'
+              }, 10, scroll_up);
+          }
+
+          function scroll_down() {
+              $('body').animate({
+                  scrollUp: '-=25'
+              }, 10, scroll_down);
+          }
+      });
+    </script>
+
+  </div><!-- #article-meta-right-data -->
+</div>
+{% endspaceless %}

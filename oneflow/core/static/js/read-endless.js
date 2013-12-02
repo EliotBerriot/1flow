@@ -130,7 +130,8 @@ function toggle_content(oid, callback) {
         open_auxilliary = function ($on_what) {
 
             var $content  = $on_what.find('.article-content').first();
-            var async_url = $content.data('async');
+            var async_url = $content.data('content-async');
+            var meta_url  = $content.data('meta-async');
 
             //console.debug('open_aux on ' + oid + ', '+ auto_mark_read_timers[oid]);
             //console.debug($content);
@@ -165,9 +166,30 @@ function toggle_content(oid, callback) {
 
                     // be sure we don't call it next time, it's already loaded.
                     // DOESN'T WORK: $content.removeData('async');
-                    $content.attr('data-async', '');
+                    $content.attr('data-content-async', '');
                 });
             }
+
+            //console.log(meta_url);
+
+            $.get(meta_url, function(data) {
+                var $data = $(data);
+
+                // See the server-side template for comments.
+
+                //console.log($data);
+                //console.log($data.find('#article-meta-left-data'));
+                //console.log($data.find('#article-meta-right-data'));
+
+                $('#article-meta-left').html(
+                    $data.find('#article-meta-left-data').html());
+
+                $('#article-meta-right').html(
+                    $data.find('#article-meta-right-data').html());
+
+                setup_everything($('#article-meta-left'));
+                setup_everything($('#article-meta-right'));
+            });
         },
 
         close_me_real = function () {
@@ -180,6 +202,9 @@ function toggle_content(oid, callback) {
             last_opened  = oid;
 
             // console.debug('set open to null and last to ' + oid);
+
+            $('#article-meta-left').html('');
+            $('#article-meta-right').html('');
 
             $content.slideUp(scroll_speed, "swing", run_callback);
 
