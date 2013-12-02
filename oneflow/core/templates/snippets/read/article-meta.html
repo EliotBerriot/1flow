@@ -1,6 +1,18 @@
 <div class="article-meta article-meta-{% firstof meta_class 'UNSET' %} {{ read_in_list|yesno:'article-meta-row,article-meta-individual' }} clicker-muter-constrainer"
     data-toggle-id="{{ article.id }}">
 
+    {% if with_delta and article.date_published %}
+        <div class="freshness"
+            data-post-process="momentFromNow"
+             {% comment %}
+                 data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
+             {% endcomment %}
+             >
+            {{ article.date_published|date:'c' }}
+        </div>
+    {% endif %}
+
+
   {% if with_actions %}
       {% with with_text=0 %}
         {# with_admin_actions=1 #}

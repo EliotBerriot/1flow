@@ -4,13 +4,21 @@
 {% block body_id %}read{% endblock body_id %}
 
 {% block extrajs_header %}
-    {{block.super}}
+    {{ block.super }}
+
     {% cache 86400 read_status_css_styles %}
         <style type="text/css">{% read_status_css_styles %}</style>
     {% endcache %}
+
 {% endblock extrajs_header %}
 
 {% block application_content %}
+
+<div id="sidebars-wrapper" class="row-fluid">
+    <div id="article-meta-left" class="reading-sidebar span2"></div>
+    <div id="article-meta-right" class="reading-sidebar span2"></div>
+</div>
+
 {% with home_style=preferences.home.style %}
 <div class="row-fluid">
     <div id="reads-list-header" class="span8 offset2">
