@@ -795,6 +795,27 @@ function setup_modals(parent) {
     find_start(parent, 'form[data-async]').on('submit', handle_ajax_form);
 }
 
+function setup_post_processors(parent) {
+
+    //console.log(find_start(parent, '[data-post-process]'));
+
+    find_start(parent, '[data-post-process]').each(function(){
+        var $this = $(this);
+        var func_name = $this.data('post-process');
+
+        try {
+            //console.log(func_name);
+            //console.log('ON');
+            //console.log($this);
+            window[func_name].call(this);
+
+        } catch(err) {
+            console.debug('Exception while trying to run '
+                          + func_name + '.call(' + this + '): ' + err);
+        }
+    });
+}
+
 // ———————————————————————————————————————————————— reusable setup_everything()
 
 function setup_everything(parent) {
@@ -819,6 +840,8 @@ function setup_everything(parent) {
     launch_faders(parent);
 
     setup_modals(parent);
+
+    setup_post_processors(parent);
 
     // not fully tested, and not needed yet.
     //launch_async_gets(parent);
