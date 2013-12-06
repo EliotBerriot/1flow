@@ -152,7 +152,7 @@ function toggle_content(oid, callback) {
                     // marks it as read immediately, whereas the
                     // previous should have been marked instead.
 
-                    mark_something(oid, 'is_read', false, true);
+                    mark_something(oid, 'is_read', false, false);
                     delete auto_mark_read_timers[oid];
 
                 }, preferences.auto_mark_read_delay);
@@ -730,7 +730,8 @@ if (Modernizr.touch) {
         $this.animate({marginLeft: -50}, 200, function(){
             $this.animate({marginLeft: 0}, 150);
         });
-        toggle_status($this.attr('id'), "is_read");
+
+        toggle_status($this.attr('id'), "is_read", false);
 
         return false;
     });
@@ -751,7 +752,7 @@ if (Modernizr.touch) {
             $this.animate({marginLeft: 0}, 150);
         });
 
-        toggle_status($this.attr('id'), "is_bookmarked");
+        toggle_status($this.attr('id'), "is_bookmarked", false);
 
         return false;
     });
