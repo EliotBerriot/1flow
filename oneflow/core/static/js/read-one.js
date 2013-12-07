@@ -135,6 +135,10 @@ function post_mark_triggers(article_id, attr_name, send_notify) {
     }
 }
 
+function current_status(article_id, attr_name) {
+    return !!$article.hasClass(attr_name);
+}
+
 function toggle_status(article_id, attr_name, send_notify) {
 
     var $article = $("#" + article_id);

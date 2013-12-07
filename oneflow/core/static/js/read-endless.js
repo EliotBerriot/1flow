@@ -463,6 +463,12 @@ function mark_current_read_as(what, send_notify) {
         }
     }
 }
+function current_read_status(status) {
+
+    if (open_content) {
+        return current_status(open_content, status);
+    }
+}
 function toggle_current_read_status(status) {
 
     if (open_content) {
