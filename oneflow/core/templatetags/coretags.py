@@ -144,6 +144,7 @@ def feature_not_ready():
 
 
 @register.simple_tag
+@cached(CACHE_ONE_WEEK)
 def read_status_css(read):
 
     css = []
