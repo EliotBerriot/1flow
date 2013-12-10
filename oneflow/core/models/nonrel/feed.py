@@ -262,7 +262,9 @@ class Feed(Document, DocumentHelperMixin):
 
         return cls.objects(restricted__ne=True).filter(
             # not internal, still open and validated by a human.
-            (Q(is_internal__ne=True, closed__ne=True, good_for_use=True))
+            (Q(is_internal__ne=True)
+             | Q(closed__ne=True)
+             | Q(good_for_use=True))
 
             # And not being duplicate of any other feed.
             & (Q(duplicate_of__exists=False) | Q(duplicate_of=None))
@@ -373,15 +375,16 @@ class Feed(Document, DocumentHelperMixin):
             LOGGER.info(u'Feed %s parallel fetch limit set to %s.',
                         self, new_limit)
 
-    @classmethod
-    def signal_pre_save_handler(cls, sender, document, **kwargs):
-
-        feed = document
-
-        for protocol in (u'http://', u'https://'):
-            if feed.url.startswith(protocol + settings.SITE_DOMAIN):
-                feed.is_internal = True
-                break
+    #
+    # NOTE: this is hard-coded in the various feed creation methods.
+    #
+    # @classmethod
+    # def signal_pre_save_handler(cls, sender, document, **kwargs):
+    #     feed = document
+    #     for protocol in (u'http://', u'https://'):
+    #         if feed.url.startswith(protocol + settings.SITE_DOMAIN):
+    #             feed.is_internal = True
+    #             break
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
