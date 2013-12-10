@@ -11,6 +11,8 @@ from mongoengine.fields import (StringField, ListField, ReferenceField,
                                 GenericReferenceField, DBRef)
 from mongoengine.errors import NotUniqueError
 
+from cache_utils.decorators import cached
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext as __
 
@@ -18,7 +20,7 @@ from ....base.fields import IntRedisDescriptor
 from ....base.utils.dateutils import (timedelta, today, combine,
                                       now, time)  # , make_aware, utc)
 
-from .common import DocumentHelperMixin
+from .common import DocumentHelperMixin, CACHE_ONE_DAY
 from .folder import Folder
 from .user import User
 from .feed import Feed
@@ -36,6 +38,7 @@ __all__ = ('subscription_post_create_task',
            'subscription_all_articles_count_default',
            'subscription_unread_articles_count_default',
            'subscription_starred_articles_count_default',
+           'subscription_archived_articles_count_default',
            'subscription_bookmarked_articles_count_default',
 
            # This one will be picked up by `Read` as an instance method.
@@ -56,6 +59,11 @@ def subscription_unread_articles_count_default(subscription):
 def subscription_starred_articles_count_default(subscription):
 
     return subscription.reads.filter(is_starred=True).count()
+
+
+def subscription_archived_articles_count_default(subscription):
+
+    return subscription.reads.filter(is_archived=True).count()
 
 
 def subscription_bookmarked_articles_count_default(subscription):
@@ -127,6 +135,11 @@ class Subscription(Document, DocumentHelperMixin):
 
     starred_articles_count = IntRedisDescriptor(
         attr_name='s.sa_c', default=subscription_starred_articles_count_default,
+        set_default=True, min_value=0)
+
+    archived_articles_count = IntRedisDescriptor(
+        attr_name='s.ra_c',
+        default=subscription_archived_articles_count_default,
         set_default=True, min_value=0)
 
     bookmarked_articles_count = IntRedisDescriptor(

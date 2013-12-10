@@ -25,6 +25,7 @@ __all__ = ('Folder',
            'folder_all_articles_count_default',
            'folder_starred_articles_count_default',
            'folder_unread_articles_count_default',
+           'folder_archived_articles_count_default',
            'folder_bookmarked_articles_count_default',
            )
 
@@ -42,6 +43,11 @@ def folder_starred_articles_count_default(folder, *args, **kwargs):
 def folder_unread_articles_count_default(folder, *args, **kwargs):
 
     return folder.reads(is_read=False).count()
+
+
+def folder_archived_articles_count_default(folder, *args, **kwargs):
+
+    return folder.reads(is_archived=True).count()
 
 
 def folder_bookmarked_articles_count_default(folder, *args, **kwargs):
@@ -71,6 +77,11 @@ class Folder(Document, DocumentHelperMixin, DocumentTreeMixin):
     starred_articles_count = IntRedisDescriptor(
         attr_name='f.sa_c', default=folder_starred_articles_count_default,
         set_default=True)
+
+    archived_articles_count = IntRedisDescriptor(
+        attr_name='f.ra_c',
+        default=folder_archived_articles_count_default,
+        set_default=True, min_value=0)
 
     bookmarked_articles_count = IntRedisDescriptor(
         attr_name='f.ba_c', default=folder_bookmarked_articles_count_default,

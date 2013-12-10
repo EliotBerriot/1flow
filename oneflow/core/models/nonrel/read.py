@@ -16,12 +16,15 @@ from mongoengine.fields import (StringField, BooleanField,
                                 GenericReferenceField, DBRef)
 from mongoengine.errors import NotUniqueError, ValidationError
 
+#from cache_utils.decorators import cached
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
 from ....base.utils.dateutils import now
 
-from .common import DocumentHelperMixin
+from .common import DocumentHelperMixin  # , CACHE_ONE_DAY
+
 from .folder import Folder
 from .subscription import Subscription, generic_check_subscriptions_method
 from .article import Article
@@ -76,6 +79,11 @@ class Read(Document, DocumentHelperMixin):
                                   u'marked it as read, in respect of a system '
                                   u'rule or a user preference.'), default=False)
     date_auto_read = DateTimeField()
+
+    is_archived   = BooleanField(help_text=_(u'The Owner has archived this '
+                                 u'read to explicitely keep it accessible.'),
+                                 default=False)
+    date_archived = DateTimeField()
 
     # NOTE: is_starred has no default, because we use True
     #       as "I like it" and False as "I don't like it".
@@ -262,6 +270,23 @@ class Read(Document, DocumentHelperMixin):
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
                                            u'star-empty'),
             'undo_icon':     pgettext_lazy(u'awesome-font icon name', u'star'),
+        },
+
+        'is_archived': {
+            'list_name':     _(u'archived'),
+            'view_name':     u'archived',
+            'list_url':      _(ur'^read/archived/$'),
+            'do_title':      _(u'Archive'),
+            'list_headers':  (_(u'%(count)s article archived'),
+                              _(u'%(count)s articles archived')),
+            'undo_title':    _(u'Remove from archive'),
+            'do_label':      _(u'Archive'),
+            'undo_label':    _(u'Remove from archive'),
+            'status_label':  _(u'archived'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'download'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'archive'),
         },
 
         'is_bookmarked': {
@@ -718,6 +743,9 @@ class Read(Document, DocumentHelperMixin):
 
             to_change = ['all_articles_count']
 
+            if self.is_archived:
+                to_change.append('archived_articles_count')
+
             if self.is_bookmarked:
                 to_change.append('bookmarked_articles_count')
 
@@ -761,6 +789,35 @@ class Read(Document, DocumentHelperMixin):
         self.update_cached_descriptors(operation='+'
                                        if self.is_starred else '-',
                                        update_only=['starred'])
+
+    def mark_archived(self):
+        if self.archived_can_change() and not self.is_archived:
+            self.is_archived = True
+            self.save()
+
+    def is_archived_can_change(self):
+
+        if self.is_archived:
+            # A user can always unarchive anything. This is dangerous because
+            # he can permanently loose data, but the UI asks for a confirmation
+            # in that case.
+            return True
+
+        if self.is_restricted:
+            LOGGER.warning(u'Implement real-time checking '
+                           u'of archive-ability permission.')
+
+            return True
+
+        else:
+            # An unrestricted read/feed can always change status.
+            return True
+
+    def is_archived_changed(self):
+
+        self.update_cached_descriptors(operation='+'
+                                       if self.is_archived else '-',
+                                       update_only=['archived'])
 
     def is_bookmarked_changed(self):
 
