@@ -57,7 +57,11 @@
     <div class="spacer50"></div>
 
     <h4 class="article-title">
-      {{ article.title }}
+      <a href="{{ article.url }}" class="popover-tooltip popover-bottom"
+            title="{% trans "Open original article on the publisher's website" %}"
+            target="_blank">
+        {{ article.title }}
+      </a>
     </h4>
 
     <div class="spacer50"></div>
