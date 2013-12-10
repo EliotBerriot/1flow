@@ -12,6 +12,8 @@ from mongoengine.fields import (IntField, StringField, URLField, BooleanField,
                                 ListField, ReferenceField, DateTimeField)
 from mongoengine.errors import ValidationError
 
+from cache_utils.decorators import cached
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
@@ -29,7 +31,8 @@ from .common import (DocumentHelperMixin,
                      ORIGIN_TYPE_FEEDPARSER,
                      ORIGIN_TYPE_WEBIMPORT,
                      USER_FEEDS_SITE_URL,
-                     WEB_IMPORT_FEED_URL)
+                     SPECIAL_FEEDS_DATA,
+                     CACHE_ONE_WEEK)
 from .tag import Tag
 from .article import Article
 from .user import User
@@ -969,8 +972,25 @@ Feed.register_delete_rule(Article, 'feeds', PULL)
 
 def User_web_import_feed_property_get(self):
 
+    return get_or_create_special_feed(self, *SPECIAL_FEEDS_DATA['web_import'])
+
+
+def User_sent_items_feed_property_get(self):
+
+    return get_or_create_special_feed(self, *SPECIAL_FEEDS_DATA['sent_items'])
+
+
+def User_received_items_feed_property_get(self):
+
+    return get_or_create_special_feed(self,
+                                      *SPECIAL_FEEDS_DATA['received_items'])
+
+
+@cached(CACHE_ONE_WEEK)
+def get_or_create_special_feed(user, url_template, default_name):
+
     try:
-        return Feed.objects.get(url=WEB_IMPORT_FEED_URL.format(user=self))
+        return Feed.objects.get(url=url_template.format(user=user))
 
     except Feed.DoesNotExist:
 
@@ -980,13 +1000,24 @@ def User_web_import_feed_property_get(self):
         # distinguish them if they have many.
         #
 
-        return Feed(url=WEB_IMPORT_FEED_URL.format(user=self),
-                    name=_('Imported items of {0}').format(
-                        self.username or (u'#%s' % self.id)),
-                    site_url=USER_FEEDS_SITE_URL.format(user=self)).save()
+        return Feed(url=url_template.format(user=user),
+                    name=default_name.format(
+                        user.username or (u'#%s' % user.id)),
+
+                    # TODO: make this dynamic, given the
+                    # free/premium level of users ?
+                    restricted=True,
+
+                    # By default, these feeds are internal,
+                    # not part of the add-subsription form.
+                    is_internal=True,
+
+                    site_url=USER_FEEDS_SITE_URL.format(user=user)).save()
 
         # This will be done in the subscription property. DRY.
-        #Subscription.subscribe_user_to_feed(self, feed)
+        #Subscription.subscribe_user_to_feed(user, feed)
 
 
-User.web_import_feed = property(User_web_import_feed_property_get)
+User.web_import_feed     = property(User_web_import_feed_property_get)
+User.sent_items_feed     = property(User_sent_items_feed_property_get)
+User.received_items_feed = property(User_received_items_feed_property_get)
