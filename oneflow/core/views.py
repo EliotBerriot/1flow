@@ -768,6 +768,17 @@ def read_one(request, read_id):
     return render(request, template, {'read': read})
 
 
+
+class UserAddressBookView(Select2View):
+
+    def get_results(self, request, term, page, context):
+
+        return (
+            'nil',
+            False,
+            [r for r in request.user.mongo.relations if term in r[1]]
+        )
+
 # ————————————————————————————————————————————————————————————————— Preferences
 
 

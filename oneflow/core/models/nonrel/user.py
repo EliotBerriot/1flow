@@ -198,6 +198,9 @@ class User(Document, DocumentHelperMixin):
                                 help_text=_(u'The user has super user related '
                                             u'permissions (see Django doc.).'))
 
+    friends     = ListField(ReferenceField('self'), verbose_name=_(u'Friends'))
+
+    address_book = ListField(StringField(), verbose_name=_(u'Address book'))
 
     all_articles_count = IntRedisDescriptor(
         attr_name='u.aa_c', default=user_all_articles_count_default,
@@ -262,6 +265,24 @@ class User(Document, DocumentHelperMixin):
         attr_name='u.la_c',
         default=user_fun_articles_count_default,
         set_default=True, min_value=0)
+
+    @property
+    def relations(self):
+        """ Meant to generate a list of choices suitable
+            for a Django form ``choices`` argument. """
+
+        for friend in self.friends:
+            # MongoDB ID, full name or username
+            yield (friend.id, friend.display_name)
+
+        for contact in self.address_book:
+            try:
+                _dymmy_, email = contact.rsplit(u' ', 1)
+
+            except:
+                email = contact
+
+            yield email, contact
 
     @property
     def has_content(self):

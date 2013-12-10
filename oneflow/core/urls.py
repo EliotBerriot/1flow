@@ -113,6 +113,13 @@ urlpatterns = patterns(
         login_required(never_cache(views.read_one)),
         name='read_one'),
 
+    # Required by the share_one recipients autocompleter.
+    # TODO: once we have an expirable cache mechanism, switch to LONG_CACHE
+    #       and make it expire on address_book and friends changes.
+    url(_(ur'^json/user-address-book/$'),
+        login_required(never_cache(views.UserAddressBookView.as_view())),
+        name='user_address_book'),
+
     url(_(ur'^selector/$'),
         login_required(never_cache(views.source_selector)),
         name='source_selector'),
