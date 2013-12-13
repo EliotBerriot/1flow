@@ -17,6 +17,7 @@ from cache_utils.decorators import cached
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
+from django.core.validators import URLValidator
 
 from ....base.utils import (RedisExpiringLock,
                             RedisSemaphore,
@@ -391,7 +392,7 @@ class Feed(Document, DocumentHelperMixin):
     @classmethod
     def prepare_feed_url(cls, feed_url):
 
-        feed_url = clean_url(feed_url)
+        feed_url = URLValidator()(clean_url(feed_url))
 
         # Be sure we get the XML result from them, 
         # else FeedBurner gives us a poor HTML page…
