@@ -133,7 +133,7 @@ class Feed(Document, DocumentHelperMixin):
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
     is_internal    = BooleanField(default=False)
-
+    created_by     = ReferenceField(u'User', reverse_delete_rule=NULLIFY)
     site_url       = URLField(verbose_name=_(u'web site'),
                               help_text=_(u'Website public URL, linked to the '
                                           u'globe icon in the source selector. '
