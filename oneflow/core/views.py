@@ -312,26 +312,33 @@ def add_feed(request, feed_url):
     #
 
     feed = subscription = None
+    feed_exc = sub_exc = None
     already_created = already_subscribed = False
 
     # We need to prepare the URL before getting it, else it won't match
     # special cases like feedburner URLs on which we add ?format=xml in
     # pre-processing phases.
-    feed_url = Feed.prepare_feed_url(feed_url)
-
     try:
-        feed = Feed.objects.get(url=feed_url)
+        feed_url = Feed.prepare_feed_url(feed_url)
 
-    except Feed.DoesNotExist:
+    except:
+        feed_exc = _(u'URL {0} is invalid, its pre-processing '
+                     u'failed').format(feed_url)
 
-        try:
-            feed = Feed.create_feed_from_url(feed_url, user)
-
-        except:
-            LOGGER.exception(u'Failed to create feed from url %s', feed_url)
-            
     else:
-        already_created = True
+        try:
+            feed = Feed.objects.get(url=feed_url)
+
+        except Feed.DoesNotExist:
+
+            try:
+                feed = Feed.create_feed_from_url(feed_url, user)
+
+            except Exception, feed_exc:
+                LOGGER.exception(u'Failed to create feed from url %s', feed_url)
+                
+        else:
+            already_created = True
 
     if feed:
 
@@ -347,7 +354,7 @@ def add_feed(request, feed_url):
                 subscription = Subscription.subscribe_user_to_feed(user, feed, 
                                                             background=True)
 
-            except:
+            except Exception, sub_exc:
                 LOGGER.exception(u'Failed to subscribe user %s to feed %s', 
                                  user, feed)
 
@@ -355,9 +362,10 @@ def add_feed(request, feed_url):
             already_subscribed = True
 
     return render(request, 'add-feed.html', {'feed': feed,
+                    'subscription': subscription,
                     'already_created': already_created, 
                     'already_subscribed': already_subscribed,
-                    'subscription': subscription})
+                    'feed_exc': feed_exc, 'sub_exc': sub_exc})
 
 
 def add_subscription(request, **kwargs):

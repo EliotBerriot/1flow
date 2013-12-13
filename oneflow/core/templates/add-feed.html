@@ -55,6 +55,12 @@
 
 				{% endblocktrans %}</p>
 
+				{% if sub_exc %}
+					<p>{% blocktrans %}
+    					For the record, if that means anything to you, the exact error is: <code>{{sub_exc}}</code>.
+					{% endblocktrans %}</p>
+				{% endif %}
+
 			{% endif %}
 
 		{% else %}
@@ -89,6 +95,12 @@
 
 				{% endblocktrans %}</p>
 
+				{% if sub_exc %}
+					<p>{% blocktrans %}
+    					For the record, if that means anything to you, the exact error is: <code>{{sub_exc}}</code>.
+					{% endblocktrans %}</p>
+				{% endif %}
+
 			{% endif %}
 
 		{% endif %}
@@ -110,6 +122,12 @@
 		You can close this window/tab, or <a href="{{sel_url}}">head up to your source selector</a>.
 
 	{% endblocktrans %}</p>
+
+	{% if feed_exc %}
+		<p>{% blocktrans %}
+			For the record, if that means anything to you, the exact error is: <code>{{feed_exc}}</code>.
+		{% endblocktrans %}</p>
+	{% endif %}
 
 {% endif %}
 </div>
