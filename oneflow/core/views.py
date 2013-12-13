@@ -302,7 +302,22 @@ def edit_subscription(request, **kwargs):
 
 def add_feed(request, feed_url):
 
+    if not feed_url.startswith(u'http'):
+        raise HttpResponseBadRequest(u'Bad url {0}'.format(feed_url))
+
     user = request.user.mongo
+
+    #
+    # Try to create the feed, and don't fail if it already exists.
+    #
+
+    feed = subscription = None
+    already_created = already_subscribed = False
+
+    # We need to prepare the URL before getting it, else it won't match
+    # special cases like feedburner URLs on which we add ?format=xml in
+    # pre-processing phases.
+    feed_url = Feed.prepare_feed_url(feed_url)
 
     try:
         feed = Feed.objects.get(url=feed_url)
@@ -314,27 +329,35 @@ def add_feed(request, feed_url):
 
         except:
             LOGGER.exception(u'Failed to create feed from url %s', feed_url)
-
-            return HttpResponseBadRequest(u'Failed to create feed from '
-                u'url {0}'.format(feed_url))
-
-    try:
-        Subscription.objects.get(user=user, feed=feed)
-
-    except Subscription.DoesNotExist:
-        try:
-            Subscription.subscribe_user_to_feed(user, feed, background=True)
-
-        except:
-            LOGGER.exception(u'Failed to subscribe user %s to feed %s', 
-                             user, feed)
-            return HttpResponseTemporaryServerError(u'Failed to subscribe '
-                u'you to %s. Developpers have been notified.', feed)
-
+            
     else:
-        return HttpResponse(u'Already subscribed, nothing done. Thanks!')
+        already_created = True
 
-    return HttpResponse(u'You are now subscribed to {0}.'.format(feed))
+    if feed:
+
+        #
+        # Then subscribe the user to this feed.
+        #
+
+        try:
+            subscription = Subscription.objects.get(user=user, feed=feed)
+
+        except Subscription.DoesNotExist:
+            try:
+                subscription = Subscription.subscribe_user_to_feed(user, feed, 
+                                                            background=True)
+
+            except:
+                LOGGER.exception(u'Failed to subscribe user %s to feed %s', 
+                                 user, feed)
+
+        else:
+            already_subscribed = True
+
+    return render(request, 'add-feed.html', {'feed': feed,
+                    'already_created': already_created, 
+                    'already_subscribed': already_subscribed,
+                    'subscription': subscription})
 
 
 def add_subscription(request, **kwargs):
