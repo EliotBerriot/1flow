@@ -139,7 +139,7 @@ urlpatterns = patterns(
     # HEADS UP: this URL is hard-coded in snippets/…/add-subscription.html
     #           because it's buried down in the Javascript code for the
     #           bookmarklet. Change it here, change it there…
-    url(_(ur'^feed/add/(http://.*)$'),
+    url(_(ur'^feed/add/(.*)$'),
         login_required(never_cache(views.add_feed)),
         name='add_feed'),
 
