@@ -483,6 +483,7 @@ function toggle_current_read_status(status) {
         });
     }
 }
+
 function show_actions(objekt) {
     // objekt is a DOM entity
 
@@ -606,7 +607,15 @@ Mousetrap.bind(['m s', 't s'], function() {
 // “Keep For Later”, “Read Later”
 Mousetrap.bind(['m l', 't l',
                 'r l', 'm f l', 'k f l'], function() {
+
     toggle_current_read_status("is_bookmarked");
+    return false;
+});
+
+// “Mark Archi[V]ed”
+Mousetrap.bind(['m v'], function() {
+    toggle_current_read_status("is_archived");
+    convert_current_read_to_fulltext();
     return false;
 });
 

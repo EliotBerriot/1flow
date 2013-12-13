@@ -113,6 +113,13 @@ urlpatterns = patterns(
         login_required(never_cache(views.read_one)),
         name='read_one'),
 
+    # Required by the share_one recipients autocompleter.
+    # TODO: once we have an expirable cache mechanism, switch to LONG_CACHE
+    #       and make it expire on address_book and friends changes.
+    url(_(ur'^json/user-address-book/$'),
+        login_required(never_cache(views.UserAddressBookView.as_view())),
+        name='user_address_book'),
+
     url(_(ur'^selector/$'),
         login_required(never_cache(views.source_selector)),
         name='source_selector'),
@@ -129,6 +136,14 @@ urlpatterns = patterns(
         login_required(never_cache(views.manage_folder)),
         name='edit_folder'),
 
+    # HEADS UP: this URL is hard-coded in snippets/…/add-subscription.html
+    #           because it's buried down in the Javascript code for the
+    #           bookmarklet. Change it here, change it there…
+    url(_(ur'^feed/add/(http://.*)$'),
+        login_required(never_cache(views.add_feed)),
+        name='add_feed'),
+
+    # Subscribe to an already-present-in-1flow feed
     url(_(ur'^subscription/new/$'),
         login_required(never_cache(views.add_subscription)),
         name='add_subscription'),

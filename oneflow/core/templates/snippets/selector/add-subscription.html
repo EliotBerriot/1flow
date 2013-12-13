@@ -2,8 +2,10 @@
 <div class="form-wrapper">
     <h1>{% trans "Add one or more subscriptions" %}</h1>
 
-    <form method="POST" action="{% url 'add_subscription' %}" class="form form-horizontal">
+    <form method="POST" action="{% url 'add_subscription' %}" class="form form-horizontal form-add-subscription">
         {% csrf_token %}
+
+            <h3>{% trans "Choose an existing feed" %}</h3>
 
         {% if not mongodb_user.has_content %}
             <p>{% trans "Please choose some news feeds to subscribe to. Just type a few letters in the field, like “CNN”, “design”, “software development”… You can subscribe to more than one." %}</p>
@@ -27,12 +29,38 @@
 
         <div class="or-choice">{% trans "or" %}</div>
 
+        <h3>{% trans "Add feeds while browsing the web" %}</h3>
+
+        <div class="bookmarklet-container">
+
+            {# HEADS UP: contains the hard-coded url to views.add_feed #}
+            {# BOOKMARK Unicode: U+1F516 (U+D83D U+DD16), UTF-8: F0 9F 94 96 #}
+            <a href="javascript:void(d=document);void(el=d.getElementsByTagName('link'));void(g=false);for(i=0;i<el.length;i++){if(el[i].getAttribute('rel').indexOf('alternate')!=-1){ty=el[i].getAttribute('type');if(ty.indexOf('application/rss+xml')!=-1||ty.indexOf('text/xml')!=-1){g=true;h=el[i].getAttribute('href');void(location.href='http://{{ settings.SITE_DOMAIN }}/feed/add/'+h);}}};if(!g){window.alert('{% trans "Could not find the RSS Feed" %}');};" class="bookmarklet btn btn-huge" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;"><i class="icon-bookmark"></i>&nbsp;{% trans "Add feed to 1flow" %}</a>
+        </div>
+
+        <p>{% blocktrans %}
+            <strong>Drag-n-drop this bookmarklet into your bookmark toolbar.</strong><br /> 
+            When you find yourself on a news website or a blog, just click on the bookmarklet to subscribe to its feed(s).<br />
+            If the website doesn't offer any feed, the bookmarklet will inform you.
+        {% endblocktrans %}</p>
+
+        {% url 'help' as help_url %}
+        
+        <p class="muted">{% blocktrans %}
+            You can get more control on this process <a href="{{help_url}}#adding-news-sources">with a browser extension and some manual setup</a>.<br />
+            If unsure, using the bookmarklet is the simplest way.
+        {% endblocktrans %}</p>
+        
+        {% comment %}
+            
         {% trans "Feature not ready yet, under development." as search_placeholder_text %}
 
         {% with search_placeholder='placeholder:'|add:search_placeholder_text %}
             {% include "widgets/forms/field-input-text.html" with field=form.search_for|add_class:"span5"|attr:'disabled="disabled"'|attr:search_placeholder %}
 
         {% endwith %}
+
+        {% endcomment %}
 
         {% if not mongodb_user.has_content %}
         <div class="or-choice">{% trans "note" %}</div>

@@ -96,6 +96,9 @@ reading_lists = {
     'read_starred':     (_(u'Starred'),
                          _(u'You have {0} starred articles'),
                          'starred_articles_count'),
+    'read_archived':    (_(u"Archived"),
+                         _(u'You have {0} archived articles'),
+                         'archived_articles_count'),
 
     'read_fun':         (_(u'Funbox'),
                          _(u'You have {0} fun articles'),

@@ -523,6 +523,7 @@ class Article(Document, DocumentHelperMixin):
             # a F*G page with links in many languages "click here
             # to continue".
             bsoup = BeautifulSoup(requests_response.content)
+            
             for anchor in bsoup.findAll('a'):
                 if u'here to continue' in anchor.text:
                     return clean_url(anchor['href'])
