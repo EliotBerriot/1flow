@@ -837,6 +837,10 @@ def preferences(request):
 
 def set_preference(request, base, sub, value):
 
+    if 'staff' in base and not (request.user.is_staff 
+                                or request.user.is_superuser):
+        return HttpResponseForbidden(u'forbidden')
+
     prefs = request.user.mongo.preferences
 
     try:
