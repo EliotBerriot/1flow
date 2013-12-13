@@ -12,41 +12,49 @@
 
     {% with read.subscriptions|first as subscription %}
 
-    <div class="subscription-meta" style="text-align:right">
-      <span class="management">
-        {% if subscription.feed.site_url %}
-            <a href="{{ subscription.feed.site_url }}" target="_blank"
-                title="{% trans "Visit the website of this stream" %}"
-                data-toggle="tooltip" class="manage popover-top"><i class="icon-globe"></i></a>
-        {% endif %}
+      {% cache 86400 subscription_feed_icon subscription.feed %}
+        <div class="subscription-meta" style="text-align:right">
+          {% comment %}
 
-        {% comment %}
+            We need a fully async implementation, first, to avoid re-jumping to
+            the current page: if it's a reading list, the user's experience will
+            be interupted / restarted by the final redirection of the form.n
 
-          We need a fully async implementation, first, to avoid re-jumping to
-          the current page: if it's a reading list, the user's experience will
-          be interupted / restarted by the final redirection of the form.n
+          <a href="{% url 'edit_subscription' subscription=subscription.id %}"
+            data-toggle="modal" data-target="#" class="manage"><i
+            class="icon-cog popover-top" title="{% trans "Manage the properties of this stream" %}"
+            data-toggle="tooltip"></i></a>
 
-        <a href="{% url 'edit_subscription' subscription=subscription.id %}"
-        data-toggle="modal" data-target="#" class="manage"><i class="icon-cog popover-top" title="{% trans "Manage the properties of this stream" %}" data-toggle="tooltip"></i></a>
+          {% endcomment %}
 
-        {% endcomment %}
-      </span>
-      <br />
-      <span class="thumbnail" style="margin-left: auto">
-          {% if subscription.feed.thumbnail_url %}
-              <img src="{{ subscription.feed.thumbnail_url }}" />
 
-          {% else %}
-            {% cache 86400 feed_icon subscription.feed %}
-                <div class="generic-img"
-                    style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
-              {% endcache %}
+          <span class="thumbnail" style="margin-left: auto">
 
-          {% endif %}
-      </span>
-    </div>
+            {% if subscription.feed.site_url and subscription.feed.site_url != subscription.feed.url %}
+              <a href="{{ subscription.feed.site_url }}" target="_blank"
+                  title="{% trans "Visit the website of this stream" %}"
+                  data-toggle="tooltip" class="manage popover-top">
+            {% endif %}
+
+            {% if subscription.feed.thumbnail_url %}
+                <img src="{{ subscription.feed.thumbnail_url }}" />
+
+            {% else %}
+                  <div class="generic-img"
+                      style="background-color: {% html_background_color_for_name subscription.name %}; color: {% html_foreground_color_for_name subscription.name %};">{% html_first_letters subscription.name 2 %}</div>
+
+            {% endif %}
+
+            {% if subscription.feed.site_url %}
+              </a>
+            {% endif %}
+
+          </span>
+        </div>
+      {% endcache %}
 
     {% endwith %}
+
 
     <h3 class="source muted">
       {% for source in read.get_source %}
@@ -58,7 +66,7 @@
 
     <h4 class="article-title">
       <a href="{{ article.url }}" class="popover-tooltip popover-bottom"
-            title="{% trans "Open original article on the publisher's website" %}"
+            title="{% trans "Open original article in a new window/tab" %}"
             target="_blank">
         {{ article.title }}
       </a>
@@ -68,7 +76,8 @@
 
     <h4 class="date">
       {% if article.date_published %}
-        {{ article.date_published }} ({{ article.date_published_delta }})
+        <a href="javascript: return false;" class="popover-tooltip popover-top"
+            title="{{ article.date_published }}">{{ article.date_published_delta }}</a>
       {% else %}
         <span class="no-date">{% trans "no date" %}</span>
       {% endif %}

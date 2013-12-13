@@ -109,6 +109,15 @@
                         inset 0 (-$bitb_width) $bitb_width (-$bitb_width) $color;
 }
 
+@mixin box-inset-tb-shadow-top($bitb_width: 5px, $color: #aaa) {
+    /* http://forrst.com/posts/Inset_box_shadow_on_top_and_bottom_only-Dfb */
+
+    -moz-box-shadow:    inset 0   $bitb_width  $bitb_width (-$bitb_width) $color;
+    -webkit-box-shadow: inset 0   $bitb_width  $bitb_width (-$bitb_width) $color;
+     box-shadow:        inset 0   $bitb_width  $bitb_width (-$bitb_width) $color;
+}
+
+
 // ———————————————————————————————————————————————————————— Bootstrap overrides
 
 
@@ -130,6 +139,34 @@ a.brand {
 
 
 // ————————————————————————————————————————————————————————————————— Our mixins
+
+@mixin fainted-anchors() {
+
+    a {
+        padding: 0;
+        margin: 0;
+        color: #aaa;
+        opacity: 0.5;
+
+        &:hover {
+            text-decoration: none;
+            opacity: 1;
+        }
+    }
+}
+
+@mixin clean-anchors() {
+
+    a {
+        padding: 0;
+        margin: 0;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
+
 
 @mixin thumbnail-img-styles($size) {
 

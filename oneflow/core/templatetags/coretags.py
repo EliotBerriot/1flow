@@ -345,7 +345,7 @@ def article_full_content_display(article):
 @cached(CACHE_ONE_WEEK)
 def read_original(article, with_text=None):
 
-    return u'''<span class="action {0} popover-top"
+    return u'''<span class="action action-read-original {0} popover-top"
       title="{1}"><a href="{2}" target="_blank" class="nowrap">
       {3}<i class="icon-double-angle-right"></i></a></span>'''.format(
         u'popover-tooltip' if with_text else u'',

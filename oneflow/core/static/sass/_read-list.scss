@@ -1,18 +1,4 @@
 
-@mixin fainted-anchors() {
-    a {
-        padding: 0;
-        margin: 0;
-        color: #aaa;
-        opacity: 0.5;
-
-        &:hover {
-            text-decoration: none;
-            opacity: 0.5;
-        }
-    }
-}
-
 #sidebars-wrapper {
     position: fixed;
     top: 50px;
@@ -47,6 +33,7 @@
 
     .watch-status {
         min-height: 20px;
+        margin-bottom: 20px;
 
         span {
             font-size: 15px;
@@ -61,6 +48,16 @@
 
     .subscription-meta .management {
         font-size: 200%;
+    }
+
+    // only one read-action per line (for displays > 1280x800)
+    .read-actions .action {
+        width: 100%;
+    }
+
+    // but still, all watch icons on one line
+    .watch-actions .action {
+        width: auto;
     }
 
     .paddle {
@@ -93,7 +90,7 @@
     left: 20px;
     text-align: right;
 
-    @include fainted-anchors();
+    @include clean-anchors();
 }
 
 #article-meta-right {
