@@ -392,7 +392,9 @@ class Feed(Document, DocumentHelperMixin):
     @classmethod
     def prepare_feed_url(cls, feed_url):
 
-        feed_url = URLValidator()(clean_url(feed_url))
+        feed_url = clean_url(feed_url)
+        
+        URLValidator()(feed_url)
 
         # Be sure we get the XML result from them, 
         # else FeedBurner gives us a poor HTML page…
