@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import requests
 import feedparser
 
 from statsd import statsd
@@ -23,6 +24,7 @@ from ....base.utils import (RedisExpiringLock,
 
 from ....base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from ....base.utils import ro_classproperty
+from ....base.utils.http import clean_url
 from ....base.utils.dateutils import (now, timedelta, today, datetime,
                                       is_naive, make_aware, utc)
 
@@ -387,6 +389,54 @@ class Feed(Document, DocumentHelperMixin):
     #             break
 
     @classmethod
+    def prepare_feed_url(cls, feed_url):
+
+        feed_url = clean_url(feed_url)
+
+        # Be sure we get the XML result from them, 
+        # else FeedBurner gives us a poor HTML page…
+        if u'feedburner' in feed_url and not feed_url.endswith(u'?format=xml'):
+            feed_url += u'?format=xml'
+
+        return feed_url
+
+    @classmethod
+    def create_feed_from_url(cls, feed_url, creator=None):
+
+        requests_response = requests.get(feed_url)
+
+        if not requests_response.ok or requests_response.status_code != 200:
+            raise Exception(u'Requests response is not OK/200, aborting')
+
+        feed_url = cls.prepare_feed_url(requests_response.url)
+
+        http_logger = HttpResponseLogProcessor()
+        parsed_feed = feedparser.parse(feed_url, handlers=[http_logger])
+        feed_status = http_logger.log[-1]['status']
+
+        # Stop on HTTP errors before stopping on feedparser errors,
+        # because he is much more lenient in many conditions.
+        if feed_status in (400, 401, 402, 403, 404, 500, 502, 503):
+            raise Exception(u'Error {0} when fetching feed {1}'.format(
+                            feed_status, feed_url))
+
+        if cls.has_feedparser_error(parsed_feed):
+            raise Exception(u'Unparsable feed {0} (feedparser error)'.format(
+                            feed_url))
+
+        # Wow. FeedParser creates a <anything>.feed
+        fp_feed = parsed_feed.feed
+
+        return cls(name=fp_feed.title,
+                   good_for_use=True,
+                   # Try the RSS description, then the Atom subtitle.
+                   description_en=fp_feed.get('description', 
+                        fp_feed.get('subtitle', u'')),
+                   url=feed_url,
+                   created_by=creator,
+                   site_url=clean_url(fp_feed.link or feed_url)).save()
+
+    @classmethod
     def signal_post_save_handler(cls, sender, document,
                                  created=False, **kwargs):
 
@@ -721,7 +771,8 @@ class Feed(Document, DocumentHelperMixin):
 
         return False
 
-    def has_feedparser_error(self, parsed_feed):
+    @classmethod
+    def has_feedparser_error(cls, parsed_feed):
 
         if parsed_feed.get('bozo', None) is None:
             return False
@@ -730,7 +781,7 @@ class Feed(Document, DocumentHelperMixin):
 
         # Charset declaration problems are harmless (until they are not).
         if str(error).startswith('document declared as'):
-            LOGGER.warning('Feed %s: %s', self, error)
+            LOGGER.warning('Feed parsing: %s', error)
             return False
 
         # currently, I've encountered no error fatal to feedparser.

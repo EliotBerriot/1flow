@@ -504,6 +504,10 @@ class WebPagesImportForm(forms.Form):
             if url in self.import_to_create:
                 return False
 
+            # Avoid stupidity.
+            if u'1flow.io' in url:
+                return False
+
             self.import_to_create.add(url)
             return True
 

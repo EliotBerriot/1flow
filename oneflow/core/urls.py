@@ -136,6 +136,14 @@ urlpatterns = patterns(
         login_required(never_cache(views.manage_folder)),
         name='edit_folder'),
 
+    # HEADS UP: this URL is hard-coded in snippets/…/add-subscription.html
+    #           because it's buried down in the Javascript code for the
+    #           bookmarklet. Change it here, change it there…
+    url(_(ur'^feed/add/(http://.*)$'),
+        login_required(never_cache(views.add_feed)),
+        name='add_feed'),
+
+    # Subscribe to an already-present-in-1flow feed
     url(_(ur'^subscription/new/$'),
         login_required(never_cache(views.add_subscription)),
         name='add_subscription'),

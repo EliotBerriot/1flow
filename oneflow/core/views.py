@@ -300,6 +300,43 @@ def edit_subscription(request, **kwargs):
                   {'form': form, 'subscription': subscription})
 
 
+def add_feed(request, feed_url):
+
+    user = request.user.mongo
+
+    try:
+        feed = Feed.objects.get(url=feed_url)
+
+    except Feed.DoesNotExist:
+
+        try:
+            feed = Feed.create_feed_from_url(feed_url, user)
+
+        except:
+            LOGGER.exception(u'Failed to create feed from url %s', feed_url)
+
+            return HttpResponseBadRequest(u'Failed to create feed from '
+                u'url {0}'.format(feed_url))
+
+    try:
+        Subscription.objects.get(user=user, feed=feed)
+
+    except Subscription.DoesNotExist:
+        try:
+            Subscription.subscribe_user_to_feed(user, feed, background=True)
+
+        except:
+            LOGGER.exception(u'Failed to subscribe user %s to feed %s', 
+                             user, feed)
+            return HttpResponseTemporaryServerError(u'Failed to subscribe '
+                u'you to %s. Developpers have been notified.', feed)
+
+    else:
+        return HttpResponse(u'Already subscribed, nothing done. Thanks!')
+
+    return HttpResponse(u'You are now subscribed to {0}.'.format(feed))
+
+
 def add_subscription(request, **kwargs):
 
     if request.POST:
