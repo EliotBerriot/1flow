@@ -302,8 +302,12 @@ def edit_subscription(request, **kwargs):
 
 def add_feed(request, feed_url):
 
-    if not feed_url.startswith(u'http'):
-        raise HttpResponseBadRequest(u'Bad url {0}'.format(feed_url))
+    try:
+        if not feed_url.startswith(u'http') or feed_url.strip() == u'':
+            raise HttpResponseBadRequest(u'Bad url {0}'.format(feed_url))
+            
+    except:
+        raise HttpResponseBadRequest(u'Very bad url {0}'.format(feed_url))
 
     user = request.user.mongo
 
@@ -321,9 +325,9 @@ def add_feed(request, feed_url):
     try:
         feed_url = Feed.prepare_feed_url(feed_url)
 
-    except:
+    except Exception, e:
         feed_exc = _(u'URL {0} is invalid, its pre-processing '
-                     u'failed').format(feed_url)
+                     u'failed ({1})').format(feed_url, e)
 
     else:
         try:
