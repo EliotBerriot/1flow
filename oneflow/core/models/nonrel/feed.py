@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
 import logging
+import requests
 import feedparser
 
 from statsd import statsd
@@ -12,6 +13,8 @@ from mongoengine.fields import (IntField, StringField, URLField, BooleanField,
                                 ListField, ReferenceField, DateTimeField)
 from mongoengine.errors import ValidationError
 
+from cache_utils.decorators import cached
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
@@ -21,6 +24,7 @@ from ....base.utils import (RedisExpiringLock,
 
 from ....base.fields import IntRedisDescriptor, DatetimeRedisDescriptor
 from ....base.utils import ro_classproperty
+from ....base.utils.http import clean_url
 from ....base.utils.dateutils import (now, timedelta, today, datetime,
                                       is_naive, make_aware, utc)
 
@@ -29,7 +33,8 @@ from .common import (DocumentHelperMixin,
                      ORIGIN_TYPE_FEEDPARSER,
                      ORIGIN_TYPE_WEBIMPORT,
                      USER_FEEDS_SITE_URL,
-                     WEB_IMPORT_FEED_URL)
+                     SPECIAL_FEEDS_DATA,
+                     CACHE_ONE_WEEK)
 from .tag import Tag
 from .article import Article
 from .user import User
@@ -130,7 +135,7 @@ class Feed(Document, DocumentHelperMixin):
     name           = StringField(verbose_name=_(u'name'))
     url            = URLField(unique=True, verbose_name=_(u'url'))
     is_internal    = BooleanField(default=False)
-
+    created_by     = ReferenceField(u'User', reverse_delete_rule=NULLIFY)
     site_url       = URLField(verbose_name=_(u'web site'),
                               help_text=_(u'Website public URL, linked to the '
                                           u'globe icon in the source selector. '
@@ -259,7 +264,9 @@ class Feed(Document, DocumentHelperMixin):
 
         return cls.objects(restricted__ne=True).filter(
             # not internal, still open and validated by a human.
-            (Q(is_internal__ne=True, closed__ne=True, good_for_use=True))
+            (Q(is_internal__ne=True)
+             | Q(closed__ne=True)
+             | Q(good_for_use=True))
 
             # And not being duplicate of any other feed.
             & (Q(duplicate_of__exists=False) | Q(duplicate_of=None))
@@ -370,15 +377,64 @@ class Feed(Document, DocumentHelperMixin):
             LOGGER.info(u'Feed %s parallel fetch limit set to %s.',
                         self, new_limit)
 
+    #
+    # NOTE: this is hard-coded in the various feed creation methods.
+    #
+    # @classmethod
+    # def signal_pre_save_handler(cls, sender, document, **kwargs):
+    #     feed = document
+    #     for protocol in (u'http://', u'https://'):
+    #         if feed.url.startswith(protocol + settings.SITE_DOMAIN):
+    #             feed.is_internal = True
+    #             break
+
     @classmethod
-    def signal_pre_save_handler(cls, sender, document, **kwargs):
+    def prepare_feed_url(cls, feed_url):
 
-        feed = document
+        feed_url = clean_url(feed_url)
 
-        for protocol in (u'http://', u'https://'):
-            if feed.url.startswith(protocol + settings.SITE_DOMAIN):
-                feed.is_internal = True
-                break
+        # Be sure we get the XML result from them, 
+        # else FeedBurner gives us a poor HTML page…
+        if u'feedburner' in feed_url and not feed_url.endswith(u'?format=xml'):
+            feed_url += u'?format=xml'
+
+        return feed_url
+
+    @classmethod
+    def create_feed_from_url(cls, feed_url, creator=None):
+
+        requests_response = requests.get(feed_url)
+
+        if not requests_response.ok or requests_response.status_code != 200:
+            raise Exception(u'Requests response is not OK/200, aborting')
+
+        feed_url = cls.prepare_feed_url(requests_response.url)
+
+        http_logger = HttpResponseLogProcessor()
+        parsed_feed = feedparser.parse(feed_url, handlers=[http_logger])
+        feed_status = http_logger.log[-1]['status']
+
+        # Stop on HTTP errors before stopping on feedparser errors,
+        # because he is much more lenient in many conditions.
+        if feed_status in (400, 401, 402, 403, 404, 500, 502, 503):
+            raise Exception(u'Error {0} when fetching feed {1}'.format(
+                            feed_status, feed_url))
+
+        if cls.has_feedparser_error(parsed_feed):
+            raise Exception(u'Unparsable feed {0} (feedparser error)'.format(
+                            feed_url))
+
+        # Wow. FeedParser creates a <anything>.feed
+        fp_feed = parsed_feed.feed
+
+        return cls(name=fp_feed.title,
+                   good_for_use=True,
+                   # Try the RSS description, then the Atom subtitle.
+                   description_en=fp_feed.get('description', 
+                        fp_feed.get('subtitle', u'')),
+                   url=feed_url,
+                   created_by=creator,
+                   site_url=clean_url(fp_feed.link or feed_url)).save()
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -715,7 +771,8 @@ class Feed(Document, DocumentHelperMixin):
 
         return False
 
-    def has_feedparser_error(self, parsed_feed):
+    @classmethod
+    def has_feedparser_error(cls, parsed_feed):
 
         if parsed_feed.get('bozo', None) is None:
             return False
@@ -724,7 +781,7 @@ class Feed(Document, DocumentHelperMixin):
 
         # Charset declaration problems are harmless (until they are not).
         if str(error).startswith('document declared as'):
-            LOGGER.warning('Feed %s: %s', self, error)
+            LOGGER.warning('Feed parsing: %s', error)
             return False
 
         # currently, I've encountered no error fatal to feedparser.
@@ -969,8 +1026,25 @@ Feed.register_delete_rule(Article, 'feeds', PULL)
 
 def User_web_import_feed_property_get(self):
 
+    return get_or_create_special_feed(self, *SPECIAL_FEEDS_DATA['web_import'])
+
+
+def User_sent_items_feed_property_get(self):
+
+    return get_or_create_special_feed(self, *SPECIAL_FEEDS_DATA['sent_items'])
+
+
+def User_received_items_feed_property_get(self):
+
+    return get_or_create_special_feed(self,
+                                      *SPECIAL_FEEDS_DATA['received_items'])
+
+
+@cached(CACHE_ONE_WEEK)
+def get_or_create_special_feed(user, url_template, default_name):
+
     try:
-        return Feed.objects.get(url=WEB_IMPORT_FEED_URL.format(user=self))
+        return Feed.objects.get(url=url_template.format(user=user))
 
     except Feed.DoesNotExist:
 
@@ -980,13 +1054,24 @@ def User_web_import_feed_property_get(self):
         # distinguish them if they have many.
         #
 
-        return Feed(url=WEB_IMPORT_FEED_URL.format(user=self),
-                    name=_('Imported items of {0}').format(
-                        self.username or (u'#%s' % self.id)),
-                    site_url=USER_FEEDS_SITE_URL.format(user=self)).save()
+        return Feed(url=url_template.format(user=user),
+                    name=default_name.format(
+                        user.username or (u'#%s' % user.id)),
+
+                    # TODO: make this dynamic, given the
+                    # free/premium level of users ?
+                    restricted=True,
+
+                    # By default, these feeds are internal,
+                    # not part of the add-subsription form.
+                    is_internal=True,
+
+                    site_url=USER_FEEDS_SITE_URL.format(user=user)).save()
 
         # This will be done in the subscription property. DRY.
-        #Subscription.subscribe_user_to_feed(self, feed)
+        #Subscription.subscribe_user_to_feed(user, feed)
 
 
-User.web_import_feed = property(User_web_import_feed_property_get)
+User.web_import_feed     = property(User_web_import_feed_property_get)
+User.sent_items_feed     = property(User_sent_items_feed_property_get)
+User.received_items_feed = property(User_received_items_feed_property_get)

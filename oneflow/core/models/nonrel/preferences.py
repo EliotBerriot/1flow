@@ -38,21 +38,47 @@ class ReadPreferences(EmbeddedDocument):
     """ Reading list preferences. """
 
     starred_marks_read = BooleanField(
-        verbose_name=_(u'Star marks read'),
+        verbose_name=_(u'Starring marks read too'),
         help_text=_(u'When you mark an article starred, this will '
-                    u'automatically mark it as read (default: true).'),
+                    u'automatically mark it as read (default: true; we '
+                    u'consider you have read it before you decide to '
+                    u'like it).'),
         default=True)
 
+    starred_marks_archived = BooleanField(
+        verbose_name=_(u'Starring marks archived too'),
+        help_text=_(u'When you mark an article starred, this will '
+                    u'automatically archive it, if not already '
+                    u'done (default: false).'),
+        default=False)
+
+    bookmarked_marks_archived = BooleanField(
+        verbose_name=_(u'Reading later marks archived too'),
+        help_text=_(u'Marking an article to read later will automatically '
+                    u'archive it if not already done. (default: false).'),
+        default=False)
+
+    watch_attributes_mark_archived = BooleanField(
+        verbose_name=_(u'Setting any watch attribute marks archived too'),
+        help_text=_(u'Setting any watch attribute will also mark it archived '
+                    u'if not already done. (default: false).'),
+        default=False)
+
     starred_removes_bookmarked = BooleanField(
-        verbose_name=_(u'Star unmarks “read later”'),
+        verbose_name=_(u'Starring unmarks “read later”'),
         help_text=_(u'When you mark an article starred, this will '
                     u'automatically remove it from the “read later” '
-                    u'list. (default: true).'), default=True)
+                    u'list. (default: true; we consider you have read '
+                    u'it before you decide to like it, thus it is not '
+                    u'“to read later” anymore).'),
+        default=True)
 
     bookmarked_marks_unread = BooleanField(
         verbose_name=_(u'Reading later marks unread'),
-        help_text=_(u'Marking an article to read later marks it as unread '
-                    u'(default: true).'), default=True)
+        help_text=_(u'Marking an article to read later marks it as unread. '
+                    u'As a consequence, articles to read later are counted '
+                    u'in unread when this setting is enabled (default: true).'),
+        default=True)
 
     auto_mark_read_delay = IntField(
         verbose_name=_(u'Auto mark-read delay'),
@@ -172,6 +198,22 @@ class StaffPreferences(EmbeddedDocument):
                     u'automatically redirected to the web application.'),
         default=False)
 
+    allow_all_articles = BooleanField(
+        verbose_name=_(u'Allow display of all articles'),
+        help_text=_(u'As a staff member, you can have access to all fulltext '
+                    u'content for testing / checking purposes. PLEASE DO NOT '
+                    u'ENABLE IN NORMAL CONDITIONS.'),
+        default=False)
+
+
+class SharePreferences(EmbeddedDocument):
+    """ Preferences used when the user shares
+        an article, a read, or anything else. """
+
+    # This has no default intentionnaly, in order
+    # to use the generated one from inside the form.
+    default_message = StringField(verbose_name=_(u'Default share message'))
+
 
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
@@ -246,6 +288,8 @@ class Preferences(Document, DocumentHelperMixin):
                                          default=HelpWizards)
     staff        = EmbeddedDocumentField(u'StaffPreferences',
                                          default=StaffPreferences)
+    share        = EmbeddedDocumentField(u'SharePreferences',
+                                         default=SharePreferences)
 
     def __unicode__(self):
         return u'Preferences #%s' % self.id

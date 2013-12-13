@@ -11,6 +11,8 @@ from mongoengine.fields import (StringField, ListField, ReferenceField,
                                 GenericReferenceField, DBRef)
 from mongoengine.errors import NotUniqueError
 
+from cache_utils.decorators import cached
+
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext as __
 
@@ -18,7 +20,7 @@ from ....base.fields import IntRedisDescriptor
 from ....base.utils.dateutils import (timedelta, today, combine,
                                       now, time)  # , make_aware, utc)
 
-from .common import DocumentHelperMixin
+from .common import DocumentHelperMixin, CACHE_ONE_DAY
 from .folder import Folder
 from .user import User
 from .feed import Feed
@@ -36,6 +38,7 @@ __all__ = ('subscription_post_create_task',
            'subscription_all_articles_count_default',
            'subscription_unread_articles_count_default',
            'subscription_starred_articles_count_default',
+           'subscription_archived_articles_count_default',
            'subscription_bookmarked_articles_count_default',
 
            # This one will be picked up by `Read` as an instance method.
@@ -56,6 +59,11 @@ def subscription_unread_articles_count_default(subscription):
 def subscription_starred_articles_count_default(subscription):
 
     return subscription.reads.filter(is_starred=True).count()
+
+
+def subscription_archived_articles_count_default(subscription):
+
+    return subscription.reads.filter(is_archived=True).count()
 
 
 def subscription_bookmarked_articles_count_default(subscription):
@@ -127,6 +135,11 @@ class Subscription(Document, DocumentHelperMixin):
 
     starred_articles_count = IntRedisDescriptor(
         attr_name='s.sa_c', default=subscription_starred_articles_count_default,
+        set_default=True, min_value=0)
+
+    archived_articles_count = IntRedisDescriptor(
+        attr_name='s.ra_c',
+        default=subscription_archived_articles_count_default,
         set_default=True, min_value=0)
 
     bookmarked_articles_count = IntRedisDescriptor(
@@ -250,8 +263,13 @@ class Subscription(Document, DocumentHelperMixin):
             the operation was done by the user.
 
             Also available as a task for background execution.
+
+            .. note: the archived reads stay archived, whatever their
+                read status is. No need to test this attribute.
         """
 
+        # We touch only unread. This avoid altering the auto_read attribute
+        # on reads that have been manually marked read by the user.
         params = {'is_read__ne': True, 'date_created__lte': prior_datetime}
 
         if self.user.preferences.read.bookmarked_marks_unread:
@@ -414,9 +432,10 @@ def Folder_open_subscriptions_property_get(self):
 def User_subscriptions_property_get(self):
     """ “Normal” subscriptions, eg. not special (immutable) ones. """
 
-    return Subscription.objects(user=self,
-                                # Add all special feeds here.
-                                feed__nin=[self.web_import_feed])
+    # Add all special feeds here.
+    return self.all_subscriptions(feed__nin=[self.web_import_feed,
+                                             self.sent_items_feed,
+                                             self.received_items_feed])
 
 
 def User_all_subscriptions_property_get(self):
@@ -425,10 +444,10 @@ def User_all_subscriptions_property_get(self):
     return Subscription.objects(user=self).no_cache()
 
 
-def User_web_import_subscription_property_get(self):
+def get_or_create_special_subscription(user, special_feed, feed_name):
 
     try:
-        return self.all_subscriptions.get(feed=self.web_import_feed)
+        return user.all_subscriptions.get(feed=special_feed)
 
     except Subscription.DoesNotExist:
 
@@ -438,10 +457,29 @@ def User_web_import_subscription_property_get(self):
         # the subscription title.
         #
 
-        return Subscription.subscribe_user_to_feed(user=self,
-                                                   feed=self.web_import_feed,
+        return Subscription.subscribe_user_to_feed(user=user,
+                                                   feed=special_feed,
                                                    name=__(u'Imported items'),
                                                    background=True)
+
+
+def User_received_items_subscription_property_get(self):
+
+    return get_or_create_special_subscription(self, self.received_items_feed,
+                                              __(u'Received items'))
+
+
+def User_sent_items_subscription_property_get(self):
+
+    return get_or_create_special_subscription(self, self.sent_items_feed,
+                                              __(u'Sent items'))
+
+
+@cached(CACHE_ONE_DAY)
+def User_web_import_subscription_property_get(self):
+
+    return get_or_create_special_subscription(self, self.web_import_feed,
+                                              __(u'Imported items'))
 
 
 def User_subscriptions_by_folder_property_get(self):
@@ -584,3 +622,7 @@ User.subscriptions_by_folder  = property(
                                     User_subscriptions_by_folder_property_get)
 User.web_import_subscription  = property(
                                     User_web_import_subscription_property_get)
+User.sent_items_subscription  = property(
+                                    User_sent_items_subscription_property_get)
+User.received_items_subscription = property(
+                                User_received_items_subscription_property_get)

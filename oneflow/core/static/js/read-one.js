@@ -87,7 +87,10 @@ function mark_something(article_id, mark_what, mark_inverse, send_notify, messag
 
 function post_mark_triggers(article_id, attr_name, send_notify) {
 
-    var $article = $("#" + article_id);
+    var $article      = $("#" + article_id);
+    var is_bookmarked = $article.hasClass('is_bookmarked');
+    var is_starred    = $article.hasClass('is_starred');
+    var is_archived   = $article.hasClass('is_archived');
 
     if (attr_name == 'is_bookmarked') {
 
@@ -97,13 +100,18 @@ function post_mark_triggers(article_id, attr_name, send_notify) {
             //console.debug($article.hasClass('is_bookmarked'));
             //console.debug($article.hasClass('is_read'));
 
-            if($article.hasClass('is_bookmarked')
-                    && $article.hasClass('is_read')) {
+            if(is_bookmarked && $article.hasClass('is_read')) {
 
                 // 'true' means mark 'inverse' of is_read.
                 mark_something(article_id, 'is_read', true, send_notify);
 
                 // console.log('item ' + article_id + ' bookmarked; marked as unread too.');
+            }
+        }
+
+        if (preferences.bookmarked_marks_archived) {
+            if(is_bookmarked && !is_archived) {
+                mark_something(article_id, 'is_archived', false, send_notify);
             }
         }
 
@@ -113,8 +121,7 @@ function post_mark_triggers(article_id, attr_name, send_notify) {
 
         if (preferences.starred_marks_read) {
 
-            if($article.hasClass('is_starred')
-                    && $article.hasClass('not_is_read')) {
+            if(is_starred && $article.hasClass('not_is_read')) {
 
                 mark_something(article_id, 'is_read', false, send_notify);
 
@@ -124,20 +131,52 @@ function post_mark_triggers(article_id, attr_name, send_notify) {
 
         if (preferences.starred_removes_bookmarked) {
 
-            if($article.hasClass('is_starred')
-                    && $article.hasClass('is_bookmarked')) {
+            if(is_starred && is_bookmarked) {
 
                 mark_something(article_id, 'is_bookmarked', true, send_notify);
 
                 // console.log('item ' + article_id + ' starred; unbookmarked too.');
             }
         }
+
+        if (preferences.starred_marks_archived) {
+            if (is_starred && !is_archived) {
+                mark_something(article_id, 'is_archived', false, send_notify);
+            }
+        }
+
+    } else if ( _.indexOf(watch_attributes_names, attr_name) >= 0 ) {
+        // the read was marked with a watch attribute (any of them)
+
+        if (watch_attributes_mark_archived) {
+            if ( $article.hasClass(attr_name) && !is_archived ) {
+                mark_something(article_id, 'is_archived', false, send_notify);
+            }
+        }
     }
+
+    // else if (!is_archived) {
+    //  Eventually clear every other attributes (watch, starred, bookmarked).
+    //  See toggle_status() TODO note for details.
+    // }
+}
+
+function current_status(article_id, attr_name) {
+    return !!$("#" + article_id).hasClass(attr_name);
 }
 
 function toggle_status(article_id, attr_name, send_notify) {
 
     var $article = $("#" + article_id);
+    //var is_bookmarked = $article.hasClass('is_bookmarked');
+    //var is_starred    = $article.hasClass('is_starred');
+    //var is_archived   = $article.hasClass('is_archived');
+
+    // TODO: check if we are removing is_archived, and prevent it if the
+    // article has any is_{starred,bookmarked,watch*}, or do not prevent
+    // it if the user has the hypothetical
+    // preferences.unarchive_clears_everything, letting the post_mark…()
+    // function clear everything.
 
     mark_something(article_id, attr_name,
                    !!$article.hasClass(attr_name),

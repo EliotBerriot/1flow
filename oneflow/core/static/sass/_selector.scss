@@ -598,13 +598,26 @@ $folder-border-width-default: 2px;
     padding: 0 25%;
 
     h1 {
+        text-align: center;
         margin-bottom: 2em;
+    }
+
+    h3 {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    .bookmarklet-container {
+        float: right;
+        min-height: 100px;
+        margin: 20px 20px 0;
     }
 
     .form-actions {
         // override Bootstrap's form-horizontal value.
         padding-left: 20px;
-        margin-top: 40px;
+        margin-top: 80px;
     }
 
     .control-label:last-child {
@@ -625,7 +638,7 @@ $folder-border-width-default: 2px;
 
     .or-choice {
         text-align: center;
-        margin: 1em 40%;
+        margin: 2em 40%;
         width: 20%;
         position: relative;
         font-size: 250%;

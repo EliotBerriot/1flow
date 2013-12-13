@@ -99,7 +99,14 @@ ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
                         settings.SITE_DOMAIN)
 USER_FEEDS_SITE_URL   = u'http://{0}'.format(settings.SITE_DOMAIN
                                              ) + u'/user/{user.id}/'
-WEB_IMPORT_FEED_URL   = USER_FEEDS_SITE_URL + 'imports'
+SPECIAL_FEEDS_DATA = {
+    'sent_items'     : (USER_FEEDS_SITE_URL + 'sent',
+                        _(u'Items sent by {0}')),
+    'web_import'     : (USER_FEEDS_SITE_URL + 'imports',
+                        _(u'Imported items of {0}')),
+    'received_items' : (USER_FEEDS_SITE_URL + 'received',
+                        _(u'Inbox of {0}')),
+}
 
 
 def lowername(objekt):

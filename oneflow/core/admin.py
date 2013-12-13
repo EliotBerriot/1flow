@@ -592,7 +592,7 @@ class FeedAdmin(admin.DocumentAdmin):
     list_per_page = config.FEED_ADMIN_LIST_PER_PAGE
     search_fields = ('name', 'url', 'site_url', 'closed', )
     exclude = ('tags', )
-    raw_id_fields = ('duplicate_of', )
+    raw_id_fields = ('duplicate_of', 'created_by', )
     # Setting this makes the whole thing unsortable…
     #ordering = ('-last_fetch', )
 
@@ -619,9 +619,11 @@ class FeedAdmin(admin.DocumentAdmin):
         }),
         ('Birth & Death', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : ('date_added',
-                        ('closed', 'date_closed', ),
-                        'closed_reason', 'errors', ),
+            'fields' : (
+                ('date_added', 'created_by'),
+                ('closed', 'date_closed', ),
+                'closed_reason', 'errors', 
+                ),
         }),
     )
     # def name_display(self, obj):

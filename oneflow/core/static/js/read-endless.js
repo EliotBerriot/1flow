@@ -463,6 +463,12 @@ function mark_current_read_as(what, send_notify) {
         }
     }
 }
+function current_read_status(status) {
+
+    if (open_content) {
+        return current_status(open_content, status);
+    }
+}
 function toggle_current_read_status(status) {
 
     if (open_content) {
@@ -477,6 +483,7 @@ function toggle_current_read_status(status) {
         });
     }
 }
+
 function show_actions(objekt) {
     // objekt is a DOM entity
 
@@ -600,7 +607,15 @@ Mousetrap.bind(['m s', 't s'], function() {
 // “Keep For Later”, “Read Later”
 Mousetrap.bind(['m l', 't l',
                 'r l', 'm f l', 'k f l'], function() {
+
     toggle_current_read_status("is_bookmarked");
+    return false;
+});
+
+// “Mark Archi[V]ed”
+Mousetrap.bind(['m v'], function() {
+    toggle_current_read_status("is_archived");
+    convert_current_read_to_fulltext();
     return false;
 });
 

@@ -224,10 +224,13 @@
             auto_mark_read_delay:       {{ preferences.read.auto_mark_read_delay }},
 
             {# |lower because JS doesn't like Python's booleans at all. #}
-            bookmarked_marks_unread:     {{ preferences.read.bookmarked_marks_unread|lower }},
-            starred_marks_read:          {{ preferences.read.starred_marks_read|lower }},
-            starred_removes_bookmarked:  {{ preferences.read.starred_removes_bookmarked|lower }},
-            read_switches_to_fullscreen: {{ preferences.read.read_switches_to_fullscreen|lower }}
+            bookmarked_marks_unread:        {{ preferences.read.bookmarked_marks_unread|lower }},
+            starred_marks_read:             {{ preferences.read.starred_marks_read|lower }},
+            starred_removes_bookmarked:     {{ preferences.read.starred_removes_bookmarked|lower }},
+            starred_marks_archived:         {{ preferences.read.starred_marks_archived|lower }},
+            bookmarked_marks_archived:      {{ preferences.read.bookmarked_marks_archived|lower }},
+            watch_attributes_mark_archived: {{ preferences.read.watch_attributes_mark_archived|lower }},
+            read_switches_to_fullscreen:    {{ preferences.read.read_switches_to_fullscreen|lower }}
         };
 
         {% if preferences.home.style|slice:'1' == 'T' %}
