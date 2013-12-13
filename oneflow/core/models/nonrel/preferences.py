@@ -198,6 +198,22 @@ class StaffPreferences(EmbeddedDocument):
                     u'automatically redirected to the web application.'),
         default=False)
 
+    allow_all_articles = BooleanField(
+        verbose_name=_(u'Allow display of all articles'),
+        help_text=_(u'As a staff member, you can have access to all fulltext '
+                    u'content for testing / checking purposes. PLEASE DO NOT '
+                    u'ENABLE IN NORMAL CONDITIONS.'),
+        default=False)
+
+
+class SharePreferences(EmbeddedDocument):
+    """ Preferences used when the user shares
+        an article, a read, or anything else. """
+
+    # This has no default intentionnaly, in order
+    # to use the generated one from inside the form.
+    default_message = StringField(verbose_name=_(u'Default share message'))
+
 
 HOME_STYLE_CHOICES = (
     (u'RL', _(u'Reading list')),
@@ -272,6 +288,8 @@ class Preferences(Document, DocumentHelperMixin):
                                          default=HelpWizards)
     staff        = EmbeddedDocumentField(u'StaffPreferences',
                                          default=StaffPreferences)
+    share        = EmbeddedDocumentField(u'SharePreferences',
+                                         default=SharePreferences)
 
     def __unicode__(self):
         return u'Preferences #%s' % self.id
