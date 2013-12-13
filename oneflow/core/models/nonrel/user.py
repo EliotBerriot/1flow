@@ -286,7 +286,7 @@ class User(Document, DocumentHelperMixin):
 
     @property
     def has_content(self):
-        return self.all_articles_count > 0
+        return self.all_articles_count > 0 or self.subscriptions
 
     @property
     def preferences(self):
