@@ -188,7 +188,7 @@ def source_selector(request, **kwargs):
         'show_closed_streams':         selector_prefs.show_closed_streams,
         'titles_show_unread_count':    selector_prefs.titles_show_unread_count,
         'folders_show_unread_count':   selector_prefs.folders_show_unread_count,
-        })
+    })
 
 
 def manage_folder(request, **kwargs):
@@ -312,12 +312,12 @@ def add_feed(request, feed_url):
         if not feed_url.startswith(u'http'):
             if request.META['HTTP_REFERER']:
                 proto, host_and_port, remaining = WebSite.split_url(
-                                                request.META['HTTP_REFERER'])
+                    request.META['HTTP_REFERER'])
 
                 feed_url = u'{0}://{1}{2}{3}'.format(
-                                proto, host_and_port,
-                                u'' if feed_url.startswith(u'/') else u'/',
-                                feed_url)
+                    proto, host_and_port,
+                    u'' if feed_url.startswith(u'/') else u'/',
+                    feed_url)
 
             else:
                 LOGGER.error(u'Bad url {0} while trying to add a '
@@ -328,7 +328,6 @@ def add_feed(request, feed_url):
         LOGGER.exception(u'Very bad url {0} while trying to add a '
                          u'feed.'.format(feed_url))
         feed_exc = _(u'Very malformed url {0}').format(feed_url)
-
 
     #
     # Create the feed, and don't
@@ -357,9 +356,17 @@ def add_feed(request, feed_url):
                     feed = Feed.create_feed_from_url(feed_url, user)
 
                 except Exception, feed_exc:
-                    LOGGER.exception(u'Failed to create feed from url %s', feed_url)
+                    LOGGER.exception(u'Failed to create feed from url %s',
+                                     feed_url)
 
             else:
+
+                # Get the right one. THE right one.
+                # The RIGHT one. The main. The only one.
+                # You get it.
+                if feed.duplicate_of:
+                    feed = feed.duplicate_of
+
                 already_created = True
 
     if feed:
@@ -374,8 +381,8 @@ def add_feed(request, feed_url):
 
         except Subscription.DoesNotExist:
             try:
-                subscription = Subscription.subscribe_user_to_feed(user, feed,
-                                                            background=True)
+                subscription = Subscription.subscribe_user_to_feed(
+                    user, feed, background=True)
 
             except Exception, sub_exc:
                 LOGGER.exception(u'Failed to subscribe user %s to feed %s',
@@ -385,10 +392,10 @@ def add_feed(request, feed_url):
             already_subscribed = True
 
     return render(request, 'add-feed.html', {'feed': feed,
-                    'subscription': subscription,
-                    'already_created': already_created,
-                    'already_subscribed': already_subscribed,
-                    'feed_exc': feed_exc, 'sub_exc': sub_exc})
+                  'subscription': subscription,
+                  'already_created': already_created,
+                  'already_subscribed': already_subscribed,
+                  'feed_exc': feed_exc, 'sub_exc': sub_exc})
 
 
 def add_subscription(request, **kwargs):
@@ -445,7 +452,7 @@ class FeedsCompleterView(Select2View):
             # “ObjectId('51c8a0858af8069f5bafbb5a') is not JSON serializable”
             [(unicode(f.id), f.name) for f in Feed.good_feeds(
                 id__nin=[s.feed.id for s in request.user.mongo.subscriptions]
-                ).filter(Q(name__icontains=term) | Q(site_url__icontains=term))]
+            ).filter(Q(name__icontains=term) | Q(site_url__icontains=term))]
         )
 
 
@@ -491,7 +498,7 @@ def _rwep_generate_query_kwargs(request, **kwargs):
                 if request.user.is_superuser or request.user.is_staff:
                     combinations.union(set(
                         attr2, request.GET.get(attr2, None), bool)
-                            for attr2 in attributes if attr2 not in attributes
+                        for attr2 in attributes if attr2 not in attributes
                     )
 
     # Then allow the user to mix with manual query
@@ -607,7 +614,7 @@ def _rwep_special_update_counters(subscription, user):
         for attr_name, count in (
             ('unread_articles_count',
              subscription.reads(is_read__ne=True).count()),
-                ):
+        ):
             current_count = getattr(subscription, attr_name)
 
             if current_count != count:
@@ -666,10 +673,10 @@ def _rwep_build_page_header_text(subscription, folder, user, primary_mode):
         header_text_left = ungettext(
             u'In your <span class="hide">%(count)s</span> subscription',
             u'In your %(count)s subscriptions', sub_count) % {
-                                                        'count': sub_count}
+            'count': sub_count}
 
     header_text_right = ungettext(singular_text, plural_text, count) % {
-                            'count': count}
+        'count': count}
 
     return header_text_left, header_text_right
 
@@ -721,7 +728,7 @@ def read_with_endless_pagination(request, **kwargs):
     reads = user.reads(**query_kwargs).order_by(order_by).no_cache()
 
     header_text_left, header_text_right = _rwep_build_page_header_text(
-                                    subscription, folder, user, primary_mode)
+        subscription, folder, user, primary_mode)
 
     context = {
         u'reads': reads,
@@ -810,6 +817,7 @@ def read_with_endless_pagination(request, **kwargs):
 
     return render(request, template, context)
 
+
 def article_content(request, article_id):
 
     try:
@@ -877,17 +885,17 @@ def preferences(request):
 
     if request.POST:
         home_form = HomePreferencesForm(
-                request.POST, instance=request.user.mongo.preferences.home)
+            request.POST, instance=request.user.mongo.preferences.home)
 
         reading_form = ReadPreferencesForm(
-                request.POST, instance=request.user.mongo.preferences.read)
+            request.POST, instance=request.user.mongo.preferences.read)
 
         sources_form = SelectorPreferencesForm(
-                request.POST, instance=request.user.mongo.preferences.selector)
+            request.POST, instance=request.user.mongo.preferences.selector)
 
         if request.user.is_superuser:
             staff_form = StaffPreferencesForm(
-                    request.POST, instance=request.user.mongo.preferences.staff)
+                request.POST, instance=request.user.mongo.preferences.staff)
 
         if home_form.is_valid() and reading_form.is_valid() \
                 and sources_form.is_valid() and (
@@ -906,15 +914,15 @@ def preferences(request):
             return HttpResponseRedirect(reverse('preferences'))
     else:
         home_form = HomePreferencesForm(
-                instance=request.user.mongo.preferences.home)
+            instance=request.user.mongo.preferences.home)
         reading_form = ReadPreferencesForm(
-                instance=request.user.mongo.preferences.read)
+            instance=request.user.mongo.preferences.read)
         sources_form = SelectorPreferencesForm(
-                instance=request.user.mongo.preferences.selector)
+            instance=request.user.mongo.preferences.selector)
 
         if request.user.is_superuser:
             staff_form = StaffPreferencesForm(
-                    instance=request.user.mongo.preferences.staff)
+                instance=request.user.mongo.preferences.staff)
         else:
             staff_form = None
 
@@ -1248,7 +1256,7 @@ def google_reader_import_status(request):
 
             if running:
                 data.update({
-                    'status' : 'running',
+                    'status': 'running',
                 })
 
             else:
