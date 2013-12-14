@@ -396,6 +396,14 @@ class Feed(Document, DocumentHelperMixin):
         
         URLValidator()(feed_url)
 
+        requests_response = requests.get(feed_url)
+
+        if not requests_response.ok or requests_response.status_code != 200:
+            raise Exception(u'Requests response is not OK/200, aborting')
+
+        # Switch to the last hop of eventually (multiple-)redirected URLs.
+        feed_url = requests_response.url
+
         # Be sure we get the XML result from them, 
         # else FeedBurner gives us a poor HTML page…
         if u'feedburner' in feed_url and not feed_url.endswith(u'?format=xml'):
@@ -406,12 +414,7 @@ class Feed(Document, DocumentHelperMixin):
     @classmethod
     def create_feed_from_url(cls, feed_url, creator=None):
 
-        requests_response = requests.get(feed_url)
-
-        if not requests_response.ok or requests_response.status_code != 200:
-            raise Exception(u'Requests response is not OK/200, aborting')
-
-        feed_url = cls.prepare_feed_url(requests_response.url)
+        feed_url = cls.prepare_feed_url(feed_url)
 
         http_logger = HttpResponseLogProcessor()
         parsed_feed = feedparser.parse(feed_url, handlers=[http_logger])
