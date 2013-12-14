@@ -303,6 +303,11 @@ def edit_subscription(request, **kwargs):
 
 def add_feed(request, feed_url):
 
+    user = request.user.mongo
+    feed = subscription = None
+    feed_exc = sub_exc = None
+    already_created = already_subscribed = False
+
     try:
         if not feed_url.startswith(u'http'):
             if request.META['HTTP_REFERER']:
@@ -315,50 +320,53 @@ def add_feed(request, feed_url):
                                 feed_url)
 
             else:
-                raise HttpResponseBadRequest(u'Bad url {0}'.format(feed_url))
+                LOGGER.error(u'Bad url {0} while trying to add a '
+                             u'feed.'.format(feed_url))
+                feed_exc = _(u'Malformed URL {0}').format(feed_url)
 
     except:
-        raise HttpResponseBadRequest(u'Very bad url {0}'.format(feed_url))
+        LOGGER.exception(u'Very bad url {0} while trying to add a '
+                         u'feed.'.format(feed_url))
+        feed_exc = _(u'Very malformed url {0}').format(feed_url)
 
-    user = request.user.mongo
 
     #
-    # Try to create the feed, and don't fail if it already exists.
+    # Create the feed, and don't
+    # fail if it already exists.
     #
 
-    feed = subscription = None
-    feed_exc = sub_exc = None
-    already_created = already_subscribed = False
+    if feed_exc is None:
 
-    # We need to prepare the URL before getting it, else it won't match
-    # special cases like feedburner URLs on which we add ?format=xml in
-    # pre-processing phases.
-    try:
-        feed_url = Feed.prepare_feed_url(feed_url)
-
-    except Exception, e:
-        feed_exc = _(u'URL {0} is invalid, its pre-processing '
-                     u'failed ({1})').format(feed_url, e)
-
-    else:
+        # We need to prepare the URL before fetching it, else it won't match
+        # special cases in the database, like feedburner URLs on which we
+        # add ?format=xml in pre-processing phases, or simply redirected URLs.
         try:
-            feed = Feed.objects.get(url=feed_url)
+            feed_url = Feed.prepare_feed_url(feed_url)
 
-        except Feed.DoesNotExist:
-
-            try:
-                feed = Feed.create_feed_from_url(feed_url, user)
-
-            except Exception, feed_exc:
-                LOGGER.exception(u'Failed to create feed from url %s', feed_url)
+        except Exception, e:
+            feed_exc = _(u'URL {0} is invalid, its pre-processing '
+                         u'failed ({1})').format(feed_url, e)
 
         else:
-            already_created = True
+            try:
+                feed = Feed.objects.get(url=feed_url)
+
+            except Feed.DoesNotExist:
+
+                try:
+                    feed = Feed.create_feed_from_url(feed_url, user)
+
+                except Exception, feed_exc:
+                    LOGGER.exception(u'Failed to create feed from url %s', feed_url)
+
+            else:
+                already_created = True
 
     if feed:
 
         #
-        # Then subscribe the user to this feed.
+        # Then subscribe the user to this feed,
+        # and don't fail if he's already subscribed.
         #
 
         try:
