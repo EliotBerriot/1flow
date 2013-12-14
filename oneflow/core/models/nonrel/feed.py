@@ -274,8 +274,7 @@ class Feed(Document, DocumentHelperMixin):
 
             # or just internal; internal feeds have no duplicate by nature,
             # and are not checked by humans.
-            | Q(is_internal=True)).filter(
-                )
+            | Q(is_internal=True))
 
     @property
     def latest_article(self):
@@ -305,9 +304,9 @@ class Feed(Document, DocumentHelperMixin):
     @property
     def recent_articles(self):
         return self.good_articles.filter(
-                date_published__gt=today()
-                - timedelta(
-                    days=config.FEED_ADMIN_MEANINGFUL_DELTA))
+            date_published__gt=today()
+            - timedelta(
+                days=config.FEED_ADMIN_MEANINGFUL_DELTA))
 
     def update_recent_articles_count(self, force=False):
         """ This task is protected to run only once per day,
@@ -393,7 +392,7 @@ class Feed(Document, DocumentHelperMixin):
     def prepare_feed_url(cls, feed_url):
 
         feed_url = clean_url(feed_url)
-        
+
         URLValidator()(feed_url)
 
         requests_response = requests.get(feed_url)
@@ -404,7 +403,7 @@ class Feed(Document, DocumentHelperMixin):
         # Switch to the last hop of eventually (multiple-)redirected URLs.
         feed_url = requests_response.url
 
-        # Be sure we get the XML result from them, 
+        # Be sure we get the XML result from them,
         # else FeedBurner gives us a poor HTML page…
         if u'feedburner' in feed_url and not feed_url.endswith(u'?format=xml'):
             feed_url += u'?format=xml'
@@ -436,8 +435,9 @@ class Feed(Document, DocumentHelperMixin):
         return cls(name=fp_feed.title,
                    good_for_use=True,
                    # Try the RSS description, then the Atom subtitle.
-                   description_en=fp_feed.get('description', 
-                        fp_feed.get('subtitle', u'')),
+                   description_en=fp_feed.get(
+                       'description',
+                       fp_feed.get('subtitle', u'')),
                    url=feed_url,
                    created_by=creator,
                    site_url=clean_url(fp_feed.link or feed_url)).save()
@@ -1046,7 +1046,7 @@ def User_received_items_feed_property_get(self):
                                       *SPECIAL_FEEDS_DATA['received_items'])
 
 
-@cached(CACHE_ONE_WEEK)
+#@cached(CACHE_ONE_WEEK)
 def get_or_create_special_feed(user, url_template, default_name):
 
     try:
