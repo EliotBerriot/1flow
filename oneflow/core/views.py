@@ -48,7 +48,8 @@ from .forms import (FullUserCreationForm,
 from .tasks import import_google_reader_trigger
 from .models.nonrel import (Feed, Subscription,
                             Article, Read,
-                            Folder, TreeCycleException)
+                            Folder, WebSite,
+                            TreeCycleException)
 from .models.reldb import HelpContent
 from ..base.utils.dateutils import now
 
@@ -303,9 +304,19 @@ def edit_subscription(request, **kwargs):
 def add_feed(request, feed_url):
 
     try:
-        if not feed_url.startswith(u'http') or feed_url.strip() == u'':
-            raise HttpResponseBadRequest(u'Bad url {0}'.format(feed_url))
-            
+        if not feed_url.startswith(u'http'):
+            if request.META['HTTP_REFERER']:
+                proto, host_and_port, remaining = WebSite.split_url(
+                                                request.META['HTTP_REFERER'])
+
+                feed_url = u'{0}://{1}{2}{3}'.format(
+                                proto, host_and_port,
+                                u'' if feed_url.startswith(u'/') else u'/',
+                                feed_url)
+
+            else:
+                raise HttpResponseBadRequest(u'Bad url {0}'.format(feed_url))
+
     except:
         raise HttpResponseBadRequest(u'Very bad url {0}'.format(feed_url))
 
@@ -340,7 +351,7 @@ def add_feed(request, feed_url):
 
             except Exception, feed_exc:
                 LOGGER.exception(u'Failed to create feed from url %s', feed_url)
-                
+
         else:
             already_created = True
 
@@ -355,11 +366,11 @@ def add_feed(request, feed_url):
 
         except Subscription.DoesNotExist:
             try:
-                subscription = Subscription.subscribe_user_to_feed(user, feed, 
+                subscription = Subscription.subscribe_user_to_feed(user, feed,
                                                             background=True)
 
             except Exception, sub_exc:
-                LOGGER.exception(u'Failed to subscribe user %s to feed %s', 
+                LOGGER.exception(u'Failed to subscribe user %s to feed %s',
                                  user, feed)
 
         else:
@@ -367,7 +378,7 @@ def add_feed(request, feed_url):
 
     return render(request, 'add-feed.html', {'feed': feed,
                     'subscription': subscription,
-                    'already_created': already_created, 
+                    'already_created': already_created,
                     'already_subscribed': already_subscribed,
                     'feed_exc': feed_exc, 'sub_exc': sub_exc})
 
@@ -909,7 +920,7 @@ def preferences(request):
 
 def set_preference(request, base, sub, value):
 
-    if 'staff' in base and not (request.user.is_staff 
+    if 'staff' in base and not (request.user.is_staff
                                 or request.user.is_superuser):
         return HttpResponseForbidden(u'forbidden')
 
