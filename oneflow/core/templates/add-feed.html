@@ -5,6 +5,7 @@
 {% block application_content %}
 
 <div class="spacer50"></div>
+
 <div class="row-fluid">
 	<div class="hero-unit span6 offset3">
 
@@ -23,19 +24,21 @@
 				<div class="spacer25"></div>
 
 				{% with sub_id=subscription.id sub_name=subscription.name %}
-				    
+
 					{% if already_subscribed %}
-					
+
 						<p>{% blocktrans %}
 							You were already subscribed to <em>{{sub_name}}</em>, all is well.</p><p>
-							You can close this window/tab, or <a href="{{sel_url}}#{{sub_id}}">go straight to your subscription</a>.
+
+							<a href="{{sel_url}}#{{sub_id}}">Go straight to it</a>, or close this window/tab.
 						{% endblocktrans %}</p>
 
 					{% else %}
 
 						<p>{% blocktrans %}
 							You are now subscribed to <em>{{sub_name}}</em>.</p><p>
-							You can close this window/tab, or <a href="{{sel_url}}#{{sub_id}}">display it in your source selector</a>.
+
+							<a href="{{sel_url}}#{{sub_id}}">Go straight to it</a>, or close this window/tab.
 						{% endblocktrans %}</p>
 
 					{% endif %}
@@ -49,8 +52,10 @@
 
 				<p>{% blocktrans %}
 
-					The feed <em>{{feed_name}}</em> already existed in 1flow, but <strong>we were not able to subscribe yourself to it</strong>. We are sorry for that.</p><p>
+					<strong>We were not able to subscribe yourself to <em>{{ feed_name }}</em></strong>. We are sorry for that.</p><p>
+
 					Developers have been notified of the failure and will either subscribe you manually, or get in touch with you to get more information.</p><p>
+
 					Hoping this is a temporary problem in our infrastructure, you can try to <a href="{{add_url}}">re-suscribe to it manually from the dedicated page</a> in a moment.
 
 				{% endblocktrans %}</p>
@@ -71,13 +76,14 @@
 				<div class="spacer25"></div>
 
 				{% with sub_id=subscription.id sub_name=subscription.name %}
-			    
+
 					<p>{% blocktrans %}
-						The feed <em>{{feed_name}}</em> has been registered in 1flow, and you are now subscribed to it.</p><p>
+						You are now subscribed to {{feed_name}}.</p><p>
 
-						Thanks for your contribution to the 1flow community!</p><p>
+						As this feed was unknown to 1flow before, you have
+						contributed to making it better. Thank You!</p><p>
 
-						You can close this window/tab, or <a href="{{sel_url}}#{{sub_id}}">display the feed in your source selector</a>.
+						<a href="{{sel_url}}#{{sub_id}}">Go straight to your new subscription</a>, or close this window/tab.
 					{% endblocktrans %}</p>
 
 				{% endwith %}
@@ -89,9 +95,11 @@
 
 				<p>{% blocktrans %}
 
-					We were able to register the feed <em>{{feed_name}}</em> in 1flow, but not to subscribe yourself to it. We are sorry for that.</p><p>
+					<strong>We were not able to subscribe yourself to <em>{{feed_name}}</em></strong>. We are sorry for that.</p><p>
+
 					Developers have been notified of the failure and will either subscribe you manually, or get in touch with you to get more information.</p><p>
-					Alternatively, you can try to <a href="{{add_url}}">re-suscribe to it manually from the dedicated page</a>, searching for it in 1flow sources.
+
+					Hoping this is a temporary problem in our infrastructure, you can try to <a href="{{add_url}}">re-suscribe to it manually from the dedicated page</a> in a moment.
 
 				{% endblocktrans %}</p>
 
@@ -114,10 +122,11 @@
 
 	<p>{% blocktrans %}
 
-		We were not able to register the feed in 1flow, thus not subscribe yourself to it either. There must be a serious problem.</p><p>
-		Some feed URLs lie in automatically generated web pages, but do not exist in reality. This could be the reason. Or not.</p><p>
-		Anyway, developers have been notified of the failure and will try to subscribe you manually, or get in touch with you to get more information.</p><p>
+		WOW. The whole operation failed. There must be a serious problem.</p><p>
+
 		We are very sorry for the inconvenience.</p><p>
+
+		Developers have been notified of the failure and will try to subscribe you manually to this feed if it's a valid one, or get in touch with you to get more information.</p><p>
 
 		You can close this window/tab, or <a href="{{sel_url}}">head up to your source selector</a>.
 
@@ -130,6 +139,16 @@
 	{% endif %}
 
 {% endif %}
-</div>
+
+	</div>
+
+{% if mongo_user.is_staff_or_superuser_and_enabled and feed %}
+	<div class="hero-unit span6 offset3">
+		<p>{% trans "Admin stuff:" %}
+				<a href="{% settings.NONREL_ADMIN %}feed/{{ feed.id }}">{{feed.name}}</a>
+		</p>
+	</div>
+{% endif %}
+
 </div>
 {% endblock application_content %}
