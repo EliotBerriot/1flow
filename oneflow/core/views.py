@@ -370,7 +370,7 @@ def add_feed(request, feed_url):
                 already_created = True
 
     if feed and \
-        not user.mongo.is_staff_or_superuser_and_enabled \
+        not user.is_staff_or_superuser_and_enabled \
             or user.preferences.staff.subscribe_to_new_feeds:
 
         #
