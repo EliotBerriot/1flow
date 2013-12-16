@@ -502,11 +502,18 @@ function setup_tooltips(parent){
         parent = $('body');
     }
 
-    parent.find('[data-toggle="tooltip"]').tooltip({
+    parent.find('[data-toggle="tooltip"]')
+        .on("hidden", function (e) {
+            // https://github.com/twbs/bootstrap/issues/6942
+            // .on('hide'…) doesn't work, it's "hidden" now.
+            e.stopPropagation();
+        })
+        .tooltip({
             placement: popover_placement,
             // Since Bootstrap 2.2 http://stackoverflow.com/q/14025438/654755
             container: 'body'
-        }).click(function(e) {
+        })
+        .click(function(e) {
             $(this).tooltip('toggle');
         });
 
@@ -515,11 +522,17 @@ function setup_tooltips(parent){
     // work perfectly.
     // https://github.com/twitter/bootstrap/issues/3417
     parent.find('.popover-tooltip')
+        .on("hidden", function (e) {
+            // https://github.com/twbs/bootstrap/issues/6942
+            // .on('hide'…) doesn't work, it's "hidden" now.
+            e.stopPropagation();
+        })
         .tooltip({
             placement: popover_placement,
             // Since Bootstrap 2.2 http://stackoverflow.com/q/14025438/654755
             container: 'body'
-        }).click(function(e) {
+        })
+        .click(function(e) {
             $(this).tooltip('toggle');
         });
 }

@@ -17,7 +17,7 @@ from mongodbforms import DocumentForm
 from django_select2.widgets import (Select2Widget, Select2MultipleWidget,
                                     HeavySelect2MultipleWidget)
 
-from ..models import (Folder, Subscription, Feed, Article)
+from ..models import (Folder, Subscription, Feed, Article, Read)
 from .fields import OnlyNameChoiceField, OnlyNameMultipleChoiceField
 
 
@@ -358,15 +358,7 @@ class AddSubscriptionForm(forms.Form):
 
 class WebPagesImportForm(forms.Form):
 
-    urls = forms.CharField(label=_(u'Enter URL(s)'), required=True,
-                           help_text=_(u'Type one URL per line, as many '
-                                       u'as you want. Even if 1flow can '
-                                       u'currently display only text-pages '
-                                       u'correctly, you may import anything '
-                                       u'(websites home pages, youtube '
-                                       u'videos, etc). As soon as custom '
-                                       u'renderers are ready, the content '
-                                       u'you imported will show correctly.'),
+    urls = forms.CharField(label=_(u'Web addresses'), required=True,
                            widget=forms.Textarea())
 
     def __init__(self, *args, **kwargs):
@@ -505,10 +497,11 @@ class WebPagesImportForm(forms.Form):
                 return False
 
             # Avoid stupidity.
-            if u'1flow.io' in url:
+            if u'1flow.io/' in url or u'1flow.net/' in url:
                 return False
 
             self.import_to_create.add(url)
+
             return True
 
     def import_one_article_from_url(self, url):
@@ -524,6 +517,12 @@ class WebPagesImportForm(forms.Form):
             return None
 
         else:
+            # Keep the read accessible over time.
+            LOGGER.warning(u'TODO: make sure import_one_article_from_url() has '
+                           u'no race condition when marking new read archived.')
+            read = Read.objects.get(article=article, user=self.user)
+            read.mark_archived()
+
             # We append "None" if the article was not created but
             # already exists. This is intended, for the view to
             # count them as "correctly imported" to the end-user.
