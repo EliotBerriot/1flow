@@ -190,13 +190,6 @@ class StaffPreferences(EmbeddedDocument):
                     u'<span class="muted">Default: enabled.</span>'),
         default=True)
 
-    subscribe_to_new_feeds = BooleanField(
-        verbose_name=_(u'Automatically subscribe to new feeds'),
-        help_text=_(u'When you add a bunch of feeds to 1flow, you will '
-                    u'eventually not want to subscribe to them all.<br />'
-                    u'<span class="muted">Default: enabled.</span>'),
-        default=True)
-
     no_home_redirect = BooleanField(
         verbose_name=_(u'Landing page does not redirect to webapp'),
         help_text=_(u'As a staff member, you can have access to the landing '

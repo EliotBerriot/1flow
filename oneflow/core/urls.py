@@ -11,7 +11,7 @@ from .models.nonrel import Read
 
 import views
 
-LONG_CACHE = 3600*24
+LONG_CACHE = 3600 * 24
 
 
 # This builds "read_later", "read_starred" and so on.
@@ -22,15 +22,15 @@ read_patterns = tuple(
         name=u'read_' + attrval.get('view_name'),
         kwargs={attrkey: True})
     for attrkey, attrval
-        in Read.status_data.items()
-        if 'list_url' in attrval
+    in Read.status_data.items()
+    if 'list_url' in attrval
 )
 
 # This builds all feeds and folders related URLs, and there are a lot.
 for url_trans, url_untrans in (
-            # HEADS UP: sync this list with views.py
-            (pgettext_lazy(u'part of url regex', u'feed'), u'feed'),
-            (pgettext_lazy(u'part of url regex', u'folder'), u'folder')):
+    # HEADS UP: sync this list with views.py
+    (pgettext_lazy(u'part of url regex', u'feed'), u'feed'),
+        (pgettext_lazy(u'part of url regex', u'folder'), u'folder')):
 
     suffix = u'_' + url_untrans
 
@@ -55,19 +55,18 @@ for url_trans, url_untrans in (
                 )
             ),
             name='read_all' + suffix),
-        ))
+    ))
 
     read_patterns += tuple(
         url(attrval.get('list_url').replace(u'$', type_url),
             login_required(never_cache(
                 getattr(views, 'read_{0}_feed_with_endless_pagination'.format(
-                    attrval.get('view_name')))
-                )
+                    attrval.get('view_name'))))
             ),
             name=u'read_' + attrval.get('view_name') + suffix)
         for attrkey, attrval
-            in Read.status_data.items()
-            if 'list_url' in attrval
+        in Read.status_data.items()
+        if 'list_url' in attrval
     )
 
 urlpatterns = patterns(
@@ -142,6 +141,13 @@ urlpatterns = patterns(
     url(_(ur'^feed/add/(.*)$'),
         login_required(never_cache(views.add_feed)),
         name='add_feed'),
+
+    # HEADS UP: this URL is hard-coded in snippets/…/add-subscription.html
+    #           because it's buried down in the Javascript code for the
+    #           bookmarklet. Change it here, change it there…
+    url(_(ur'^feed/add/nosub/(.*)$'),
+        staff_member_required(never_cache(views.add_feed)),
+        name='add_feed_staff', kwargs={'subscribe': False}),
 
     # Subscribe to an already-present-in-1flow feed
     url(_(ur'^subscription/new/$'),
