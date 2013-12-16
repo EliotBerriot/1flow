@@ -147,7 +147,8 @@
 <div class="row-fluid">
 	<div class="hero-unit span6 offset3">
 		<p>{% trans "Admin stuff:" %}
-				<a href="{{ settings.NONREL_ADMIN }}feed/{{ feed.id }}">{{feed.name}}</a>
+				<a href="{{ settings.NONREL_ADMIN }}feed/{{ feed.id }}"
+					target="_blank">{{ feed.name }} – {{ feed.id }}</a>
 		</p>
 	</div>
 {% endif %}
