@@ -49,7 +49,7 @@ from .tasks import import_google_reader_trigger
 from .models.nonrel import (Feed, Subscription,
                             Article, Read,
                             Folder, WebSite,
-                            TreeCycleException)
+                            TreeCycleException, CONTENT_TYPES_FINAL)
 from .models.reldb import HelpContent
 from ..base.utils.dateutils import now
 
@@ -1040,6 +1040,52 @@ def toggle(request, klass, oid, key):
 
 
 # ——————————————————————————————————————————————————————————————————————— Other
+
+
+def import_web_url(request, url):
+
+    LOGGER.warning(url)
+
+    form = WebPagesImportForm({'urls': url}, request=request)
+
+    article = None
+
+    if form.is_valid():
+        created, failed = form.save()
+
+        article = created[0]
+
+        # Just in case the item was previously
+        # here (from another user, or the same).
+        if article.content_type in CONTENT_TYPES_FINAL:
+            read = Read.get_or_404(user=request.user.mongo, article=article)
+
+            return HttpResponseRedirect(u'http://' + settings.SITE_DOMAIN +
+                                        reverse('read_one', args=(read.id,)))
+
+    return render(request, 'import-web-url.html', {'article': article})
+
+
+def article_conversion_status(request, article_id):
+
+    try:
+        article = Article.get_or_404(article_id)
+
+    except:
+        return HttpResponseTemporaryServerError(
+            u'Could not find article #{0}'.format(article_id))
+
+    if article.content_type in CONTENT_TYPES_FINAL:
+
+        read = Read.get_or_404(user=request.user.mongo, article=article)
+
+        return HttpResponseRedirect(u'http://' + settings.SITE_DOMAIN +
+                                    reverse('read_one', args=(read.id,)))
+
+    res = HttpResponse(u'IN PROGRESS')
+    res.status = 202
+
+    return res
 
 
 def import_web_pages(request):

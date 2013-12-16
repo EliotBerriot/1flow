@@ -171,6 +171,14 @@ urlpatterns = patterns(
         login_required(never_cache(views.edit_subscription)),
         name='edit_subscription'),
 
+    url(_(ur'^import/url/(.*)$'),
+        login_required(never_cache(views.import_web_url)),
+        name='import_web_url'),
+
+    url(_(ur'^status/article/([0-9a-f]{24,24})/$'),
+        login_required(never_cache(views.article_conversion_status)),
+        name='article_conversion_status'),
+
     url(_(ur'^webimport/$'),
         login_required(never_cache(views.import_web_pages)),
         name='import_web_pages'),

@@ -17,7 +17,7 @@ from mongodbforms import DocumentForm
 from django_select2.widgets import (Select2Widget, Select2MultipleWidget,
                                     HeavySelect2MultipleWidget)
 
-from ..models import (Folder, Subscription, Feed, Article)
+from ..models import (Folder, Subscription, Feed, Article, Read)
 from .fields import OnlyNameChoiceField, OnlyNameMultipleChoiceField
 
 
@@ -517,6 +517,12 @@ class WebPagesImportForm(forms.Form):
             return None
 
         else:
+            # Keep the read accessible over time.
+            LOGGER.warning(u'TODO: make sure import_one_article_from_url() has '
+                           u'no race condition when marking new read archived.')
+            read = Read.objects.get(article=article, user=self.user)
+            read.mark_archived()
+
             # We append "None" if the article was not created but
             # already exists. This is intended, for the view to
             # count them as "correctly imported" to the end-user.

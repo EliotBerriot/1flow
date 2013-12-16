@@ -24,6 +24,17 @@
         title="You can import anything in 1flow (front pages, blog articles, streamed videos, audio files… 1flow currently only display text-pages, but as soon as custom renderers are implemented, your imported content will show correctly." >of any type</strong>, eg. <em>https://www.site.org/page.html</em>.
         {% endblocktrans %}</li>
 
+        <li>{% trans "Use this bookmarklet to import while browsing:" %}
+
+        {% trans "Drag this button to your bookmarks toolbar to install it." as drag_help_text %}
+
+        {# BOOKMARK Unicode: U+1F516 (U+D83D U+DD16), UTF-8: F0 9F 94 96 #}
+        <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'import_web_url' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-mini btn-success popover-tooltip"
+        onclick="javascript:alert(&quot;{{ drag_help_text }}&quot;);return false;"
+        title="{{ drag_help_text }}"><i class="icon-bookmark"></i>&nbsp;{% trans "Import in 1flow" %}</a>
+
+        </li>
+
         <li><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Need to import data from Readability / Pocket?" %}</a></li>
     </ul>
 
