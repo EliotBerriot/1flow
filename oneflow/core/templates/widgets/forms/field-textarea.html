@@ -9,9 +9,11 @@
         <span class="help-block">{{ field.errors|join:", " }}</span>
     {% endif %}
 
-    <div class="controls">
-        <span class="help-block">{{ field.help_text|safe }}</span>
-    </div>
+    {% if not hide_help_text %}
+        <div class="controls">
+            <span class="help-block">{{ field.help_text|safe }}</span>
+        </div>
+    {% endif %}
 
     <script type="text/javascript">
         $('#{{ field.auto_id }}[data-placeholder]').each(function(index) {
