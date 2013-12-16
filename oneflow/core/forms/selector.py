@@ -497,10 +497,11 @@ class WebPagesImportForm(forms.Form):
                 return False
 
             # Avoid stupidity.
-            if u'1flow.io' in url:
+            if u'1flow.io/' in url or u'1flow.net/' in url:
                 return False
 
             self.import_to_create.add(url)
+
             return True
 
     def import_one_article_from_url(self, url):
