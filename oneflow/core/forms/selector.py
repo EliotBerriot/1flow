@@ -358,7 +358,7 @@ class AddSubscriptionForm(forms.Form):
 
 class WebPagesImportForm(forms.Form):
 
-    urls = forms.CharField(label=_(u'Magic field'), required=True,
+    urls = forms.CharField(label=_(u'Web addresses'), required=True,
                            widget=forms.Textarea())
 
     def __init__(self, *args, **kwargs):

@@ -1063,7 +1063,8 @@ def import_web_url(request, url):
             return HttpResponseRedirect(u'http://' + settings.SITE_DOMAIN +
                                         reverse('read_one', args=(read.id,)))
 
-    return render(request, 'import-web-url.html', {'article': article})
+    return render(request, 'import-web-url.html',
+                  {'article': article, 'url': url})
 
 
 def article_conversion_status(request, article_id):
