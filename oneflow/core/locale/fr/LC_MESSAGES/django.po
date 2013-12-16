@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-16 10:13+0100\n"
-"PO-Revision-Date: 2013-12-16 10:24+0009\n"
+"POT-Creation-Date: 2013-12-16 11:23+0100\n"
+"PO-Revision-Date: 2013-12-16 11:27+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -142,7 +142,6 @@ msgid "Article"
 msgstr "Article"
 
 #: admin.py:535 forms/selector.py:34
-#: templates/snippets/preferences/staff.html:17
 msgid "Subscriptions"
 msgstr "Abonnements"
 
@@ -290,143 +289,147 @@ msgstr "^lire/"
 msgid "^read/all/"
 msgstr "^lire/tous/"
 
-#: urls.py:75
+#: urls.py:74
 msgid "^home/$"
 msgstr "^accueil/$"
 
-#: urls.py:77
+#: urls.py:76
 msgid "^skip-welcome-beta/$"
 msgstr "^skip-welcome-beta/$"
 
-#: urls.py:81
+#: urls.py:80
 msgid "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 msgstr "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 
-#: urls.py:86
+#: urls.py:85
 msgid "^preference/toggle/(?P<base>\\w+)[\\./](?P<sub>\\w+)/?$"
 msgstr "^preference/basculer/(?P<base>\\w+)[\\./](?P<sub>\\w+)/?$"
 
-#: urls.py:91
+#: urls.py:90
 msgid "^preferences/$"
 msgstr "^preferences/$"
 
-#: urls.py:94
+#: urls.py:93
 msgid "^profile/$"
 msgstr "^profil/$"
 
-#: urls.py:97
+#: urls.py:96
 msgid "^read/all/$"
 msgstr "^lire/tous/$"
 
-#: urls.py:100
+#: urls.py:99
 msgid "^read/meta/([0-9a-f]{24,24})/$"
 msgstr "^lire/meta/([0-9a-f]{24,24})/$"
 
-#: urls.py:104
+#: urls.py:103
 msgid "^read/$"
 msgstr "^lire/$"
 
-#: urls.py:108
+#: urls.py:107
 msgid "^article/([0-9a-f]{24,24})/$"
 msgstr "^article/([0-9a-f]{24,24})/$"
 
-#: urls.py:112
+#: urls.py:111
 msgid "^read/([0-9a-f]{24,24})/$"
 msgstr "^lire/([0-9a-f]{24,24})/$"
 
-#: urls.py:116
+#: urls.py:115
 msgid "^share/([0-9a-f]{24,24})/$"
 msgstr "^partager/([0-9a-f]{24,24})/$"
 
-#: urls.py:123
+#: urls.py:122
 msgid "^json/user-address-book/$"
 msgstr "^json/user-address-book/$"
 
-#: urls.py:127
+#: urls.py:126
 msgid "^selector/$"
 msgstr "^selecteur/$"
 
-#: urls.py:131
+#: urls.py:130
 msgid "^folder/new/$"
 msgstr "^dossier/nouveau/$"
 
-#: urls.py:135
+#: urls.py:134
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:139
+#: urls.py:138
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:146
+#: urls.py:145
 msgid "^feed/add/(.*)$"
 msgstr "^flux/ajouter/(.*)$"
 
-#: urls.py:151
+#: urls.py:152
+msgid "^feed/add/nosub/(.*)$"
+msgstr "^flux/ajouter/pasdab/(.*)$"
+
+#: urls.py:157
 msgid "^subscription/new/$"
 msgstr "^abonnement/nouveau/$"
 
-#: urls.py:159
+#: urls.py:165
 msgid "^json/feeds-completer/$"
 msgstr "^json/feeds-completer/$"
 
-#: urls.py:164
+#: urls.py:170
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:168
+#: urls.py:174
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:172
+#: urls.py:178
 msgid "^import/url/(http.*)$"
 msgstr "^importer/url/(http.*)$"
 
-#: urls.py:176
+#: urls.py:182
 msgid "^webimport/$"
 msgstr "^import-web/$"
 
-#: urls.py:180
+#: urls.py:186
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:183
+#: urls.py:189
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:185
+#: urls.py:191
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:186
+#: urls.py:192
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:191
+#: urls.py:197
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:194
+#: urls.py:200
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:197
+#: urls.py:203
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:200
+#: urls.py:206
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:205
+#: urls.py:211
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:214
+#: urls.py:220
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:216
+#: urls.py:222
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
@@ -471,23 +474,23 @@ msgstr "Abonnement <em>{0}</em> modifié avec succès."
 msgid "Could not save subscription: {0}."
 msgstr "Impossible d'enregistrer l'abonnement : {0}."
 
-#: views.py:326
+#: views.py:328
 #, python-brace-format
 msgid "Malformed URL {0}"
 msgstr "URL {0} mal-formée"
 
-#: views.py:331
+#: views.py:333
 #, python-brace-format
 msgid "Very malformed url {0}"
 msgstr "URL {0} très mal-formée"
 
-#: views.py:347
+#: views.py:349
 #, python-brace-format
 msgid "URL {0} is invalid, its pre-processing failed ({1})"
 msgstr ""
 "L'URL {0} est invalide, impossible de réaliser les pré-traitements ({1})"
 
-#: views.py:412
+#: views.py:413
 #, python-brace-format
 msgid ""
 "Successfully subscribed to {0} streams. Articles are being added "
@@ -496,69 +499,69 @@ msgstr ""
 "Abonné à {0} flux avec succès. Les articles sont en train d'être importés "
 "petit-à-petit, merci de votre patience."
 
-#: views.py:434
+#: views.py:435
 #, python-brace-format
 msgid "Subscription <em>{0}</em> successfully deleted."
 msgstr "Abonnement <em>{0}</em> résilié avec succès."
 
-#: views.py:669
+#: views.py:670
 #, python-format
 msgid " (%(count)s subscription)"
 msgid_plural " (%(count)s subscriptions)"
 msgstr[0] " (%(count)s abonnement)"
 msgstr[1] " (%(count)s abonnements)"
 
-#: views.py:677
+#: views.py:678
 #, python-format
 msgid "In your <span class=\"hide\">%(count)s</span> subscription"
 msgid_plural "In your %(count)s subscriptions"
 msgstr[0] "Dans votre <span class=\"hide\">%(count)s</span> abonnement"
 msgstr[1] "Dans vos %(count)s abonnements"
 
-#: views.py:782
+#: views.py:783
 msgid "no item"
 msgstr "aucun élément"
 
-#: views.py:904
+#: views.py:905
 #, python-brace-format
 msgid "Share article with <code>{0}</code> failed: {1}"
 msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
 
-#: views.py:910
+#: views.py:911
 #, python-brace-format
 msgid "Successfully shared <em>{0}</em> with {1} persons"
 msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
 
-#: views.py:1204
+#: views.py:1205
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:1208
+#: views.py:1209
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:1212
+#: views.py:1213
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:1219
+#: views.py:1220
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:1223
+#: views.py:1224
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:1229
+#: views.py:1230
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:1232
+#: views.py:1233
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -1534,23 +1537,10 @@ msgstr ""
 "class=\"muted\">Valeur par défaut : activé.</span>"
 
 #: models/nonrel/preferences.py:194
-msgid "Automatically subscribe to new feeds"
-msgstr "S'abonner automatiquement aux flux que vous ajoutez"
-
-#: models/nonrel/preferences.py:195
-msgid ""
-"When you add a bunch of feeds to 1flow, you will eventually not want to "
-"subscribe to them all.<br /><span class=\"muted\">Default: enabled.</span>"
-msgstr ""
-"Quand vous ajoutez un paquet de flux dans 1flow, vous ne voulez pas "
-"nécessairement vous abonner à tous. Décochez ça pendant que vous importez en"
-" masse. Par défaut, 1flow vous abonne."
-
-#: models/nonrel/preferences.py:201
 msgid "Landing page does not redirect to webapp"
 msgstr "La landing page ne redirige pas automatiquement vers l'appli web"
 
-#: models/nonrel/preferences.py:202
+#: models/nonrel/preferences.py:195
 msgid ""
 "As a staff member, you can have access to the landing page for testing / "
 "check purposes even if you are logged in, whereas standard logged in users "
@@ -1560,11 +1550,11 @@ msgstr ""
 "faire des tests / vérifications même si vous êtes identifié(e). Les "
 "utilisateurs standards, une fois identifiés, n'ont plus accès à la landing."
 
-#: models/nonrel/preferences.py:209
+#: models/nonrel/preferences.py:202
 msgid "Allow display of all articles"
 msgstr "Autoriser l'affichage de tous les articles"
 
-#: models/nonrel/preferences.py:210
+#: models/nonrel/preferences.py:203
 msgid ""
 "As a staff member, you can have access to all fulltext content for testing /"
 " checking purposes. PLEASE DO NOT ENABLE IN NORMAL CONDITIONS."
@@ -1573,35 +1563,35 @@ msgstr ""
 "texte archivés par les utilisateurs, à des fins de tests/vérification de "
 "conversion. MERCI DE NE PAS ACTIVER EN CONDITIONS NORMALES."
 
-#: models/nonrel/preferences.py:222
+#: models/nonrel/preferences.py:215
 msgid "Default share message"
 msgstr "Message de partage par défaut."
 
-#: models/nonrel/preferences.py:226
+#: models/nonrel/preferences.py:219
 msgid "Reading list"
 msgstr "Liste de lecture"
 
-#: models/nonrel/preferences.py:227
+#: models/nonrel/preferences.py:220
 msgid "Tiled News"
 msgstr "News en tuiles"
 
-#: models/nonrel/preferences.py:232
+#: models/nonrel/preferences.py:225
 msgid "Unread articles"
 msgstr "Articles non-lus"
 
-#: models/nonrel/preferences.py:233
+#: models/nonrel/preferences.py:226
 msgid "Source selector"
 msgstr "Sélecteur de source"
 
-#: models/nonrel/preferences.py:244
+#: models/nonrel/preferences.py:237
 msgid "How the user wants his 1flow home to appear"
 msgstr "Comment l'utilisateur veut voir sa home page"
 
-#: models/nonrel/preferences.py:249
+#: models/nonrel/preferences.py:242
 msgid "I want to play with my life"
 msgstr "Je veux jouer avec ma vie"
 
-#: models/nonrel/preferences.py:250
+#: models/nonrel/preferences.py:243
 msgid ""
 "With this setting, you will be able to tune the 1flow interface a lot more. "
 "<strong>But BEWARE:</strong> you will gain access to features which are not "
@@ -1618,11 +1608,11 @@ msgstr ""
 "défaut, c'est désactivé : nous voulons que votre expérience utilisateur soit"
 " agréable et fluide.</span>"
 
-#: models/nonrel/preferences.py:259
+#: models/nonrel/preferences.py:252
 msgid "Clicking <code>Read</code> displays:"
 msgstr "Cliquer sur <code>Lecture</code> affiche :"
 
-#: models/nonrel/preferences.py:262
+#: models/nonrel/preferences.py:255
 msgid ""
 "Define what 1flow will display when you click on the <code>Read</code> link "
 "in the top navbar of the interface. <br /><span class=\"muted\">Default: "
@@ -2517,54 +2507,55 @@ msgstr "(duplicata de #%s)"
 msgid "Add a subscription"
 msgstr "Ajouter un abonnement"
 
-#: templates/add-feed.html:23 templates/add-feed.html.py:75
+#: templates/add-feed.html:25 templates/add-feed.html.py:77
+#: templates/add-feed.html:95 templates/add-feed.html.py:137
 msgid "Success"
 msgstr "Succès"
 
-#: templates/add-feed.html:30
+#: templates/add-feed.html:32
 #, python-format
 msgid ""
 "\n"
-"\t\t\t\t\t\t\tYou were already subscribed to <em>%(sub_name)s</em>, all is well.</p><p>\n"
+"\t\t\t\t\t\t\t\tYou were already subscribed to <em>%(sub_name)s</em>, all is well.</p><p>\n"
 "\n"
-"\t\t\t\t\t\t\t<a href=\"%(sel_url)s#%(sub_id)s\">Go straight to it</a>, or close this window/tab.\n"
-"\t\t\t\t\t\t"
+"\t\t\t\t\t\t\t\t<a href=\"%(sel_url)s#%(sub_id)s\">Go straight to it</a>, or <a href=\"javascript:window.open('', '_self', '');window.close()\">close this window/tab</a>.\n"
+"\t\t\t\t\t\t\t"
 msgstr ""
 "\n"
 "Vous étiez déjà abonné à <em>%(sub_name)s</em>, tout va bien.</p><p>\n"
 "\n"
-"<a href=\"%(sel_url)s#%(sub_id)s\">Affichez l'abonnement</a>, ou fermez cet onglet/fenêtre."
+"<a href=\"%(sel_url)s#%(sub_id)s\">Affichez l'abonnement</a>, ou <a href=\"javascript:window.open('', '_self', '');window.close()\">fermez cet onglet/fenêtre</a>."
 
-#: templates/add-feed.html:38
+#: templates/add-feed.html:40
 #, python-format
 msgid ""
 "\n"
-"\t\t\t\t\t\t\tYou are now subscribed to <em>%(sub_name)s</em>.</p><p>\n"
+"\t\t\t\t\t\t\t\tYou are now subscribed to <em>%(sub_name)s</em>.</p><p>\n"
 "\n"
-"\t\t\t\t\t\t\t<a href=\"%(sel_url)s#%(sub_id)s\">Go straight to it</a>, or close this window/tab.\n"
-"\t\t\t\t\t\t"
+"\t\t\t\t\t\t\t\t<a href=\"%(sel_url)s#%(sub_id)s\">Go straight to it</a>, or <a href=\"javascript:window.open('', '_self', '');window.close()\">close this window/tab</a>.\n"
+"\t\t\t\t\t\t\t"
 msgstr ""
 "\n"
 "Vous êtes maintenant abonné à <em>%(sub_name)s</em>.</p><p>\n"
 "\n"
-"<a href=\"%(sel_url)s#%(sub_id)s\">Affichez l'abonnement</a>, ou fermez cet onglet/fenêtre."
+"<a href=\"%(sel_url)s#%(sub_id)s\">Affichez l'abonnement</a>, ou <a href=\"javascript:window.open('', '_self', '');window.close()\">fermez cet onglet/fenêtre</a>."
 
-#: templates/add-feed.html:50 templates/add-feed.html.py:93
+#: templates/add-feed.html:52 templates/add-feed.html.py:113
 msgid "Bummer!"
 msgstr "Mince !"
 
-#: templates/add-feed.html:53 templates/add-feed.html.py:96
+#: templates/add-feed.html:55 templates/add-feed.html.py:116
 #, python-format
 msgid ""
 "\n"
 "\n"
-"\t\t\t\t\t<strong>We were not able to subscribe yourself to <em>%(feed_name)s</em></strong>. We are sorry for that.</p><p>\n"
+"\t\t\t\t\t\t<strong>We were not able to subscribe yourself to <em>%(feed_name)s</em></strong>. We are sorry for that.</p><p>\n"
 "\n"
-"\t\t\t\t\tDevelopers have been notified of the failure and will either subscribe you manually, or get in touch with you to get more information.</p><p>\n"
+"\t\t\t\t\t\tDevelopers have been notified of the failure and will either subscribe you manually, or get in touch with you to get more information.</p><p>\n"
 "\n"
-"\t\t\t\t\tHoping this is a temporary problem in our infrastructure, you can try to <a href=\"%(add_url)s\">re-suscribe to it manually from the dedicated page</a> in a moment.\n"
+"\t\t\t\t\t\tHoping this is a temporary problem in our infrastructure, you can try to <a href=\"%(add_url)s\">re-suscribe to it manually from the dedicated page</a> in a moment.\n"
 "\n"
-"\t\t\t\t"
+"\t\t\t\t\t"
 msgstr ""
 "\n"
 "<strong>Nous n'avons pas réussi à vous abonner à <em>%(feed_name)s</em></strong>. J'en suis personnellement désolé.</p><p>\n"
@@ -2573,12 +2564,12 @@ msgstr ""
 "\n"
 "Si tant est que ça soit un problème temporaire dans notre infrastructure, vous pouvez ré-essayer <a href=\"%(add_url)s\">de vous abonner manuellement</a> dans un moment."
 
-#: templates/add-feed.html:64 templates/add-feed.html.py:107
+#: templates/add-feed.html:66 templates/add-feed.html.py:127
 #, python-format
 msgid ""
 "\n"
-"    \t\t\t\t\tFor the record, if that means anything to you, the exact error is: <code>%(sub_exc)s</code>.\n"
-"\t\t\t\t\t"
+"\t    \t\t\t\t\tFor the record, if that means anything to you, the exact error is: <code>%(sub_exc)s</code>.\n"
+"\t\t\t\t\t\t"
 msgstr ""
 "\n"
 "Pour mémoire, si ça vous dit quelque chose, l'erreur exacte est : <code>%(sub_exc)s</code>. Moi je n'y comprends rien ; j'espère qu'un développeur nous éclairera. Ils ont souvent la science infuse ces gens là. Enfin, le croient-ils. Moi je dis ça, je dis rien. Po-po-lom-po-pom…"
@@ -2587,26 +2578,54 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"\t\t\t\t\t\tYou are now subscribed to %(feed_name)s.</p><p>\n"
+"\t\t\t\t\t\tFeed <em>%(feed_name)s</em> already in 1flow.</p><p>\n"
 "\n"
-"\t\t\t\t\t\tAs this feed was unknown to 1flow before, you have\n"
-"\t\t\t\t\t\tcontributed to making it better. Thank You!</p><p>\n"
-"\n"
-"\t\t\t\t\t\t<a href=\"%(sel_url)s#%(sub_id)s\">Go straight to your new subscription</a>, or close this window/tab.\n"
+"\t\t\t\t\t\t<a href=\"javascript:window.open('', '_self', '');window.close()\">Close this window/tab</a>.\n"
 "\t\t\t\t\t"
+msgstr ""
+"\n"
+"Flux <em>%(feed_name)s</em> déjà dans 1flow.</p><p>\n"
+"\n"
+"<a href=\"javascript:window.open('', '_self', '');window.close()\">Fermer cet onglet/fenêtre</a>."
+
+#: templates/add-feed.html:100
+#, python-format
+msgid ""
+"\n"
+"\t\t\t\t\t\t\tYou are now subscribed to %(feed_name)s.</p><p>\n"
+"\n"
+"\t\t\t\t\t\t\tAs this feed was unknown to 1flow before, you have\n"
+"\t\t\t\t\t\t\tcontributed to making it better. Thank You!</p><p>\n"
+"\n"
+"\t\t\t\t\t\t\t<a href=\"%(sel_url)s#%(sub_id)s\">Go straight to your new subscription</a>, or <a href=\"javascript:window.open('', '_self', '');window.close()\">close this window/tab</a>.\n"
+"\t\t\t\t\t\t"
 msgstr ""
 "\n"
 "Vous êtes maintenant abonné à <em>%(feed_name)s</em>.</p><p>\n"
 "\n"
 "Comme ce flux nous était inconnu auparavant, vous venez de contribuer à améliorer 1flow. Merci !\n"
 "\n"
-"<a href=\"%(sel_url)s#%(sub_id)s\">Affichez votre nouvel abonnement</a>, ou fermez cet onglet/fenêtre."
+"<a href=\"%(sel_url)s#%(sub_id)s\">Affichez votre nouvel abonnement</a>, ou <a href=\"javascript:window.open('', '_self', '');window.close()\">fermez cet onglet/fenêtre</a>."
 
-#: templates/add-feed.html:120
+#: templates/add-feed.html:140
+#, python-format
+msgid ""
+"\n"
+"\t\t\t\t\t\tFeed <em>%(feed_name)s</em> created.</p><p>\n"
+"\n"
+"\t\t\t\t\t\t<a href=\"javascript:window.open('', '_self', '');window.close()\">Close this window/tab</a>.\n"
+"\t\t\t\t\t"
+msgstr ""
+"\n"
+"Flux <em>%(feed_name)s</em> créé.</p><p>\n"
+"\n"
+"<a href=\"javascript:window.open('', '_self', '');window.close()\">Fermer cet onglet/fenêtre</a>."
+
+#: templates/add-feed.html:154
 msgid "Doomed!"
 msgstr "Corne de bouc !"
 
-#: templates/add-feed.html:123
+#: templates/add-feed.html:157
 #, python-format
 msgid ""
 "\n"
@@ -2617,7 +2636,7 @@ msgid ""
 "\n"
 "\t\tDevelopers have been notified of the failure and will try to subscribe you manually to this feed if it's a valid one, or get in touch with you to get more information.</p><p>\n"
 "\n"
-"\t\tYou can close this window/tab, or <a href=\"%(sel_url)s\">head up to your source selector</a>.\n"
+"\t\tYou can <a href=\"javascript:window.open('', '_self', '');window.close()\">close this window/tab</a>, or <a href=\"%(sel_url)s\">head up to your source selector</a>.\n"
 "\n"
 "\t"
 msgstr ""
@@ -2628,9 +2647,9 @@ msgstr ""
 "\n"
 "Les développeurs ont été notifiés de cet échec et essaierons de vous abonner manuellement au flux si c'est possible, ou vous contacteront pour plus de détails.</p><p>\n"
 "\n"
-"Vous pouvez fermer cet onglet/fenêtre, ou <a href=\"%(sel_url)s\">aller à votre sélecteur de source</a>."
+"Vous pouvez <a href=\"javascript:window.open('', '_self', '');window.close()\">fermer cet onglet/fenêtre</a>, ou <a href=\"%(sel_url)s\">aller à votre sélecteur de source</a>."
 
-#: templates/add-feed.html:136
+#: templates/add-feed.html:170
 #, python-format
 msgid ""
 "\n"
@@ -2640,7 +2659,19 @@ msgstr ""
 "\n"
 "Pour mémoire, si ça vous dit quelque chose, l'erreur exacte est : <code>%(feed_exc)s</code>. Moi je n'y comprends rien !"
 
-#: templates/add-feed.html:149
+#: templates/add-feed.html:186
+msgid "no language!"
+msgstr "pas de langue !"
+
+#: templates/add-feed.html:190
+msgid "no description!"
+msgstr "pas de description !"
+
+#: templates/add-feed.html:194
+msgid "no thumbnail!"
+msgstr "pas de vignette !"
+
+#: templates/add-feed.html:198
 msgid "Admin stuff:"
 msgstr "Trucs d'admins :"
 
@@ -2960,7 +2991,7 @@ msgid "Jump to:"
 msgstr "Raccourcis :"
 
 #: templates/navbars/read-endless.html:26
-#: templates/snippets/preferences/staff.html:29
+#: templates/snippets/preferences/staff.html:23
 #: templates/snippets/selector/selector.html:26
 msgid "Reading lists"
 msgstr "Listes de lecture"
@@ -3195,7 +3226,7 @@ msgstr ""
 "Readability / Pocket ?"
 
 #: templates/snippets/import/import-web-pages.html:31
-#: templates/snippets/selector/add-subscription.html:79
+#: templates/snippets/selector/add-subscription.html:93
 #: templates/snippets/selector/manage-folder.html:38
 #: templates/snippets/selector/manage-subscription.html:119
 #: templates/snippets/share/share-one.html:62
@@ -3292,7 +3323,7 @@ msgstr "Super-pouvoirs"
 msgid "Landing page"
 msgstr "Page d'accueil"
 
-#: templates/snippets/preferences/staff.html:23
+#: templates/snippets/preferences/staff.html:17
 msgid "Selector"
 msgstr "Sélecteur"
 
@@ -3783,31 +3814,41 @@ msgid "Add feeds while browsing the web"
 msgstr "Ajoutez des flux pendant que vous surfez sur le web"
 
 #: templates/snippets/selector/add-subscription.html:38
+#: templates/snippets/selector/add-subscription.html:46
 msgid "Could not find the RSS Feed"
 msgstr "Impossible de trouver un flux RSS/Atom dans la page."
 
 #: templates/snippets/selector/add-subscription.html:38
+#: templates/snippets/selector/add-subscription.html:46
 msgid "Drag this link to your bookmarks toolbar"
 msgstr "Glissez-déposez ce lien dans votre barre de signets."
 
 #: templates/snippets/selector/add-subscription.html:38
-msgid "Add feed to 1flow"
+msgid "Subscribe in 1flow"
+msgstr "S'abonner dans 1flow"
+
+#: templates/snippets/selector/add-subscription.html:46
+msgid "Import feed into 1flow"
 msgstr "Ajouter le flux à 1flow"
 
-#: templates/snippets/selector/add-subscription.html:41
+#: templates/snippets/selector/add-subscription.html:49
+msgid "(no subscription, for staff only)"
+msgstr "(pas d'abonnement ; pour le staff)"
+
+#: templates/snippets/selector/add-subscription.html:55
 msgid ""
 "\n"
-"            <strong>Drag-n-drop this bookmarklet into your bookmark toolbar.</strong><br /> \n"
+"            <strong>Drag-n-drop this bookmarklet into your bookmark toolbar.</strong><br />\n"
 "            When you find yourself on a news website or a blog, just click on the bookmarklet to subscribe to its feed(s).<br />\n"
 "            If the website doesn't offer any feed, the bookmarklet will inform you.\n"
 "        "
 msgstr ""
 "\n"
-"<strong>Glissez-déposez cette bookmarklet dans votre barre de signets.</strong><br /> \n"
+"<strong>Glissez-déposez cette bookmarklet dans votre barre de signets.</strong><br />\n"
 "Quand vous visitez un site d'informations ou un blog, cliquez sur la bookmarlet pour vous abonner au flux.<br />\n"
 "Si le site web n'en propose pas, la bookmarklet vous en informera."
 
-#: templates/snippets/selector/add-subscription.html:49
+#: templates/snippets/selector/add-subscription.html:63
 #, python-format
 msgid ""
 "\n"
@@ -3819,11 +3860,11 @@ msgstr ""
 "Vous pouvez obtenir plus de contrôle sur ce processus <a href=\"%(help_url)s#ajout-de-nouvelles-sources\">avec une extension pour votre navigateur et un peu de configuration manuelle</a>.<br />\n"
 "Dans le doute, l'utilisation de la bookmarklet est l'option la plus simple."
 
-#: templates/snippets/selector/add-subscription.html:67
+#: templates/snippets/selector/add-subscription.html:81
 msgid "note"
 msgstr "note"
 
-#: templates/snippets/selector/add-subscription.html:68
+#: templates/snippets/selector/add-subscription.html:82
 msgid ""
 "The sources you choose will be added to what we call the <em>sources "
 "selector</em>. It's the screen that will show after you click <em>Add to my "
@@ -3835,7 +3876,7 @@ msgstr ""
 " avoir cliqué sur <em>Ajouter à mes sources</em>. La prochaine fois que vous"
 " viendrez sur 1flow, vous serez amené(e) directement là-bas."
 
-#: templates/snippets/selector/add-subscription.html:73
+#: templates/snippets/selector/add-subscription.html:87
 msgid "Add to my sources"
 msgstr "Ajouter à mes sources"
 
@@ -4283,6 +4324,17 @@ msgstr "k+"
 #, python-brace-format
 msgid "{0} articles"
 msgstr "{0} articles"
+
+#~ msgid "Automatically subscribe to new feeds"
+#~ msgstr "S'abonner automatiquement aux flux que vous ajoutez"
+
+#~ msgid ""
+#~ "When you add a bunch of feeds to 1flow, you will eventually not want to "
+#~ "subscribe to them all.<br /><span class=\"muted\">Default: enabled.</span>"
+#~ msgstr ""
+#~ "Quand vous ajoutez un paquet de flux dans 1flow, vous ne voulez pas "
+#~ "nécessairement vous abonner à tous. Décochez ça pendant que vous importez en"
+#~ " masse. Par défaut, 1flow vous abonne."
 
 #~ msgid ""
 #~ "\n"
