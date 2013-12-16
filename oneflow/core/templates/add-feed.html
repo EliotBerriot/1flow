@@ -143,6 +143,8 @@
 	</div>
 
 {% if mongodb_user.is_staff_or_superuser_and_enabled and feed %}
+</div>
+<div class="row-fluid">
 	<div class="hero-unit span6 offset3">
 		<p>{% trans "Admin stuff:" %}
 				<a href="{{ settings.NONREL_ADMIN }}feed/{{ feed.id }}">{{feed.name}}</a>
