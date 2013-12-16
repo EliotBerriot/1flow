@@ -803,6 +803,8 @@ class Read(Document, DocumentHelperMixin):
             # in that case.
             return True
 
+        return True
+
         if self.is_restricted:
             LOGGER.warning(u'Implement real-time checking '
                            u'of archive-ability permission.')
