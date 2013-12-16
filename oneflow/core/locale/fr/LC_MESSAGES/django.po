@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-16 11:23+0100\n"
-"PO-Revision-Date: 2013-12-16 11:27+0009\n"
+"POT-Creation-Date: 2013-12-17 00:34+0100\n"
+"PO-Revision-Date: 2013-12-17 00:44+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -382,54 +382,58 @@ msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
 #: urls.py:178
-msgid "^import/url/(http.*)$"
-msgstr "^importer/url/(http.*)$"
+msgid "^import/url/(.*)$"
+msgstr "^importer/url/(.*)$"
 
 #: urls.py:182
+msgid "^status/article/([0-9a-f]{24,24})/$"
+msgstr "^etat/article/([0-9a-f]{24,24})/$"
+
+#: urls.py:186
 msgid "^webimport/$"
 msgstr "^import-web/$"
 
-#: urls.py:186
+#: urls.py:190
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:189
+#: urls.py:193
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:191
+#: urls.py:195
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:192
+#: urls.py:196
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:197
+#: urls.py:201
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:200
+#: urls.py:204
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:203
+#: urls.py:207
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:206
+#: urls.py:210
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:211
+#: urls.py:215
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:220
+#: urls.py:224
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:222
+#: urls.py:226
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
@@ -532,36 +536,36 @@ msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
 msgid "Successfully shared <em>{0}</em> with {1} persons"
 msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
 
-#: views.py:1205
+#: views.py:1236
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:1209
+#: views.py:1240
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:1213
+#: views.py:1244
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:1220
+#: views.py:1251
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:1224
+#: views.py:1255
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:1230
+#: views.py:1261
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:1233
+#: views.py:1264
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -686,24 +690,10 @@ msgid "You have to fill at least one of the two fields."
 msgstr "Vous devez remplir au moins un des deux champs."
 
 #: forms/selector.py:361
-msgid "Enter URL(s)"
-msgstr "Entrez des URLs"
+msgid "Web addresses"
+msgstr "Adresses web"
 
-#: forms/selector.py:362
-msgid ""
-"Type one URL per line, as many as you want. Even if 1flow can currently "
-"display only text-pages correctly, you may import anything (websites home "
-"pages, youtube videos, etc). As soon as custom renderers are ready, the "
-"content you imported will show correctly."
-msgstr ""
-"Saississez autant d'URLs que vous le souhaitez, une par ligne. Même si 1flow"
-" est actuellement limité à l'affichage de contenu textuel, vous pouvez "
-"importer n'importe quoi (pages d'accueil de sites, vidéos youtube, etc). Dès"
-" que les visualiseurs spécifiques de contenus seront déployés, vos éléments "
-"importés apparaîtront correctement. En attendant, vous ne les aurez pas "
-"perdus."
-
-#: forms/selector.py:403
+#: forms/selector.py:395
 msgid "Readability JSON export format detected."
 msgstr "Format d'export Readability détecté."
 
@@ -2509,6 +2499,7 @@ msgstr "Ajouter un abonnement"
 
 #: templates/add-feed.html:25 templates/add-feed.html.py:77
 #: templates/add-feed.html:95 templates/add-feed.html.py:137
+#: templates/import-web-url.html:17
 msgid "Success"
 msgstr "Succès"
 
@@ -2541,6 +2532,7 @@ msgstr ""
 "<a href=\"%(sel_url)s#%(sub_id)s\">Affichez l'abonnement</a>, ou <a href=\"javascript:window.open('', '_self', '');window.close()\">fermez cet onglet/fenêtre</a>."
 
 #: templates/add-feed.html:52 templates/add-feed.html.py:113
+#: templates/import-web-url.html:52
 msgid "Bummer!"
 msgstr "Mince !"
 
@@ -2671,7 +2663,7 @@ msgstr "pas de description !"
 msgid "no thumbnail!"
 msgstr "pas de vignette !"
 
-#: templates/add-feed.html:198
+#: templates/add-feed.html:198 templates/import-web-url.html:74
 msgid "Admin stuff:"
 msgstr "Trucs d'admins :"
 
@@ -2731,6 +2723,57 @@ msgstr "Ouverture de vos préférences…"
 #: templates/home.html:226
 msgid "Opening your account…"
 msgstr "Ouverture de votre compte…"
+
+#: templates/import-web-url.html:2
+msgid "Import a web item"
+msgstr "Importer un élément web"
+
+#: templates/import-web-url.html:20
+#, python-format
+msgid ""
+"\n"
+"\t\tItem imported. Waiting for its conversion <i class=\"icon-spinner icon-spin icon-large\"></i></p><p>\n"
+"\n"
+"\t\tYou can <a href=\"javascript:window.open('', '_self', '');window.close()\">close this window/tab</a> or open <a href=\"%(import_url)s\">your imported items</a> and wait there.</p><p>\n"
+"\n"
+"\n"
+"\t\tJust remember that <strong>the item will not be visible until converted</strong>.</p><div class=\"spacer25\"></div><p class=\"muted\"><small>\n"
+"\n"
+"\t\tNote: videos, images and other kind of non-textual content are not handled yet, and will fail to convert. Thus, you will not see them at all. We apologize for this non-smart technical restriction. <br />\n"
+"\t\t<strong>Your landing on this very page guarantees that the item has been imported in your data set</strong>. You <strong>will</strong> be able to display it correctly in the not-so-distant future.</small>\n"
+"\n"
+"\t"
+msgstr ""
+"\n"
+"Élément importé. En attente de conversion <i class=\"icon-spinner icon-spin icon-large\"></i></p><p>\n"
+"\n"
+"Vous pouvez <a href=\"javascript:window.open('', '_self', '');window.close()\">fermer cet onglet/fenêtre</a> ou bien ouvrir <a href=\"%(import_url)s\">vos éléments importés</a> et attendre là-bas.</p><p>\n"
+"\n"
+"\n"
+"Gardez en tête que <strong>l'élément ne sera pas visible tant qu'il n'est pas converti</strong>.</p><div class=\"spacer25\"></div><p class=\"muted\"><small>\n"
+"\n"
+"Note : les vidéos, images et autres types de contenus non-textuels ne sont pas pris en charge, leur conversion échouera. En conséquence, vous ne les verrez nulle part. Nous sommes désolés de cette restriction technique bien peu élégante. <br />\n"
+"<strong>Votre arrivée sur la présente page garantit que l'élément a bien été importé dans vos données personnelles</strong>. Vous <strong>pourrez</strong> le consulter correctement dans un futur pas si lointain.</small>"
+
+#: templates/import-web-url.html:55
+#, python-format
+msgid ""
+"\n"
+"\n"
+"\t\t<strong>We were not able to import the item at address <em>%(url)s</em></strong>. We are sorry for that.</p><p>\n"
+"\n"
+"\t\tDevelopers have been notified of the failure, and will investigate the problem if the error is legitimate.</p><p>\n"
+"\n"
+"\t\t<a href=\"javascript:window.open('', '_self', '');window.close()\">Close this window/tab.</a>\n"
+"\n"
+"\t"
+msgstr ""
+"\n"
+"<strong>Nous n'avons pas réussi à importer l'élément à l'adresse <em>%(url)s</em></strong> et nous en sommes désolés.</p><p>\n"
+"\n"
+"Les développeurs ont été notifiés de ce problème, et l'investigueront si sa cause est légitime.</p><p>\n"
+"\n"
+"<a href=\"javascript:window.open('', '_self', '');window.close()\">Fermer cet onglet/fenêtre.</a>"
 
 #: templates/preferences.html:5 templates/preferences.html.py:13
 #: templates/snippets/navbar.html:38
@@ -3214,26 +3257,48 @@ msgstr "À propos"
 msgid "Contact"
 msgstr "Contact"
 
-#: templates/snippets/import/import-web-pages.html:19
+#: templates/snippets/import/import-web-pages.html:22
+msgid ""
+"\n"
+"        Type or copy-paste full addresses <strong class=\"popover-tooltip\"\n"
+"        title=\"You can import anything in 1flow (front pages, blog articles, streamed videos, audio files… 1flow currently only display text-pages, but as soon as custom renderers are implemented, your imported content will show correctly.\" >of any type</strong>, eg. <em>https://www.site.org/page.html</em>.\n"
+"        "
+msgstr ""
+"\n"
+"Tapez ou copiez-collez des adresses complètes <strong class=\"popover-tooltip\"\n"
+"title=\"Vous pouvez importez n'importe quoi dans 1flow (pages de garde, articles de blog, vidéos steamées, fichiers audio… 1flow n'affiche actuellement que les contenus textuels, mais dès que les rendereurs spécialisés sont implémentés, vos contenus importés s'afficheront correctement.\" >de tout type</strong>, ex. <em>https://www.site.org/page.html</em>."
+
+#: templates/snippets/import/import-web-pages.html:27
+msgid "Use this bookmarklet to import while browsing:"
+msgstr ""
+"Utilisez cette <em>bookmarklet</em> pour importer pendant que vous surfez :"
+
+#: templates/snippets/import/import-web-pages.html:29
+msgid "Drag this button to your bookmarks toolbar to install it."
+msgstr ""
+"Glissez-déposez ce bouton dans votre barre de signets pour l'installer."
+
+#: templates/snippets/import/import-web-pages.html:34
+msgid "Import in 1flow"
+msgstr "Importer dans 1flow"
+
+#: templates/snippets/import/import-web-pages.html:38
 msgid "importing-data-from-other-services"
 msgstr "import-de-donnees-dautres-applications-web"
 
-#: templates/snippets/import/import-web-pages.html:19
-msgid ""
-"Do you need to import data from other webservices like Readability / Pocket?"
-msgstr ""
-"Avez-vous besoin d'importer des données depuis d'autres webservices comme "
-"Readability / Pocket ?"
+#: templates/snippets/import/import-web-pages.html:38
+msgid "Need to import data from Readability / Pocket?"
+msgstr "Besoin d'importer des données depuis Readability / Pocket ?"
 
-#: templates/snippets/import/import-web-pages.html:31
-#: templates/snippets/selector/add-subscription.html:93
+#: templates/snippets/import/import-web-pages.html:52
+#: templates/snippets/selector/add-subscription.html:92
 #: templates/snippets/selector/manage-folder.html:38
 #: templates/snippets/selector/manage-subscription.html:119
 #: templates/snippets/share/share-one.html:62
 msgid "Cancel"
 msgstr "Annuler"
 
-#: templates/snippets/import/import-web-pages.html:34
+#: templates/snippets/import/import-web-pages.html:55
 msgid "Launch import"
 msgstr "Lancer l'import"
 
@@ -3813,29 +3878,29 @@ msgstr "ou"
 msgid "Add feeds while browsing the web"
 msgstr "Ajoutez des flux pendant que vous surfez sur le web"
 
-#: templates/snippets/selector/add-subscription.html:38
-#: templates/snippets/selector/add-subscription.html:46
+#: templates/snippets/selector/add-subscription.html:37
+#: templates/snippets/selector/add-subscription.html:45
 msgid "Could not find the RSS Feed"
 msgstr "Impossible de trouver un flux RSS/Atom dans la page."
 
-#: templates/snippets/selector/add-subscription.html:38
-#: templates/snippets/selector/add-subscription.html:46
+#: templates/snippets/selector/add-subscription.html:37
+#: templates/snippets/selector/add-subscription.html:45
 msgid "Drag this link to your bookmarks toolbar"
 msgstr "Glissez-déposez ce lien dans votre barre de signets."
 
-#: templates/snippets/selector/add-subscription.html:38
+#: templates/snippets/selector/add-subscription.html:37
 msgid "Subscribe in 1flow"
 msgstr "S'abonner dans 1flow"
 
-#: templates/snippets/selector/add-subscription.html:46
+#: templates/snippets/selector/add-subscription.html:45
 msgid "Import feed into 1flow"
 msgstr "Ajouter le flux à 1flow"
 
-#: templates/snippets/selector/add-subscription.html:49
+#: templates/snippets/selector/add-subscription.html:48
 msgid "(no subscription, for staff only)"
 msgstr "(pas d'abonnement ; pour le staff)"
 
-#: templates/snippets/selector/add-subscription.html:55
+#: templates/snippets/selector/add-subscription.html:54
 msgid ""
 "\n"
 "            <strong>Drag-n-drop this bookmarklet into your bookmark toolbar.</strong><br />\n"
@@ -3848,7 +3913,7 @@ msgstr ""
 "Quand vous visitez un site d'informations ou un blog, cliquez sur la bookmarlet pour vous abonner au flux.<br />\n"
 "Si le site web n'en propose pas, la bookmarklet vous en informera."
 
-#: templates/snippets/selector/add-subscription.html:63
+#: templates/snippets/selector/add-subscription.html:62
 #, python-format
 msgid ""
 "\n"
@@ -3860,11 +3925,11 @@ msgstr ""
 "Vous pouvez obtenir plus de contrôle sur ce processus <a href=\"%(help_url)s#ajout-de-nouvelles-sources\">avec une extension pour votre navigateur et un peu de configuration manuelle</a>.<br />\n"
 "Dans le doute, l'utilisation de la bookmarklet est l'option la plus simple."
 
-#: templates/snippets/selector/add-subscription.html:81
+#: templates/snippets/selector/add-subscription.html:80
 msgid "note"
 msgstr "note"
 
-#: templates/snippets/selector/add-subscription.html:82
+#: templates/snippets/selector/add-subscription.html:81
 msgid ""
 "The sources you choose will be added to what we call the <em>sources "
 "selector</em>. It's the screen that will show after you click <em>Add to my "
@@ -3876,7 +3941,7 @@ msgstr ""
 " avoir cliqué sur <em>Ajouter à mes sources</em>. La prochaine fois que vous"
 " viendrez sur 1flow, vous serez amené(e) directement là-bas."
 
-#: templates/snippets/selector/add-subscription.html:87
+#: templates/snippets/selector/add-subscription.html:86
 msgid "Add to my sources"
 msgstr "Ajouter à mes sources"
 
@@ -4324,6 +4389,22 @@ msgstr "k+"
 #, python-brace-format
 msgid "{0} articles"
 msgstr "{0} articles"
+
+#~ msgid "Enter URL(s)"
+#~ msgstr "Entrez des URLs"
+
+#~ msgid ""
+#~ "Type one URL per line, as many as you want. Even if 1flow can currently "
+#~ "display only text-pages correctly, you may import anything (websites home "
+#~ "pages, youtube videos, etc). As soon as custom renderers are ready, the "
+#~ "content you imported will show correctly."
+#~ msgstr ""
+#~ "Saississez autant d'URLs que vous le souhaitez, une par ligne. Même si 1flow"
+#~ " est actuellement limité à l'affichage de contenu textuel, vous pouvez "
+#~ "importer n'importe quoi (pages d'accueil de sites, vidéos youtube, etc). Dès"
+#~ " que les visualiseurs spécifiques de contenus seront déployés, vos éléments "
+#~ "importés apparaîtront correctement. En attendant, vous ne les aurez pas "
+#~ "perdus."
 
 #~ msgid "Automatically subscribe to new feeds"
 #~ msgstr "S'abonner automatiquement aux flux que vous ajoutez"
