@@ -84,7 +84,7 @@ class ReadPreferences(EmbeddedDocument):
         verbose_name=_(u'Auto mark-read delay'),
         help_text=_(u'The delay after which an open article in any reading '
                     u'list will be automatically marked as read if it is not.'),
-                    default=4500, choices=AUTO_MARK_READ_DELAY_CHOICES)
+        default=4500, choices=AUTO_MARK_READ_DELAY_CHOICES)
 
     read_switches_to_fullscreen = BooleanField(
         verbose_name=_(u'Switch to full-screen while reading'),
@@ -156,9 +156,9 @@ class SelectorPreferences(EmbeddedDocument):
                     u'never be new content in them, it is safe to hide them '
                     u'in the selector. Unread articles from closed streams '
                     u'still show in the unread list.'),
-                    # TODO: use reverse_lazy('read') and make a link.
-                    # 20131004: it just crashes because of a circular
-                    # import loop in mongoadmin, to change.
+        # TODO: use reverse_lazy('read') and make a link.
+        # 20131004: it just crashes because of a circular
+        # import loop in mongoadmin, to change.
         default=False)
 
 
@@ -187,6 +187,13 @@ class StaffPreferences(EmbeddedDocument):
         verbose_name=_(u'Selector shows admin links'),
         help_text=_(u'Automatically link to the admin from the selector '
                     u'whenever folder/subscription has missing data.<br />'
+                    u'<span class="muted">Default: enabled.</span>'),
+        default=True)
+
+    subscribe_to_new_feeds = BooleanField(
+        verbose_name=_(u'Automatically subscribe to new feeds'),
+        help_text=_(u'When you add a bunch of feeds to 1flow, you will '
+                    u'eventually not want to subscribe to them all.<br />'
                     u'<span class="muted">Default: enabled.</span>'),
         default=True)
 
