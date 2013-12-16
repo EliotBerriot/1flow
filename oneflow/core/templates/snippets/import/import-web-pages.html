@@ -14,9 +14,16 @@
         <div class="modal-body">
     {% endif %}
 
-    {% include "widgets/forms/field-textarea.html" with field=form.urls|attr:"rows:3"|add_class:"span5" %}
+    {% with hide_help_text=1 %}
+        {% include "widgets/forms/field-textarea.html" with field=form.urls|attr:"rows:6"|add_class:"span5" %}
+    {% endwith %}
 
-    <p class="controls muted"><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Do you need to import data from other webservices like Readability / Pocket?" %}</p>
+    <ul class="controls">
+        <li><span class="popover-tooltip"
+            title="{{ form.urls.help_text|safe }}">{% trans "Examples of input?" %}</span></li>
+        <li><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Need to import data from Readability / Pocket?" %}</li>
+    </ul>
+
 
     {% if in_modal %}
         </div>
