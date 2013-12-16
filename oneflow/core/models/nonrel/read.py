@@ -248,7 +248,7 @@ class Read(Document, DocumentHelperMixin):
             'list_headers':  (_(u'%(count)s read article'),
                               _(u'%(count)s read articles')),
             'undo_title':    _(u'Mark as unread'),
-            'do_label' :     _(u'Mark read'),
+            'do_label':      _(u'Mark read'),
             'undo_label':    _(u'Mark unread'),
             'status_label':  pgettext_lazy(u'adjective', u'read'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -264,7 +264,7 @@ class Read(Document, DocumentHelperMixin):
             'list_headers':  (_(u'%(count)s starred article'),
                               _(u'%(count)s starred articles')),
             'undo_title':    _(u'Remove from starred/favorites'),
-            'do_label' :     pgettext_lazy(u'verb', u'Star'),
+            'do_label':      pgettext_lazy(u'verb', u'Star'),
             'undo_label':    _(u'Unstar'),
             'status_label':  _(u'starred'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -316,7 +316,7 @@ class Read(Document, DocumentHelperMixin):
             'undo_title':    _(u'Remove from facts / important events'),
             'status_title':  _(u'This article contains one or '
                                u'more important facts'),
-            'do_label' :     _(u'Mark as fact'),
+            'do_label':      _(u'Mark as fact'),
             'undo_label':    _(u'Unmark fact'),
             'status_label':  _(u'fact'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -335,7 +335,7 @@ class Read(Document, DocumentHelperMixin):
             'undo_title':    _(u'Remove from valuable numbers'),
             'status_title':  _(u'This article contains quantified '
                                u'numbers for a watch.'),
-            'do_label' :     _(u'Mark as number'),
+            'do_label':      _(u'Mark as number'),
             'undo_label':    _(u'Unmark number'),
             'status_label':  _(u'number'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -358,7 +358,7 @@ class Read(Document, DocumentHelperMixin):
             'status_title':  _(u'This article contains an analysis, '
                                u'an in-depth study or a research '
                                u'publication.'),
-            'do_label' :     _(u'Mark as analysis'),
+            'do_label':      _(u'Mark as analysis'),
             'undo_label':    _(u'Unmark analysis'),
             'status_label':  _(u'analysis'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -381,7 +381,7 @@ class Read(Document, DocumentHelperMixin):
                                u'(people are not famous anymore?)'),
             'status_title':  _(u'This article contains one or more quote '
                                u'from people you care about.'),
-            'do_label' :     _(u'Mark as quote'),
+            'do_label':      _(u'Mark as quote'),
             'undo_label':    _(u'Unmark quote'),
             'status_label':  pgettext_lazy(u'noun', u'quote'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -402,7 +402,7 @@ class Read(Document, DocumentHelperMixin):
             'undo_title':    _(u'Unmark as prospective-related content'),
             'status_title':  _(u'This article contains prospective element(s) '
                                u'or must-remember hypothesis.'),
-            'do_label' :     _(u'Mark as prospective'),
+            'do_label':      _(u'Mark as prospective'),
             'undo_label':    _(u'Unmark prospective'),
             'status_label':  _(u'prospective'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -423,7 +423,7 @@ class Read(Document, DocumentHelperMixin):
             'undo_title':    _(u'Unmark as legal content (overriden laws?)'),
             'status_title':  _(u'This article contains regulations/'
                                u'law/rules element(s)'),
-            'do_label' :     _(u'Mark as law/regul.'),
+            'do_label':      _(u'Mark as law/regul.'),
             'undo_label':    _(u'Unmark law/regul.'),
             'status_label':  _(u'regulations'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -447,7 +447,7 @@ class Read(Document, DocumentHelperMixin):
                                u'(has it become obsolete?)'),
             'status_title':  _(u'This article contains best-practices / '
                                u' state of art element(s).'),
-            'do_label' :     _(u'Mark as best-practice'),
+            'do_label':      _(u'Mark as best-practice'),
             'undo_label':    _(u'Unmark best-practice'),
             'status_label':  pgettext_lazy(u'noun', u'know-how'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
@@ -470,7 +470,7 @@ class Read(Document, DocumentHelperMixin):
                                u'element(s)'),
             'status_title':  _(u'This article contains a valuable '
                                u'piece of knowlegde.'),
-            'do_label' :     _(u'Mark as Knowledge'),
+            'do_label':      _(u'Mark as Knowledge'),
             'undo_label':    _(u'Unmark knowlegde'),
             'status_label':  _(u'knowledge'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name', u'globe'),
@@ -488,7 +488,7 @@ class Read(Document, DocumentHelperMixin):
                               _(u'%(count)s fun articles')),
             'undo_title':    _(u'Not fun anymore, sadly.'),
             'status_title':  _(u'OMG, this thing is sooooooooo fun! LMAO!'),
-            'do_label' :     _(u'Mark as fun'),
+            'do_label':      _(u'Mark as fun'),
             'undo_label':    _(u'Mark as boring'),
             'status_label':  _(u'fun'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name', u'smile'),
@@ -599,8 +599,8 @@ class Read(Document, DocumentHelperMixin):
             self.article.title[:40] + (self.article.title[40:] and u'…'),
             self.user.id, self.article.id, self.id,
             pgettext_lazy(u'adjective', u'read')
-                if self.is_read
-                else pgettext_lazy(u'adjective', u'unread'),
+            if self.is_read
+            else pgettext_lazy(u'adjective', u'unread'),
             self.rating)
 
     # —————————————————————————————————————————————————————————————— Properties
@@ -791,7 +791,7 @@ class Read(Document, DocumentHelperMixin):
                                        update_only=['starred'])
 
     def mark_archived(self):
-        if self.archived_can_change() and not self.is_archived:
+        if self.is_archived_can_change() and not self.is_archived:
             self.is_archived = True
             self.save()
 

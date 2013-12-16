@@ -359,11 +359,6 @@ class AddSubscriptionForm(forms.Form):
 class WebPagesImportForm(forms.Form):
 
     urls = forms.CharField(label=_(u'Magic field'), required=True,
-                           help_text=_(u'Just type any valid web address. '
-                                       u'Eg: http://example.com/ '
-                                       u'https://www.site.org/page.html ' # NOQA
-                                       u'etc. Best is to copy-paste them from '
-                                       u'browser address bar.'),
                            widget=forms.Textarea())
 
     def __init__(self, *args, **kwargs):

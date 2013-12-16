@@ -19,9 +19,12 @@
     {% endwith %}
 
     <ul class="controls">
-        <li><span class="popover-tooltip"
-            title="{{ form.urls.help_text|safe }}">{% trans "Examples of input?" %}</span></li>
-        <li><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Need to import data from Readability / Pocket?" %}</li>
+        <li>{% blocktrans %}
+        Type or copy-paste full addresses <strong class="popover-tooltip"
+        title="You can import anything in 1flow (front pages, blog articles, streamed videos, audio files… 1flow currently only display text-pages, but as soon as custom renderers are implemented, your imported content will show correctly." >of any type</strong>, eg. <em>https://www.site.org/page.html</em>.
+        {% endblocktrans %}</li>
+
+        <li><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Need to import data from Readability / Pocket?" %}</a></li>
     </ul>
 
 
