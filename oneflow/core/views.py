@@ -301,7 +301,9 @@ def edit_subscription(request, **kwargs):
                   {'form': form, 'subscription': subscription})
 
 
-def add_feed(request, feed_url):
+def add_feed(request, feed_url, subscribe=True):
+    """ The :param`subscribe` parameter is set to False for staff members
+        who use a different URL. """
 
     user = request.user.mongo
     feed = subscription = None
@@ -369,9 +371,7 @@ def add_feed(request, feed_url):
 
                 already_created = True
 
-    if feed and \
-        not user.is_staff_or_superuser_and_enabled \
-            or user.preferences.staff.subscribe_to_new_feeds:
+    if feed and subscribe:
 
         #
         # Then subscribe the user to this feed,
@@ -397,6 +397,7 @@ def add_feed(request, feed_url):
                   'subscription': subscription,
                   'already_created': already_created,
                   'already_subscribed': already_subscribed,
+                  'subscribe': subscribe,
                   'feed_exc': feed_exc, 'sub_exc': sub_exc})
 
 
