@@ -135,19 +135,15 @@ urlpatterns = patterns(
         login_required(never_cache(views.manage_folder)),
         name='edit_folder'),
 
-    # HEADS UP: this URL is hard-coded in snippets/…/add-subscription.html
-    #           because it's buried down in the Javascript code for the
-    #           bookmarklet. Change it here, change it there…
-    url(_(ur'^feed/add/(.*)$'),
-        login_required(never_cache(views.add_feed)),
-        name='add_feed'),
-
-    # HEADS UP: this URL is hard-coded in snippets/…/add-subscription.html
-    #           because it's buried down in the Javascript code for the
-    #           bookmarklet. Change it here, change it there…
+    # HEADS UP: this one must come before the other,
+    # else staff members will fail to add new feeds.
     url(_(ur'^feed/add/nosub/(.*)$'),
         staff_member_required(never_cache(views.add_feed)),
         name='add_feed_staff', kwargs={'subscribe': False}),
+
+    url(_(ur'^feed/add/(.*)$'),
+        login_required(never_cache(views.add_feed)),
+        name='add_feed'),
 
     # Subscribe to an already-present-in-1flow feed
     url(_(ur'^subscription/new/$'),
