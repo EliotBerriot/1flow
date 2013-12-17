@@ -471,13 +471,14 @@ class ReadAdmin(admin.DocumentAdmin):
                 ('is_good', 'date_created', 'rating', ),
                 ('is_read', 'date_read', ),
                 ('is_starred', 'date_starred', ),
+                ('is_archived', 'date_archived', ),
                 ('is_bookmarked', 'date_bookmarked', 'bookmark_type'),
                 ('is_auto_read', 'date_auto_read', ),
             ),
         }),
         ('Watch attributes', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : (
+            'fields': (
                 ('is_fact', 'date_fact', ),
                 ('is_number', 'date_number', ),
                 ('is_quote', 'date_quote', ),
