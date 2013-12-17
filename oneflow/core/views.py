@@ -1044,8 +1044,6 @@ def toggle(request, klass, oid, key):
 
 def import_web_url(request, url):
 
-    LOGGER.warning(url)
-
     form = WebPagesImportForm({'urls': url}, request=request)
 
     article = None
@@ -1080,8 +1078,8 @@ def article_conversion_status(request, article_id):
 
         read = Read.get_or_404(user=request.user.mongo, article=article)
 
-        return HttpResponseRedirect(u'http://' + settings.SITE_DOMAIN +
-                                    reverse('read_one', args=(read.id,)))
+        return HttpResponse(u'http://' + settings.SITE_DOMAIN +
+                            reverse('read_one', args=(read.id,)))
 
     res = HttpResponse(u'IN PROGRESS')
     res.status = 202
