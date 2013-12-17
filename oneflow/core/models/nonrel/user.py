@@ -34,6 +34,7 @@ __all__ = (
     'user_unread_articles_count_default',
     'user_starred_articles_count_default',
     'user_bookmarked_articles_count_default',
+    'user_archived_articles_count_default',
 
     'user_fun_articles_count_default',
     'user_fact_articles_count_default',
@@ -104,6 +105,11 @@ def user_unread_articles_count_default(user):
 def user_starred_articles_count_default(user):
 
     return user.reads.filter(is_starred=True).count()
+
+
+def user_archived_articles_count_default(user):
+
+    return user.reads.filter(is_archived=True).count()
 
 
 def user_bookmarked_articles_count_default(user):
@@ -212,6 +218,11 @@ class User(Document, DocumentHelperMixin):
 
     starred_articles_count = IntRedisDescriptor(
         attr_name='u.sa_c', default=user_starred_articles_count_default,
+        set_default=True, min_value=0)
+
+    archived_articles_count = IntRedisDescriptor(
+        attr_name='u.ra_c',
+        default=user_archived_articles_count_default,
         set_default=True, min_value=0)
 
     bookmarked_articles_count = IntRedisDescriptor(
@@ -449,7 +460,7 @@ def __mongo_user(self):
                 # Woops. Race condition? On a user?? Weird.
 
                 self.__mongo_user_cache__ = User.objects.get(
-                                                django_user=self.id)
+                    django_user=self.id)
 
         return self.__mongo_user_cache__
 
