@@ -11,17 +11,16 @@
 
 {% url 'article_conversion_status' article.id as poll_url %}
 {% url 'read_all_feed' mongodb_user.web_import_subscription.id as import_url %}
-{% if article %}
 
+{% if article %}
 
 	<h1>{% trans "Success" %}</h1>
 	<div class="spacer25"></div>
 
 	<p>{% blocktrans %}
-		Item imported. Waiting for its conversion <i class="icon-spinner icon-spin icon-large"></i></p><p>
+		Item imported. Waiting for its conversion <span class="square-spinner"></span></p><p>
 
 		You can <a href="javascript:window.open('', '_self', '');window.close()">close this window/tab</a> or open <a href="{{ import_url }}">your imported items</a> and wait there.</p><p>
-
 
 		Just remember that <strong>the item will not be visible until converted</strong>.</p><div class="spacer25"></div><p class="muted"><small>
 
@@ -74,8 +73,8 @@
 	<div class="hero-unit span8 offset2 centered">
 
 		<p>{% trans "Admin stuff:" %}
-				<a href="{{ settings.NONREL_ADMIN }}article/{{ article.id }}"
-					target="_blank">{{ article.title }} – {{ article.id }}</a>
+			<a href="{{ settings.NONREL_ADMIN }}article/{{ article.id }}"
+				target="_blank">{{ article.title }} – {{ article.id }}</a>
 		</p>
 
 	</div>
