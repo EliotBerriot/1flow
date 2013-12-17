@@ -36,6 +36,9 @@ runshell:
 clean:
 	ps ax | grep manage.py | grep -v grep | awk '{print $$1}' | xargs kill -9
 
+purge:
+	./manage.py celery purge
+
 test:
 	# REUSE fails with
 	# "AttributeError: 'DatabaseCreation' object has no attribute '_rollback_works'"
