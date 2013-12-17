@@ -3,6 +3,7 @@ bootstrap:
 	# like runable, but with the manual minimum for Fabric calls to succeed.
 	pip install -r config/dev-requirements.txt
 	fab -H localhost local sdf.fabfile.dev_django_full
+	sudo chown -R `whoami`: ~/.virtualenvs/1flow
 	fab local runable
 
 runable:
