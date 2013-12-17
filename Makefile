@@ -1,8 +1,10 @@
 
 runable:
+	pip install -r config/dev-requirements.txt
 	fab local runable
 
 fullrunable:
+	pip install -r config/dev-requirements.txt
 	fab test runable
 	fab prod runable
 
@@ -55,6 +57,7 @@ update-requirements:
 	(cd config && pip-dump)
 
 requirements:
+	pip install -r config/dev-requirements.txt
 	fab local sdf.requirements
 
 syncdb:
