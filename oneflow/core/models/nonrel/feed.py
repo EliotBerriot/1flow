@@ -432,7 +432,7 @@ class Feed(Document, DocumentHelperMixin):
         # Wow. FeedParser creates a <anything>.feed
         fp_feed = parsed_feed.feed
 
-        return cls(name=fp_feed.title,
+        return cls(name=fp_feed.get('title', u'Feed from {0}'.format(feed_url)),
                    good_for_use=True,
                    # Try the RSS description, then the Atom subtitle.
                    description_en=fp_feed.get(
