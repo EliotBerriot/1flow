@@ -1,7 +1,12 @@
 
-runable:
+bootstrap:
+	# like runable, but with the manual minimum for Fabric calls to succeed.
 	pip install -r config/dev-requirements.txt
 	fab -H localhost local sdf.fabfile.dev_django_full
+	sudo chown -R `whoami`: ~/.virtualenvs/1flow
+	fab local runable
+
+runable:
 	fab local runable
 
 fullrunable:
@@ -31,6 +36,9 @@ runshell:
 clean:
 	ps ax | grep manage.py | grep -v grep | awk '{print $$1}' | xargs kill -9
 
+purge:
+	./manage.py celery purge
+
 test:
 	# REUSE fails with
 	# "AttributeError: 'DatabaseCreation' object has no attribute '_rollback_works'"
@@ -57,8 +65,6 @@ update-requirements:
 	(cd config && pip-dump)
 
 requirements:
-	pip install -r config/dev-requirements.txt
-	fab -H localhost local sdf.fabfile.dev_django_full
 	fab local sdf.requirements
 
 syncdb:
