@@ -36,7 +36,9 @@
 			function poll_article_status() {
 
 				$.get("{{ poll_url }}", function(data) {
-					console.log(data);
+					if (data.indexOf('http') == 0) {
+						document.location = data;
+					}
 				});
 
 				setTimeout(poll_article_status, 1000);
