@@ -1,5 +1,7 @@
 
 runable:
+	pip install -r config/dev-requirements.txt
+	fab -H localhost local sdf.fabfile.dev_django_full
 	fab local runable
 
 fullrunable:
@@ -55,6 +57,8 @@ update-requirements:
 	(cd config && pip-dump)
 
 requirements:
+	pip install -r config/dev-requirements.txt
+	fab -H localhost local sdf.fabfile.dev_django_full
 	fab local sdf.requirements
 
 syncdb:
