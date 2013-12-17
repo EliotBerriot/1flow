@@ -176,8 +176,8 @@ class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
                 return u'<a href="{0}">{1}</a>'.format(
                     reverse('google_reader_import',
                             kwargs={'user_id': obj.id}),
-                            _(u'start') if gri.running() is None
-                            else _(u'restart'))
+                    _(u'start') if gri.running() is None
+                    else _(u'restart'))
         else:
             return u'<span style="text-decoration: line-through">OAuth2</span>'
 
@@ -189,9 +189,9 @@ class GriOneFlowUserAdmin(UserAdmin, CSVAdminMixin):
         gri = GoogleReaderImport(obj.id)
 
         return u'<a href="{0}">{1}</a>'.format(
-                    reverse('google_reader_can_import_toggle',
-                            kwargs={'user_id': obj.id}), _(u'deny')
-                            if gri.can_import else _(u'allow'))
+            reverse('google_reader_can_import_toggle',
+                    kwargs={'user_id': obj.id}),
+            _(u'deny') if gri.can_import else _(u'allow'))
 
     can_import_display.short_description = _(u'Permission')
     can_import_display.allow_tags = True
@@ -281,7 +281,7 @@ class MongoUserAdmin(admin.DocumentAdmin):
         }),
         ('Friends', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : (
+            'fields': (
                 'friends',
                 'address_book',
             ),
@@ -363,7 +363,7 @@ class ArticleAdmin(admin.DocumentAdmin):
         }),
         ('URL & status', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : (
+            'fields': (
                 'url',
                 ('url_absolute', 'orphaned', 'duplicate_of'),
                 ('date_added', 'date_published', ),
@@ -373,7 +373,7 @@ class ArticleAdmin(admin.DocumentAdmin):
         }),
         ('Other', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : (
+            'fields': (
                 'image_url',
                 'slug', 'pages_urls',
                 'excerpt',
@@ -403,7 +403,7 @@ class ArticleAdmin(admin.DocumentAdmin):
             return (u'<a href="{0}article/{1}" '
                     u'style="cursor: pointer; font-size: 300%;" '
                     u'target="_blank">∃</a>').format(
-                        settings.NONREL_ADMIN, obj.duplicate_of.id)
+                settings.NONREL_ADMIN, obj.duplicate_of.id)
 
         return u''
 
@@ -496,7 +496,7 @@ class ReadAdmin(admin.DocumentAdmin):
 
         try:
             return u'<a href="{0}user/{1}" target="_blank">{2}</a>'.format(
-                        settings.NONREL_ADMIN, obj.user.id, obj.user.username)
+                settings.NONREL_ADMIN, obj.user.id, obj.user.username)
 
         except Exception, e:
             return unicode(e)
@@ -511,8 +511,8 @@ class ReadAdmin(admin.DocumentAdmin):
 
         try:
             return u'<a href="{0}article/{1}" target="_blank">{2}</a>'.format(
-                        settings.NONREL_ADMIN, art.id,
-                        art.title[:40] + (art.title[:40] and u'…'))
+                settings.NONREL_ADMIN, art.id,
+                art.title[:40] + (art.title[:40] and u'…'))
 
         except Exception, e:
             return unicode(e)
@@ -615,16 +615,16 @@ class FeedAdmin(admin.DocumentAdmin):
         }),
         ('Fetch parameters', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : ('url', 'fetch_interval', 'last_fetch',
-                        ('last_etag', 'last_modified',), ),
+            'fields': ('url', 'fetch_interval', 'last_fetch',
+                       ('last_etag', 'last_modified',), ),
         }),
         ('Birth & Death', {
             'classes': ('grp-collapse grp-closed', ),
-            'fields' : (
+            'fields': (
                 ('date_added', 'created_by'),
                 ('closed', 'date_closed', ),
-                'closed_reason', 'errors', 
-                ),
+                'closed_reason', 'errors',
+            ),
         }),
     )
     # def name_display(self, obj):
@@ -833,19 +833,19 @@ if settings.FULL_ADMIN:
             }),
             (_(u'Translators notes'), {
                 'classes': ('grp-collapse grp-closed', ),
-                'fields' : (
+                'fields': (
                     'name_nt',
                     'content_nt',
                 )
             }),
             (_(u'Contents (English)'), {
-                'fields' : (
+                'fields': (
                     'name_en',
                     'content_en',
                 )
             }),
             (_(u'Contents (French)'), {
-                'fields' : (
+                'fields': (
                     'name_fr',
                     'content_fr',
                 )
