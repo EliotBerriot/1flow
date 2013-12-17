@@ -1,7 +1,11 @@
 
-runable:
+bootstrap:
+	# like runable, but with the manual minimum for Fabric calls to succeed.
 	pip install -r config/dev-requirements.txt
 	fab -H localhost local sdf.fabfile.dev_django_full
+	fab local runable
+
+runable:
 	fab local runable
 
 fullrunable:
@@ -57,8 +61,6 @@ update-requirements:
 	(cd config && pip-dump)
 
 requirements:
-	pip install -r config/dev-requirements.txt
-	fab -H localhost local sdf.fabfile.dev_django_full
 	fab local sdf.requirements
 
 syncdb:
