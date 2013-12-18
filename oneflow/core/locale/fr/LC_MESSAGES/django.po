@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-17 00:34+0100\n"
-"PO-Revision-Date: 2013-12-17 20:49+0009\n"
+"POT-Creation-Date: 2013-12-18 06:25+0100\n"
+"PO-Revision-Date: 2013-12-18 06:27+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -74,7 +74,7 @@ msgstr "relancer"
 msgid "import"
 msgstr "import"
 
-#: admin.py:193
+#: admin.py:194
 msgid "deny"
 msgstr "bloquer"
 
@@ -133,31 +133,31 @@ msgstr "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%;\">••�
 msgid "URL err."
 msgstr "Erreur d'URL"
 
-#: admin.py:504
+#: admin.py:505
 msgid "User"
 msgstr "Utilisateur"
 
-#: admin.py:520
+#: admin.py:521
 msgid "Article"
 msgstr "Article"
 
-#: admin.py:535 forms/selector.py:34
+#: admin.py:536 forms/selector.py:34
 msgid "Subscriptions"
 msgstr "Abonnements"
 
-#: admin.py:645
+#: admin.py:646
 msgid "ID"
 msgstr "ID"
 
-#: admin.py:658
+#: admin.py:659
 msgid "URLs"
 msgstr "URLs"
 
-#: admin.py:672
+#: admin.py:673
 msgid "Dupe of"
 msgstr "Dupe de"
 
-#: admin.py:684
+#: admin.py:685
 #, python-brace-format
 msgid ""
 "<span title=\"Last 3 errors:\n"
@@ -166,80 +166,80 @@ msgstr ""
 "<span title=\"3 dernières erreurs :\n"
 "{0}\" style=\"cursor: pointer\">{1} erreur(s)</span>"
 
-#: admin.py:687
+#: admin.py:688
 #, python-brace-format
 msgid "{0}: {1}"
 msgstr "{0} : {1}"
 
-#: admin.py:693
+#: admin.py:694
 msgid "Errors"
 msgstr "Erreurs"
 
-#: admin.py:701
+#: admin.py:702
 msgid "Restr.?"
 msgstr "Restr. ?"
 
-#: admin.py:709
+#: admin.py:710
 msgid "Sys?"
 msgstr "Sys ?"
 
-#: admin.py:717
+#: admin.py:718
 msgid "Shown?"
 msgstr "Affiché ?"
 
-#: admin.py:725
+#: admin.py:726
 msgid "Recent"
 msgstr "Récents"
 
-#: admin.py:732
+#: admin.py:733
 msgid "Total"
 msgstr "Total"
 
-#: admin.py:743
+#: admin.py:744
 msgid "Latest"
 msgstr "Derniers"
 
-#: admin.py:751
+#: admin.py:752
 msgid "Added"
 msgstr "Ajouté(e)"
 
-#: admin.py:762
+#: admin.py:763
 msgid "Interval"
 msgstr "Intervalle"
 
-#: admin.py:771
+#: admin.py:772
 msgid "never"
 msgstr "jamais"
 
-#: admin.py:776
+#: admin.py:777
 msgid "Refreshed"
 msgstr "Rafraîchi(e)"
 
-#: admin.py:783
+#: admin.py:784
 msgid "Subs."
 msgstr "Sous…"
 
-#: admin.py:800
+#: admin.py:801
 msgid "The feed is open"
 msgstr "Le flux est ouvert"
 
-#: admin.py:802
+#: admin.py:803
 msgid "Run?"
 msgstr "Actif ?"
 
-#: admin.py:828
+#: admin.py:829
 msgid "Main"
 msgstr "Principal"
 
-#: admin.py:833
+#: admin.py:834
 msgid "Translators notes"
 msgstr "Notes des traducteurs"
 
-#: admin.py:840
+#: admin.py:841
 msgid "Contents (English)"
 msgstr "Contenu (Anglais)"
 
-#: admin.py:846
+#: admin.py:847
 msgid "Contents (French)"
 msgstr "Contenu (Français)"
 
@@ -333,168 +333,164 @@ msgstr "^article/([0-9a-f]{24,24})/$"
 msgid "^read/([0-9a-f]{24,24})/$"
 msgstr "^lire/([0-9a-f]{24,24})/$"
 
-#: urls.py:115
-msgid "^share/([0-9a-f]{24,24})/$"
-msgstr "^partager/([0-9a-f]{24,24})/$"
-
-#: urls.py:122
+#: urls.py:118
 msgid "^json/user-address-book/$"
 msgstr "^json/user-address-book/$"
 
-#: urls.py:126
+#: urls.py:122
 msgid "^selector/$"
 msgstr "^selecteur/$"
 
-#: urls.py:130
+#: urls.py:126
 msgid "^folder/new/$"
 msgstr "^dossier/nouveau/$"
 
-#: urls.py:134
+#: urls.py:130
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:138
+#: urls.py:134
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:145
-msgid "^feed/add/(.*)$"
-msgstr "^flux/ajouter/(.*)$"
-
-#: urls.py:152
+#: urls.py:140
 msgid "^feed/add/nosub/(.*)$"
 msgstr "^flux/ajouter/pasdab/(.*)$"
 
-#: urls.py:157
+#: urls.py:144
+msgid "^feed/add/(.*)$"
+msgstr "^flux/ajouter/(.*)$"
+
+#: urls.py:149
 msgid "^subscription/new/$"
 msgstr "^abonnement/nouveau/$"
 
-#: urls.py:165
+#: urls.py:157
 msgid "^json/feeds-completer/$"
 msgstr "^json/feeds-completer/$"
 
-#: urls.py:170
+#: urls.py:162
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:174
+#: urls.py:166
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:178
+#: urls.py:170
 msgid "^import/url/(.*)$"
 msgstr "^importer/url/(.*)$"
 
-#: urls.py:182
+#: urls.py:174
 msgid "^status/article/([0-9a-f]{24,24})/$"
 msgstr "^etat/article/([0-9a-f]{24,24})/$"
 
-#: urls.py:186
+#: urls.py:178
 msgid "^webimport/$"
 msgstr "^import-web/$"
 
-#: urls.py:190
+#: urls.py:182
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:193
+#: urls.py:185
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:195
+#: urls.py:187
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:196
+#: urls.py:188
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:201
+#: urls.py:193
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:204
+#: urls.py:196
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:207
+#: urls.py:199
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:210
+#: urls.py:202
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:215
+#: urls.py:207
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:224
+#: urls.py:216
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:226
+#: urls.py:218
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:223
+#: views.py:222
 #, python-brace-format
 msgid "Save <em>{0}</em> failed: {1}"
 msgstr "Enregistrement de <em>{0}</em> impossible : {1}"
 
-#: views.py:228
+#: views.py:227
 #, python-brace-format
 msgid "Folder <em>{0}</em> successfully {1}."
 msgstr "Dossier <em>{0}</em> {1} avec succès."
 
-#: views.py:229 models/nonrel/feed.py:192
+#: views.py:228 models/nonrel/feed.py:192
 msgid "modified"
 msgstr "modifié"
 
-#: views.py:230
+#: views.py:229
 msgid "created"
 msgstr "créé"
 
-#: views.py:235
+#: views.py:234
 #, python-brace-format
 msgid "Could not {0} folder: {1}."
 msgstr "Impossible de {0} le dossier : {1}."
 
-#: views.py:236
+#: views.py:235
 msgid "modify"
 msgstr "de modifier"
 
-#: views.py:236
+#: views.py:235
 msgid "create"
 msgstr "de créer"
 
-#: views.py:281
+#: views.py:280
 #, python-brace-format
 msgid "Subscription <em>{0}</em> successfully modified."
 msgstr "Abonnement <em>{0}</em> modifié avec succès."
 
-#: views.py:286
+#: views.py:285
 #, python-brace-format
 msgid "Could not save subscription: {0}."
 msgstr "Impossible d'enregistrer l'abonnement : {0}."
 
-#: views.py:328
+#: views.py:327
 #, python-brace-format
 msgid "Malformed URL {0}"
 msgstr "URL {0} mal-formée"
 
-#: views.py:333
+#: views.py:332
 #, python-brace-format
 msgid "Very malformed url {0}"
 msgstr "URL {0} très mal-formée"
 
-#: views.py:349
+#: views.py:348
 #, python-brace-format
 msgid "URL {0} is invalid, its pre-processing failed ({1})"
 msgstr ""
 "L'URL {0} est invalide, impossible de réaliser les pré-traitements ({1})"
 
-#: views.py:413
+#: views.py:412
 #, python-brace-format
 msgid ""
 "Successfully subscribed to {0} streams. Articles are being added "
@@ -503,69 +499,59 @@ msgstr ""
 "Abonné à {0} flux avec succès. Les articles sont en train d'être importés "
 "petit-à-petit, merci de votre patience."
 
-#: views.py:435
+#: views.py:434
 #, python-brace-format
 msgid "Subscription <em>{0}</em> successfully deleted."
 msgstr "Abonnement <em>{0}</em> résilié avec succès."
 
-#: views.py:670
+#: views.py:669
 #, python-format
 msgid " (%(count)s subscription)"
 msgid_plural " (%(count)s subscriptions)"
 msgstr[0] " (%(count)s abonnement)"
 msgstr[1] " (%(count)s abonnements)"
 
-#: views.py:678
+#: views.py:677
 #, python-format
 msgid "In your <span class=\"hide\">%(count)s</span> subscription"
 msgid_plural "In your %(count)s subscriptions"
 msgstr[0] "Dans votre <span class=\"hide\">%(count)s</span> abonnement"
 msgstr[1] "Dans vos %(count)s abonnements"
 
-#: views.py:783
+#: views.py:782
 msgid "no item"
 msgstr "aucun élément"
 
-#: views.py:905
-#, python-brace-format
-msgid "Share article with <code>{0}</code> failed: {1}"
-msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
-
-#: views.py:911
-#, python-brace-format
-msgid "Successfully shared <em>{0}</em> with {1} persons"
-msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
-
-#: views.py:1236
+#: views.py:1195
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:1240
+#: views.py:1199
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:1244
+#: views.py:1203
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:1251
+#: views.py:1210
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:1255
+#: views.py:1214
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:1261
+#: views.py:1220
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:1264
+#: views.py:1223
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -960,7 +946,7 @@ msgstr "il y a {0}"
 msgid "Unknown source"
 msgstr "Source inconnue"
 
-#: models/nonrel/article.py:354 models/nonrel/read.py:671
+#: models/nonrel/article.py:354 models/nonrel/read.py:650
 #, python-brace-format
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
@@ -2408,12 +2394,12 @@ msgctxt "adjective"
 msgid "unread"
 msgstr "non-lu"
 
-#: models/nonrel/read.py:636
+#: models/nonrel/read.py:615
 #, python-brace-format
 msgid " ({feed})"
 msgstr " ({feed}) "
 
-#: models/nonrel/read.py:641
+#: models/nonrel/read.py:620
 #, python-brace-format
 msgid "{title}{source}"
 msgstr "{title}{source}"
@@ -2460,31 +2446,31 @@ msgstr ""
 msgid "{0} {1}⚐ (#{2})"
 msgstr "{0} {1}⚐ (#{2})"
 
-#: models/nonrel/user.py:194
+#: models/nonrel/user.py:200
 msgid "Staff member"
 msgstr "Membre du staff"
 
-#: models/nonrel/user.py:195
+#: models/nonrel/user.py:201
 msgid "The user has staff permissions (see Django documentation)."
 msgstr "L'utilisateur est membre du staff (voir la documentation Django)."
 
-#: models/nonrel/user.py:197
+#: models/nonrel/user.py:203
 msgid "Superuser"
 msgstr "Super-utilisateur"
 
-#: models/nonrel/user.py:198
+#: models/nonrel/user.py:204
 msgid "The user has super user related permissions (see Django doc.)."
 msgstr "L'utilisateur est super-utilisateur (voir la documentation Django)."
 
-#: models/nonrel/user.py:201
+#: models/nonrel/user.py:207
 msgid "Friends"
 msgstr "Amis"
 
-#: models/nonrel/user.py:203
+#: models/nonrel/user.py:209
 msgid "Address book"
 msgstr "Carnet d'adresse"
 
-#: models/nonrel/user.py:489
+#: models/nonrel/user.py:500
 msgid "System group?"
 msgstr "Groupe système ?"
 
@@ -2532,7 +2518,7 @@ msgstr ""
 "<a href=\"%(sel_url)s#%(sub_id)s\">Affichez l'abonnement</a>, ou <a href=\"javascript:window.open('', '_self', '');window.close()\">fermez cet onglet/fenêtre</a>."
 
 #: templates/add-feed.html:52 templates/add-feed.html.py:113
-#: templates/import-web-url.html:52
+#: templates/import-web-url.html:53
 msgid "Bummer!"
 msgstr "Mince !"
 
@@ -2663,7 +2649,7 @@ msgstr "pas de description !"
 msgid "no thumbnail!"
 msgstr "pas de vignette !"
 
-#: templates/add-feed.html:198 templates/import-web-url.html:74
+#: templates/add-feed.html:198 templates/import-web-url.html:75
 msgid "Admin stuff:"
 msgstr "Trucs d'admins :"
 
@@ -2732,10 +2718,9 @@ msgstr "Importer un élément web"
 #, python-format
 msgid ""
 "\n"
-"\t\tItem imported. Waiting for its conversion <i class=\"icon-spinner icon-spin icon-large\"></i></p><p>\n"
+"\t\tItem imported. Waiting for its conversion <span class=\"square-spinner\"></span></p><p>\n"
 "\n"
 "\t\tYou can <a href=\"javascript:window.open('', '_self', '');window.close()\">close this window/tab</a> or open <a href=\"%(import_url)s\">your imported items</a> and wait there.</p><p>\n"
-"\n"
 "\n"
 "\t\tJust remember that <strong>the item will not be visible until converted</strong>.</p><div class=\"spacer25\"></div><p class=\"muted\"><small>\n"
 "\n"
@@ -2745,7 +2730,7 @@ msgid ""
 "\t"
 msgstr ""
 "\n"
-"Élément importé. En attente de conversion <i class=\"icon-spinner icon-spin icon-large\"></i></p><p>\n"
+"Élément importé. En attente de conversion <span class=\"square-spinner\"></span></p><p>\n"
 "\n"
 "Vous pouvez <a href=\"javascript:window.open('', '_self', '');window.close()\">fermer cet onglet/fenêtre</a> ou bien ouvrir <a href=\"%(import_url)s\">vos éléments importés</a> et attendre là-bas.</p><p>\n"
 "\n"
@@ -2755,7 +2740,7 @@ msgstr ""
 "Note : les vidéos, images et autres types de contenus non-textuels ne sont pas pris en charge, leur conversion échouera. En conséquence, vous ne les verrez nulle part. Nous sommes désolés de cette restriction technique bien peu élégante. <br />\n"
 "<strong>Votre arrivée sur la présente page garantit que l'élément a bien été importé dans vos données personnelles</strong>. Vous <strong>pourrez</strong> le consulter correctement dans un futur pas si lointain.</small>"
 
-#: templates/import-web-url.html:55
+#: templates/import-web-url.html:56
 #, python-format
 msgid ""
 "\n"
@@ -3680,23 +3665,6 @@ msgstr "Assigner ou supprimer des attributs de veille"
 msgid "Watch"
 msgstr "Veille"
 
-#: templates/snippets/read/read-actions.html:48
-msgid "Share privately with individuals or your watch-teams"
-msgstr "Partagez en privé avec des personnes ou vos équipes de veille"
-
-#: templates/snippets/read/read-actions.html:51
-msgid "Share"
-msgstr "Partager"
-
-#: templates/snippets/read/read-actions.html:60
-msgid "This feature is under development. Thanks for your patience."
-msgstr ""
-"Cette fonctionnalité est en cours de développement, merci de votre patience."
-
-#: templates/snippets/read/read-actions.html:63
-msgid "Broadcast"
-msgstr "Diffuser"
-
 #: templates/snippets/read/read-admin-informations.html:9
 msgid "Read: "
 msgstr "Lecture :"
@@ -4389,6 +4357,28 @@ msgstr "k+"
 #, python-brace-format
 msgid "{0} articles"
 msgstr "{0} articles"
+
+#~ msgid "^share/([0-9a-f]{24,24})/$"
+#~ msgstr "^partager/([0-9a-f]{24,24})/$"
+
+#~ msgid "Share article with <code>{0}</code> failed: {1}"
+#~ msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
+
+#~ msgid "Successfully shared <em>{0}</em> with {1} persons"
+#~ msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
+
+#~ msgid "Share privately with individuals or your watch-teams"
+#~ msgstr "Partagez en privé avec des personnes ou vos équipes de veille"
+
+#~ msgid "Share"
+#~ msgstr "Partager"
+
+#~ msgid "This feature is under development. Thanks for your patience."
+#~ msgstr ""
+#~ "Cette fonctionnalité est en cours de développement, merci de votre patience."
+
+#~ msgid "Broadcast"
+#~ msgstr "Diffuser"
 
 #~ msgid "Enter URL(s)"
 #~ msgstr "Entrez des URLs"
