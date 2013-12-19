@@ -298,8 +298,7 @@
     }
 
 
-    // The big squared background.
-    /*
+    /* The big squared background, kept for memories.
     .h1-background {
         position: absolute;
         top: 0;
@@ -332,10 +331,16 @@
         line-height: 25px;
         color: $dark-grey;
         background-color: $backgroundLightColor;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+        white-space: nowrap;
     }
 
     h1.left-side {
         left: 50px;
+        max-width: 70%;
 
         padding-left: 15px;
         padding-right: 15px;
@@ -347,6 +352,7 @@
 
     h1.right-side {
         right: 50px;
+        max-width: 150px;
 
         padding-left: 15px;
         padding-right: 15px;
