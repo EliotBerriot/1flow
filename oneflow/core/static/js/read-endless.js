@@ -106,7 +106,7 @@ var last_opened  = null;
 var open_actions = null;
 var auto_mark_read_timers = {};
 var remove_iframes_timers = {};
-
+var remove_iframes_delay = 10000;
 var navbars_visible = true;
 
 function notice_element(oid) {
@@ -221,8 +221,8 @@ function toggle_content(oid, callback) {
 
             try {
 
-                clearTimeout(auto_mark_read_timers[myid]);
-                delete auto_mark_read_timers[myid];
+                clearTimeout(remove_iframes_timers[oid]);
+                delete remove_iframes_timers[oid];
 
             } catch (err) {
                 console.error(err);
@@ -286,8 +286,8 @@ function toggle_content(oid, callback) {
             if(preferences.auto_mark_read_delay > 0) {
                 try {
 
-                    clearTimeout(remove_iframes_timers[oid]);
-                    delete remove_iframes_timers[oid];
+                    clearTimeout(auto_mark_read_timers[oid]);
+                    delete auto_mark_read_timers[oid];
 
                 } catch (err) {
                     console.error(err);
@@ -302,13 +302,13 @@ function toggle_content(oid, callback) {
 
             remove_iframes_timers[oid] = setTimeout(function() {
                 try {
-
                     $on_what.find('.article-iframe-wrapper').remove();
+
                 } catch (err) {
                     console.error('error while removing iframe of ' + oid);
                     console.error(err);
                 }
-            }, 5000);
+            }, remove_iframes_delay);
 
             // clear the content, for the page to stay light.
             // NOTE: in fact, NO. keep it to avoid useless round-trips
