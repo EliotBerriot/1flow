@@ -166,6 +166,16 @@ function toggle_content(oid, callback) {
                 $.get(async_url, function(data){
                     $content.html(data);
 
+                    // Special case to hide the header on the fly.
+                    // TODO: this is a very edge case whose counter-part
+                    // (when closing the read) is not handled at all, it
+                    // just works smoothly currently. This should be
+                    // enhanced in the future to be more solid or more
+                    // "officially supported".
+                    if ($content.find('iframe.no-article-content')) {
+                        $on_what.addClass('original-view');
+                    }
+
                     // be sure we don't call it next time, it's already loaded.
                     // DOESN'T WORK: $content.removeData('async');
                     $content.attr('data-content-async', '');

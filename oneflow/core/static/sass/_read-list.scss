@@ -267,6 +267,20 @@
     }
 }
 
+.restricted-read,
+.original-view {
+    // These are hidden, even if the read is open,
+    // because they are useless in iframe mode.
+
+    .top-marker,
+    .top-closer,
+    .article-meta-bottom {
+        display: none;
+
+        @include single-transition(opacity, 0.25s, ease-out, 0.25s);
+    }
+}
+
 // .not_is_bookmarked.not_is_starred
 .read-list-item.not_is_read {
     .only_when_collapsed .article-title {

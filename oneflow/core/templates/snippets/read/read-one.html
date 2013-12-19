@@ -1,8 +1,8 @@
 <main id="{{ read.article.id }}"
-    class="read-individual-item open_content row-fluid {% read_status_css read %}"
+    class="read-individual-item open_content row-fluid {{ read.is_restricted|yesno:"restricted-read," }} {% read_status_css read %}"
     {% read_action_toggle_url read %}>
 
-  {# HEADS UP: read_in_list is neccesary for the 'cache' call not to crash. #}
+  {# HEADS UP: read_in_list is necessary for the 'cache' call not to crash. #}
   {% include "snippets/read/article-body.html" with article=read.article read_in_list=0 %}
 
 </main>
