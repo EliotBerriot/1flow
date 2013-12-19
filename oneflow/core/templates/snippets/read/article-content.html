@@ -1,28 +1,46 @@
 
-{% if article.content_type == CONTENT_TYPE_MARKDOWN %}
+{% if is_restricted %}
 
-    {% if content %}
-
-      {% if excerpt %}
-            {% include 'snippets/read/article-content-excerpt.html' %}
-
-      {% else %}
-        {{ content|safe }}
-
-      {% endif %}
-
-    {% else %}
-      {% include 'snippets/read/article-content-no-content.html' %}
-
-    {% endif %}
-
-{% elif article.content_type == CONTENT_TYPE_HTML %}
-      {% include 'snippets/read/article-content-not-safe.html' %}
-
-{% elif article.content_type in CONTENT_TYPE_FINAL %}
-      {% include 'snippets/read/article-content-not-ready.html' %}
+      {# https://developer.mozilla.org/fr/docs/Web/HTML/Element/iframe allowfullscreen seamless sandbox #}
+      <div class="article-iframe-wrapper">
+        <iframe class="article-iframe" src="{{ article_url }}"></iframe>
+      </div>
 
 {% else %}
-  {% include 'snippets/read/article-content-no-content.html' %}
+    {% if article.content_type == CONTENT_TYPE_MARKDOWN %}
+
+        {% if content %}
+
+          {% if excerpt %}
+                {% include 'snippets/read/article-content-excerpt.html' %}
+
+          {% else %}
+            {{ content|safe }}
+
+          {% endif %}
+
+        {% else %}
+          {#{% include 'snippets/read/article-content-no-content.html' %}#}
+
+          <div class="article-iframe-wrapper no-article-content">
+            <iframe class="article-iframe" src="{{ article_url }}"></iframe>
+          </div>
+
+        {% endif %}
+
+    {% elif article.content_type == CONTENT_TYPE_HTML %}
+          {% include 'snippets/read/article-content-not-safe.html' %}
+
+    {% elif article.content_type in CONTENT_TYPE_FINAL %}
+          {% include 'snippets/read/article-content-not-ready.html' %}
+
+    {% else %}
+      {#{% include 'snippets/read/article-content-no-content.html' %}#}
+
+      <div class="article-iframe-wrapper no-article-content">
+        <iframe class="article-iframe" src="{{ article_url }}"></iframe>
+      </div>
+
+    {% endif %}
 
 {% endif %}

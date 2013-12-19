@@ -13,13 +13,13 @@ from django import template
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
-from cache_utils.decorators import cached
+#from cache_utils.decorators import cached
 
 from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
 
-from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN, CACHE_ONE_WEEK
+from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN  # , CACHE_ONE_WEEK
 
 LOGGER = logging.getLogger(__name__)
 
@@ -147,7 +147,9 @@ def feature_not_ready():
 
 
 @register.simple_tag
-@cached(CACHE_ONE_WEEK)
+# HEADS UP: we can't cache simpletags results, it will
+# cache only one value, whatever the tag arguments are…
+#@cached(CACHE_ONE_WEEK)
 def read_status_css(read):
 
     css = []
@@ -195,7 +197,7 @@ def reading_list_with_count(user, view_name, show_unreads=False,
 def special_subscription_list_with_count(user, special_name, css_classes=None):
 
     list_name, tooltip_both, tooltip_unread, tooltip_all, tooltip_none = \
-                                            reading_lists[special_name]
+        reading_lists[special_name]
 
     subscription = getattr(user, special_name + u'_subscription')
     all_count    = subscription.all_articles_count
@@ -281,8 +283,7 @@ def container_reading_list_with_count(view_name, container_type, container,
             class1=view_name,
             class2=css_classes or u'nowrap',
             title=(u'title="%s" data-toggle="tooltip"' %
-                   _(u'{0} articles').format(count))
-                    if add_title else u'',
+                   _(u'{0} articles').format(count)) if add_title else u'',
             trans=translation,
             small=small_class,
             count=count_as_digits))
@@ -296,7 +297,7 @@ def read_action_toggle_url(read):
     any_key = Read.get_status_attributes()[0]
     url_base = reverse('toggle', kwargs={'klass': 'Read',
                        'oid': read.id, 'key': any_key}).replace(
-                        any_key, u'@@KEY@@')
+        any_key, u'@@KEY@@')
 
     return u'data-url-action-toggle={0}'.format(url_base)
 
@@ -327,7 +328,8 @@ def article_full_content_display(article):
                         # Sometimes, last match is the empty string… Skip it.
                         if blk[-1] != 0:
                             transient_content = article.content[
-                                                        blk[0] + blk[2]:]
+                                blk[0] + blk[2]:
+                            ]
                             break
 
             # END temporary measure.
@@ -342,12 +344,12 @@ def article_full_content_display(article):
 
 
 @register.simple_tag
-@cached(CACHE_ONE_WEEK)
+#@cached(CACHE_ONE_WEEK)
 def read_original(article, with_text=None):
 
     return u'''<span class="action action-read-original {0} popover-top"
       title="{1}"><a href="{2}" target="_blank" class="nowrap">
-      {3}<i class="icon-double-angle-right"></i></a></span>'''.format(
+      <i class="icon-fixed-width icon-globe"></i>&nbsp;{3}</a></span>'''.format(
         u'popover-tooltip' if with_text else u'',
         _(u"Display on the original website"), article.url,
         u'<span class="hidden-phone">{0}&nbsp;</span>'.format(
@@ -356,7 +358,6 @@ def read_original(article, with_text=None):
     )
 
 
-#@cached(CACHE_ONE_WEEK)
 def article_excerpt_content_display(article):
 
     excerpt = article.excerpt
@@ -394,9 +395,13 @@ def article_excerpt_content_display(article):
 
 @register.inclusion_tag('snippets/read/article-content.html',
                         takes_context=True)
-def article_content(context, article, with_full_text):
+def article_content(context, article, is_restricted, with_full_text):
 
-    if with_full_text:
+    if is_restricted:
+        content = None
+        excerpt = None
+
+    elif with_full_text:
         content = article_full_content_display(article)
         excerpt = False
 
@@ -410,6 +415,7 @@ def article_content(context, article, with_full_text):
         # http://stackoverflow.com/q/5842538/654755
         'article_url': article.url,
         'STATIC_URL': settings.STATIC_URL,
+        'is_restricted': is_restricted,
 
         # We don't mark_safe() here, else mark_safe(None) outputs "None"
         # in the templates, and "if content" tests fail because content
@@ -422,13 +428,34 @@ def article_content(context, article, with_full_text):
 @register.inclusion_tag('snippets/read/read-action.html')
 def read_action(article, action_name, with_text=True, popover_direction=None):
 
+    if action_name.startswith('is_'):
+        return {
+            'with_text': with_text,
+            'popover_direction': popover_direction or 'top',
+            'action_name': action_name,
+            'action_data': Read.status_data.get(action_name),
+            'popover_class': '' if with_text else 'popover-tooltip',
+            'js_func': "toggle_status('{0}', '{1}')".format(
+                       article.id, action_name)
+        }
+
     return {
         'with_text': with_text,
-        'popover_direction' : popover_direction or 'top',
+        'popover_direction': popover_direction or 'top',
         'action_name': action_name,
-        'action_data' : Read.status_data.get(action_name),
+        'action_data': {
+            'do_title':      _(u'Convert to full-text'),
+            'undo_title':    _(u'Switch back to original'),
+            'do_label':      _(u'Convert to full-text'),
+            'undo_label':    _(u'View original'),
+            'status_label':  _(u'converted'),
+            'do_icon':       pgettext_lazy(u'awesome-font icon name',
+                                           u'exchange'),
+            'undo_icon':     pgettext_lazy(u'awesome-font icon name',
+                                           u'exchange'),
+        },
         'popover_class': '' if with_text else 'popover-tooltip',
-        'js_func': "toggle_status('{0}', '{1}')".format(
+        'js_func': "switch_view('{0}', '{1}')".format(
                    article.id, action_name)
     }
 
@@ -439,7 +466,7 @@ def read_action_status(action_name, with_text=False):
     return {
         'with_text': with_text,
         'action_name': action_name,
-        'action_data' : Read.status_data.get(action_name),
+        'action_data': Read.status_data.get(action_name),
     }
 
 

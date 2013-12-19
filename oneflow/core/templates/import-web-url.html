@@ -17,36 +17,16 @@
 	<h1>{% trans "Success" %}</h1>
 	<div class="spacer25"></div>
 
+	{# Note: The SPAN inside the P avoids the tooltip to show up at the edge of the .hero-unit DIV. #}
+
 	<p>{% blocktrans %}
-		Item imported. Waiting for its conversion <span class="square-spinner"></span></p><p>
+		<strong>Item imported.</strong> Waiting for its conversion <span class="square-spinner"></span></p><p>
 
-		You can <a href="javascript:window.open('', '_self', '');window.close()">close this window/tab</a> or open <a href="{{ import_url }}">your imported items</a> and wait there.</p><p>
+		You can <a href="javascript:window.open('', '_self', '');window.close()">close this window/tab</a> or open <a href="{{ import_url }}">your imported items</a> and wait there.</p>
 
-		Just remember that <strong>the item will not be visible until converted</strong>.</p><div class="spacer25"></div><p class="muted"><small>
-
-		Note: videos, images and other kind of non-textual content are not handled yet, and will fail to convert. Thus, you will not see them at all. We apologize for this non-smart technical restriction. <br />
-		<strong>Your landing on this very page guarantees that the item has been imported in your data set</strong>. You <strong>will</strong> be able to display it correctly in the not-so-distant future.</small>
+		<p class="muted"><span data-toggle="tooltip" title="Videos, images and other kind of non-textual content are not handled yet. You will NOT see them at all in 1flow. NOT YET. But they are saved. Sorry for the inconvenience.">Note: item will not be visible in your reading lists until fully converted&nbsp;<i class="icon-question-sign"></i>.</span>
 
 	{% endblocktrans %}</p>
-
-	<script type="text/javascript">
-
-		$(document).ready(function(){
-			function poll_article_status() {
-
-				$.get("{{ poll_url }}", function(data) {
-					if (data.indexOf('http') == 0) {
-						document.location = data;
-					}
-				});
-
-				setTimeout(poll_article_status, 1000);
-			}
-
-			setTimeout(poll_article_status, 1000);
-		});
-
-	</script>
 
 {% else %}
 
@@ -82,3 +62,33 @@
 
 </div>
 {% endblock application_content %}
+
+{% block extrajs_footer %}
+
+    {{ block.super }}
+    {% compressed_js 'read-one' %}
+
+    <script type="text/javascript">
+
+        common_init();
+
+        {% if article %}
+
+			$(document).ready(function(){
+				function poll_article_status() {
+
+					$.get("{{ poll_url }}", function(data) {
+						if (data.indexOf('http') == 0) {
+							document.location = data;
+						}
+					});
+
+					setTimeout(poll_article_status, 1000);
+				}
+
+				setTimeout(poll_article_status, 1000);
+			});
+
+        {% endif %}
+
+    </script>{% endblock extrajs_footer %}

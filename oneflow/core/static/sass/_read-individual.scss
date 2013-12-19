@@ -10,8 +10,10 @@
         // Make the white space around the text be the same as in the list.
         // The list has 1em from <li> and 4em from .article-*. Thus here we
         // need 5em for the same comfortable reading effect.
-        padding-left: 5em;
-        padding-right: 5em;
+        // NOTE: specified in pixels because eventual iframes need to overlap
+        // it for best container space usage.
+        padding-left: $article-padding-side;
+        padding-right: $article-padding-side;
     }
 
     .article-meta-top {

@@ -114,38 +114,55 @@
         class="clicker-muter-constrainer {% read_status_css read %}"
         {% read_action_toggle_url read %}>
 
-      <div class="spacer50"></div>
+    <table class="paddle">
+      <!--
+      <tr>
+        <td>&nbsp;</td>
+        <td class="up"><a href="javascript: open_previous_read(); return false;"
+          data-toggle="tooltip" title="{% trans "Open posterior item" %}"><i class="icon-long-arrow-up icon-2x"></i></a></td>
+        <td>&nbsp;</td>
+      </tr>-->
+      <tr>
+        <td>&nbsp;</td>
+        <td class="previous"><a class="popover-top"
+            href="javascript: open_previous_read(); return false;"
+            data-toggle="tooltip" title="{% trans "Open posterior item" %}"><i
+              class="icon-arrow-left icon-2x"></i>
+          </a>
+        </td>
+        <td class="closer"><a class="popover-top"
+            href="javascript: close_current_read(); return false;"
+            data-toggle="tooltip" title="{% trans "Close current item" %}"><i
+              class="icon-remove-sign"></i>
+          </a>
+        </td>
+        <td class="next"><a class="popover-top"
+            href="javascript: open_next_read(); return false;"
+            data-toggle="tooltip" title="{% trans "Open anterior item" %}"><i
+              class="icon-arrow-right icon-2x"></i>
+          </a>
+        </td>
+        <td>&nbsp;</td>
+      </tr>
+      <!--<tr>
+        <td>&nbsp;</td>
+        <td class="down"><a href="javascript: open_next_read(); return false;"
+          data-toggle="tooltip" title="{% trans "Open anterior item" %}"><i class="icon-long-arrow-down icon-2x"></i></a></td>
+        <td>&nbsp;</td>
+      </tr>-->
+    </table>
+
+    <div class="spacer50"></div>
 
       <h4 class="status-icons watch-status">
         {% include "snippets/read/watch-status.html" %}
       </h4>
 
       {% with with_admin_actions=1 side_actions=1 with_text=1 %}
-          {% include "snippets/read/read-actions.html" %}
+        {% include "snippets/read/read-actions.html" %}
       {% endwith %}
 
     </div><!-- #meta-article.id -->
-
-    <table class="paddle">
-      <tr>
-        <td>&nbsp;</td>
-        <td class="up"><a href="javascript: open_previous_read(); return false;"
-          data-toggle="tooltip" title="{% trans "Open posterior item" %}"><i class="icon-long-arrow-up icon-2x"></i></a></td>
-        <td>&nbsp;</td></tr>
-      <tr>
-        <td>&nbsp;</td>
-        <!--<td class="previous"><a href="javascript: open_previous_read(); return false;"><i class="icon-long-arrow-left icon-2x"></i></a></td>-->
-        <td class="closer"><a href="javascript: close_current_read(); return false;"
-          data-toggle="tooltip" title="{% trans "Close current item" %}"><i class="icon-remove-sign"></i></a></td>
-        <!--<td class="next"><a href="javascript: open_next_read(); return false;"><i class="icon-long-arrow-right icon-2x"></i></a></td>-->
-        <td>&nbsp;</td>
-      </tr>
-      <tr>
-        <td>&nbsp;</td>
-        <td class="down"><a href="javascript: open_next_read(); return false;"
-          data-toggle="tooltip" title="{% trans "Open anterior item" %}"><i class="icon-long-arrow-down icon-2x"></i></a></td>
-        <td>&nbsp;</td></tr>
-    </table>
 
     <script type="text/javascript">
 
@@ -157,6 +174,7 @@
           //     }, 1000);
           //     event.preventDefault();
           // });
+
           $('.paddle .up').on('mouseenter', scroll_up);
           $('.paddle .down').on('mouseenter', scroll_down);
           $('.paddle .up,.down').on('mouseleave', function () {

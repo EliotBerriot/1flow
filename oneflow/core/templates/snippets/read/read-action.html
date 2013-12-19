@@ -6,11 +6,11 @@
 
         <span class="icon-stack">
             <i class="icon-sign-blank icon-stack-base"></i>
-            <i class="icon-{{ action_data.undo_icon }}"></i>
+            <i class="icon-fixed-width icon-{{ action_data.undo_icon }}"></i>
         </span>
 
       {% else %}
-        <i class="icon-{{ action_data.undo_icon }}"></i>
+        <i class="icon-fixed-width icon-{{ action_data.undo_icon }}"></i>
 
       {% endif %}{% if with_text %}<span
           class="hidden-phone"> {{ action_data.undo_label }}</span>{% endif %}</a>
@@ -24,11 +24,11 @@
       {% if action_data.do_icon_stack %}
         <span class="icon-stack">
             <i class="icon-sign-blank icon-stack-base"></i>
-            <i class="icon-{{ action_data.do_icon }} icon-light"></i>
+            <i class="icon-fixed-width icon-{{ action_data.do_icon }} icon-light"></i>
         </span>
 
       {% else %}
-          <i class="icon-{{ action_data.do_icon }}"></i>
+          <i class="icon-fixed-width icon-{{ action_data.do_icon }}"></i>
 
     {% endif %}{% if with_text %}<span
           class="hidden-phone"> {{ action_data.do_label }}</span>{% endif %}</a>

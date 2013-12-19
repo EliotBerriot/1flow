@@ -1,19 +1,28 @@
 <div id="header" class="clearfix">
+
+
     <div class="ctrls">
         <div class="btn-group pull-right">
-            <a href="{% url 'add_subscription' %}" id="add-subscription-trigger"
-                class="btn">{% trans "Add a stream" %}</a>
             <button class="btn dropdown-toggle" data-toggle="dropdown">
-                <span class="caret"></span>
+                {% trans "Add new content" %}&nbsp;&nbsp;<span class="caret"></span>
             </button>
             <ul class="dropdown-menu">
-                <li><a href="{% url 'add_subscription' %}">{% trans "Add a stream" %}</a></li>
+                <li><a id="import-web-item-trigger"
+                    href="{% url 'import_web_pages' %}"
+                    data-toggle="modal"
+                    data-target="#"><i
+                    class="icon-fixed-width icon-cloud-download"></i>&nbsp;{% trans "Import web pages" %}</a></li>
+
+                <li><a href="{% url 'add_subscription' %}"
+                    id="add-subscription-trigger">
+                    <i class="icon-fixed-width icon-rss"></i>&nbsp;{% trans "Subscribe to a stream" %}</a></li>
+
                 <li><a href="{% url 'add_folder' %}"
                         id="add-folder-trigger"
-                        data-toggle="modal"
-                        data-target="#">{% trans "Add a folder" %}</a></li>
+                        data-toggle="modal" data-target="#"><i
+                        class="icon-fixed-width icon-folder-open"></i>&nbsp;{% trans "Add a folder" %}</a></li>
 
-                {% include 'snippets/selector/import-web-items-trigger.html' with in_list=1 %}
+                {#{% include 'snippets/selector/import-web-items-trigger.html' with in_list=1 %}#}
             </ul>
         </div>
     </div>
