@@ -39,7 +39,6 @@
             font-size: 15px;
             margin-right: 5px;
         }
-
     }
 
     h3.source {
@@ -62,17 +61,22 @@
 
     .paddle {
         position: absolute;
-        bottom: 0;
-        right: 0;
+        top: 0;
+        left: 0;
         width: 100%;
-        margin-left: auto;
-        margin-right: auto;
+        //margin-left: 20px;
+        //margin-right: auto;
         font-size: 200%;
 
         td {
             padding: 0;
             margin: 0;
             text-align: center;
+
+            a {
+                // make the link fill the cell, easier to click.
+                display: block;
+            }
         }
 
         .next {
