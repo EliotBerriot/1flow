@@ -279,9 +279,9 @@ class Read(Document, DocumentHelperMixin):
             'do_title':      _(u'Archive'),
             'list_headers':  (_(u'%(count)s article archived'),
                               _(u'%(count)s articles archived')),
-            'undo_title':    _(u'Remove from archive'),
+            'undo_title':    _(u'Delete'),
             'do_label':      _(u'Archive'),
-            'undo_label':    _(u'Remove from archive'),
+            'undo_label':    _(u'Delete'),
             'status_label':  _(u'archived'),
             'do_icon':       pgettext_lazy(u'awesome-font icon name',
                                            u'download'),
@@ -604,6 +604,27 @@ class Read(Document, DocumentHelperMixin):
             self.rating)
 
     # —————————————————————————————————————————————————————————————— Properties
+
+    @property
+    def is_restricted(self):
+
+        if (self.user.is_staff_or_superuser_and_enabled
+                and self.user.preferences.staff.allow_all_articles):
+            return False
+
+        if self.is_archived:
+            return False
+
+        return any(map(lambda sub: sub.feed.restricted, self.subscriptions))
+
+        # delta_from_now = timedelda(now() - self.date_published)
+        # if self.is_read:
+        #     if self.is_archived:
+        #     if self.is_auto_read:
+        #         if self.article.feed.restrict_read_delta \
+        #           and delta_from_now > self.article.feed.restrict_read_delta:
+        #             return True
+        #     and delta_from_now <= config.ARTICLE_LIMITS_READ
 
     @property
     def title(self):

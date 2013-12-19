@@ -14,7 +14,7 @@
 
   {# NOTE: id and class have to be in sync with 'read-meta-async.html' #}
   <li id="{{ article.id }}"
-      class="read-list-item hover-unmute-children {% read_status_css read %}"
+      class="read-list-item hover-unmute-children {{ read.is_restricted|yesno:"restricted-read," }} {% read_status_css read %}"
       {% read_action_toggle_url read %} data-index="{{ tenths_counter|add:forloop.counter }}">
 
     <div class="top-marker only_when_open">

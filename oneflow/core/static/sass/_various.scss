@@ -137,6 +137,20 @@ a.brand {
   margin-right: 0;
 }
 
+// ————————————————————————————————————————————————————— Font-awesome overrides
+
+// HEADS UP: we override Font-Awesome .icon-fixed-with
+// text-alignment, else the result is visually bad in
+// our reading-lists right sidebar. The right padding
+// is unnecessary, too. It's too much with the &nbsp;
+// we already have.
+[class^="icon-"].icon-fixed-width,
+[class*=" icon-"].icon-fixed-width {
+    text-align: center;
+    padding-right: 0;
+}
+
+
 
 // ————————————————————————————————————————————————————————————————— Our mixins
 

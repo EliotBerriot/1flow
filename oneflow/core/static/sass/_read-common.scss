@@ -30,8 +30,8 @@
         padding-top: 24px;
         height: 48px;
         width: 50px;
-        text-align: center;
-        vertical-align: middle;
+        //text-align: center;
+        //vertical-align: middle;
         color: #29313c;
         opacity: 0.5;
 
@@ -322,5 +322,44 @@
     a:hover {
         background-color: inherit;
         color: rgb(170, 170, 170);
+    }
+}
+
+.article-iframe-wrapper {
+    // overwrite the dotted line, this doesn't mix beautifully with the iframe.
+    margin-top: -3.5em;
+    margin-bottom: -5em;
+
+    height: $article-iframe-height;
+
+    // first version, not perfect. the iframe doesn't scroll
+    // "under it", but still it's better than no shadow.
+    @include box-inset-tb-shadow($article-iframe-padding, #949aa1);
+    padding-top: $article-iframe-padding;
+    padding-bottom: $article-iframe-padding;
+
+    // get max width for the iframe, else it's
+    // too small to display anything useful.
+    margin-left: -$article-padding-side - 10px;
+    margin-right: -$article-padding-side - 10px;
+
+    .article-iframe {
+        border: none;
+        width: 100%;
+        height: 100%;
+    }
+}
+
+.read-individual-item {
+
+    .article-iframe-wrapper {
+
+        // adapt the number to individual reading,
+        // which has no 10px container margin.
+        margin-left: -$article-padding-side;
+        margin-right: -$article-padding-side;
+
+        // Make it taller too, we have more space.
+        height: $article-iframe-height + $article-iframe-supplement;
     }
 }
