@@ -105,6 +105,8 @@ var open_content = null;
 var last_opened  = null;
 var open_actions = null;
 var auto_mark_read_timers = {};
+var remove_iframes_timers = {};
+
 var navbars_visible = true;
 
 function notice_element(oid) {
@@ -217,7 +219,17 @@ function toggle_content(oid, callback) {
 
         open_me_real = function () {
 
+            try {
+
+                clearTimeout(auto_mark_read_timers[myid]);
+                delete auto_mark_read_timers[myid];
+
+            } catch (err) {
+                console.error(err);
+            }
+
             if (scrollTo) {
+
                 if (preferences.read_switches_to_fullscreen) {
                     scrollToElement(me, scroll_speed, -50);
 
@@ -266,18 +278,19 @@ function toggle_content(oid, callback) {
 
         close_auxilliary = function ($on_what) {
 
+            // Shouldn't we just use "oid" ?
+            var myid = $on_what.attr('id');
+
             //console.debug('close_aux ' + $on_what);
 
             if(preferences.auto_mark_read_delay > 0) {
                 try {
-                    var myid = $on_what.attr('id');
-                    //console.debug('mark read timer cancel ' + myid + ', '+ auto_mark_read_timers[myid]);
 
-                    clearTimeout(auto_mark_read_timers[myid]);
-                    delete auto_mark_read_timers[myid];
+                    clearTimeout(remove_iframes_timers[oid]);
+                    delete remove_iframes_timers[oid];
 
                 } catch (err) {
-                    console.log(err);
+                    console.error(err);
                 }
             }
 
@@ -286,6 +299,16 @@ function toggle_content(oid, callback) {
                 // a lot, and if it's not, slideUp() will do nothing.
                 $(this).slideUp();
             });
+
+            remove_iframes_timers[oid] = setTimeout(function() {
+                try {
+
+                    $on_what.find('.article-iframe-wrapper').remove();
+                } catch (err) {
+                    console.error('error while removing iframe of ' + oid);
+                    console.error(err);
+                }
+            }, 5000);
 
             // clear the content, for the page to stay light.
             // NOTE: in fact, NO. keep it to avoid useless round-trips
