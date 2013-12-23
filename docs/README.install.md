@@ -18,8 +18,13 @@ start and not running virtualenvwrapper stuff, on which sparks relies.
 
 ## Setup 1flow environment
 
+Ask for an example `.env` file and include it in your shell environment.
+
+	. ~/.env
+
 Let Fabric and sparks install Django and all the rest:
 
-    git clone git@dev.1flow.net:1flow.git
-    cd 1flow
-    fab local firstdeploy
+    git clone git@dev.1flow.net:1flow.git && cd 1flow
+    make bootstrap
+
+This will run a `fab local firstdeploy` and populate the database with minimal data.
