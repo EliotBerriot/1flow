@@ -75,7 +75,7 @@
         {% if article %}
 
 			$(document).ready(function(){
-				function poll_article_status() {
+				var poll_article_status = function() {
 
 					$.get("{{ poll_url }}", function(data) {
 						if (data.indexOf('http') == 0) {
