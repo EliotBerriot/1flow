@@ -19,6 +19,9 @@ fullrunable:
 compass:
 	(cd oneflow/core/static; compass watch)
 
+collectstatic:
+	./manage.py collectstatic
+
 run:
 	honcho -f Procfile.development start --quiet flower,shell,celery_beat
 

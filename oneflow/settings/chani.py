@@ -31,6 +31,7 @@ include_snippets(
 ALLOWED_HOSTS += [
     'lil.1flow.io',
     'chani.licorn.org',
+    'duncan.licorn.org',
     'leto.licorn.org',
     'gurney.licorn.org',
 ]
