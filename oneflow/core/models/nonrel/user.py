@@ -419,8 +419,12 @@ class User(Document, DocumentHelperMixin):
     @property
     def nofolder_subscriptions(self):
 
-        return self.subscriptions.filter(
-            Q(folders__exists=False) | Q(folders__size=0))
+        return [
+            s for s in self.subscriptions.filter(
+                Q(folders__exists=False) | Q(folders__size=0)
+            )
+            if not s.feed.is_internal
+        ]
 
     @property
     def open_subscriptions(self):
