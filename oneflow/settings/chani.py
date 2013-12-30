@@ -3,6 +3,7 @@
 
 MAIN_SERVER = '127.0.0.1'
 
+import socket
 from sparks.django.settings import include_snippets
 
 include_snippets(
@@ -30,6 +31,7 @@ include_snippets(
 
 ALLOWED_HOSTS += [
     'lil.1flow.io',
+    'big.1flow.io',
     'chani.licorn.org',
     'duncan.licorn.org',
     'leto.licorn.org',
@@ -37,7 +39,10 @@ ALLOWED_HOSTS += [
 ]
 
 # We need an official public host name for all `social_auth` backends.
-SITE_DOMAIN = 'lil.1flow.io'
+if socket.gethostname().lower() == 'duncan':
+    SITE_DOMAIN = 'big.1flow.io'
+else:
+    SITE_DOMAIN = 'lil.1flow.io'
 
 EMAIL_HOST = 'gurney'
 #EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
