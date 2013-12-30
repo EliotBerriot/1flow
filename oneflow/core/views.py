@@ -1068,7 +1068,9 @@ def import_web_url(request, url):
                                                     args=(read.id,)))
 
     return render(request, 'import-web-url.html',
-                  {'article': article, 'url': url})
+                  {'article': article, 'url': url,
+                   'poll_url': reverse('article_conversion_status',
+                                       args=(article.id,))})
 
 
 def article_conversion_status(request, article_id):

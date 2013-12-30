@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-12-18 11:45+0100\n"
-"PO-Revision-Date: 2013-12-18 12:02+0009\n"
+"POT-Creation-Date: 2013-12-30 09:52+0100\n"
+"PO-Revision-Date: 2013-12-30 09:53+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -116,7 +116,6 @@ msgid "Content"
 msgstr "Contenu"
 
 #: admin.py:428
-#, python-brace-format
 msgid "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%\">•••</span>"
 msgstr "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%\">•••</span>"
 
@@ -125,7 +124,6 @@ msgid "Fetch err."
 msgstr "Err. récup."
 
 #: admin.py:441
-#, python-brace-format
 msgid "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%;\">•••</span>"
 msgstr "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%;\">•••</span>"
 
@@ -158,7 +156,6 @@ msgid "Dupe of"
 msgstr "Dupe de"
 
 #: admin.py:685
-#, python-brace-format
 msgid ""
 "<span title=\"Last 3 errors:\n"
 "{0}\" style=\"cursor: pointer\">{1} error(s)</span>"
@@ -167,7 +164,6 @@ msgstr ""
 "{0}\" style=\"cursor: pointer\">{1} erreur(s)</span>"
 
 #: admin.py:688
-#, python-brace-format
 msgid "{0}: {1}"
 msgstr "{0} : {1}"
 
@@ -248,12 +244,10 @@ msgid "Forcing all feed refresh…"
 msgstr "Déclenchement forcé du rafraîchissement de tous les flux…"
 
 #: tasks.py:739
-#, python-brace-format
 msgid "Reminder: {0} feed(s) closed in last {1} day(s)"
 msgstr "Rappel : {0} flux fermé(s) ce(s) {1} dernier(s) jour(s)"
 
 #: tasks.py:741
-#, python-brace-format
 msgid ""
 "\n"
 "\n"
@@ -438,12 +432,10 @@ msgid "^signout/$"
 msgstr "^deconnexion/$"
 
 #: views.py:223
-#, python-brace-format
 msgid "Save <em>{0}</em> failed: {1}"
 msgstr "Enregistrement de <em>{0}</em> impossible : {1}"
 
 #: views.py:228
-#, python-brace-format
 msgid "Folder <em>{0}</em> successfully {1}."
 msgstr "Dossier <em>{0}</em> {1} avec succès."
 
@@ -456,7 +448,6 @@ msgid "created"
 msgstr "créé"
 
 #: views.py:235
-#, python-brace-format
 msgid "Could not {0} folder: {1}."
 msgstr "Impossible de {0} le dossier : {1}."
 
@@ -469,33 +460,27 @@ msgid "create"
 msgstr "de créer"
 
 #: views.py:281
-#, python-brace-format
 msgid "Subscription <em>{0}</em> successfully modified."
 msgstr "Abonnement <em>{0}</em> modifié avec succès."
 
 #: views.py:286
-#, python-brace-format
 msgid "Could not save subscription: {0}."
 msgstr "Impossible d'enregistrer l'abonnement : {0}."
 
 #: views.py:328
-#, python-brace-format
 msgid "Malformed URL {0}"
 msgstr "URL {0} mal-formée"
 
 #: views.py:333
-#, python-brace-format
 msgid "Very malformed url {0}"
 msgstr "URL {0} très mal-formée"
 
 #: views.py:349
-#, python-brace-format
 msgid "URL {0} is invalid, its pre-processing failed ({1})"
 msgstr ""
 "L'URL {0} est invalide, impossible de réaliser les pré-traitements ({1})"
 
 #: views.py:413
-#, python-brace-format
 msgid ""
 "Successfully subscribed to {0} streams. Articles are being added "
 "progressively, thanks for your patience."
@@ -504,7 +489,6 @@ msgstr ""
 "petit-à-petit, merci de votre patience."
 
 #: views.py:435
-#, python-brace-format
 msgid "Subscription <em>{0}</em> successfully deleted."
 msgstr "Abonnement <em>{0}</em> résilié avec succès."
 
@@ -527,45 +511,43 @@ msgid "no item"
 msgstr "aucun élément"
 
 #: views.py:905
-#, python-brace-format
 msgid "Share article with <code>{0}</code> failed: {1}"
 msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
 
 #: views.py:911
-#, python-brace-format
 msgid "Successfully shared <em>{0}</em> with {1} persons"
 msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
 
-#: views.py:1240
+#: views.py:1242
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:1244
+#: views.py:1246
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:1248
+#: views.py:1250
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:1255
+#: views.py:1257
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:1259
+#: views.py:1261
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:1265
+#: views.py:1267
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:1268
+#: views.py:1270
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -584,7 +566,6 @@ msgstr ""
 "class=\"icon-question-sign\"></i></a>."
 
 #: forms/read.py:34
-#, python-brace-format
 msgid ""
 "Hi {{fullname}},\n"
 "\n"
@@ -666,12 +647,10 @@ msgid "Enter an URL"
 msgstr "Saississez une URL"
 
 #: forms/selector.py:306
-#, python-brace-format
 msgid "Select feed(s) from the {0} referenced"
 msgstr "Sélectionnez des flux parmis les {0} référencés"
 
 #: forms/selector.py:309
-#, python-brace-format
 msgid ""
 "<span class=\"muted\">NOTE: this can be long. You will be notified when "
 "search is done.</span> <a href=\"{0}\" target=\"_blank\">How does it "
@@ -764,7 +743,6 @@ msgstr ""
 " je ne suis pas sûr…"
 
 #: models/reldb.py:285
-#, python-brace-format
 msgid "{field_name}: {truncated_field_value}"
 msgstr "{field_name} : {truncated_field_value}"
 
@@ -947,12 +925,10 @@ msgstr ""
 "pointent vers la même destination finale sur le web."
 
 #: models/nonrel/article.py:283
-#, python-brace-format
 msgid "{0} (#{1}) from {2}"
 msgstr "{0} (#{1}) from {2}"
 
 #: models/nonrel/article.py:330
-#, python-brace-format
 msgid "{0} ago"
 msgstr "il y a {0}"
 
@@ -961,7 +937,6 @@ msgid "Unknown source"
 msgstr "Source inconnue"
 
 #: models/nonrel/article.py:354 models/nonrel/read.py:671
-#, python-brace-format
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
 
@@ -994,32 +969,26 @@ msgid " (unsure)"
 msgstr "(non confirmé)"
 
 #: models/nonrel/common.py:104
-#, python-brace-format
 msgid "Items sent by {0}"
 msgstr "Éléments envoyés par {0}"
 
 #: models/nonrel/common.py:106
-#, python-brace-format
 msgid "Imported items of {0}"
 msgstr "Éléments importés de {0}"
 
 #: models/nonrel/common.py:108
-#, python-brace-format
 msgid "Inbox of {0}"
 msgstr "Boîte de réception de {0}"
 
 #: models/nonrel/common.py:172
-#, python-brace-format
 msgid "{0} #{1} not found"
 msgstr "{0} #{1} introuvable"
 
 #: models/nonrel/common.py:176
-#, python-brace-format
 msgid "{0}({1}) not found"
 msgstr "{0}({1}) introuvable"
 
 #: models/nonrel/common.py:409 models/nonrel/common.py:442
-#, python-brace-format
 msgid ""
 "{0} is already in the parent chain of {1}. Setting the later parent of the "
 "former would result in a cycle and is not allowed."
@@ -1194,12 +1163,10 @@ msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
 #: models/nonrel/feed.py:341 models/nonrel/folder.py:96
-#, python-brace-format
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
 #: models/nonrel/feed.py:608
-#, python-brace-format
 msgid "Imported item from {0}"
 msgstr "Élément importé depuis {0}"
 
@@ -1216,17 +1183,14 @@ msgid "Children folders"
 msgstr "Dossier(s) enfant(s)"
 
 #: models/nonrel/folder.py:91
-#, python-brace-format
 msgid "{0} (#{1}) for user {2}{3}{4}"
 msgstr "{0} (#{1}) de l'utilisateur {2}{3}{4}"
 
 #: models/nonrel/folder.py:93
-#, python-brace-format
 msgid ", parent: {0} (#{1})"
 msgstr ", parent : {0} (#{1})"
 
 #: models/nonrel/folder.py:95
-#, python-brace-format
 msgid ", children: {0}"
 msgstr ", enfant(s) : {0}"
 
@@ -2399,7 +2363,6 @@ msgid "frown"
 msgstr "frown"
 
 #: models/nonrel/read.py:597
-#, python-brace-format
 msgid "{0}∞{1} (#{2}∞#{3}→#{4}) {5} @{6}"
 msgstr "{0}∞{1} (#{2}∞#{3}→#{4}) {5} @{6}"
 
@@ -2409,12 +2372,10 @@ msgid "unread"
 msgstr "non-lu"
 
 #: models/nonrel/read.py:636
-#, python-brace-format
 msgid " ({feed})"
 msgstr " ({feed}) "
 
 #: models/nonrel/read.py:641
-#, python-brace-format
 msgid "{title}{source}"
 msgstr "{title}{source}"
 
@@ -2429,7 +2390,6 @@ msgid "Folder(s) in which this subscription appears."
 msgstr "Dossier(s) dans lesquel(s) cet abonnement apparaît."
 
 #: models/nonrel/subscription.py:159
-#, python-brace-format
 msgid "{0}+{1} (#{2})"
 msgstr "{0}+{1} (#{2})"
 
@@ -2456,7 +2416,6 @@ msgid ""
 msgstr ""
 
 #: models/nonrel/tag.py:82
-#, python-brace-format
 msgid "{0} {1}⚐ (#{2})"
 msgstr "{0} {1}⚐ (#{2})"
 
@@ -2484,7 +2443,7 @@ msgstr "Amis"
 msgid "Address book"
 msgstr "Carnet d'adresse"
 
-#: models/nonrel/user.py:500
+#: models/nonrel/user.py:503
 msgid "System group?"
 msgstr "Groupe système ?"
 
@@ -3638,17 +3597,17 @@ msgstr ""
 "Alternativement, vous pouvez <a href=\"%(article_url)s\" target=\"_blank\">le lire sur le site d'origine</a>. Désolé du désagrément.\n"
 
 #: templates/snippets/read/article-meta.html:59
-#: templates/snippets/read/read-meta-async.html:83
+#: templates/snippets/read/read-meta-async.html:82
 msgid "no date"
 msgstr "pas de date"
 
 #: templates/snippets/read/article-meta.html:65
-#: templates/snippets/read/read-meta-async.html:89
+#: templates/snippets/read/read-meta-async.html:88
 msgid "by"
 msgstr "par"
 
 #: templates/snippets/read/article-meta.html:76
-#: templates/snippets/read/read-meta-async.html:100
+#: templates/snippets/read/read-meta-async.html:99
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid "in"
@@ -3664,30 +3623,13 @@ msgstr "Afficher sur le site d'origine"
 msgid "Read original"
 msgstr "Voir l'original"
 
-#: templates/snippets/read/read-actions.html:36
+#: templates/snippets/read/read-actions.html:48
 msgid "Assign or remove watch-related attributes"
 msgstr "Assigner ou supprimer des attributs de veille"
 
-#: templates/snippets/read/read-actions.html:40
+#: templates/snippets/read/read-actions.html:52
 msgid "Watch"
 msgstr "Veille"
-
-#: templates/snippets/read/read-actions.html:48
-msgid "Share privately with individuals or your watch-teams"
-msgstr "Partagez en privé avec des personnes ou vos équipes de veille"
-
-#: templates/snippets/read/read-actions.html:51
-msgid "Share"
-msgstr "Partager"
-
-#: templates/snippets/read/read-actions.html:60
-msgid "This feature is under development. Thanks for your patience."
-msgstr ""
-"Cette fonctionnalité est en cours de développement, merci de votre patience."
-
-#: templates/snippets/read/read-actions.html:63
-msgid "Broadcast"
-msgstr "Diffuser"
 
 #: templates/snippets/read/read-admin-informations.html:9
 msgid "Read: "
@@ -3797,25 +3739,27 @@ msgstr ""
 msgid "Visit the website of this stream"
 msgstr "Visitez le site web de ce flux"
 
-#: templates/snippets/read/read-meta-async.html:70
+#: templates/snippets/read/read-meta-async.html:69
 msgid "Open original article in a new window/tab"
 msgstr "Ouvrir l'article original dans une nouvelle fenêtre/onglet."
 
-#: templates/snippets/read/read-meta-async.html:106
+#: templates/snippets/read/read-meta-async.html:105
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid ", rated "
 msgstr ", noté"
 
-#: templates/snippets/read/read-meta-async.html:134
+#: templates/snippets/read/read-meta-async.html:122
+#: templates/snippets/read/read-meta-async.html:129
 msgid "Open posterior item"
 msgstr "Ouvrir l'élément postérieur"
 
-#: templates/snippets/read/read-meta-async.html:140
+#: templates/snippets/read/read-meta-async.html:135
 msgid "Close current item"
 msgstr "Fermer l'élément courant"
 
-#: templates/snippets/read/read-meta-async.html:147
+#: templates/snippets/read/read-meta-async.html:141
+#: templates/snippets/read/read-meta-async.html:150
 msgid "Open anterior item"
 msgstr "Ouvrir l'élément antérieur"
 
@@ -4087,8 +4031,8 @@ msgid "Add new content"
 msgstr "Ajouter du contenu"
 
 #: templates/snippets/selector/selector.html:18
-msgid "Add a stream"
-msgstr "Ajouter un flux"
+msgid "Subscribe to a stream"
+msgstr "S'abonner à un flux"
 
 #: templates/snippets/selector/selector.html:40
 msgid "Inbox"
@@ -4143,7 +4087,7 @@ msgid "Share this article"
 msgstr "Partager cet article"
 
 #: templates/snippets/share/share-one.html:24
-#, python-format, python-brace-format
+#, python-format
 msgid ""
 "\n"
 " The message you type will be integrated in the mail sent to your friends or colleagues, with a small exerpt of the article, and an image if the article has one.\n"
@@ -4260,17 +4204,14 @@ msgid "Reset"
 msgstr "Remettre à zéro"
 
 #: templatetags/coretags.py:78
-#, python-brace-format
 msgid "You have {0} newly imported items."
 msgstr "Vous avez {0} éléments récemment importés"
 
 #: templatetags/coretags.py:80
-#, python-brace-format
 msgid "You have {0} newly imported items, out of {1} so far"
 msgstr "Vous avez {0} éléments non-lus sur un total de {1}"
 
 #: templatetags/coretags.py:82
-#, python-brace-format
 msgid "You imported {0} web items so far"
 msgstr "Vous avez importé {0} éléments web"
 
@@ -4283,7 +4224,6 @@ msgid "All articles"
 msgstr "Tous les articles"
 
 #: templatetags/coretags.py:88
-#, python-brace-format
 msgid "You have {0} articles in 1flow"
 msgstr "Vous avez {0} articles dans 1flow"
 
@@ -4292,17 +4232,14 @@ msgid "All unread"
 msgstr "Tous les non-lus"
 
 #: templatetags/coretags.py:91
-#, python-brace-format
 msgid "You have {0} unread articles"
 msgstr "Vous avez {0} articles non-lus"
 
 #: templatetags/coretags.py:94
-#, python-brace-format
 msgid "You have {0} articles to read later"
 msgstr "Vous avez {0} articles à lire plus tard"
 
 #: templatetags/coretags.py:97
-#, python-brace-format
 msgid "You have {0} starred articles"
 msgstr "Vous avez {0} articles sélectionnés"
 
@@ -4311,32 +4248,26 @@ msgid "Archived"
 msgstr "Archivé"
 
 #: templatetags/coretags.py:100
-#, python-brace-format
 msgid "You have {0} archived articles"
 msgstr "Vous avez {0} articles archivés"
 
 #: templatetags/coretags.py:104
-#, python-brace-format
 msgid "You have {0} fun articles"
 msgstr "Vous avez {0} articles tordants"
 
 #: templatetags/coretags.py:108
-#, python-brace-format
 msgid "You have {0} articles marked as fact(s)"
 msgstr "Vous avez {0} articles contenant des faits marquants"
 
 #: templatetags/coretags.py:111
-#, python-brace-format
 msgid "You have {0} articles marked as number(s)"
 msgstr "Vous avez {0} articles contenant des chiffres-clefs"
 
 #: templatetags/coretags.py:114
-#, python-brace-format
 msgid "You have {0} articles marked as analysis"
 msgstr "Vous avez {0} articles marqués comme analyses/études"
 
 #: templatetags/coretags.py:117
-#, python-brace-format
 msgid "You have {0} articles marked as prospective"
 msgstr "Vous avez {0} éléments de prospective"
 
@@ -4345,22 +4276,18 @@ msgid "Best-practices"
 msgstr "Bonnes pratiques"
 
 #: templatetags/coretags.py:120
-#, python-brace-format
 msgid "You have {0} articles marked as best-practices"
 msgstr "Vous avez {0} articles marqués comme bonnes-pratiques/état de l'art"
 
 #: templatetags/coretags.py:123
-#, python-brace-format
 msgid "You have {0} articles marked as regulation/legal"
 msgstr "Vous avez {0} éléments marqués comme réglementation/juridique/légal"
 
 #: templatetags/coretags.py:126
-#, python-brace-format
 msgid "You have {0} articles marked as quote(s)"
 msgstr "Vous avez {0} articles contenant des citations"
 
 #: templatetags/coretags.py:129
-#, python-brace-format
 msgid "You have {0} articles marked as knowledge"
 msgstr "Vous avez {0} éléments marqués comme savoir ou connaissance"
 
@@ -4385,9 +4312,45 @@ msgid "k+"
 msgstr "k+"
 
 #: templatetags/coretags.py:286
-#, python-brace-format
 msgid "{0} articles"
 msgstr "{0} articles"
+
+#: templatetags/coretags.py:447 templatetags/coretags.py:449
+msgid "Convert to full-text"
+msgstr "Convertir en plein-texte"
+
+#: templatetags/coretags.py:448
+msgid "Switch back to original"
+msgstr "Revenir à l'original"
+
+#: templatetags/coretags.py:450
+msgid "View original"
+msgstr "Voir l'original"
+
+#: templatetags/coretags.py:451
+msgid "converted"
+msgstr "converti"
+
+#: templatetags/coretags.py:453 templatetags/coretags.py:455
+msgctxt "awesome-font icon name"
+msgid "exchange"
+msgstr "exchange"
+
+#~ msgid "Share privately with individuals or your watch-teams"
+#~ msgstr "Partagez en privé avec des personnes ou vos équipes de veille"
+
+#~ msgid "Share"
+#~ msgstr "Partager"
+
+#~ msgid "This feature is under development. Thanks for your patience."
+#~ msgstr ""
+#~ "Cette fonctionnalité est en cours de développement, merci de votre patience."
+
+#~ msgid "Broadcast"
+#~ msgstr "Diffuser"
+
+#~ msgid "Add a stream"
+#~ msgstr "Ajouter un flux"
 
 #~ msgid "Remove from archive"
 #~ msgstr "Supprimer des archives"
