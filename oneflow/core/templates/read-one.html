@@ -24,10 +24,10 @@
 
     <script type="text/javascript">
         {% include "snippets/read/actions-messages.js.html" %}
+        {% include 'snippets/read/user-read-preferences.js.html' %}
+        {% include "snippets/read/admin-shortcuts.js.html" with read_id=read.id %}
 
         common_init();
-
-        {% include "snippets/read/admin-shortcuts.js.html" with read_id=read.id %}
 
         var read_id = "{{ read.id }}";
 
