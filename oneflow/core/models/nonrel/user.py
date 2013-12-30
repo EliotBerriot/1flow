@@ -297,7 +297,10 @@ class User(Document, DocumentHelperMixin):
 
     @property
     def has_content(self):
-        return self.all_articles_count > 0 or self.subscriptions
+
+        return self.all_articles_count > 0 or [
+            s for s in self.open_subscriptions if not s.feed.is_internal
+        ]
 
     @property
     def preferences(self):
