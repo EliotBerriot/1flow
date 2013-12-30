@@ -350,9 +350,6 @@
         color: $dark-grey;
         background-color: $backgroundLightColor;
 
-        overflow: hidden;
-        text-overflow: ellipsis;
-        -o-text-overflow: ellipsis;
         white-space: nowrap;
     }
 
@@ -366,6 +363,12 @@
         font-size: 150%;
         font-weight: 700;
         color: $navbar-grey;
+
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+
     }
 
     h1.right-side {

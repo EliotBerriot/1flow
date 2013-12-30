@@ -39,7 +39,53 @@
 
                 {% endspaceless %}"><i class="icon-arrow-left"></i>&nbsp;
                 {{ read_page_header_text_left|safe }}</a></h1>
-            <h1 class="right-side"><span id="reads-number">{{ read_page_header_text_right|safe }}</span></h1>
+            <h1 class="right-side"><span
+                    id="reads-number">{{ read_page_header_text_right|safe }}</span>
+                &nbsp;<a href="#" class="btn btn-mini dropdown-toggle"
+                        data-toggle="dropdown"><i
+                        class="icon-exchange"></i></a>
+                <ul class="dropdown-menu">
+                    {% if folder %}
+
+
+                        {% if current_mode != "is_read" %}
+                            <li>{% container_reading_list_with_count 'read' 'folder' folder 'unread' _('unread') %}</li>
+                        {% endif %}
+
+                        {% if current_mode != "is_bookmarked" %}
+                            <li>{% container_reading_list_with_count 'read_later' 'folder' folder 'bookmarked' _('for later') %}</li>
+                        {% endif %}
+
+                        {% if current_mode != "is_starred" %}
+                            <li>{% container_reading_list_with_count 'read_starred' 'folder' folder 'starred' _('starred') %}</li>
+                        {% endif %}
+
+                        {% if current_mode != "all" %}
+                            <li>{% container_reading_list_with_count 'read_all' 'folder' folder 'all' _('all')  %}</li>
+                        {% endif %}
+
+                    {% else %}
+
+                        {% if current_mode != "is_read" %}
+                            <li>{% container_reading_list_with_count 'read' 'feed' subscription 'unread' _('unread') %}</li>
+                        {% endif %}
+
+                        {% if current_mode != "is_bookmarked" %}
+                            <li>{% container_reading_list_with_count 'read_later' 'feed' subscription 'bookmarked' _('for later') %}</li>
+                        {% endif %}
+
+                        {% if current_mode != "is_starred" %}
+                            <li>{% container_reading_list_with_count 'read_starred' 'feed' subscription 'starred' _('starred') %}</li>
+                        {% endif %}
+
+                        {% if current_mode != "all" %}
+                            <li>{% container_reading_list_with_count 'read_all' 'feed' subscription 'all' _('all')  %}</li>
+                        {% endif %}
+
+                    {% endif %}
+                </ul>
+                {#{% include 'snippets/selector/import-web-items-trigger.html' with in_list=1 %}#}
+            </h1>
         </div>
     </div>
 
