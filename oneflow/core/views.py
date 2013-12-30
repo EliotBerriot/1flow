@@ -737,6 +737,8 @@ def read_with_endless_pagination(request, **kwargs):
         u'reads': reads,
         u'subscription': subscription,
         u'folder': folder,
+        u'current_mode': primary_mode[0],
+
         # 'user' is already there, via a context processor.
 
         u'read_page_header_text_left': header_text_left,
