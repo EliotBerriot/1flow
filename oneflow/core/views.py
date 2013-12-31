@@ -1004,6 +1004,9 @@ def toggle(request, klass, oid, key):
     except:
         return HttpResponseTemporaryServerError()
 
+    if not obj.check_owner(request.user.mongo):
+        return HttpResponseForbidden(u'Not owner')
+
     try:
         new_value = not getattr(obj, key)
         setattr(obj, key, new_value)

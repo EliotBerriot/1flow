@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-
-
     .. note:: as of Celery 3.0.20, there are many unsolved problems related
         to tasks-as-methods. Just to name a few:
         - https://github.com/celery/celery/issues/1458
@@ -309,7 +307,7 @@ class DocumentHelperMixin(object):
             # task name in the current module. OK, not *that* big deal.
             self.nonrel_globals[_cls_name_lower_
                                 + '_replace_duplicate_everywhere'].delay(
-                                    self.id, duplicate.id)
+                                self.id, duplicate.id)
 
         except KeyError:
             LOGGER.warning(u'Object %s does not have a '
@@ -386,6 +384,25 @@ class DocumentHelperMixin(object):
                                      u'namespace.', lower_class, self.id,
                                      attr_name, func_name)
 
+    def check_owner(self, user):
+
+        try:
+            return user.is_staff_or_superuser_and_enabled \
+                or user == self.user
+
+        except AttributeError:
+            try:
+                return user.is_staff_or_superuser_and_enabled \
+                    or user == self.owner
+
+            except AttributeError:
+
+                LOGGER.warning(u'Called .check_owner(%s) on %s #%s which '
+                               u'has no .user nor .owner attribute.',
+                               user, self.__class__.__name__, self.id)
+
+                return False
+
 
 class DocumentTreeMixin(object):
     """ WARNING: currently I have no obvious way to add the required
@@ -410,7 +427,7 @@ class DocumentTreeMixin(object):
                                        u'{1}. Setting the later parent of the '
                                        u'former would result in a cycle and '
                                        u'is not allowed.').format(
-                                            self.name, parent.name))
+                                     self.name, parent.name))
 
         if self.parent:
             self.unset_parent(full_reload=False)
