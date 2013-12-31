@@ -602,6 +602,19 @@ class Feed(Document, DocumentHelperMixin):
         # TODO: find article publication date while fetching content…
         # TODO: set Title during fetch…
 
+        if settings.SITE_DOMAIN in url:
+            # The following code should not fail, because the URL has
+            # already been idiot-proof-checked in core.forms.selector
+            #   .WebPagesImportForm.validate_url()
+            read_id = url[-26:].split('/', 1)[1].replace('/', '')
+
+            # Avoid an import cycle.
+            from .read import Read
+
+            # HEADS UP: we just patch the URL to benefit from all the
+            # Article.create_article() mechanisms (eg. mutualization, etc).
+            url = Read.objects.get(id=read_id).article.url
+
         try:
             new_article, created = Article.create_article(
                 url=url.replace(' ', '%20'),

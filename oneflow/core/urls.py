@@ -108,6 +108,12 @@ urlpatterns = patterns(
         login_required(never_cache(views.article_content)),
         name='article_content'),
 
+    #
+    # HEADS UP: if you change this URL, please check:
+    # core.forms.selector.WebPagesImportForm.validate_url() and
+    # core.models.nonrel.feed.Feed.create_article_from_url(),
+    # These methods use hard-coded "[-26:]" array matching.
+    #
     url(_(ur'^read/([0-9a-f]{24,24})/$'),
         login_required(never_cache(views.read_one)),
         name='read_one'),
