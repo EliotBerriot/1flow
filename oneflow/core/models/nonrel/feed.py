@@ -13,7 +13,7 @@ from mongoengine.fields import (IntField, StringField, URLField, BooleanField,
                                 ListField, ReferenceField, DateTimeField)
 from mongoengine.errors import ValidationError
 
-from cache_utils.decorators import cached
+#from cache_utils.decorators import cached
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -34,8 +34,8 @@ from .common import (DocumentHelperMixin,
                      ORIGIN_TYPE_FEEDPARSER,
                      ORIGIN_TYPE_WEBIMPORT,
                      USER_FEEDS_SITE_URL,
-                     SPECIAL_FEEDS_DATA,
-                     CACHE_ONE_WEEK)
+                     SPECIAL_FEEDS_DATA)
+                     # CACHE_ONE_WEEK)
 from .tag import Tag
 from .article import Article
 from .user import User

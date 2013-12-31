@@ -425,7 +425,7 @@ class WebPagesImportForm(forms.Form):
                     article.save()
 
                 read = article.reads.get(
-                            subscriptions=self.user.web_import_subscription)
+                    subscriptions=self.user.web_import_subscription)
 
                 # About parsing dates:
                 # http://stackoverflow.com/q/127803/654755
