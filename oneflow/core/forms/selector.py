@@ -425,7 +425,7 @@ class WebPagesImportForm(forms.Form):
                     article.save()
 
                 read = article.reads.get(
-                            subscriptions=self.user.web_import_subscription)
+                    subscriptions=self.user.web_import_subscription)
 
                 # About parsing dates:
                 # http://stackoverflow.com/q/127803/654755
@@ -498,7 +498,30 @@ class WebPagesImportForm(forms.Form):
 
             # Avoid stupidity.
             if u'1flow.io/' in url or u'1flow.net/' in url:
-                return False
+                try:
+                    #
+                    # HACK: if we try to import an article from another
+                    # user's page. This is quick and dirty, but sufficient
+                    # until we have an auto-clone feature.
+                    #
+
+                    # extract a potential read_id from
+                    # http://1flow.io/fr/lire/52c2beba84cc1762a69c4c2e/
+                    # get it from the end, because matching any reverse_lazy()
+                    # is too complicated, given the lang of the 2 users.
+                    read_id = url[-26:].split('/', 1)[1].replace('/', '')
+
+                except:
+                    return False
+
+                try:
+                    Read.objects.get(id=read_id)
+
+                except:
+                    return False
+
+                else:
+                    return True
 
             self.import_to_create.add(url)
 

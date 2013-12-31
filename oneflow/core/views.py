@@ -1056,21 +1056,17 @@ def import_web_url(request, url):
     if form.is_valid():
         created, failed = form.save()
 
-        try:
-            article = created[0]
-        except IndexError:
-            pass
+        article = created[0]
 
-        else:
-            # Just in case the item was previously
-            # here (from another user, or the same).
-            if article.content_type in CONTENT_TYPES_FINAL:
-                read = Read.get_or_404(user=request.user.mongo,
-                                       article=article)
+        # Just in case the item was previously
+        # here (from another user, or the same).
+        if article.content_type in CONTENT_TYPES_FINAL:
+            read = Read.get_or_404(user=request.user.mongo,
+                                   article=article)
 
-                return HttpResponseRedirect(u'http://' + settings.SITE_DOMAIN +
-                                            reverse('read_one',
-                                                    args=(read.id,)))
+            return HttpResponseRedirect(u'http://' + settings.SITE_DOMAIN +
+                                        reverse('read_one',
+                                                args=(read.id,)))
 
     return render(request, 'import-web-url.html',
                   {'article': article, 'url': url,

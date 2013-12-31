@@ -13,7 +13,7 @@ from mongoengine.fields import (IntField, StringField, URLField, BooleanField,
                                 ListField, ReferenceField, DateTimeField)
 from mongoengine.errors import ValidationError
 
-from cache_utils.decorators import cached
+#from cache_utils.decorators import cached
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
@@ -34,8 +34,8 @@ from .common import (DocumentHelperMixin,
                      ORIGIN_TYPE_FEEDPARSER,
                      ORIGIN_TYPE_WEBIMPORT,
                      USER_FEEDS_SITE_URL,
-                     SPECIAL_FEEDS_DATA,
-                     CACHE_ONE_WEEK)
+                     SPECIAL_FEEDS_DATA)
+                     # CACHE_ONE_WEEK)
 from .tag import Tag
 from .article import Article
 from .user import User
@@ -601,6 +601,19 @@ class Feed(Document, DocumentHelperMixin):
 
         # TODO: find article publication date while fetching content…
         # TODO: set Title during fetch…
+
+        if settings.SITE_DOMAIN in url:
+            # The following code should not fail, because the URL has
+            # already been idiot-proof-checked in core.forms.selector
+            #   .WebPagesImportForm.validate_url()
+            read_id = url[-26:].split('/', 1)[1].replace('/', '')
+
+            # Avoid an import cycle.
+            from .read import Read
+
+            # HEADS UP: we just patch the URL to benefit from all the
+            # Article.create_article() mechanisms (eg. mutualization, etc).
+            url = Read.objects.get(id=read_id).article.url
 
         try:
             new_article, created = Article.create_article(
