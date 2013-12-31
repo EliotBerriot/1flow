@@ -1,7 +1,5 @@
 # -*- coding: utf-8 -*-
 """
-
-
     .. note:: as of Celery 3.0.20, there are many unsolved problems related
         to tasks-as-methods. Just to name a few:
         - https://github.com/celery/celery/issues/1458
@@ -309,7 +307,7 @@ class DocumentHelperMixin(object):
             # task name in the current module. OK, not *that* big deal.
             self.nonrel_globals[_cls_name_lower_
                                 + '_replace_duplicate_everywhere'].delay(
-                                    self.id, duplicate.id)
+                                self.id, duplicate.id)
 
         except KeyError:
             LOGGER.warning(u'Object %s does not have a '
@@ -410,7 +408,7 @@ class DocumentTreeMixin(object):
                                        u'{1}. Setting the later parent of the '
                                        u'former would result in a cycle and '
                                        u'is not allowed.').format(
-                                            self.name, parent.name))
+                                     self.name, parent.name))
 
         if self.parent:
             self.unset_parent(full_reload=False)
