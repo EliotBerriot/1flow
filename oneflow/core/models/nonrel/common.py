@@ -384,6 +384,25 @@ class DocumentHelperMixin(object):
                                      u'namespace.', lower_class, self.id,
                                      attr_name, func_name)
 
+    def check_owner(self, user):
+
+        try:
+            return user.is_staff_or_superuser_and_enabled \
+                or user == self.user
+
+        except AttributeError:
+            try:
+                return user.is_staff_or_superuser_and_enabled \
+                    or user == self.owner
+
+            except AttributeError:
+
+                LOGGER.warning(u'Called .check_owner(%s) on %s #%s which '
+                               u'has no .user nor .owner attribute.',
+                               user, self.__class__.__name__, self.id)
+
+                return False
+
 
 class DocumentTreeMixin(object):
     """ WARNING: currently I have no obvious way to add the required
