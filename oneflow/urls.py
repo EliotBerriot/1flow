@@ -3,6 +3,8 @@
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.i18n import i18n_patterns
+from django.contrib.auth.decorators import login_required
+from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView
 from django.contrib.staticfiles.urls import staticfiles_urlpatterns
 
@@ -14,6 +16,8 @@ admin.autodiscover()
 
 # We need to import this after Django's standard autodiscover().
 from mongoadmin import site as admin_site
+
+import core.views
 
 handler404 = 'oneflow.base.views.not_found_handler'
 handler500 = 'oneflow.base.views.error_handler'
@@ -33,6 +37,14 @@ urlpatterns = patterns(
         content_type='text/plain')),
     url(r'^i18n/', include('django.conf.urls.i18n')),
     url(r'^djangojs/', include('djangojs.urls')),
+
+    #
+    # HEADS UP: this URL belongs to `core` and is not translated.
+    #           This is an hard-coded exception.
+    #
+    url(ur'^import/contacts/success/$',
+        login_required(never_cache(core.views.import_contacts_authorized)),
+        name='import_contacts_authorized'),
 )
 
 urlpatterns += i18n_patterns(

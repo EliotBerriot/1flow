@@ -13,6 +13,8 @@ from constance import config
 
 from mongoengine import Q
 
+import gdata.gauth
+
 from django.http import (HttpResponseRedirect,
                          HttpResponseForbidden,
                          HttpResponseBadRequest,
@@ -1171,6 +1173,100 @@ def import_web_pages(request):
 
     return render(request, 'snippets/selector/import-web-pages.html',
                   {'form': form})
+
+
+def import_contacts(request):
+    """
+
+        Reference, as of 20140102:
+            http://stackoverflow.com/a/14161012/654755
+    """
+
+    auth_token = gdata.gauth.OAuth2Token(
+        client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
+        client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+        scope=settings.GOOGLE_OAUTH2_CONTACTS_SCOPE,
+        user_agent=settings.DEFAULT_USER_AGENT)
+
+    authorize_url = auth_token.generate_authorize_url(
+        redirect_uri='http://{0}{1}'.format(
+            settings.SITE_DOMAIN,
+            settings.GOOGLE_OAUTH2_CONTACTS_REDIRECT_URI
+        )
+    )
+
+    return HttpResponseRedirect(authorize_url)
+
+
+def import_contacts_authorized(request):
+    """
+        Reference, as of 20140102:
+            https://developers.google.com/google-apps/contacts/v3/
+    """
+    import gdata.contacts.client
+
+    user          = request.user.mongo
+    dupes         = 0
+    imported      = 0
+    current_mails = set(a.rsplit(u' ', 1)[1] for a in user.address_book)
+
+    auth_token = gdata.gauth.OAuth2Token(
+        client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
+        client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+        scope=settings.GOOGLE_OAUTH2_CONTACTS_SCOPE,
+        user_agent=settings.DEFAULT_USER_AGENT)
+
+    auth_token.redirect_uri = 'http://{0}{1}'.format(
+        settings.SITE_DOMAIN,
+        settings.GOOGLE_OAUTH2_CONTACTS_REDIRECT_URI
+    )
+
+    # Heads UP: as of 20130104, "service" seems to be broken.
+    # Google invites to use "client" instead.
+    # Ref: https://code.google.com/p/gdata-python-client/issues/detail?id=549
+    #client = gdata.contacts.service.ContactsService(source='1flow.io')
+    client = gdata.contacts.client.ContactsClient(source='1flow.io')
+
+    auth_token.get_access_token(request.GET['code'])
+    auth_token.authorize(client)
+
+    feed = client.GetContacts()
+
+    for entry in feed.entry:
+        try:
+            name = entry.name.full_name.text
+
+        except AttributeError:
+            try:
+                name = u'{0} {1}'.format(
+                    entry.name.given_name.text,
+                    entry.name.family_name.text
+                )
+
+            except:
+                name = None
+
+        for email in entry.email:
+            if email.primary and email.primary == 'true':
+
+                if email.address in current_mails:
+                    dupes += 1
+
+                else:
+                    user.address_book.append(
+                        u'{0} {1}'.format(name or email.address,
+                                          email.address))
+                    imported += 1
+
+        #for group in entry.group_membership_info:
+        #    print '    Member of group: %s' % (group.href)
+
+    if imported:
+        user.save()
+
+    return render(request, 'import-contacts.html', {
+        'imported': imported, 'dupes': dupes
+    })
 
 
 def profile(request):

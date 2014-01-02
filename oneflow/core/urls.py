@@ -178,6 +178,16 @@ urlpatterns = patterns(
         login_required(never_cache(views.edit_subscription)),
         name='edit_subscription'),
 
+    url(_(ur'^import/contacts/$'),
+        login_required(never_cache(views.import_contacts)),
+        name='import_contacts'),
+
+    #
+    # HEADS UP: the 'import_contact_authorized' is in oneflow.urls because
+    #           it needs to stay untranslated for easy-maintainance reasons
+    #           on the google side.
+    #
+
     url(_(ur'^import/url/(.*)$'),
         login_required(never_cache(views.import_web_url)),
         name='import_web_url'),
