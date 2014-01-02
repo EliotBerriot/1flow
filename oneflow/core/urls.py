@@ -2,6 +2,7 @@
 
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
+#from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page, never_cache
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.contrib.auth.decorators import login_required
@@ -117,6 +118,10 @@ urlpatterns = patterns(
     url(_(ur'^read/([0-9a-f]{24,24})/$'),
         login_required(never_cache(views.read_one)),
         name='read_one'),
+
+    url(_(ur'^share/([0-9a-f]{24,24})/$'),
+        login_required(never_cache(views.share_one)),
+        name='share_one'),
 
     # Required by the share_one recipients autocompleter.
     # TODO: once we have an expirable cache mechanism, switch to LONG_CACHE

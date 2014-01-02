@@ -288,12 +288,14 @@ class User(Document, DocumentHelperMixin):
 
         for contact in self.address_book:
             try:
-                _dymmy_, email = contact.rsplit(u' ', 1)
+                full_name, email = contact.rsplit(u' ', 1)
 
             except:
-                email = contact
+                # We have only the email.
+                email     = contact
+                full_name = contact
 
-            yield email, contact
+            yield email, full_name
 
     @property
     def has_content(self):
@@ -301,6 +303,11 @@ class User(Document, DocumentHelperMixin):
         return self.all_articles_count > 0 or [
             s for s in self.open_subscriptions if not s.feed.is_internal
         ]
+
+    @property
+    def has_contacts(self):
+
+        return len(self.address_book)
 
     @property
     def preferences(self):

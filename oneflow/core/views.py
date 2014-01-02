@@ -31,6 +31,7 @@ from django.utils.translation import (ugettext_lazy as _,
 from django_select2.views import Select2View
 
 #from infinite_pagination.paginator import InfinitePaginator
+#from contact_importer.decorators import get_contacts
 from endless_pagination.utils import get_page_number_from_request
 
 from sparks.django.utils import HttpResponseTemporaryServerError
@@ -44,13 +45,15 @@ from .forms import (FullUserCreationForm,
                     ManageFolderForm,
                     ManageSubscriptionForm,
                     AddSubscriptionForm,
-                    WebPagesImportForm)
+                    WebPagesImportForm,
+                    ReadShareForm)
 from .tasks import import_google_reader_trigger
 from .models.nonrel import (Feed, Subscription,
                             Article, Read,
                             Folder, WebSite,
                             TreeCycleException, CONTENT_TYPES_FINAL)
 from .models.reldb import HelpContent
+from ..base.utils import word_match_consecutive_once
 from ..base.utils.dateutils import now
 
 from .gr_import import GoogleReaderImport
@@ -878,15 +881,62 @@ def read_one(request, read_id):
     return render(request, template, {'read': read})
 
 
+def share_one(request, article_id):
+
+    if not request.is_ajax():
+        return HttpResponseBadRequest(u'Ajax is needed for this…')
+
+    try:
+        article = Article.get_or_404(article_id)
+        LOGGER.warning(article)
+        read    = Read.get_or_404(article=article, user=request.user.mongo)
+        LOGGER.warning(read)
+
+    except:
+        LOGGER.exception(u'Could not load things to share article #%s',
+                         article_id)
+        return HttpResponseTemporaryServerError('BOOM')
+
+    if request.POST:
+        form = ReadShareForm(request.POST, user=request.user.mongo)
+
+        if form.is_valid():
+            sent, failed = form.save()
+
+            if failed:
+                for address, reason in failed:
+                    messages.warning(request,
+                                     _(u'Share article with <code>{0}</code> '
+                                       u'failed: {1}').format(address, reason),
+                                     extra_tags='sticky safe')
+
+            if sent:
+                messages.info(request,
+                              _(u'Successfully shared <em>{0}</em> '
+                                u'with {1} persons').format(
+                                  read.article.title, len(sent)),
+                              extra_tags='safe')
+
+            return HttpResponse(u'DONE')
+
+    else:
+        form = ReadShareForm(user=request.user.mongo)
+
+    return render(request, u'snippets/share/share-one.html',
+                  {'read': read, 'form': form})
+
 
 class UserAddressBookView(Select2View):
 
     def get_results(self, request, term, page, context):
 
+        term = term.lower()
+
         return (
             'nil',
             False,
-            [r for r in request.user.mongo.relations if term in r[1]]
+            [r for r in request.user.mongo.relations
+             if word_match_consecutive_once(term, r[1].lower())]
         )
 
 # ————————————————————————————————————————————————————————————————— Preferences

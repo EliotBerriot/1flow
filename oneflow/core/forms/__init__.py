@@ -7,3 +7,5 @@ from .selector import (ManageFolderForm, ManageSubscriptionForm,
                        AddSubscriptionForm, WebPagesImportForm)
 
 from .user import FullUserCreationForm, UserProfileEditForm
+
+from .read import ReadShareForm
