@@ -488,6 +488,18 @@ function setup_clicker_muters(parent){
             return clicker_muter_toggle.call(this, ev, group_name);
         });
 }
+
+function setup_collapsibles(parent){
+
+    // NOTE: we really want mouseover() (not mouseenter()), to not
+    // trigger the "out" when mouse gets over a sub-dropdown or a
+    // sub-tooltip.
+    find_start(parent, 'collapse')
+        .on('hidden', function(e){
+      e.stopPropagation();
+    });
+}
+
 function setup_tooltips(parent){
 
     //
@@ -844,6 +856,7 @@ function setup_everything(parent) {
 
     setup_popovers(parent);
     setup_clicker_muters(parent);
+    setup_collapsibles(parent);
 
     // bindable_hovered NOT USED YET
     //setup_hover_notifiers(parent);
