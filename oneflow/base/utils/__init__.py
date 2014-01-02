@@ -619,3 +619,18 @@ class RedisStatsCounter(object):
 # By default take the normal REDIS connection, but still allow
 # to override it in tests via the class attribute.
 RedisStatsCounter.REDIS = REDIS
+
+def word_match_consecutive_once(term, word):
+    """ Eat letters as far as we find them
+        to get a quite-enough fuzy match. """
+
+    for char in term:
+        idx = word.find(char)
+
+        if idx >= 0:
+            word = word[idx + 1:]
+
+        else:
+            return False
+
+    return True
