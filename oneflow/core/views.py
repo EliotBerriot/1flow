@@ -9,11 +9,10 @@
 import logging
 import humanize
 
-from constance import config
-
-from mongoengine import Q
-
 import gdata.gauth
+
+from constance import config
+from mongoengine import Q
 
 from django.http import (HttpResponseRedirect,
                          HttpResponseForbidden,
@@ -890,9 +889,7 @@ def share_one(request, article_id):
 
     try:
         article = Article.get_or_404(article_id)
-        LOGGER.warning(article)
         read    = Read.get_or_404(article=article, user=request.user.mongo)
-        LOGGER.warning(read)
 
     except:
         LOGGER.exception(u'Could not load things to share article #%s',

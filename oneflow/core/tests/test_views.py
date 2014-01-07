@@ -182,7 +182,7 @@ class SelectorViewTest(TestCase):
             cls.feeds.append(feed)
 
     def setUp(self):
-        self.client        = Client()
+        self.client = Client()
 
         # WARNING: it doesn't work as expected
         # when this user is created in setUpClass().
