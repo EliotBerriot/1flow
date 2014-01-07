@@ -386,6 +386,66 @@ class FeedsTest(TestCase):
         #self.assertEqual( mail.outbox[0].to, [ "test@foo.bar" ] )
         #self.assertTrue( "test@foo.bar" in mail.outbox[0].to )
 
+    def test_feeds_creation(self):
+
+        # .setUp() creates one already.
+        self.assertEquals(Feed._get_collection().count(), 1)
+
+        feed, created = Feed.create_feeds_from_url(u'http://ntoll.org/')[0]
+        self.assertTrue(created)
+        self.assertEquals(feed.url, u'http://ntoll.org/rss.xml')
+        self.assertEquals(Feed._get_collection().count(), 2)
+
+        # Via the Home Page
+        feed, created = Feed.create_feeds_from_url(u'http://www.zdnet.fr/')[0]
+        self.assertTrue(created)
+        self.assertEquals(feed.url, u'http://www.zdnet.fr/feeds/rss/')
+        self.assertEquals(Feed._get_collection().count(), 3)
+
+        # Via the RSS listing page
+        feed, created = Feed.create_feeds_from_url(u'http://www.zdnet.fr/services/rss/')[0] # NOQA
+        self.assertFalse(created)
+        self.assertEquals(feed.url, u'http://www.zdnet.fr/feeds/rss/')
+        self.assertEquals(Feed._get_collection().count(), 3)
+
+        # Via the first RSS (raw)
+        feed, created = Feed.create_feeds_from_url(u'http://www.zdnet.fr/feeds/rss/')[0] # NOQA
+        self.assertFalse(created)
+        self.assertEquals(feed.url, u'http://www.zdnet.fr/feeds/rss/')
+        self.assertEquals(Feed._get_collection().count(), 3)
+
+        feed, created = Feed.create_feeds_from_url(u'http://www.atlantico.fr/')[0] # NOQA
+        self.assertTrue(created)
+        self.assertEquals(feed.url, u'http://www.atlantico.fr/rss.xml')
+        self.assertEquals(Feed._get_collection().count(), 4)
+
+        feed, created = Feed.create_feeds_from_url(u'http://wordpress.org/')[0]
+        self.assertTrue(created)
+        self.assertEquals(feed.url, u'http://wordpress.org/news/feed/')
+        self.assertEquals(Feed._get_collection().count(), 5)
+
+        # Not created again, even from an article which has the comment feed.
+        feed, created = Feed.create_feeds_from_url(u'http://ntoll.org/article/build-a-drogulus')[0] # NOQA
+        self.assertFalse(created)
+        self.assertEquals(feed.url, u'http://ntoll.org/rss.xml')
+        self.assertEquals(Feed._get_collection().count(), 5)
+
+        # This one has been created in .setUp()
+        feed, created = Feed.create_feeds_from_url(u'http://blog.1flow.io/')[0]
+        self.assertFalse(created)
+        self.assertEquals(feed.url, u'http://blog.1flow.io/rss')
+        self.assertEquals(Feed._get_collection().count(), 5)
+
+        # No RSS in main page
+        self.assertRaises(Exception, Feed.create_feeds_from_url,
+                          u'http://www.bbc.co.uk/')
+        self.assertEquals(Feed._get_collection().count(), 5)
+
+        # This one has no RSS anywhere, it won't create anything
+        self.assertRaises(Exception, Feed.create_feeds_from_url,
+                          u'http://www.tumblr.com/blog/1flowio')
+        self.assertEquals(Feed._get_collection().count(), 5)
+
 
 @override_settings(STATICFILES_STORAGE=
                    'pipeline.storage.NonPackagingPipelineStorage',

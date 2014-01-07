@@ -583,6 +583,9 @@ GOOGLE_OAUTH_EXTRA_SCOPE           = OAuth2Method.SCOPE
 # See http://stackoverflow.com/a/10857806/654755 for notes.
 GOOGLE_OAUTH2_AUTH_EXTRA_ARGUMENTS = {'access_type': 'offline'}
 
+GOOGLE_OAUTH2_CONTACTS_SCOPE = 'https://www.google.com/m8/feeds'
+GOOGLE_OAUTH2_CONTACTS_REDIRECT_URI = reverse_lazy('import_contacts_authorized')
+
 # See http://django-social-auth.readthedocs.org/en/latest/configuration.html#urls-options # NOQA
 # for social_auth specific URLs.
 LOGIN_URL          = reverse_lazy('signin')

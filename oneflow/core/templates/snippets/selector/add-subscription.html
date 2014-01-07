@@ -2,30 +2,65 @@
 <div class="form-wrapper">
     <h1>{% trans "Add one or more subscriptions" %}</h1>
 
-    <form method="POST" action="{% url 'add_subscription' %}" class="form form-horizontal form-add-subscription">
+    <form method="POST" action="{% url 'add_subscription' %}" class="form form-inline form-add-subscription">
         {% csrf_token %}
 
-            <h3>{% trans "Choose an existing feed" %}</h3>
+        <h3>{% trans "Choose an existing feed" %}</h3>
 
         {% if not mongodb_user.has_content %}
             <p>{% trans "Please choose some news feeds to subscribe to. Just type a few letters in the field, like “CNN”, “design”, “software development”… You can subscribe to more than one." %}</p>
         {% endif %}
 
         {% with field=form.feeds %}
-            <div class="control-group">
+            <div class="control-group centered">
+
                 <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
 
-                <div class="controls">
-                    {% render_field field class+="span4" %}
-                </div>
+                &nbsp;&nbsp;{% render_field field %}&nbsp;
+
+                <button type="submit" class="btn btn-primary">{% trans "Subscribe" %}</button>
+            </div>
+            <div class="control-group">
 
                 {% if field.errors %}
                     <span class="help-block">{{ field.errors|join:", " }}</span>
                 {% endif %}
 
                 <div class="help-block">{{ field.help_text|safe }}</div>
+
             </div>
+
         {% endwith %}
+
+        {% if not mongodb_user.has_content %}
+        <div class="or-choice">{% trans "note" %}</div>
+            <p>{% trans "The sources you choose will be added to what we call the <em>sources selector</em>. It's the screen that will show after you click <em>Add to my sources</em>. Next time you come to 1flow, you will be brought directly there." %}</p>
+        {% endif %}
+
+        {% comment %}
+
+        <div class="form-actions">
+            <div class="pull-right">
+
+            </div>
+
+            {% if mongodb_user.has_content %}
+                <div class="pull-left">
+                    <a href="{% url 'source_selector' %}"
+                    class="btn">{% trans "Cancel" %}</a>
+                </div>
+            {% endif %}
+
+        </div>
+                {% endcomment %}
+
+    </form>
+
+    <script type="text/javascript">
+        $(document).ready(function() {
+            $('.select2-input').focus();
+        });
+    </script>
 
         <div class="or-choice">{% trans "or" %}</div>
 
@@ -34,7 +69,7 @@
         <div class="bookmarklet-container">
 
             {# BOOKMARK Unicode: U+1F516 (U+D83D U+DD16), UTF-8: F0 9F 94 96 #}
-            <a href="javascript:void(d=document);void(el=d.getElementsByTagName('link'));void(g=false);for(i=0;i<el.length;i++){if(el[i].getAttribute('rel').indexOf('alternate')!=-1){ty=el[i].getAttribute('type');if(ty.indexOf('application/rss+xml')!=-1||ty.indexOf('text/xml')!=-1){g=true;h=el[i].getAttribute('href');void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'add_feed' '' %}'+h);}}};if(!g){window.alert('{% trans "Could not find the RSS Feed" %}');};" class="bookmarklet btn btn-huge btn-success" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;"><i class="icon-bookmark"></i>&nbsp;{% trans "Subscribe in 1flow" %}</a>
+            <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'add_feed' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-huge btn-success" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;"><i class="icon-bookmark"></i>&nbsp;{% trans "Subscribe in 1flow" %}</a>
 
             {% if mongodb_user.is_staff_or_superuser_and_enabled %}
 
@@ -42,7 +77,7 @@
                 <br />
                 <br />
 
-                <a href="javascript:void(d=document);void(el=d.getElementsByTagName('link'));void(g=false);for(i=0;i<el.length;i++){if(el[i].getAttribute('rel').indexOf('alternate')!=-1){ty=el[i].getAttribute('type');if(ty.indexOf('application/rss+xml')!=-1||ty.indexOf('text/xml')!=-1){g=true;h=el[i].getAttribute('href');void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'add_feed_staff' '' %}'+h);}}};if(!g){window.alert('{% trans "Could not find the RSS Feed" %}');};" class="bookmarklet btn btn-huge btn-warning" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;"><i class="icon-cloud-download"></i>&nbsp;{% trans "Import feed into 1flow" %}</a>
+                <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'add_feed_staff' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-huge btn-warning" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;"><i class="icon-cloud-download"></i>&nbsp;{% trans "Import feed into 1flow" %}</a>
 
                 <br />
                 {% trans "(no subscription, for staff only)" %}
@@ -51,17 +86,19 @@
 
         </div>
 
-        <p>{% blocktrans %}
-            <strong>Drag-n-drop this bookmarklet into your bookmark toolbar.</strong><br />
-            When you find yourself on a news website or a blog, just click on the bookmarklet to subscribe to its feed(s).<br />
-            If the website doesn't offer any feed, the bookmarklet will inform you.
-        {% endblocktrans %}</p>
-
         {% url 'help' as help_url %}
 
-        <p class="muted">{% blocktrans %}
-            You can get more control on this process <a href="{{help_url}}#adding-news-sources">with a browser extension and some manual setup</a>.<br />
-            If unsure, using the bookmarklet is the simplest way.
+        <p>{% blocktrans %}
+            <strong>Drag-n-drop this bookmarklet into your bookmark toolbar.</strong></p><p>
+
+            When you want to subscribe to a news website or a blog, just click on the bookmarklet to discover its feed(s).</p>
+
+        {% endblocktrans %}</p>
+
+        <p class="muted popover-left" data-toggle="tooltip" title="{% trans "To subscribe to raw RSS/Atom feed URLs, just open or copy them in your browser's location bar, then click on the bookmarklet." %}">{% blocktrans %}
+<strong>Pro tip</strong>: use it to manually subscribe to RSS/Atom feeds <i class="icon-question-sign"></i></p>
+
+            <p><a href="{{help_url}}#adding-news-sources">Need more help?</a>
         {% endblocktrans %}</p>
 
         {% comment %}
@@ -75,29 +112,5 @@
 
         {% endcomment %}
 
-        {% if not mongodb_user.has_content %}
-        <div class="or-choice">{% trans "note" %}</div>
-            <p>{% trans "The sources you choose will be added to what we call the <em>sources selector</em>. It's the screen that will show after you click <em>Add to my sources</em>. Next time you come to 1flow, you will be brought directly there." %}</p>
-        {% endif %}
 
-        <div class="form-actions">
-            <div class="pull-right">
-                <button type="submit" class="btn btn-primary">{% trans "Add to my sources" %}</a>
-            </div>
-
-            {% if mongodb_user.has_content %}
-                <div class="pull-left">
-                    <a href="{% url 'source_selector' %}"
-                    class="btn">{% trans "Cancel" %}</a>
-                </div>
-            {% endif %}
-
-        </div>
-    </form>
-
-    <script type="text/javascript">
-        $(document).ready(function() {
-            $('.select2-input').focus();
-        });
-    </script>
 </div>

@@ -5,6 +5,16 @@
   {% include "widgets/forms/field-checkbox.html" with field=home_form.show_advanced_preferences %}
 </fieldset>
 
+{% if mongodb_user.is_staff_or_superuser_and_enabled and preferences.home.show_advanced_preferences %}
+
+    <fieldset>
+      <legend>{% trans "Experimental features" %}</legend>
+
+      {% include "widgets/forms/field-checkbox.html" with field=home_form.experimental_features %}
+    </fieldset>
+
+{% endif %}
+
 
 <fieldset class="form-end-notice">
 <p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}

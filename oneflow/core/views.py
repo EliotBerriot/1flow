@@ -9,8 +9,9 @@
 import logging
 import humanize
 
-from constance import config
+import gdata.gauth
 
+from constance import config
 from mongoengine import Q
 
 from django.http import (HttpResponseRedirect,
@@ -31,6 +32,7 @@ from django.utils.translation import (ugettext_lazy as _,
 from django_select2.views import Select2View
 
 #from infinite_pagination.paginator import InfinitePaginator
+#from contact_importer.decorators import get_contacts
 from endless_pagination.utils import get_page_number_from_request
 
 from sparks.django.utils import HttpResponseTemporaryServerError
@@ -44,13 +46,15 @@ from .forms import (FullUserCreationForm,
                     ManageFolderForm,
                     ManageSubscriptionForm,
                     AddSubscriptionForm,
-                    WebPagesImportForm)
+                    WebPagesImportForm,
+                    ReadShareForm)
 from .tasks import import_google_reader_trigger
-from .models.nonrel import (Feed, Subscription,
+from .models.nonrel import (Feed, Subscription, FeedIsHtmlPageException,
                             Article, Read,
                             Folder, WebSite,
                             TreeCycleException, CONTENT_TYPES_FINAL)
 from .models.reldb import HelpContent
+from ..base.utils import word_match_consecutive_once
 from ..base.utils.dateutils import now
 
 from .gr_import import GoogleReaderImport
@@ -306,13 +310,16 @@ def add_feed(request, feed_url, subscribe=True):
         who use a different URL. """
 
     user = request.user.mongo
+    feeds = []
     feed = subscription = None
     feed_exc = sub_exc = None
-    already_created = already_subscribed = False
+    created = already_subscribed = False
 
+    # Sanitize the URL as much as possible. Try to get the REFERER if the
+    # user manually typed the address in the URL bar of his browser.
     try:
         if not feed_url.startswith(u'http'):
-            if request.META['HTTP_REFERER']:
+            if request.META.get('HTTP_REFERER', None):
                 proto, host_and_port, remaining = WebSite.split_url(
                     request.META['HTTP_REFERER'])
 
@@ -331,53 +338,26 @@ def add_feed(request, feed_url, subscribe=True):
                          u'feed.'.format(feed_url))
         feed_exc = _(u'Very malformed url {0}').format(feed_url)
 
-    #
-    # Create the feed, and don't
-    # fail if it already exists.
-    #
-
     if feed_exc is None:
-
-        # We need to prepare the URL before fetching it, else it won't match
-        # special cases in the database, like feedburner URLs on which we
-        # add ?format=xml in pre-processing phases, or simply redirected URLs.
         try:
-            feed_url = Feed.prepare_feed_url(feed_url)
+            feeds = Feed.create_feeds_from_url(feed_url)
+
+        except FeedIsHtmlPageException:
+            feed_exc = _(u'The website at {0} does not seem '
+                         u'to provide any feed.').format(feed_url)
 
         except Exception, e:
-            feed_exc = _(u'URL {0} is invalid, its pre-processing '
-                         u'failed ({1})').format(feed_url, e)
+            feed_exc = _(u'Could not create any feed from '
+                         u'URL {0}: {1}').format(feed_url, e)
 
-        else:
-            try:
-                feed = Feed.objects.get(url=feed_url)
+    if feeds and subscribe:
 
-            except Feed.DoesNotExist:
+        # Taking the first is completely arbitrary, but better than nothing.
+        # TODO: enhance this with a nice form to show all feeds to the user.
+        feed, created = feeds[0]
 
-                try:
-                    feed = Feed.create_feed_from_url(feed_url, user)
-
-                except Exception, feed_exc:
-                    LOGGER.exception(u'Failed to create feed from url %s',
-                                     feed_url)
-
-            else:
-
-                # Get the right one. THE right one.
-                # The RIGHT one. The main. The only one.
-                # You get it.
-                if feed.duplicate_of:
-                    feed = feed.duplicate_of
-
-                already_created = True
-
-    if feed and subscribe:
-
-        #
         # Then subscribe the user to this feed,
         # and don't fail if he's already subscribed.
-        #
-
         try:
             subscription = Subscription.objects.get(user=user, feed=feed)
 
@@ -393,9 +373,9 @@ def add_feed(request, feed_url, subscribe=True):
         else:
             already_subscribed = True
 
-    return render(request, 'add-feed.html', {'feed': feed,
+    return render(request, 'add-feed.html', {
+                  'feed': feed, 'created': created, 'feeds': feeds,
                   'subscription': subscription,
-                  'already_created': already_created,
                   'already_subscribed': already_subscribed,
                   'subscribe': subscribe,
                   'feed_exc': feed_exc, 'sub_exc': sub_exc})
@@ -878,15 +858,60 @@ def read_one(request, read_id):
     return render(request, template, {'read': read})
 
 
+def share_one(request, article_id):
+
+    if not request.is_ajax():
+        return HttpResponseBadRequest(u'Ajax is needed for this…')
+
+    try:
+        article = Article.get_or_404(article_id)
+        read    = Read.get_or_404(article=article, user=request.user.mongo)
+
+    except:
+        LOGGER.exception(u'Could not load things to share article #%s',
+                         article_id)
+        return HttpResponseTemporaryServerError('BOOM')
+
+    if request.POST:
+        form = ReadShareForm(request.POST, user=request.user.mongo)
+
+        if form.is_valid():
+            sent, failed = form.save()
+
+            if failed:
+                for address, reason in failed:
+                    messages.warning(request,
+                                     _(u'Share article with <code>{0}</code> '
+                                       u'failed: {1}').format(address, reason),
+                                     extra_tags='sticky safe')
+
+            if sent:
+                messages.info(request,
+                              _(u'Successfully shared <em>{0}</em> '
+                                u'with {1} persons').format(
+                                  read.article.title, len(sent)),
+                              extra_tags='safe')
+
+            return HttpResponse(u'DONE')
+
+    else:
+        form = ReadShareForm(user=request.user.mongo)
+
+    return render(request, u'snippets/share/share-one.html',
+                  {'read': read, 'form': form})
+
 
 class UserAddressBookView(Select2View):
 
     def get_results(self, request, term, page, context):
 
+        term = term.lower()
+
         return (
             'nil',
             False,
-            [r for r in request.user.mongo.relations if term in r[1]]
+            [r for r in request.user.mongo.relations
+             if word_match_consecutive_once(term, r[1].lower())]
         )
 
 # ————————————————————————————————————————————————————————————————— Preferences
@@ -1121,6 +1146,135 @@ def import_web_pages(request):
 
     return render(request, 'snippets/selector/import-web-pages.html',
                   {'form': form})
+
+
+def import_contacts(request):
+    """
+
+        Reference, as of 20140102:
+            http://stackoverflow.com/a/14161012/654755
+    """
+
+    auth_token = gdata.gauth.OAuth2Token(
+        client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
+        client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+        scope=settings.GOOGLE_OAUTH2_CONTACTS_SCOPE,
+        user_agent=settings.DEFAULT_USER_AGENT)
+
+    authorize_url = auth_token.generate_authorize_url(
+        redirect_uri='http://{0}{1}'.format(
+            settings.SITE_DOMAIN,
+            settings.GOOGLE_OAUTH2_CONTACTS_REDIRECT_URI
+        )
+    )
+
+    return HttpResponseRedirect(authorize_url)
+
+
+def import_contacts_authorized(request):
+    """
+        Reference, as of 20140102:
+            https://developers.google.com/google-apps/contacts/v3/
+    """
+    import gdata.contacts.client
+
+    user          = request.user.mongo
+    dupes         = 0
+    imported      = 0
+    address_book  = set(a.rsplit(u' ', 1)[1] for a in user.address_book)
+
+    current_mails = address_book.copy()
+    current_mails |= [f.email for f in user.friends]
+
+    auth_token = gdata.gauth.OAuth2Token(
+        client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
+        client_secret=settings.GOOGLE_OAUTH2_CLIENT_SECRET,
+        scope=settings.GOOGLE_OAUTH2_CONTACTS_SCOPE,
+        user_agent=settings.DEFAULT_USER_AGENT)
+
+    auth_token.redirect_uri = 'http://{0}{1}'.format(
+        settings.SITE_DOMAIN,
+        settings.GOOGLE_OAUTH2_CONTACTS_REDIRECT_URI
+    )
+
+    # Heads UP: as of 20130104, "service" seems to be broken.
+    # Google invites to use "client" instead.
+    # Ref: https://code.google.com/p/gdata-python-client/issues/detail?id=549
+    #client = gdata.contacts.service.ContactsService(source='1flow.io')
+    client = gdata.contacts.client.ContactsClient(source='1flow.io')
+
+    auth_token.get_access_token(request.GET['code'])
+    auth_token.authorize(client)
+
+    query = gdata.contacts.client.ContactsQuery()
+    #query.updated_min = '2008-01-01'
+    query.max_results = 1000
+
+    feed = client.GetContacts(q=query)
+
+    # The "all contacts" way, but it only return a limited subset of them.
+    #feed = client.GetContacts()
+
+    for entry in feed.entry:
+
+        full_name = first_name = last_name = u''
+
+        try:
+            full_name = u'{0} {1}'.format(
+                entry.name.given_name.text,
+                entry.name.family_name.text
+            )
+
+        except AttributeError:
+            try:
+                full_name = entry.name.full_name.text
+
+            except:
+                pass
+
+            else:
+                try:
+                    first_name, last_name = full_name.split(u' ', 1)
+
+                except:
+                    pass
+        else:
+            first_name = entry.name.given_name.text
+            last_name  = entry.name.family_name.text
+
+        for email in entry.email:
+
+            if email.primary and email.primary == 'true':
+
+                if email.address in current_mails:
+                    if email.address in address_book:
+                        user.ab_remove(email.address)
+
+                        # NOTE: User is the Django User model here.
+                        friend = User.get_or_create_friend(
+                            email=email.address,
+                            first_name=first_name,
+                            last_name=last_name
+                        )
+
+                    else:
+                        dupes += 1
+
+                else:
+                    user.address_book.append(
+                        u'{0} {1}'.format(full_name or email.address,
+                                          email.address))
+                    imported += 1
+
+        #for group in entry.group_membership_info:
+        #    print '    Member of group: %s' % (group.href)
+
+    if imported:
+        user.save()
+
+    return render(request, 'import-contacts.html', {
+        'imported': imported, 'dupes': dupes
+    })
 
 
 def profile(request):

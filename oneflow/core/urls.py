@@ -2,6 +2,7 @@
 
 from django.conf.urls import patterns, url
 from django.views.generic import TemplateView
+#from django.views.decorators.csrf import csrf_exempt
 from django.views.decorators.cache import cache_page, never_cache
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 from django.contrib.auth.decorators import login_required
@@ -118,6 +119,10 @@ urlpatterns = patterns(
         login_required(never_cache(views.read_one)),
         name='read_one'),
 
+    url(_(ur'^share/([0-9a-f]{24,24})/$'),
+        login_required(never_cache(views.share_one)),
+        name='share_one'),
+
     # Required by the share_one recipients autocompleter.
     # TODO: once we have an expirable cache mechanism, switch to LONG_CACHE
     #       and make it expire on address_book and friends changes.
@@ -172,6 +177,16 @@ urlpatterns = patterns(
     url(_(ur'^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$'),
         login_required(never_cache(views.edit_subscription)),
         name='edit_subscription'),
+
+    url(_(ur'^import/contacts/$'),
+        login_required(never_cache(views.import_contacts)),
+        name='import_contacts'),
+
+    #
+    # HEADS UP: the 'import_contact_authorized' is in oneflow.urls because
+    #           it needs to stay untranslated for easy-maintainance reasons
+    #           on the google side.
+    #
 
     url(_(ur'^import/url/(.*)$'),
         login_required(never_cache(views.import_web_url)),

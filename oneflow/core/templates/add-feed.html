@@ -16,7 +16,86 @@
 
 	{% with feed_name=feed.name %}
 
-		{% if already_created %}
+		{% if created %}
+
+			{% if subscribe %}
+
+				{% if subscription %}
+
+					<h1>{% trans "Success" %}</h1>
+					<div class="spacer25"></div>
+
+					{% with sub_id=subscription.id sub_name=subscription.name %}
+
+						<p>{% blocktrans %}
+							You are now subscribed to {{feed_name}}.</p><p>
+
+							As this feed was unknown to 1flow before, you have
+							contributed to making it better. Thank You!</p><p>
+
+							<a href="{{sel_url}}#{{sub_id}}">Go straight to your new subscription</a>, or <a href="javascript:window.open('', '_self', '');window.close()">close this window/tab</a>.
+						{% endblocktrans %}</p>
+
+					{% endwith %}
+
+				{% else %}
+
+					<h1>{% trans "Bummer!" %}</h1>
+					<div class="spacer25"></div>
+
+					<p>{% blocktrans %}
+
+						<strong>We were not able to subscribe yourself to <em>{{feed_name}}</em></strong>. We are sorry for that.</p><p>
+
+						Developers have been notified of the failure and will either subscribe you manually, or get in touch with you to get more information.</p><p>
+
+						Hoping this is a temporary problem in our infrastructure, you can try to <a href="{{add_url}}">re-suscribe to it manually from the dedicated page</a> in a moment.
+
+					{% endblocktrans %}</p>
+
+					{% if sub_exc %}
+						<p>{% blocktrans %}
+	    					For the record, if that means anything to you, the exact error is: <code>{{sub_exc}}</code>.
+						{% endblocktrans %}</p>
+					{% endif %}
+
+				{% endif %}
+
+			{% else %}
+				{# This is for staff members only… #}
+
+				<h1>{% trans "Success" %}</h1>
+				<div class="spacer25"></div>
+
+				<p><strong>{{ feeds|length }}</strong> feed(s) analyzed.</p>
+
+				{% for subfeed, created in feeds %}
+					<p>
+					{% with subfeed_name=subfeed.name %}
+						{% if created %}
+							{% blocktrans %}
+							Feed <em>{{ subfeed_name }}</em> created.
+							{% endblocktrans %}
+
+						{% else %}
+							{% blocktrans %}
+							Feed <em>{{ subfeed_name }}</em> already in 1flow.
+							{% endblocktrans %}
+
+						{% endif %}
+
+					{% endwith %}
+					</p>
+
+				{% endfor %}
+
+				<p>{% blocktrans %}
+				    <a href="javascript:window.open('', '_self', '');window.close()">Close this window/tab</a>.
+				{% endblocktrans %}</p>
+
+			{% endif %}
+
+		{% else %}
 
 			{% if subscribe %}
 
@@ -73,75 +152,34 @@
 			{% else %}
 				{# This is for staff members only… #}
 
+				<h1>{% trans "Success" %}</h1>
+				<div class="spacer25"></div>
 
-					<h1>{% trans "Success" %}</h1>
-					<div class="spacer25"></div>
+				<p><strong>{{ feeds|length }}</strong> feed(s) analyzed.</p>
 
-					<p>{% blocktrans %}
-						Feed <em>{{ feed_name }}</em> already in 1flow.</p><p>
+				{% for subfeed, created in feeds %}
+					<p>
+					{% with subfeed_name=subfeed.name %}
+						{% if created %}
+							{% blocktrans %}
+							Feed <em>{{ subfeed_name }}</em> created.
+							{% endblocktrans %}
 
-						<a href="javascript:window.open('', '_self', '');window.close()">Close this window/tab</a>.
-					{% endblocktrans %}</p>
+						{% else %}
+							{% blocktrans %}
+							Feed <em>{{ subfeed_name }}</em> already in 1flow.
+							{% endblocktrans %}
 
-
-			{% endif %}
-
-		{% else %}
-
-			{% if  subscribe %}
-
-				{% if subscription %}
-
-					<h1>{% trans "Success" %}</h1>
-					<div class="spacer25"></div>
-
-					{% with sub_id=subscription.id sub_name=subscription.name %}
-
-						<p>{% blocktrans %}
-							You are now subscribed to {{feed_name}}.</p><p>
-
-							As this feed was unknown to 1flow before, you have
-							contributed to making it better. Thank You!</p><p>
-
-							<a href="{{sel_url}}#{{sub_id}}">Go straight to your new subscription</a>, or <a href="javascript:window.open('', '_self', '');window.close()">close this window/tab</a>.
-						{% endblocktrans %}</p>
+						{% endif %}
 
 					{% endwith %}
+					</p>
 
-				{% else %}
+				{% endfor %}
 
-					<h1>{% trans "Bummer!" %}</h1>
-					<div class="spacer25"></div>
-
-					<p>{% blocktrans %}
-
-						<strong>We were not able to subscribe yourself to <em>{{feed_name}}</em></strong>. We are sorry for that.</p><p>
-
-						Developers have been notified of the failure and will either subscribe you manually, or get in touch with you to get more information.</p><p>
-
-						Hoping this is a temporary problem in our infrastructure, you can try to <a href="{{add_url}}">re-suscribe to it manually from the dedicated page</a> in a moment.
-
-					{% endblocktrans %}</p>
-
-					{% if sub_exc %}
-						<p>{% blocktrans %}
-	    					For the record, if that means anything to you, the exact error is: <code>{{sub_exc}}</code>.
-						{% endblocktrans %}</p>
-					{% endif %}
-
-				{% endif %}
-
-			{% else %}
-				{# This is for staff members only… #}
-
-					<h1>{% trans "Success" %}</h1>
-					<div class="spacer25"></div>
-
-					<p>{% blocktrans %}
-						Feed <em>{{ feed_name }}</em> created.</p><p>
-
-						<a href="javascript:window.open('', '_self', '');window.close()">Close this window/tab</a>.
-					{% endblocktrans %}</p>
+				<p>{% blocktrans %}
+				    <a href="javascript:window.open('', '_self', '');window.close()">Close this window/tab</a>.
+				{% endblocktrans %}</p>
 
 			{% endif %}
 
@@ -168,7 +206,7 @@
 
 	{% if feed_exc %}
 		<p>{% blocktrans %}
-			For the record, if that means anything to you, the exact error is: <code>{{feed_exc}}</code>.
+			For the record, if that means anything to you, the exact error is: <code>{{feed_exc}}</code>
 		{% endblocktrans %}</p>
 	{% endif %}
 
@@ -181,24 +219,28 @@
 <div class="row-fluid">
 	<div class="hero-unit span8 offset2 centered">
 
-		<p>
-		{% if not feed.languages %}
-			<span class="alert alert-warning">{% trans "no language!" %}</span>
-		{% endif %}
+		{% for feed, created in feeds %}
 
-		{% if not feed.description %}
-			<span class="alert alert-warning">{% trans "no description!" %}</span>
-		{% endif %}
+			<p>
+			{% if not feed.languages %}
+				<span class="alert alert-warning">{% trans "no language!" %}</span>
+			{% endif %}
 
-		{% if not feed.thumbnail_url %}
-			<span class="alert alert-warning">{% trans "no thumbnail!" %}</span>
-		{% endif %}
-		</p>
+			{% if not feed.description %}
+				<span class="alert alert-warning">{% trans "no description!" %}</span>
+			{% endif %}
 
-		<p>{% trans "Admin stuff:" %}
-				<a href="{{ settings.NONREL_ADMIN }}feed/{{ feed.id }}"
-					target="_blank">{{ feed.name }} – {{ feed.id }}</a>
-		</p>
+			{% if not feed.thumbnail_url %}
+				<span class="alert alert-warning">{% trans "no thumbnail!" %}</span>
+			{% endif %}
+			</p>
+
+			<p>{% trans "Admin stuff:" %}
+					<a href="{{ settings.NONREL_ADMIN }}feed/{{ feed.id }}"
+						target="_blank">{{ feed.name }} – {{ feed.id }}</a>
+			</p>
+
+		{% endfor %}
 
 	</div>
 {% endif %}

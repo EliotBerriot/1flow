@@ -1,0 +1,88 @@
+{% comment %}
+     tabindex="-1"
+
+    According to https://github.com/ivaynberg/select2/issues/1393
+    removing the tabindex makes select2 work again.
+
+{% endcomment %}
+<div id="share-read" class="modal hide fade">
+
+    {# <div class="modal-header"></div> #}
+
+    <form class="form form-horizontal" data-async data-target="#share-read"
+            action="{% url 'share_one' read.id %}" method="POST">
+        {% csrf_token %}
+
+        <div class="modal-body">
+
+{% with title=read.article.title %}
+{% absolute 'read_one' read.id as read_link %}
+
+            <!-- ———————————————————————————— share-one help sub-modal -->
+            <div id="share-read-fields-help" class="modal sub-modal hide">
+                <div class="modal-body">
+
+                {% filter markdown %}{% blocktrans with my_username=mongodb_user.username %}
+ The message you type will be integrated in the mail sent to your friends or colleagues, with a small exerpt of the article, and an image if the article has one.
+
+In your message, you can use the following fields:
+
+- `{username}`: the username of the person you share the article with (yours is **@{{ my_username }}**)
+- `{firstname}`: the first name of the person. If he/she has not given any, the username will be used instead.
+- `{fullname}`: usually, the first and last names of the person. If he/she has not given any, the username will be used instead.
+- `{title}`: the title of the article you want to share (here, it's *{{ title }}*).
+- `{link}`: the article public link in 1flow (here, it's [{{read_link}}]({{ read_link }})).
+                    {% endblocktrans %}{% endfilter %}
+
+                </div>
+
+                <div class="modal-footer">
+
+                    <a href="#" class="btn"
+                        data-dismiss="submodal">{% trans "Understood. Let me play now." %}</a>
+                </div>
+            </div>
+            <!-- ———————————————————————————— share-one help sub-modal -->
+
+        <button type="button" class="close" data-dismiss="modal" aria-hidden="true">&times;</button>
+
+        <div class="spacer25"></div>
+
+        <h3 class="control-group centered">{% blocktrans %}Share <em>{{title}}</em>{% endblocktrans %}</h3>
+
+        {% with hide_help_text=1 %}
+            {% include "widgets/forms/field-textarea.html" with field=form.recipients %}
+        {% endwith %}
+
+        {% if not mongodb_user.has_contacts %}
+
+            <div class="control-group centered"><a href="{% url 'import_contacts' %}?service=google" target="_blank">{% trans "Import your contacts" %}</a></div>
+
+        {% endif %}
+
+        <div class="accordion-heading centered">
+            <a class="accordion-toggle muted" data-toggle="collapse" href="#collapse-share-message">
+                {% trans "Would you like to customize the message?" %}
+            </a>
+        </div>
+        <div id="collapse-share-message" class="accordion-body collapse">
+            {% include "widgets/forms/field-textarea.html" with field=form.message %}
+        </div>
+
+        </div>
+        <div class="modal-footer">
+
+            {% url 'help' as help_url %}
+
+            <div class="pull-left muted">{% blocktrans %}
+                <a href="{{ help_url }}#sharing-features" target="_blank">What will happen when I hit “Send”?</a>
+            {% endblocktrans %}</div>
+
+        <a href="#" class="btn" data-dismiss="modal">{% trans "Cancel" %}</a>
+        <button type="submit" class="btn btn-primary">{% trans "Send" %}</a>
+    </form>
+
+{% endwith %}
+
+    </div>
+</div>

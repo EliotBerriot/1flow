@@ -405,6 +405,29 @@ body.modal-open {
   overflow: hidden;
 }
 
+// ——————————————————————————————————————————————————— Accordion with carret
+// http://stackoverflow.com/a/18330745/654755
+
+.accordion-caret .accordion-toggle:hover {
+    text-decoration: none;
+}
+.accordion-caret .accordion-toggle:hover span,
+.accordion-caret .accordion-toggle:hover strong {
+    text-decoration: underline;
+}
+.accordion-caret .accordion-toggle:before {
+    font-size: 25px;
+    vertical-align: -3px;
+}
+.accordion-caret .accordion-toggle:not(.collapsed):before {
+    content: "▾";
+    margin-right: 0px;
+}
+.accordion-caret .accordion-toggle.collapsed:before {
+    content: "▸";
+    margin-right: 0px;
+}
+
 
 // ——————————————————————————————————————————————————— Any Firefox in the room?
 

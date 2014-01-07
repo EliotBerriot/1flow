@@ -98,12 +98,12 @@ ARTICLE_ORPHANED_BASE = u'http://{0}/orphaned/article/'.format(
 USER_FEEDS_SITE_URL   = u'http://{0}'.format(settings.SITE_DOMAIN
                                              ) + u'/user/{user.id}/'
 SPECIAL_FEEDS_DATA = {
-    'sent_items'     : (USER_FEEDS_SITE_URL + 'sent',
-                        _(u'Items sent by {0}')),
-    'web_import'     : (USER_FEEDS_SITE_URL + 'imports',
-                        _(u'Imported items of {0}')),
-    'received_items' : (USER_FEEDS_SITE_URL + 'received',
-                        _(u'Inbox of {0}')),
+    'sent_items': (USER_FEEDS_SITE_URL + 'sent',
+                   _(u'Items sent by {0}')),
+    'web_import': (USER_FEEDS_SITE_URL + 'imports',
+                   _(u'Imported items of {0}')),
+    'received_items': (USER_FEEDS_SITE_URL + 'received',
+                       _(u'Inbox of {0}')),
 }
 
 
@@ -113,6 +113,18 @@ def lowername(objekt):
 
 
 class TreeCycleException(Exception):
+    """ Raised when a tree has a cycle. Obviously it should not have. """
+    pass
+
+
+class FeedIsHtmlPageException(Exception):
+    """ Raised when the parsed feed gives us an HTML content
+        instead of an XML (RSS/Atom) one. """
+    pass
+
+
+class FeedFetchException(Exception):
+    """ Raised when an RSS/Atom feed cannot be fetched, for any reason. """
     pass
 
 
@@ -305,9 +317,9 @@ class DocumentHelperMixin(object):
             # Having tasks not as methods because of Celery bugs forces
             # us to do strange things. We have to "guess" and lookup the
             # task name in the current module. OK, not *that* big deal.
-            self.nonrel_globals[_cls_name_lower_
-                                + '_replace_duplicate_everywhere'].delay(
-                                self.id, duplicate.id)
+            self.nonrel_globals[
+                _cls_name_lower_ + '_replace_duplicate_everywhere'].delay(
+                self.id, duplicate.id)
 
         except KeyError:
             LOGGER.warning(u'Object %s does not have a '
@@ -460,7 +472,7 @@ class DocumentTreeMixin(object):
                                        u'{1}. Setting the later parent of the '
                                        u'former would result in a cycle and '
                                        u'is not allowed.').format(
-                                            child.name, self.name))
+                                     child.name, self.name))
 
         self.update(add_to_set__children=child)
 
