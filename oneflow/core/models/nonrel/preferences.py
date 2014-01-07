@@ -260,6 +260,16 @@ class HomePreferences(EmbeddedDocument):
                                       u'the <strong>sources '
                                       u'selector</strong>.</span>'))
 
+    experimental_features = BooleanField(verbose_name=_(u'Activate '
+                                         u'experimental features'),
+                                         default=False,
+                                         help_text=_(u'Activate features that '
+                                                     u'are currently under '
+                                                     u'development, beiing '
+                                                     u'tested or privately '
+                                                     u'deployed. USE AT YOUR '
+                                                     u'OWN RISK!'))
+
     def get_template(self):
         return HomePreferences.style_templates.get(self.style)
 
