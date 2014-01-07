@@ -113,6 +113,18 @@ def lowername(objekt):
 
 
 class TreeCycleException(Exception):
+    """ Raised when a tree has a cycle. Obviously it should not have. """
+    pass
+
+
+class FeedIsHtmlPageException(Exception):
+    """ Raised when the parsed feed gives us an HTML content
+        instead of an XML (RSS/Atom) one. """
+    pass
+
+
+class FeedFetchException(Exception):
+    """ Raised when an RSS/Atom feed cannot be fetched, for any reason. """
     pass
 
 

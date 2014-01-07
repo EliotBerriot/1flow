@@ -611,7 +611,7 @@ $folder-border-width-default: 2px;
     .bookmarklet-container {
         float: right;
         min-height: 100px;
-        margin: 50px 20px;
+        margin: 10px 20px;
         text-align: center;
     }
 
@@ -631,12 +631,13 @@ $folder-border-width-default: 2px;
     }
 
     .select2-container {
-        width: 85%;
+        max-width: 80%;
+        width: inherit;
+        min-width: 45%;
     }
     input[type="text"]:last-child {
         width: 80%;
     }
-
     .or-choice {
         text-align: center;
         margin: 2em 40%;

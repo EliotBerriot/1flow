@@ -8,6 +8,8 @@ from statsd import statsd
 from celery import task
 from constance import config
 
+from xml.sax import SAXParseException
+
 from mongoengine import Q, Document, NULLIFY, PULL
 from mongoengine.fields import (IntField, StringField, URLField, BooleanField,
                                 ListField, ReferenceField, DateTimeField)
@@ -30,6 +32,8 @@ from ....base.utils.dateutils import (now, timedelta, today, datetime,
                                       is_naive, make_aware, utc)
 
 from .common import (DocumentHelperMixin,
+                     FeedIsHtmlPageException,
+                     FeedFetchException,
                      CONTENT_NOT_PARSED,
                      ORIGIN_TYPE_FEEDPARSER,
                      ORIGIN_TYPE_WEBIMPORT,
@@ -411,9 +415,48 @@ class Feed(Document, DocumentHelperMixin):
         return feed_url
 
     @classmethod
-    def create_feed_from_url(cls, feed_url, creator=None):
+    def create_feeds_from_url(cls, feed_url, creator=None, recurse=True):
+        """ Return a list of one or more tuple(s) ``(feed, created)``,
+            from a given URL.
+
+            If the URL given is an RSS/Atom URL, the method will create a feed
+            (if not already in the database), and will return it associated
+            with the ``created`` boolean, given if it was created now, or not.
+            For consistency, the tuple will be returned in a list, so that this
+            method *always* returns a list of tuples.
+
+            If the URL is a simple website one, it will be opened and parsed
+            to discover eventual RSS/Atom feeds referenced in the page headers,
+            and the method will return a list of tuples.
+
+            .. todo:: parse the content body to find any RSS/Atom feeds inside.
+                Will make it easy to parse http://www.bbc.co.uk/news/10628494
+
+            :param creator: a :class:`User` that will be set as the feed(s)
+                creator. This will allow to eventually give acheivements to
+                users, or at the contrary to ban them if they pollute the DB.
+
+            :param recurse: In case of a simple web URL, this method will be
+                called recursively. Subsequent calls will be non-recursive
+                by default. You can consider this argument to be "internal".
+        """
 
         feed_url = cls.prepare_feed_url(feed_url)
+
+        try:
+            feed = Feed.objects.get(url=feed_url)
+
+        except Feed.DoesNotExist:
+            # We will create it now.
+            pass
+
+        else:
+            # Get the right one for the user subscription.
+            if feed.duplicate_of:
+                return [(feed.duplicate_of, False)]
+
+            else:
+                return [(feed, False)]
 
         http_logger = HttpResponseLogProcessor()
         parsed_feed = feedparser.parse(feed_url, handlers=[http_logger])
@@ -422,25 +465,84 @@ class Feed(Document, DocumentHelperMixin):
         # Stop on HTTP errors before stopping on feedparser errors,
         # because he is much more lenient in many conditions.
         if feed_status in (400, 401, 402, 403, 404, 500, 502, 503):
-            raise Exception(u'Error {0} when fetching feed {1}'.format(
-                            feed_status, feed_url))
+            raise FeedFetchException(u'Error {0} when fetching feed {1}'.format(
+                feed_status, feed_url))
 
-        if cls.has_feedparser_error(parsed_feed):
-            raise Exception(u'Unparsable feed {0} (feedparser error)'.format(
-                            feed_url))
+        try:
+            cls.check_feedparser_error(parsed_feed)
 
-        # Wow. FeedParser creates a <anything>.feed
-        fp_feed = parsed_feed.feed
+        except FeedIsHtmlPageException:
+            if recurse:
+                new_feeds = []
 
-        return cls(name=fp_feed.get('title', u'Feed from {0}'.format(feed_url)),
-                   good_for_use=True,
-                   # Try the RSS description, then the Atom subtitle.
-                   description_en=fp_feed.get(
-                       'description',
-                       fp_feed.get('subtitle', u'')),
-                   url=feed_url,
-                   created_by=creator,
-                   site_url=clean_url(fp_feed.link or feed_url)).save()
+                for sub_url in cls.parse_feeds_urls(parsed_feed):
+                    try:
+                        new_feeds += cls.create_feeds_from_url(
+                            sub_url, creator=creator, recurse=False)
+
+                    except FeedIsHtmlPageException:
+                        # We don't warn for every URL we find,
+                        # most of them are CSS/JS/whatever ones.
+                        pass
+
+                    except:
+                        LOGGER.exception(u'Could not create a feed from '
+                                         u'recursed url {0} (from {1})'.format(
+                                             sub_url, feed_url))
+
+                if new_feeds:
+                    return new_feeds
+
+                raise
+
+            else:
+                raise
+
+        except Exception, e:
+            raise Exception(u'Unparsable feed {0}: {1}'.format(feed_url, e))
+
+        else:
+            # Wow. FeedParser creates a <anything>.feed
+            fp_feed = parsed_feed.feed
+
+            return [(cls(name=fp_feed.get('title',
+                         u'Feed from {0}'.format(feed_url)),
+                         good_for_use=True,
+                         # Try the RSS description, then the Atom subtitle.
+                         description_en=fp_feed.get(
+                             'description',
+                             fp_feed.get('subtitle', u'')),
+                         url=feed_url,
+                         created_by=creator,
+                         site_url=clean_url(fp_feed.get('link',
+                                            feed_url))).save(), True)]
+
+    @classmethod
+    def parse_feeds_urls(cls, parsed_feed, skip_comments=True):
+        """ Will yield any RSS/Atom links discovered into a badly parsed
+            feed. Luckily for us, feedparser does a lot in pre-munching
+            the data.
+        """
+
+        try:
+            links = parsed_feed.feed.links
+
+        except:
+            LOGGER.info(u'No links to discover in {0}'.format(
+                        parsed_feed.href))
+
+        else:
+
+            for link in links:
+                if link.get('rel', None) == 'alternate' \
+                    and link.get('type', None) in (u'application/rss+xml',
+                                                   u'application/atom+xml',
+                                                   u'text/xml', ) \
+                    and (not skip_comments
+                         or not u'comments for '
+                         in link.get('title', u'').lower()):
+
+                    yield link.get('href')
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -791,32 +893,47 @@ class Feed(Document, DocumentHelperMixin):
         return False
 
     @classmethod
-    def has_feedparser_error(cls, parsed_feed):
+    def check_feedparser_error(cls, parsed_feed):
 
         if parsed_feed.get('bozo', None) is None:
-            return False
+            return
 
         error = parsed_feed.get('bozo_exception', None)
+
+        if error is None:
+            return
 
         # Charset declaration problems are harmless (until they are not).
         if str(error).startswith('document declared as'):
             LOGGER.warning('Feed parsing: %s', error)
-            return False
+            return
 
-        # currently, I've encountered no error fatal to feedparser.
-        return False
-
-        # Thus, no need for this yet, but it's ready.
-        #self.error(u'feedparser error %s', str(error))
-
-        # Do not close for this: it can be a temporary error.
-        # if isinstance(exception, SAXParseException):
-        #     self.close(reason=str(exception))
-        #     return True
+        # Different error values were observed on:
+        #   - http://ntoll.org/
+        #       SAX: "mismatched tag"
+        #       One .html attribute
         #
-        #return False
+        #   - http://www.bbc.co.uk/
+        #       SAX: "not well-formed (invalid token)"
+        #       One .html attribute
         #
-        pass
+        #   - http://blog.1flow.io/ (Tumblr blog)
+        #       SAX: 'junk after document element'
+        #       *NO* .html attribute
+        #
+        # But we still have a quite-reliable common base to determine
+        # if the page is pure HTML or not. We have to hope HTML pages
+        # are > 2Kb nowadays, else small pages could still be detected
+        # as feeds.
+        if isinstance(error, SAXParseException) \
+            and len(parsed_feed.get('entries', [])) == 0 \
+            and parsed_feed.get('version', u'') == u'' \
+            and ('html' in parsed_feed.feed
+                 or not 'summary' in parsed_feed.feed
+                 or len(parsed_feed.feed.summary) > 2048):
+
+            raise FeedIsHtmlPageException(u'URL leads to an HTML page, '
+                                          u'not a real feed.')
 
     @staticmethod
     def throttle_fetch_interval(interval, news, mutualized,
@@ -943,8 +1060,11 @@ class Feed(Document, DocumentHelperMixin):
                        http_logger.log[-1]['url']), last_fetch=True)
             return
 
-        if self.has_feedparser_error(parsed_feed):
-            # the method will have already call self.error().
+        try:
+            Feed.check_feedparser_error(parsed_feed)
+
+        except Exception, e:
+            self.close(reason=str(e))
             return
 
         if feed_status == 304:

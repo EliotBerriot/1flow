@@ -49,7 +49,7 @@ from .forms import (FullUserCreationForm,
                     WebPagesImportForm,
                     ReadShareForm)
 from .tasks import import_google_reader_trigger
-from .models.nonrel import (Feed, Subscription,
+from .models.nonrel import (Feed, Subscription, FeedIsHtmlPageException,
                             Article, Read,
                             Folder, WebSite,
                             TreeCycleException, CONTENT_TYPES_FINAL)
@@ -310,13 +310,16 @@ def add_feed(request, feed_url, subscribe=True):
         who use a different URL. """
 
     user = request.user.mongo
+    feeds = []
     feed = subscription = None
     feed_exc = sub_exc = None
-    already_created = already_subscribed = False
+    created = already_subscribed = False
 
+    # Sanitize the URL as much as possible. Try to get the REFERER if the
+    # user manually typed the address in the URL bar of his browser.
     try:
         if not feed_url.startswith(u'http'):
-            if request.META['HTTP_REFERER']:
+            if request.META.get('HTTP_REFERER', None):
                 proto, host_and_port, remaining = WebSite.split_url(
                     request.META['HTTP_REFERER'])
 
@@ -335,53 +338,26 @@ def add_feed(request, feed_url, subscribe=True):
                          u'feed.'.format(feed_url))
         feed_exc = _(u'Very malformed url {0}').format(feed_url)
 
-    #
-    # Create the feed, and don't
-    # fail if it already exists.
-    #
-
     if feed_exc is None:
-
-        # We need to prepare the URL before fetching it, else it won't match
-        # special cases in the database, like feedburner URLs on which we
-        # add ?format=xml in pre-processing phases, or simply redirected URLs.
         try:
-            feed_url = Feed.prepare_feed_url(feed_url)
+            feeds = Feed.create_feeds_from_url(feed_url)
+
+        except FeedIsHtmlPageException:
+            feed_exc = _(u'The website at {0} does not seem '
+                         u'to provide any feed.').format(feed_url)
 
         except Exception, e:
-            feed_exc = _(u'URL {0} is invalid, its pre-processing '
-                         u'failed ({1})').format(feed_url, e)
+            feed_exc = _(u'Could not create any feed from '
+                         u'URL {0}: {1}').format(feed_url, e)
 
-        else:
-            try:
-                feed = Feed.objects.get(url=feed_url)
+    if feeds and subscribe:
 
-            except Feed.DoesNotExist:
+        # Taking the first is completely arbitrary, but better than nothing.
+        # TODO: enhance this with a nice form to show all feeds to the user.
+        feed, created = feeds[0]
 
-                try:
-                    feed = Feed.create_feed_from_url(feed_url, user)
-
-                except Exception, feed_exc:
-                    LOGGER.exception(u'Failed to create feed from url %s',
-                                     feed_url)
-
-            else:
-
-                # Get the right one. THE right one.
-                # The RIGHT one. The main. The only one.
-                # You get it.
-                if feed.duplicate_of:
-                    feed = feed.duplicate_of
-
-                already_created = True
-
-    if feed and subscribe:
-
-        #
         # Then subscribe the user to this feed,
         # and don't fail if he's already subscribed.
-        #
-
         try:
             subscription = Subscription.objects.get(user=user, feed=feed)
 
@@ -397,9 +373,9 @@ def add_feed(request, feed_url, subscribe=True):
         else:
             already_subscribed = True
 
-    return render(request, 'add-feed.html', {'feed': feed,
+    return render(request, 'add-feed.html', {
+                  'feed': feed, 'created': created, 'feeds': feeds,
                   'subscription': subscription,
-                  'already_created': already_created,
                   'already_subscribed': already_subscribed,
                   'subscribe': subscribe,
                   'feed_exc': feed_exc, 'sub_exc': sub_exc})
