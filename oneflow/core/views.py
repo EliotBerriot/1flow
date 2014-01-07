@@ -1181,7 +1181,10 @@ def import_contacts_authorized(request):
     user          = request.user.mongo
     dupes         = 0
     imported      = 0
-    current_mails = set(a.rsplit(u' ', 1)[1] for a in user.address_book)
+    address_book  = set(a.rsplit(u' ', 1)[1] for a in user.address_book)
+
+    current_mails = address_book.copy()
+    current_mails |= [f.email for f in user.friends]
 
     auth_token = gdata.gauth.OAuth2Token(
         client_id=settings.GOOGLE_OAUTH2_CLIENT_ID,
@@ -1203,31 +1206,63 @@ def import_contacts_authorized(request):
     auth_token.get_access_token(request.GET['code'])
     auth_token.authorize(client)
 
-    feed = client.GetContacts()
+    query = gdata.contacts.client.ContactsQuery()
+    #query.updated_min = '2008-01-01'
+    query.max_results = 1000
+
+    feed = client.GetContacts(q=query)
+
+    # The "all contacts" way, but it only return a limited subset of them.
+    #feed = client.GetContacts()
 
     for entry in feed.entry:
+
+        full_name = first_name = last_name = u''
+
         try:
-            name = entry.name.full_name.text
+            full_name = u'{0} {1}'.format(
+                entry.name.given_name.text,
+                entry.name.family_name.text
+            )
 
         except AttributeError:
             try:
-                name = u'{0} {1}'.format(
-                    entry.name.given_name.text,
-                    entry.name.family_name.text
-                )
+                full_name = entry.name.full_name.text
 
             except:
-                name = None
+                pass
+
+            else:
+                try:
+                    first_name, last_name = full_name.split(u' ', 1)
+
+                except:
+                    pass
+        else:
+            first_name = entry.name.given_name.text
+            last_name  = entry.name.family_name.text
 
         for email in entry.email:
+
             if email.primary and email.primary == 'true':
 
                 if email.address in current_mails:
-                    dupes += 1
+                    if email.address in address_book:
+                        user.ab_remove(email.address)
+
+                        # NOTE: User is the Django User model here.
+                        friend = User.get_or_create_friend(
+                            email=email.address,
+                            first_name=first_name,
+                            last_name=last_name
+                        )
+
+                    else:
+                        dupes += 1
 
                 else:
                     user.address_book.append(
-                        u'{0} {1}'.format(name or email.address,
+                        u'{0} {1}'.format(full_name or email.address,
                                           email.address))
                     imported += 1
 
