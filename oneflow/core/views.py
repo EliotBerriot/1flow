@@ -350,28 +350,29 @@ def add_feed(request, feed_url, subscribe=True):
             feed_exc = _(u'Could not create any feed from '
                          u'URL {0}: {1}').format(feed_url, e)
 
-    if feeds and subscribe:
-
+    if feeds:
         # Taking the first is completely arbitrary, but better than nothing.
         # TODO: enhance this with a nice form to show all feeds to the user.
         feed, created = feeds[0]
 
-        # Then subscribe the user to this feed,
-        # and don't fail if he's already subscribed.
-        try:
-            subscription = Subscription.objects.get(user=user, feed=feed)
+        if subscribe:
 
-        except Subscription.DoesNotExist:
+            # Then subscribe the user to this feed,
+            # and don't fail if he's already subscribed.
             try:
-                subscription = Subscription.subscribe_user_to_feed(
-                    user, feed, background=True)
+                subscription = Subscription.objects.get(user=user, feed=feed)
 
-            except Exception, sub_exc:
-                LOGGER.exception(u'Failed to subscribe user %s to feed %s',
-                                 user, feed)
+            except Subscription.DoesNotExist:
+                try:
+                    subscription = Subscription.subscribe_user_to_feed(
+                        user, feed, background=True)
 
-        else:
-            already_subscribed = True
+                except Exception, sub_exc:
+                    LOGGER.exception(u'Failed to subscribe user %s to feed %s',
+                                     user, feed)
+
+            else:
+                already_subscribed = True
 
     return render(request, 'add-feed.html', {
                   'feed': feed, 'created': created, 'feeds': feeds,
