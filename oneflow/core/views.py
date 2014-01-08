@@ -863,11 +863,11 @@ def read_one(request, read_id):
 
         if created:
             message = _(u'{1} shared <em>{0}</em> with you.').format(
-                read.article.title, read.user.get_fullname())
+                read.article.title, read.user.get_full_name())
         else:
             message = _(u'Recorded <em>{0}</em> as shared by {1} '
                         u'in your inbox.').format(
-                read.article.title, read.user.get_fullname())
+                read.article.title, read.user.get_full_name())
 
         messages.info(request, message, extra_tags='safe')
 
