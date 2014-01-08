@@ -15,6 +15,7 @@ from constance import config
 from mongoengine import Q
 
 from django.http import (HttpResponseRedirect,
+                         HttpResponsePermanentRedirect,
                          HttpResponseForbidden,
                          HttpResponseBadRequest,
                          HttpResponse)
@@ -871,7 +872,9 @@ def read_one(request, read_id):
 
         messages.info(request, message, extra_tags='safe')
 
-        read = cloned_read
+        return HttpResponsePermanentRedirect(
+            u'http://' + settings.SITE_DOMAIN
+            + reverse('read_one', args=(cloned_read.id,)))
 
     if request.is_ajax():
         template = u'snippets/read/read-one.html'
@@ -1113,9 +1116,9 @@ def import_web_url(request, url):
             read = Read.get_or_404(user=request.user.mongo,
                                    article=article)
 
-            return HttpResponseRedirect(u'http://' + settings.SITE_DOMAIN +
-                                        reverse('read_one',
-                                                args=(read.id,)))
+            return HttpResponsePermanentRedirect(
+                u'http://' + settings.SITE_DOMAIN
+                + reverse('read_one', args=(read.id,)))
 
     return render(request, 'import-web-url.html',
                   {'article': article, 'url': url,
