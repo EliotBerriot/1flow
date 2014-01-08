@@ -850,6 +850,25 @@ def read_one(request, read_id):
     except:
         return HttpResponseTemporaryServerError()
 
+    user = request.user.mongo
+
+    if read.user != user:
+        # Most probably, a user has shared
+        # his read_one() url with another user.
+
+        cloned_read = user.received_items_subscription.create_read(
+            article=read.article)
+
+        cloned_read.update(add_to_set__senders=read.user)
+
+        messages.info(request,
+                      _(u'Recorded <em>{0}</em> as shared by {1} '
+                        u'in your inbox.').format(
+                          read.article.title, read.user.get_fullname()),
+                      extra_tags='safe')
+
+        read = cloned_read
+
     if request.is_ajax():
         template = u'snippets/read/read-one.html'
 
