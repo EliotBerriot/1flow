@@ -359,7 +359,7 @@ class Subscription(Document, DocumentHelperMixin):
 
             # The `create_read()` methods is defined
             # in `nonrel/read.py` to avoid an import loop.
-            created = self.create_read(article, False, **params)
+            _, created = self.create_read(article, False, **params)
 
             if created:
                 missing += 1

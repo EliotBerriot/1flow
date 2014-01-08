@@ -912,7 +912,11 @@ User.reads         = property(User_reads_property_get)
 
 
 def Subscription_create_read_method(self, article, verbose=True, **kwargs):
+    """ Returns a tuple (read, created) with the new (or existing) read,
+        and ``created`` as a boolean indicating if it was actually created
+        or if it existed before.
 
+    """
     new_read = Read(article=article, user=self.user)
 
     try:
@@ -934,7 +938,7 @@ def Subscription_create_read_method(self, article, verbose=True, **kwargs):
         #       check part of Subscription.check_reads(). DRY.
         #
 
-        return False
+        return cur_read, False
 
     except:
         # We must not fail here, because often this method is called in
@@ -966,6 +970,6 @@ def Subscription_create_read_method(self, article, verbose=True, **kwargs):
         self.all_articles_count += 1
         self.unread_articles_count += 1
 
-        return True
+        return new_read, True
 
 Subscription.create_read = Subscription_create_read_method
