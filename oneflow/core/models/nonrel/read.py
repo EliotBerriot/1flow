@@ -926,7 +926,7 @@ def Subscription_create_read_method(self, article, verbose=True, **kwargs):
         if verbose:
             LOGGER.info(u'Duplicate read %s!', new_read)
 
-        cur_read = Read.objects(article=article, user=self.user)
+        cur_read = Read.objects.get(article=article, user=self.user)
 
         # If another feed has already created the read, be sure the
         # current one is registered in the read via the subscriptions.
