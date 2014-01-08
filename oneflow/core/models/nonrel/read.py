@@ -61,6 +61,11 @@ class Read(Document, DocumentHelperMixin):
     # slow. The hard work is done in `Subscription.post_delete_task()`.
     subscriptions = ListField(ReferenceField(Subscription))
 
+    senders = ListField(ReferenceField(User), verbose_name=_(u'Senders'),
+                        help_text=_(u'All the users that have shared the '
+                                    u'article with the current owner of '
+                                    u'this read.'))
+
     date_created = DateTimeField(default=now)
 
     is_good   = BooleanField(verbose_name=_('good for use?'),
