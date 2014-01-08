@@ -856,16 +856,20 @@ def read_one(request, read_id):
         # Most probably, a user has shared
         # his read_one() url with another user.
 
-        cloned_read = user.received_items_subscription.create_read(
+        cloned_read, created = user.received_items_subscription.create_read(
             article=read.article)
 
         cloned_read.update(add_to_set__senders=read.user)
 
-        messages.info(request,
-                      _(u'Recorded <em>{0}</em> as shared by {1} '
+        if created:
+            message = _(u'{1} shared <em>{0}</em> with you.').format(
+                read.article.title, read.user.get_fullname())
+        else:
+            message = _(u'Recorded <em>{0}</em> as shared by {1} '
                         u'in your inbox.').format(
-                          read.article.title, read.user.get_fullname()),
-                      extra_tags='safe')
+                read.article.title, read.user.get_fullname())
+
+        messages.info(request, message, extra_tags='safe')
 
         read = cloned_read
 
