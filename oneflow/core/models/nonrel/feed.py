@@ -267,7 +267,7 @@ class Feed(Document, DocumentHelperMixin):
             part of the source selector, eg feeds marked as usable by
             the administrators, not closed. """
 
-        return cls.objects(restricted__ne=True).filter(
+        return cls.objects.filter(
             # not internal, still open and validated by a human.
             (Q(is_internal__ne=True)
              | Q(closed__ne=True)
