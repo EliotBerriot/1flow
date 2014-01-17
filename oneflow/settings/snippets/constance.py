@@ -11,6 +11,13 @@ CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 
 CONSTANCE_CONFIG = {
 
+    'STAFF_HAS_FULL_ACCESS': (False, ugettext(u'Allow staff to have full '
+                              u'access to anything. We use this mostly for '
+                              u'debugging purposes, but this can be dangerous '
+                              u'and liberticide in some conditions. NOTE: '
+                              u'disabling this does not prevent any malicious '
+                              u'code which bypasses this configuration flag.')),
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
 
     'DOCUMENTS_ARCHIVING_DISABLED': (False, ugettext(u'Set this to True to '

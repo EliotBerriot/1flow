@@ -6,6 +6,7 @@ import logging
 from random import randint
 
 from celery import task
+from constance import config
 
 from pymongo.errors import DuplicateKeyError
 
@@ -335,7 +336,8 @@ class User(Document, DocumentHelperMixin):
     @property
     def is_staff_or_superuser_and_enabled(self):
         return ((self.is_staff or self.is_superuser)
-                and self.preferences.staff.super_powers_enabled)
+                and self.preferences.staff.super_powers_enabled
+                and config.STAFF_HAS_FULL_ACCESS)
 
     # def has_permission(self, permission, **kwargs):
     #     if self.is_staff_or_superuser_and_enabled:
