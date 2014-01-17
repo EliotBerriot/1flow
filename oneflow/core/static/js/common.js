@@ -722,14 +722,19 @@ function on_hovered(func_if_found, func_if_not_found){
 
 function handle_modal(e) {
 
+    //console.debug("handle_modal");
+
     e.preventDefault();
 
     var url = $(this).attr('href');
 
     if (url.indexOf('#') == 0) {
-        $(url).modal('open');
+        //console.debug("handle_modal simple");
+
+        $("#" + $(this).data('target')).modal('show');
 
     } else {
+        //console.debug("handle_modal with input auto-focus");
 
         $.get(url, function(data) {
 
@@ -853,6 +858,8 @@ function setup_everything(parent) {
     // You can call it safely on any ajax-incoming DOM fragment
     // to setup the same things on "new" parts of the page without
     // re-walking the whole page.
+
+    console.debug('Setup everything...');
 
     try {
         if (!Modernizr.touch){
