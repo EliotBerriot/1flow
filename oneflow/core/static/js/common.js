@@ -33,7 +33,12 @@ function start_checking_for_needed_updates() {
     setInterval(check_needs_update, 1000);
 }
 
-$.pnotify.defaults.delay = 5000;
+try {
+    $.pnotify.defaults.delay = 5000;
+} catch (err) {
+    console.log('Pines notify seems not to be present: ' + err);
+}
+
 
 // bindable_hovered NOT USED YET
 //var bindable_hovered = null;
@@ -55,7 +60,7 @@ try {
 });
 
 } catch (err) {
-    console.log("Could not start hammer: " + err);
+    console.log("Hammer seems not to be present: " + err);
     var hammertime = null;
 }
 
@@ -849,9 +854,13 @@ function setup_everything(parent) {
     // to setup the same things on "new" parts of the page without
     // re-walking the whole page.
 
-    if (!Modernizr.touch){
-        setup_tooltips(parent);
-        setup_hover_muters(parent);
+    try {
+        if (!Modernizr.touch){
+            setup_tooltips(parent);
+            setup_hover_muters(parent);
+        }
+    } catch (err) {
+        console.log('Modernizr seems not to be present: ' + err);
     }
 
     setup_popovers(parent);
