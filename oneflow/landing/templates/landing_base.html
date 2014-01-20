@@ -83,6 +83,60 @@
 </section>
 
 <footer id="footer" class="footer">
+
+  <div class="modal hide fade in" id="license-and-copyrights">
+    <div class="modal-header">
+      <h1>{% trans "1flow's copyrights & licenses" %}</h1>
+    </div>
+    <div class="modal-body">
+      {% filter markdown %}{% blocktrans %}
+
+## 1flow is free software
+
+Under the terms of the [GNU Affero General Public License version 3][affero] or later.
+
+You can always find the latest source code, and the source code of the version running this web application, in [the public repository][repo].
+
+
+### Graphical theme license
+
+Please note that **the graphical theme is not libre software**.
+This is stated and explained in details in the source code, in the `COPYING` file. This will change in the future as soon as a libre theme is contributed to the project, or if we find a deal with the theme creator.
+
+
+### 1flow.io help images
+
+As of 2014-01-17, [Matthieu Chaignot][mchai] offered these images under the CC-BY-SA 4.0 license. This could eventually change, but only in the way to make the new license compatible with the AGPLv3, if the current is proven not to be.
+
+
+## Copyrights
+
+- Copyright 2013-2014 [Olivier Cortès][kmk23] for the source code, most of the website design, the help/features text content, the project persona.
+- Copyright 2013 [Matthieu Chaignot][mchai] for the landing page contents and all email contents, the help/features images and the landing page background image,
+- Copyright 2013 K.P. for parts of design on the reading lists,
+- Copyright a lot of OpenSource® and Free Software developers for all software components on which 1flow is built (Python, Django, PostgreSQL, MongoDB, Redis, Bootstrap, jQuery, and a lot more).
+
+
+## Database contents copyrights
+
+The contents of the `1flow.io` database (mostly plain text or HTML, because we don't host images nor videos) are copyrights of their respective owner in their respective countries.
+
+In this case, licences may vary a lot given the content (some are CC-*, some are all rights reserved), and you may use the `1flow.io` platform at your own risk on these content, given what you do with it.
+
+  [affero]: http://www.gnu.org/licenses/agpl-3.0.html
+  [repo]: https://github.com/1flow/
+  [kmk23]: https://twitter.com/Karmak23
+  [mchai]: https://twitter.com/mchaignot
+
+{% endblocktrans %}{% endfilter %}
+
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-primary" data-dismiss="modal"
+          data-target="license-and-copyrights">{% trans "Agreed" %}</button>
+    </div>
+  </div>
+
   <div class="container">
     <div class="row-fluid">
       <div class="span12">
@@ -93,7 +147,9 @@
           <div class="pull-left copyright" style="padding-left: 100px">version {{ oneflow_version }}</div>
         {% endif %}
 
-        <div class="pull-right copyright">{% if footer_copyright %}{{ footer_copyright|markdown }}{% else %}{% trans "©2013, all right reserved | <strong>1flow</strong> team" %}{% endif %}</div>
+        <div class="pull-right copyright"><a href="#" data-toggle="modal"
+            data-target="license-and-copyrights">{% trans "1flow is free software; copyright 2013-2014 Olivier Cortès and others" %}</a>
+        </div>
       </div>
     </div>
   </div>
@@ -101,12 +157,22 @@
 {% endblock body %}
 
 {% block extrajs_footer %}
-  {% compressed_js 'bootstrap' %}
+  {% compressed_js 'vendor-all' %}
+  {% compressed_js 'core' %}
 
   <script type="text/javascript">
+
+    // Already done by core.
+    //common_init();
+
     $('a.link-tooltip').tooltip();
+
     try {
         $("#lang-flags input[type=image]").tooltip({placement: 'bottom'});
-    } catch(err) {};
+
+    } catch(err) {
+      console.log('Lang flags seem to not be here: ' + err)
+    };
+
   </script>
 {% endblock extrajs_footer %}
