@@ -46,8 +46,8 @@ CACHES = {
 # and production-like behaviour check. But in case I need to
 # disable it, just uncomment the next two lines.
 #
-# if DEBUG:
-#    CACHES['default']['BACKEND']  = 'django.core.cache.backends.dummy.DummyCache'
+if DEBUG:
+   CACHES['default']['BACKEND']  = 'django.core.cache.backends.dummy.DummyCache'
 
 SELECT2_MEMCACHE_HOST = '127.0.0.1'
 SELECT2_MEMCACHE_PORT = '11211'
