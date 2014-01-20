@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-07 15:13+0100\n"
-"PO-Revision-Date: 2014-01-07 15:18+0009\n"
+"POT-Creation-Date: 2014-01-20 09:24+0100\n"
+"PO-Revision-Date: 2014-01-20 11:31+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,144 +19,144 @@ msgstr ""
 "X-Generator: Poedit 1.5.5\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: admin.py:50
+#: admin.py:69
 msgid "Google Reader import"
 msgstr "Import Google Reader"
 
-#: admin.py:51
+#: admin.py:70
 msgid "Google Reader imports"
 msgstr "Imports Google Reader"
 
-#: admin.py:78
+#: admin.py:97
 msgid "articles"
 msgstr "articles"
 
-#: admin.py:91
+#: admin.py:110
 msgid "feeds"
 msgstr "flux"
 
-#: admin.py:105
+#: admin.py:124
 msgctxt "noun, plural"
 msgid "reads"
 msgstr "lectures"
 
-#: admin.py:118 models/nonrel/read.py:260 models/nonrel/read.py:269
+#: admin.py:137 models/nonrel/read.py:284 models/nonrel/read.py:293
 #: templates/read-endless.html:62 templates/read-endless.html.py:94
 #: templates/snippets/selector/folder.html:37
 #: templates/snippets/selector/subscription.html:40
 msgid "starred"
 msgstr "favoris"
 
-#: admin.py:131
+#: admin.py:150
 msgid "executed"
 msgstr "exécuté"
 
-#: admin.py:147
+#: admin.py:166
 msgid "duration"
 msgstr "durée"
 
-#: admin.py:161
+#: admin.py:180
 msgid "ETA"
 msgstr "fin"
 
-#: admin.py:173
+#: admin.py:192
 msgid "stop"
 msgstr "arrêter"
 
-#: admin.py:179
+#: admin.py:198
 msgid "start"
 msgstr "démarrer"
 
-#: admin.py:180
+#: admin.py:199
 msgid "restart"
 msgstr "relancer"
 
-#: admin.py:184
+#: admin.py:203
 msgid "import"
 msgstr "import"
 
-#: admin.py:194
+#: admin.py:213
 msgid "deny"
 msgstr "bloquer"
 
-#: admin.py:194
+#: admin.py:213
 msgid "allow"
 msgstr "autoriser"
 
-#: admin.py:196
+#: admin.py:215
 msgid "Permission"
 msgstr "Permission"
 
-#: admin.py:233
+#: admin.py:252
 msgid "Parents"
 msgstr "Parents"
 
-#: admin.py:247
+#: admin.py:266
 msgid "Children"
 msgstr "Enfants"
 
-#: admin.py:295
+#: admin.py:314
 msgid "Staff?"
 msgstr "Staff ?"
 
-#: admin.py:303
+#: admin.py:322
 msgid "Superuser?"
 msgstr "Super-utilisateur ?"
 
-#: admin.py:397 models/nonrel/article.py:195 models/nonrel/read.py:147
-#: models/nonrel/subscription.py:119
+#: admin.py:416 models/nonrel/article.py:214 models/nonrel/read.py:171
+#: models/nonrel/subscription.py:138
 msgid "Tags"
 msgstr "Tags"
 
-#: admin.py:411 models/nonrel/article.py:260 models/nonrel/tag.py:63
+#: admin.py:430 models/nonrel/article.py:279 models/nonrel/tag.py:82
 msgid "Duplicate of"
 msgstr "Duplicata de"
 
-#: admin.py:422 models/nonrel/article.py:219
+#: admin.py:441 models/nonrel/article.py:238
 msgid "Content"
 msgstr "Contenu"
 
-#: admin.py:428
+#: admin.py:447
 msgid "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%\">•••</span>"
 msgstr "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%\">•••</span>"
 
-#: admin.py:435
+#: admin.py:454
 msgid "Fetch err."
 msgstr "Err. récup."
 
-#: admin.py:441
+#: admin.py:460
 msgid "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%;\">•••</span>"
 msgstr "<span title=\"{0}\" style=\"cursor: pointer; font-size: 300%;\">•••</span>"
 
-#: admin.py:448
+#: admin.py:467
 msgid "URL err."
 msgstr "Erreur d'URL"
 
-#: admin.py:505
+#: admin.py:524
 msgid "User"
 msgstr "Utilisateur"
 
-#: admin.py:521
+#: admin.py:540
 msgid "Article"
 msgstr "Article"
 
-#: admin.py:536 forms/selector.py:34
+#: admin.py:555 forms/selector.py:53
 msgid "Subscriptions"
 msgstr "Abonnements"
 
-#: admin.py:646
+#: admin.py:665
 msgid "ID"
 msgstr "ID"
 
-#: admin.py:659
+#: admin.py:678
 msgid "URLs"
 msgstr "URLs"
 
-#: admin.py:673
+#: admin.py:692
 msgid "Dupe of"
 msgstr "Dupe de"
 
-#: admin.py:685
+#: admin.py:704
 msgid ""
 "<span title=\"Last 3 errors:\n"
 "{0}\" style=\"cursor: pointer\">{1} error(s)</span>"
@@ -164,91 +164,91 @@ msgstr ""
 "<span title=\"3 dernières erreurs :\n"
 "{0}\" style=\"cursor: pointer\">{1} erreur(s)</span>"
 
-#: admin.py:688
+#: admin.py:707
 msgid "{0}: {1}"
 msgstr "{0} : {1}"
 
-#: admin.py:694
+#: admin.py:713
 msgid "Errors"
 msgstr "Erreurs"
 
-#: admin.py:702
+#: admin.py:721
 msgid "Restr.?"
 msgstr "Restr. ?"
 
-#: admin.py:710
+#: admin.py:729
 msgid "Sys?"
 msgstr "Sys ?"
 
-#: admin.py:718
+#: admin.py:737
 msgid "Shown?"
 msgstr "Affiché ?"
 
-#: admin.py:726
+#: admin.py:745
 msgid "Recent"
 msgstr "Récents"
 
-#: admin.py:733
+#: admin.py:752
 msgid "Total"
 msgstr "Total"
 
-#: admin.py:744
+#: admin.py:763
 msgid "Latest"
 msgstr "Derniers"
 
-#: admin.py:752
+#: admin.py:771
 msgid "Added"
 msgstr "Ajouté(e)"
 
-#: admin.py:763
+#: admin.py:782
 msgid "Interval"
 msgstr "Intervalle"
 
-#: admin.py:772
+#: admin.py:791
 msgid "never"
 msgstr "jamais"
 
-#: admin.py:777
+#: admin.py:796
 msgid "Refreshed"
 msgstr "Rafraîchi(e)"
 
-#: admin.py:784
+#: admin.py:803
 msgid "Subs."
 msgstr "Sous…"
 
-#: admin.py:801
+#: admin.py:820
 msgid "The feed is open"
 msgstr "Le flux est ouvert"
 
-#: admin.py:803
+#: admin.py:822
 msgid "Run?"
 msgstr "Actif ?"
 
-#: admin.py:829
+#: admin.py:848
 msgid "Main"
 msgstr "Principal"
 
-#: admin.py:834
+#: admin.py:853
 msgid "Translators notes"
 msgstr "Notes des traducteurs"
 
-#: admin.py:841
+#: admin.py:860
 msgid "Contents (English)"
 msgstr "Contenu (Anglais)"
 
-#: admin.py:847
+#: admin.py:866
 msgid "Contents (French)"
 msgstr "Contenu (Français)"
 
-#: tasks.py:596
+#: tasks.py:615
 msgid "Forcing all feed refresh…"
 msgstr "Déclenchement forcé du rafraîchissement de tous les flux…"
 
-#: tasks.py:739
+#: tasks.py:758
 msgid "Reminder: {0} feed(s) closed in last {1} day(s)"
 msgstr "Rappel : {0} flux fermé(s) ce(s) {1} dernier(s) jour(s)"
 
-#: tasks.py:741
+#: tasks.py:760
 msgid ""
 "\n"
 "\n"
@@ -266,229 +266,229 @@ msgstr ""
 "\n"
 "Vous pouvez manuellement ré-ouvrir n'importe lequel de ces flux directement depuis l'interface d'administration de 1flow.\n"
 
-#: urls.py:33
+#: urls.py:52
 msgctxt "part of url regex"
 msgid "feed"
 msgstr "flux"
 
-#: urls.py:34
+#: urls.py:53
 msgctxt "part of url regex"
 msgid "folder"
 msgstr "dossier"
 
-#: urls.py:42
+#: urls.py:61
 msgid "^read/"
 msgstr "^lire/"
 
-#: urls.py:51
+#: urls.py:70
 msgid "^read/all/"
 msgstr "^lire/tous/"
 
-#: urls.py:75
+#: urls.py:94
 msgid "^home/$"
 msgstr "^accueil/$"
 
-#: urls.py:77
+#: urls.py:96
 msgid "^skip-welcome-beta/$"
 msgstr "^skip-welcome-beta/$"
 
-#: urls.py:81
+#: urls.py:100
 msgid "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 msgstr "^preference/(?P<base>\\w+)[\\./](?P<sub>\\w+)/(?P<value>\\w+)/?$"
 
-#: urls.py:86
+#: urls.py:105
 msgid "^preference/toggle/(?P<base>\\w+)[\\./](?P<sub>\\w+)/?$"
 msgstr "^preference/basculer/(?P<base>\\w+)[\\./](?P<sub>\\w+)/?$"
 
-#: urls.py:91
+#: urls.py:110
 msgid "^preferences/$"
 msgstr "^preferences/$"
 
-#: urls.py:94
+#: urls.py:113
 msgid "^profile/$"
 msgstr "^profil/$"
 
-#: urls.py:97
+#: urls.py:116
 msgid "^read/all/$"
 msgstr "^lire/tous/$"
 
-#: urls.py:100
+#: urls.py:119
 msgid "^read/meta/([0-9a-f]{24,24})/$"
 msgstr "^lire/meta/([0-9a-f]{24,24})/$"
 
-#: urls.py:104
+#: urls.py:123
 msgid "^read/$"
 msgstr "^lire/$"
 
-#: urls.py:108
+#: urls.py:127
 msgid "^article/([0-9a-f]{24,24})/$"
 msgstr "^article/([0-9a-f]{24,24})/$"
 
-#: urls.py:118
+#: urls.py:137
 msgid "^read/([0-9a-f]{24,24})/$"
 msgstr "^lire/([0-9a-f]{24,24})/$"
 
-#: urls.py:122
+#: urls.py:141
 msgid "^share/([0-9a-f]{24,24})/$"
 msgstr "^partager/([0-9a-f]{24,24})/$"
 
-#: urls.py:129
+#: urls.py:148
 msgid "^json/user-address-book/$"
 msgstr "^json/user-address-book/$"
 
-#: urls.py:133
+#: urls.py:152
 msgid "^selector/$"
 msgstr "^selecteur/$"
 
-#: urls.py:137
+#: urls.py:156
 msgid "^folder/new/$"
 msgstr "^dossier/nouveau/$"
 
-#: urls.py:141
+#: urls.py:160
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:145
+#: urls.py:164
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:151
+#: urls.py:170
 msgid "^feed/add/nosub/(.*)$"
 msgstr "^flux/ajouter/pasdab/(.*)$"
 
-#: urls.py:155
+#: urls.py:174
 msgid "^feed/add/(.*)$"
 msgstr "^flux/ajouter/(.*)$"
 
-#: urls.py:160
+#: urls.py:179
 msgid "^subscription/new/$"
 msgstr "^abonnement/nouveau/$"
 
-#: urls.py:168
+#: urls.py:187
 msgid "^json/feeds-completer/$"
 msgstr "^json/feeds-completer/$"
 
-#: urls.py:173
+#: urls.py:192
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:177
+#: urls.py:196
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:181
+#: urls.py:200
 msgid "^import/contacts/$"
 msgstr "^importer/contacts/$"
 
-#: urls.py:191
+#: urls.py:210
 msgid "^import/url/(.*)$"
 msgstr "^importer/url/(.*)$"
 
-#: urls.py:195
+#: urls.py:214
 msgid "^status/article/([0-9a-f]{24,24})/$"
 msgstr "^etat/article/([0-9a-f]{24,24})/$"
 
-#: urls.py:199
+#: urls.py:218
 msgid "^webimport/$"
 msgstr "^import-web/$"
 
-#: urls.py:203
+#: urls.py:222
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:206
+#: urls.py:225
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:208
+#: urls.py:227
 msgid "^register/$"
 msgstr "^enregistrement/$"
 
-#: urls.py:209
+#: urls.py:228
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:214
+#: urls.py:233
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:217
+#: urls.py:236
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:220
+#: urls.py:239
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:223
+#: urls.py:242
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:228
+#: urls.py:247
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:237
+#: urls.py:256
 msgid "^signin/$"
 msgstr "^connexion/$"
 
-#: urls.py:239
+#: urls.py:258
 msgid "^signout/$"
 msgstr "^deconnexion/$"
 
-#: views.py:226
+#: views.py:240
 msgid "Save <em>{0}</em> failed: {1}"
 msgstr "Enregistrement de <em>{0}</em> impossible : {1}"
 
-#: views.py:231
+#: views.py:245
 msgid "Folder <em>{0}</em> successfully {1}."
 msgstr "Dossier <em>{0}</em> {1} avec succès."
 
-#: views.py:232 models/nonrel/feed.py:196
+#: views.py:246 models/nonrel/feed.py:215
 msgid "modified"
 msgstr "modifié"
 
-#: views.py:233
+#: views.py:247
 msgid "created"
 msgstr "créé"
 
-#: views.py:238
+#: views.py:252
 msgid "Could not {0} folder: {1}."
 msgstr "Impossible de {0} le dossier : {1}."
 
-#: views.py:239
+#: views.py:253
 msgid "modify"
 msgstr "de modifier"
 
-#: views.py:239
+#: views.py:253
 msgid "create"
 msgstr "de créer"
 
-#: views.py:284
+#: views.py:298
 msgid "Subscription <em>{0}</em> successfully modified."
 msgstr "Abonnement <em>{0}</em> modifié avec succès."
 
-#: views.py:289
+#: views.py:303
 msgid "Could not save subscription: {0}."
 msgstr "Impossible d'enregistrer l'abonnement : {0}."
 
-#: views.py:334
+#: views.py:348
 msgid "Malformed URL {0}"
 msgstr "URL {0} mal-formée"
 
-#: views.py:339
+#: views.py:353
 msgid "Very malformed url {0}"
 msgstr "URL {0} très mal-formée"
 
-#: views.py:346
+#: views.py:360
 msgid "The website at {0} does not seem to provide any feed."
 msgstr "Le site web {0} semble ne proposer aucun flux."
 
-#: views.py:350
+#: views.py:364
 msgid "Could not create any feed from URL {0}: {1}"
 msgstr "Impossible de créer un flux à partir de l'adresse {0} : {1}"
 
-#: views.py:392
+#: views.py:407
 msgid ""
 "Successfully subscribed to {0} streams. Articles are being added "
 "progressively, thanks for your patience."
@@ -496,74 +496,92 @@ msgstr ""
 "Abonné à {0} flux avec succès. Les articles sont en train d'être importés "
 "petit-à-petit, merci de votre patience."
 
-#: views.py:414
+#: views.py:429
 msgid "Subscription <em>{0}</em> successfully deleted."
 msgstr "Abonnement <em>{0}</em> résilié avec succès."
 
-#: views.py:649
+#: views.py:664
 #, python-format
 msgid " (%(count)s subscription)"
 msgid_plural " (%(count)s subscriptions)"
 msgstr[0] " (%(count)s abonnement)"
 msgstr[1] " (%(count)s abonnements)"
 
-#: views.py:657
+#: views.py:672
 #, python-format
 msgid "In your <span class=\"hide\">%(count)s</span> subscription"
 msgid_plural "In your %(count)s subscriptions"
 msgstr[0] "Dans votre <span class=\"hide\">%(count)s</span> abonnement"
 msgstr[1] "Dans vos %(count)s abonnements"
 
-#: views.py:764
+#: views.py:703 views.py:721
+msgid ""
+"As administrator, you are accessing the feed of another user. USE WITH "
+"CAUTION."
+msgstr ""
+"Vous accédez au flux d'un autre utilisateur en tant qu'administrateur. "
+"AGISSEZ AVEC PRUDENCE."
+
+#: views.py:790
 msgid "no item"
 msgstr "aucun élément"
 
-#: views.py:884
+#: views.py:890
+msgid "{1} shared <em>{0}</em> with you."
+msgstr "{1} a partagé <em>{0}</em> avec vous."
+
+#: views.py:893
+msgid "Recorded <em>{0}</em> as shared by {1} in your inbox."
+msgstr ""
+"<em>{0}</em> a été enregistré dans votre boîte de réception, comme partagé "
+"par {1}."
+
+#: views.py:935
 msgid "Share article with <code>{0}</code> failed: {1}"
 msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
 
-#: views.py:890
+#: views.py:941
 msgid "Successfully shared <em>{0}</em> with {1} persons"
 msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
 
-#: views.py:1366
+#: views.py:1403
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:1370
+#: views.py:1407
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:1374
+#: views.py:1411
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:1381
+#: views.py:1418
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:1385
+#: views.py:1422
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:1391
+#: views.py:1428
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:1394
+#: views.py:1431
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
-#: forms/read.py:20
+#: forms/read.py:39
 msgid "Message"
 msgstr "Message"
 
-#: forms/read.py:21
+#: forms/read.py:40
 msgid ""
 "Type any text you want, in <a href=\"#share-read-fields-help\" "
 "role=\"button\" data-toggle=\"submodal\" data-target=\"#\">simple text <i "
@@ -573,12 +591,11 @@ msgstr ""
 "role=\"button\" data-toggle=\"submodal\" data-target=\"#\">texte simple <i "
 "class=\"icon-question-sign\"></i></a>."
 
-#: forms/read.py:34
+#: forms/read.py:53
 msgid ""
 "Hi {{fullname}},\n"
 "\n"
-"Here is the item “{{title}}”, you may find it interesting.\n"
-"Read it on 1flow:\n"
+"I wanted to share this article “{{title}}” that you may find interesting. Read it on 1flow:\n"
 "\n"
 "{{link}}\n"
 "\n"
@@ -588,7 +605,7 @@ msgid ""
 msgstr ""
 "Bonjour {{fullname}},\n"
 "\n"
-"Voici l'article « {{title}} », tu pourrais le trouver intéressant.\n"
+"Voici l'article « {{title}} », je pense qu'il pourrait t'intéresser.\n"
 "Lis-le sur 1flow :\n"
 "\n"
 "{{link}}\n"
@@ -597,32 +614,32 @@ msgstr ""
 "--\n"
 "{0}"
 
-#: forms/read.py:44
+#: forms/read.py:63
 msgid "Share with"
 msgstr "Partager avec"
 
-#: forms/read.py:47
+#: forms/read.py:66
 msgid "Type to auto-complete, or separate new email addresses with commas."
 msgstr ""
 "Tapez pour obtenir une complétion automatique, ou séparez les nouvelles "
 "addresses e-mail par des virgules."
 
-#: forms/read.py:72
+#: forms/read.py:91
 #, python-format
 msgid ""
 "Your message does not validate. Please check for missing brackets or typos "
 "in fields names; raw error: %s."
 msgstr ""
 
-#: forms/selector.py:29 forms/selector.py:244
+#: forms/selector.py:48 forms/selector.py:263
 msgid "(None)"
 msgstr "(aucun)"
 
-#: forms/selector.py:30 models/nonrel/folder.py:64
+#: forms/selector.py:49 models/nonrel/folder.py:83
 msgid "Parent folder"
 msgstr "Dossier parent"
 
-#: forms/selector.py:36
+#: forms/selector.py:55
 msgid ""
 "These are the ones held directly by the folder; they are displayed above "
 "subfolders. There can be none, if you prefer dispatching your subscriptions "
@@ -632,35 +649,35 @@ msgstr ""
 "dessus des sous-dossiers. Il peut n'y en avoir aucun, si vous préférez "
 "répartir vos abonnements uniquement en sous-dossiers."
 
-#: forms/selector.py:121
+#: forms/selector.py:140
 msgid "A top folder by that name already exists."
 msgstr "Un dossier de premier niveau avec ce nom existe déjà."
 
-#: forms/selector.py:124
+#: forms/selector.py:143
 msgid "A folder by that name already exists at the same place."
 msgstr "Un dossier portant le même nom existe déjà au même endroit."
 
-#: forms/selector.py:236 models/nonrel/subscription.py:124
+#: forms/selector.py:255 models/nonrel/subscription.py:143
 msgid "Folders"
 msgstr "Dossiers"
 
-#: forms/selector.py:243
+#: forms/selector.py:262
 msgid "Folder"
 msgstr "Dossier"
 
-#: forms/selector.py:283
+#: forms/selector.py:302
 msgid "Search 1flow's streams"
 msgstr "Cherchez dans 1flow"
 
-#: forms/selector.py:285
+#: forms/selector.py:304
 msgid "Enter an URL"
 msgstr "Saississez une URL"
 
-#: forms/selector.py:306
+#: forms/selector.py:325
 msgid "Select feed(s) from the {0} referenced"
 msgstr "Sélectionnez des flux parmis les {0} référencés"
 
-#: forms/selector.py:309
+#: forms/selector.py:328
 msgid ""
 "<span class=\"muted\">NOTE: this can be long. You will be notified when "
 "search is done.</span> <a href=\"{0}\" target=\"_blank\">How does it "
@@ -670,47 +687,47 @@ msgstr ""
 "notifié(e) quand elle est terminée.</span>&nbsp;<a href=\"{0}\" "
 "target=\"_blank\">Comment ça marche ?</a>"
 
-#: forms/selector.py:312
+#: forms/selector.py:331
 msgid "#adding-subscriptions"
 msgstr "#ajout-dabonnement"
 
-#: forms/selector.py:324
+#: forms/selector.py:343
 msgid "You have to fill at least one of the two fields."
 msgstr "Vous devez remplir au moins un des deux champs."
 
-#: forms/selector.py:361
+#: forms/selector.py:380
 msgid "Web addresses"
 msgstr "Adresses web"
 
-#: forms/selector.py:395
+#: forms/selector.py:414
 msgid "Readability JSON export format detected."
 msgstr "Format d'export Readability détecté."
 
-#: forms/user.py:25
+#: forms/user.py:44
 msgid "The two password fields didn't match."
 msgstr "Les deux mots de passe ne correspondent pas."
 
-#: forms/user.py:29
+#: forms/user.py:48
 msgid "Password"
 msgstr "Mot de passe"
 
-#: forms/user.py:31
+#: forms/user.py:50
 msgid "Password confirmation"
 msgstr "Confirmation"
 
-#: forms/user.py:33
+#: forms/user.py:52
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: models/oldrel.py:58 models/reldb.py:214
+#: models/oldrel.py:77 models/reldb.py:233
 msgid "Categories"
 msgstr "Catégories"
 
-#: models/reldb.py:266
+#: models/reldb.py:285
 msgid "Help section label"
 msgstr "Label de section d'aide"
 
-#: models/reldb.py:268
+#: models/reldb.py:287
 msgid ""
 "Any text. Will NOT show anywhere, but is used to distinguish sections from "
 "one another."
@@ -718,65 +735,65 @@ msgstr ""
 "N'importe quel texte (mais doit être unique). Il N'APPARAIT NULLE PART, mais"
 " est simplement utilisé pour distinguer les sections les unes des autres."
 
-#: models/reldb.py:272
+#: models/reldb.py:291
 msgid "Ordering"
 msgstr "Ordre d'apparition"
 
-#: models/reldb.py:272
+#: models/reldb.py:291
 msgid "An integer that will be used to order help sections on the help page."
 msgstr ""
 "Un nombre entier positif qui sera utilisé pour ordonner les sections dans la"
 " page d'aide."
 
-#: models/reldb.py:275
+#: models/reldb.py:294
 msgid "is this help section currently displayed on the website?"
 msgstr ""
 "Cette section est-elle affichée ? (décocher pour rédiger une section "
 "tranquillement avant de la mettre en ligne)"
 
-#: models/reldb.py:278
+#: models/reldb.py:297
 msgid "Help section name"
 msgstr "Nom de section d'aide"
 
-#: models/reldb.py:279
+#: models/reldb.py:298
 msgid "Any text. Will be the title of the help section."
 msgstr "Le titre de la section. Du texte, quoi."
 
-#: models/reldb.py:281
+#: models/reldb.py:300
 msgid "Help section content"
 msgstr "Contenu de la section d'aide"
 
-#: models/reldb.py:282
+#: models/reldb.py:301
 msgid "Any text. Entered as Markdown."
 msgstr ""
 "Du texte, en markdown. Je crois qu'il y a une limite à 4096 caractères, mais"
 " je ne suis pas sûr…"
 
-#: models/reldb.py:285
+#: models/reldb.py:304
 msgid "{field_name}: {truncated_field_value}"
 msgstr "{field_name} : {truncated_field_value}"
 
-#: models/reldb.py:297
+#: models/reldb.py:316
 msgid "Help section"
 msgstr "Section d'aide"
 
-#: models/reldb.py:298
+#: models/reldb.py:317
 msgid "Help contents"
 msgstr "Contenu de l'aide"
 
-#: models/nonrel/article.py:152
+#: models/nonrel/article.py:171
 msgid "Title"
 msgstr "Titre"
 
-#: models/nonrel/article.py:154
+#: models/nonrel/article.py:173
 msgid "Public URL"
 msgstr "URL publique"
 
-#: models/nonrel/article.py:155
+#: models/nonrel/article.py:174
 msgid "Absolute URL"
 msgstr "URL absolue"
 
-#: models/nonrel/article.py:156
+#: models/nonrel/article.py:175
 msgid ""
 "The article URL has been successfully absolutized to its unique and final "
 "location."
@@ -784,29 +801,29 @@ msgstr ""
 "L'URL de l'article a été absolutisée avec succès vers son unique et finale "
 "destination."
 
-#: models/nonrel/article.py:160
+#: models/nonrel/article.py:179
 msgid "URL fetch error"
 msgstr "Erreur de récupération de l'URL"
 
-#: models/nonrel/article.py:161
+#: models/nonrel/article.py:180
 msgid "Error when absolutizing the URL"
 msgstr "Erreur pendant l'absolutisation de l'URL"
 
-#: models/nonrel/article.py:162
+#: models/nonrel/article.py:181
 msgid "Next pages URLs"
 msgstr "URLs des pages suivantes"
 
-#: models/nonrel/article.py:163
+#: models/nonrel/article.py:182
 msgid "In case of a multi-pages article, other pages URLs will be here."
 msgstr ""
 "Dans le cas d'un article multi-pages, les URLs des pages supplémentaires "
 "sont là."
 
-#: models/nonrel/article.py:168 models/nonrel/feed.py:164
+#: models/nonrel/article.py:187 models/nonrel/feed.py:183
 msgid "restricted"
 msgstr "restreint"
 
-#: models/nonrel/article.py:169
+#: models/nonrel/article.py:188
 msgid ""
 "This article comes from a paid paid subscription and cannot be shared like "
 "others inside the platform."
@@ -814,117 +831,117 @@ msgstr ""
 "Cet article vient d'un abonnement payant et ne peut pas être partagé "
 "librement à travers la plateforme."
 
-#: models/nonrel/article.py:175
+#: models/nonrel/article.py:194
 msgid "Orphaned"
 msgstr "Orphelin"
 
-#: models/nonrel/article.py:176
+#: models/nonrel/article.py:195
 msgid ""
 "This article has no public URL anymore, or is unfetchable for some reason."
 msgstr ""
 "Cet article n'a plus d'URL publique, ou son contenu n'est plus récupérable "
 "pour un autre raison."
 
-#: models/nonrel/article.py:180
+#: models/nonrel/article.py:199
 msgid "Word count"
 msgstr "Nombre de mots"
 
-#: models/nonrel/article.py:185
+#: models/nonrel/article.py:204
 msgid "date published"
 msgstr "date de publication"
 
-#: models/nonrel/article.py:186
+#: models/nonrel/article.py:205
 msgid "When the article first appeared on the publisher's website."
 msgstr "Quand l'article est apparu la première fois sur le site de l'éditeur."
 
-#: models/nonrel/article.py:190
+#: models/nonrel/article.py:209
 msgid "Date added"
 msgstr "Date d'ajout"
 
-#: models/nonrel/article.py:191
+#: models/nonrel/article.py:210
 msgid "When the article was added to the 1flow database."
 msgstr "Date à laquelle le flux a été ajouté dans la base 1flow."
 
-#: models/nonrel/article.py:196
+#: models/nonrel/article.py:215
 msgid "Default tags that will be applied to new reads of this article."
 msgstr ""
 "Tags qui seront appliqués automatiquement à toute nouvelle lecture liée à "
 "cet article."
 
-#: models/nonrel/article.py:198
+#: models/nonrel/article.py:217
 msgid "default rating"
 msgstr "score de référence"
 
-#: models/nonrel/article.py:199
+#: models/nonrel/article.py:218
 msgid "Rating used as a base when a user has not already rated the content."
 msgstr ""
 "Score qui sera utilisé comme base tant que l'utilisateur n'a pas encore "
 "noté/starré/reblogué le contenu."
 
-#: models/nonrel/article.py:202
+#: models/nonrel/article.py:221
 msgid "Article language"
 msgstr "Langue de l'article"
 
-#: models/nonrel/article.py:204
+#: models/nonrel/article.py:223
 msgid "2 letters or 5 characters language code (eg “en”, “fr-FR”…)."
 msgstr "Code de langue sur 2 ou 5 caractères."
 
-#: models/nonrel/article.py:207
+#: models/nonrel/article.py:226
 msgid "Text direction"
 msgstr "Direction du texte"
 
-#: models/nonrel/article.py:208
+#: models/nonrel/article.py:227
 msgid "Left-to-Right"
 msgstr "gauche-à-droite"
 
-#: models/nonrel/article.py:209
+#: models/nonrel/article.py:228
 msgid "Right-to-Left"
 msgstr "droite-à-gauche"
 
-#: models/nonrel/article.py:212
+#: models/nonrel/article.py:231
 msgid "image URL"
 msgstr "URL de l'image"
 
-#: models/nonrel/article.py:214
+#: models/nonrel/article.py:233
 msgid "Excerpt"
 msgstr "Extrait"
 
-#: models/nonrel/article.py:215
+#: models/nonrel/article.py:234
 msgid "Small exerpt of content, if applicable."
 msgstr "Court résumé de l'article, s'il existe."
 
-#: models/nonrel/article.py:220
+#: models/nonrel/article.py:239
 msgid "Article content"
 msgstr "Contenu de l'article"
 
-#: models/nonrel/article.py:222
+#: models/nonrel/article.py:241
 msgid "Content type"
 msgstr "Type de contenu"
 
-#: models/nonrel/article.py:223
+#: models/nonrel/article.py:242
 msgid "Type of article content (text, image…)"
 msgstr "Type de contenu d'article (texte, image…)"
 
-#: models/nonrel/article.py:225
+#: models/nonrel/article.py:244
 msgid "Error"
 msgstr "Erreur"
 
-#: models/nonrel/article.py:226
+#: models/nonrel/article.py:245
 msgid "Error when fetching content"
 msgstr "Erreur pendant la récupération du contenu"
 
-#: models/nonrel/article.py:233
+#: models/nonrel/article.py:252
 msgid "Origin type"
 msgstr "Type d'origine"
 
-#: models/nonrel/article.py:234
+#: models/nonrel/article.py:253
 msgid ""
 "Origin of article (feedparser, twitter, websnap…). Can be 0 (none/unknown)."
 msgstr ""
 "Origine de l'article (feedparser, twitter, websnap…). Peut être 0 "
 "(aucune/inconnue)."
 
-#: models/nonrel/article.py:261
+#: models/nonrel/article.py:280
 msgid ""
 "This article is a duplicate of another, which is referenced here. Even if "
 "they have different URLs (eg. one can be shortened, the other not), they "
@@ -934,23 +951,23 @@ msgstr ""
 "ont des URLs différentes (une peut être raccourcie, l'autre non), celles-ci "
 "pointent vers la même destination finale sur le web."
 
-#: models/nonrel/article.py:283
+#: models/nonrel/article.py:302
 msgid "{0} (#{1}) from {2}"
 msgstr "{0} (#{1}) from {2}"
 
-#: models/nonrel/article.py:330
+#: models/nonrel/article.py:349
 msgid "{0} ago"
 msgstr "il y a {0}"
 
-#: models/nonrel/article.py:341
+#: models/nonrel/article.py:360
 msgid "Unknown source"
 msgstr "Source inconnue"
 
-#: models/nonrel/article.py:354 models/nonrel/read.py:671
+#: models/nonrel/article.py:373 models/nonrel/read.py:695
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
 
-#: models/nonrel/author.py:42
+#: models/nonrel/author.py:61
 msgid ""
 "When trying to guess authors, we have only a \"fullname\" equivalent. We "
 "need to store it for future comparisons in case firstname and lastname get "
@@ -961,7 +978,7 @@ msgstr ""
 "cas où les noms / prénoms auraient été modifiés manuellement après la "
 "création de l'auteur."
 
-#: models/nonrel/author.py:48
+#: models/nonrel/author.py:67
 msgid ""
 "Set to True when the author has been found from its origin_name and not via "
 "email; because origin_name can be duplicated, but not emails."
@@ -970,35 +987,35 @@ msgstr ""
 "`origin_name` et non via son `email` ; car `origin_name` peut générer des "
 "auteurs homonymes, mais pas les e-mails qui sont uniques par définition."
 
-#: models/nonrel/author.py:54
+#: models/nonrel/author.py:73
 msgid "Link an internet author to a 1flow user."
 msgstr "Lier un auteur internet à un utilisateur 1flow."
 
-#: models/nonrel/author.py:62
+#: models/nonrel/author.py:81
 msgid " (unsure)"
 msgstr "(non confirmé)"
 
-#: models/nonrel/common.py:102
+#: models/nonrel/common.py:119
 msgid "Items sent by {0}"
 msgstr "Éléments envoyés par {0}"
 
-#: models/nonrel/common.py:104
+#: models/nonrel/common.py:121
 msgid "Imported items of {0}"
 msgstr "Éléments importés de {0}"
 
-#: models/nonrel/common.py:106
+#: models/nonrel/common.py:123
 msgid "Inbox of {0}"
 msgstr "Boîte de réception de {0}"
 
-#: models/nonrel/common.py:182
+#: models/nonrel/common.py:199
 msgid "{0} #{1} not found"
 msgstr "{0} #{1} introuvable"
 
-#: models/nonrel/common.py:186
+#: models/nonrel/common.py:203
 msgid "{0}({1}) not found"
 msgstr "{0}({1}) introuvable"
 
-#: models/nonrel/common.py:438 models/nonrel/common.py:471
+#: models/nonrel/common.py:455 models/nonrel/common.py:488
 msgid ""
 "{0} is already in the parent chain of {1}. Setting the later parent of the "
 "former would result in a cycle and is not allowed."
@@ -1006,27 +1023,27 @@ msgstr ""
 "{0} est déjà dans la chaine de parents de {1}. Enregistrer ce dernier comme "
 "parent du premier cité provoquerait un cycle et ce n'est pas autorisé."
 
-#: models/nonrel/common.py:586
+#: models/nonrel/common.py:603
 msgid "User can read articles with full-text contents"
 msgstr "L'utilisateur peut lire le contenu complet (full-text) de l'article."
 
-#: models/nonrel/common.py:588
+#: models/nonrel/common.py:605
 msgid "User can import any web items"
 msgstr "L'utilisateur peut importer n'importe quel élément web"
 
-#: models/nonrel/feed.py:140 models/nonrel/tag.py:49
+#: models/nonrel/feed.py:159 models/nonrel/tag.py:68
 msgid "name"
 msgstr "nom"
 
-#: models/nonrel/feed.py:141
+#: models/nonrel/feed.py:160
 msgid "url"
 msgstr "url"
 
-#: models/nonrel/feed.py:144
+#: models/nonrel/feed.py:163
 msgid "web site"
 msgstr "site web"
 
-#: models/nonrel/feed.py:145
+#: models/nonrel/feed.py:164
 msgid ""
 "Website public URL, linked to the globe icon in the source selector. This is"
 " not the XML feed URL."
@@ -1034,16 +1051,16 @@ msgstr ""
 "URL publique du site web, liée à l'icone « globe » dans le sélecteur de "
 "sources. Ce n'est PAS l'adresse du flux XML."
 
-#: models/nonrel/feed.py:148 models/nonrel/tag.py:50
-#: models/nonrel/website.py:43
+#: models/nonrel/feed.py:167 models/nonrel/tag.py:69
+#: models/nonrel/website.py:62
 msgid "slug"
 msgstr "slug"
 
-#: models/nonrel/feed.py:150
+#: models/nonrel/feed.py:169
 msgid "tags"
 msgstr "tags"
 
-#: models/nonrel/feed.py:151
+#: models/nonrel/feed.py:170
 msgid ""
 "This tags are used only when articles from this feed have no tags already. "
 "They are assigned to new subscriptions too."
@@ -1051,11 +1068,11 @@ msgstr ""
 "Ces tags sont assignés aux nouveaux articles quand ils n'en ont pas eux-"
 "mêmes. Aux nouveaux abonnements aussi."
 
-#: models/nonrel/feed.py:157
+#: models/nonrel/feed.py:176
 msgid "Languages"
 msgstr "Langues"
 
-#: models/nonrel/feed.py:159
+#: models/nonrel/feed.py:178
 msgid ""
 "Set this to more than one language to help article language detection if "
 "none is set in articles."
@@ -1063,22 +1080,22 @@ msgstr ""
 "Activez une ou plusieurs langues qui aideront à détecter la langue des "
 "articles s'ils n'en ont pas."
 
-#: models/nonrel/feed.py:163
+#: models/nonrel/feed.py:182
 msgid "date added"
 msgstr "date d'ajout"
 
-#: models/nonrel/feed.py:165
+#: models/nonrel/feed.py:184
 msgid ""
 "Is this feed available only to paid subscribers on its publisher's web site?"
 msgstr ""
 "Le flux est-il accessible seulement aux abonnés payants sur le site "
 "d'origine qui le propose ?"
 
-#: models/nonrel/feed.py:168
+#: models/nonrel/feed.py:187
 msgid "closed"
 msgstr "fermé"
 
-#: models/nonrel/feed.py:169
+#: models/nonrel/feed.py:188
 msgid ""
 "Indicate that the feed is not fetched anymore (see “closed_reason” for why)."
 " /!\\ WARNING: do not just tick the checkbox; there is a programmatic "
@@ -1088,27 +1105,27 @@ msgstr ""
 " /!\\ ATTENTION : ne cochez pas simplement la case, il y a une procédure "
 "programmée pour fermer proprement un flux."
 
-#: models/nonrel/feed.py:176
+#: models/nonrel/feed.py:195
 msgid "date closed"
 msgstr "date de fermeture"
 
-#: models/nonrel/feed.py:177
+#: models/nonrel/feed.py:196
 msgid "closed reason"
 msgstr "raison de la fermeture"
 
-#: models/nonrel/feed.py:180
+#: models/nonrel/feed.py:199
 msgid "fetch interval"
 msgstr "intervalle de récupération"
 
-#: models/nonrel/feed.py:181
+#: models/nonrel/feed.py:200
 msgid "last fetch"
 msgstr "dernière récupération"
 
-#: models/nonrel/feed.py:186
+#: models/nonrel/feed.py:205
 msgid "fetch limit"
 msgstr "limite de récupération"
 
-#: models/nonrel/feed.py:187
+#: models/nonrel/feed.py:206
 #, python-format
 msgid ""
 "The maximum number of articles that can be fetched from the feed in "
@@ -1116,23 +1133,23 @@ msgid ""
 "from real-life results."
 msgstr ""
 
-#: models/nonrel/feed.py:195
+#: models/nonrel/feed.py:214
 msgid "last etag"
 msgstr "dernier Etag"
 
-#: models/nonrel/feed.py:202
+#: models/nonrel/feed.py:221
 msgid "Notes"
 msgstr "Notes"
 
-#: models/nonrel/feed.py:203
+#: models/nonrel/feed.py:222
 msgid "Internal notes for 1flow staff related to this feed."
 msgstr "Notes internes au personnel de 1flow, à propos de ce flux."
 
-#: models/nonrel/feed.py:206
+#: models/nonrel/feed.py:225
 msgid "Shown in selector"
 msgstr "Affiché dans le sélecteur"
 
-#: models/nonrel/feed.py:208
+#: models/nonrel/feed.py:227
 msgid ""
 "Make this feed available to new subscribers in the selector wizard. Without "
 "this, the user can still subscribe but he must know it and manually enter "
@@ -1142,11 +1159,11 @@ msgstr ""
 "recherche. Sans celà, les utilisateurs peuvent toujours s'abonner, mais il "
 "leur faut connaître et saisir l'adresse exacte du flux. "
 
-#: models/nonrel/feed.py:214
+#: models/nonrel/feed.py:233
 msgid "Thumbnail URL"
 msgstr "URL de vignette"
 
-#: models/nonrel/feed.py:215
+#: models/nonrel/feed.py:234
 msgid ""
 "Full URL of the thumbnail displayed in the feed selector. Can be hosted "
 "outside of 1flow."
@@ -1154,97 +1171,97 @@ msgstr ""
 "URL complète de la vignette affichée dans le sélecteur. Peut être hébergée "
 "en dehors de 1flow."
 
-#: models/nonrel/feed.py:218
+#: models/nonrel/feed.py:237
 msgid "Description (FR)"
 msgstr "Description (FR)"
 
-#: models/nonrel/feed.py:219
+#: models/nonrel/feed.py:238
 msgid "Public description of the feed in French language. As Markdown."
 msgstr ""
 "Description publique du flux en langue française. Apparaîtra dans le "
 "sélecteur. En Markdown."
 
-#: models/nonrel/feed.py:222
+#: models/nonrel/feed.py:241
 msgid "Description (EN)"
 msgstr "Description (EN)"
 
-#: models/nonrel/feed.py:223
+#: models/nonrel/feed.py:242
 msgid "Public description of the feed in English language. As Markdown."
 msgstr "Public description of the feed in English language. As Markdown."
 
-#: models/nonrel/feed.py:345 models/nonrel/folder.py:96
+#: models/nonrel/feed.py:364 models/nonrel/folder.py:115
 msgid "{0} (#{1})"
 msgstr "{0} (#{1})"
 
-#: models/nonrel/feed.py:723
+#: models/nonrel/feed.py:742
 msgid "Imported item from {0}"
 msgstr "Élément importé depuis {0}"
 
-#: models/nonrel/folder.py:59 models/nonrel/subscription.py:115
+#: models/nonrel/folder.py:78 models/nonrel/subscription.py:134
 msgid "Name"
 msgstr "Nom"
 
-#: models/nonrel/folder.py:61
+#: models/nonrel/folder.py:80
 msgid "Owner"
 msgstr "Propriétaire"
 
-#: models/nonrel/folder.py:67
+#: models/nonrel/folder.py:86
 msgid "Children folders"
 msgstr "Dossier(s) enfant(s)"
 
-#: models/nonrel/folder.py:91
+#: models/nonrel/folder.py:110
 msgid "{0} (#{1}) for user {2}{3}{4}"
 msgstr "{0} (#{1}) de l'utilisateur {2}{3}{4}"
 
-#: models/nonrel/folder.py:93
+#: models/nonrel/folder.py:112
 msgid ", parent: {0} (#{1})"
 msgstr ", parent : {0} (#{1})"
 
-#: models/nonrel/folder.py:95
+#: models/nonrel/folder.py:114
 msgid ", children: {0}"
 msgstr ", enfant(s) : {0}"
 
-#: models/nonrel/preferences.py:15
+#: models/nonrel/preferences.py:34
 msgid "Select whole paragraph on click"
 msgstr "Sélectionner le paragraphe entier lors du clic"
 
-#: models/nonrel/preferences.py:17
+#: models/nonrel/preferences.py:36
 msgid "Grows public by default"
 msgstr "Les pousses sont publiques par défaut"
 
-#: models/nonrel/preferences.py:27
+#: models/nonrel/preferences.py:46
 msgid "Immediately"
 msgstr "Immédiatement"
 
-#: models/nonrel/preferences.py:28
+#: models/nonrel/preferences.py:47
 msgid "After one second"
 msgstr "Après une seconde"
 
-#: models/nonrel/preferences.py:29
+#: models/nonrel/preferences.py:48
 msgid "After two seconds"
 msgstr "Après deux secondes"
 
-#: models/nonrel/preferences.py:30
+#: models/nonrel/preferences.py:49
 msgid "After 4.5 seconds (default)"
 msgstr "Après 4,5 secondes (par défaut)"
 
-#: models/nonrel/preferences.py:31
+#: models/nonrel/preferences.py:50
 msgid "After 10 seconds"
 msgstr "Après 10 secondes"
 
-#: models/nonrel/preferences.py:32
+#: models/nonrel/preferences.py:51
 msgid "After 30 seconds"
 msgstr "Après 30 secondes"
 
-#: models/nonrel/preferences.py:33
+#: models/nonrel/preferences.py:52
 msgid "Never (do not auto mark as read)"
 msgstr "Jamais (ne pas automatiquement marquer comme lu)"
 
-#: models/nonrel/preferences.py:41
+#: models/nonrel/preferences.py:60
 msgid "Starring marks read too"
 msgstr "Sélectionner marque aussi lu"
 
-#: models/nonrel/preferences.py:42
+#: models/nonrel/preferences.py:61
 msgid ""
 "When you mark an article starred, this will automatically mark it as read "
 "(default: true; we consider you have read it before you decide to like it)."
@@ -1253,11 +1270,11 @@ msgstr ""
 "automatiquement marqué lu. C'est le comportement standard sur 1flow, car "
 "nous considérons qu'il faut avoir lu un article pour l'apprécier."
 
-#: models/nonrel/preferences.py:49
+#: models/nonrel/preferences.py:68
 msgid "Starring marks archived too"
 msgstr "Sélectionner marque aussi archivé"
 
-#: models/nonrel/preferences.py:50
+#: models/nonrel/preferences.py:69
 msgid ""
 "When you mark an article starred, this will automatically archive it, if not"
 " already done (default: false)."
@@ -1266,11 +1283,11 @@ msgstr ""
 "automatiquement archivé si ce n'est pas déjà le cas. Par défaut ce n'est pas"
 " le cas."
 
-#: models/nonrel/preferences.py:56
+#: models/nonrel/preferences.py:75
 msgid "Reading later marks archived too"
 msgstr "Lire plus tard marque aussi archivé"
 
-#: models/nonrel/preferences.py:57
+#: models/nonrel/preferences.py:76
 msgid ""
 "Marking an article to read later will automatically archive it if not "
 "already done. (default: false)."
@@ -1278,11 +1295,11 @@ msgstr ""
 "Marquer un article à lire plus tard l'archive si ce n'est pas déjà fait. Par"
 " défaut, ce n'est pas le cas."
 
-#: models/nonrel/preferences.py:62
+#: models/nonrel/preferences.py:81
 msgid "Setting any watch attribute marks archived too"
 msgstr "Marquer avec un attribut de veille archive aussi"
 
-#: models/nonrel/preferences.py:63
+#: models/nonrel/preferences.py:82
 msgid ""
 "Setting any watch attribute will also mark it archived if not already done. "
 "(default: false)."
@@ -1291,11 +1308,11 @@ msgstr ""
 "sera automatiquement archivé s'il ne l'est pas déjà. Par défaut, ce n'est "
 "pas le cas."
 
-#: models/nonrel/preferences.py:68
+#: models/nonrel/preferences.py:87
 msgid "Starring unmarks “read later”"
 msgstr "Sélectionner enlève de « lire plus tard »"
 
-#: models/nonrel/preferences.py:69
+#: models/nonrel/preferences.py:88
 msgid ""
 "When you mark an article starred, this will automatically remove it from the"
 " “read later” list. (default: true; we consider you have read it before you "
@@ -1306,11 +1323,11 @@ msgstr ""
 "considérons que vous l'avez lu pour le sélectionner, il n'est donc plus « à "
 "lire [plus tard] »."
 
-#: models/nonrel/preferences.py:77
+#: models/nonrel/preferences.py:96
 msgid "Reading later marks unread"
 msgstr "Lire plus tard marque non-lu"
 
-#: models/nonrel/preferences.py:78
+#: models/nonrel/preferences.py:97
 msgid ""
 "Marking an article to read later marks it as unread. As a consequence, "
 "articles to read later are counted in unread when this setting is enabled "
@@ -1320,11 +1337,11 @@ msgstr ""
 "les articles à lire plus tard sont comptés dans les non-lus quand cette "
 "préférence est activée (ce qui est le cas par défaut)."
 
-#: models/nonrel/preferences.py:84
+#: models/nonrel/preferences.py:103
 msgid "Auto mark-read delay"
 msgstr "Délai de marquage lu automatique"
 
-#: models/nonrel/preferences.py:85
+#: models/nonrel/preferences.py:104
 msgid ""
 "The delay after which an open article in any reading list will be "
 "automatically marked as read if it is not."
@@ -1332,11 +1349,11 @@ msgstr ""
 "C'est le delai après lequel un article fraîchement ouvert sera marqué comme "
 "lu s'il ne l'est pas déjà."
 
-#: models/nonrel/preferences.py:90
+#: models/nonrel/preferences.py:109
 msgid "Switch to full-screen while reading"
 msgstr "Basculer en plein écran pendant la lecture"
 
-#: models/nonrel/preferences.py:91
+#: models/nonrel/preferences.py:110
 msgid ""
 "Automatically hide navigation bars when opening an article for reading "
 "(default: false).<br />When enabled, fullscreen will remain active while you"
@@ -1349,11 +1366,11 @@ msgstr ""
 "Quand elle est activée, le plein-écran reste activé tant que vous passez d'un article à l'autre (via la souris, ou les raccourcis claviers). Les barres de navigation ré-apparaissent lorsque vous fermez l'article ouvert sans en ouvrir d'autre (= vous revenez simplement à la liste).<br />\n"
 "Quelle que soit la valeur de cette préférence, vous pouvez toujours afficher ou cacher les barres de navigation avec le raccourci clavier `shift`+`f`."
 
-#: models/nonrel/preferences.py:103
+#: models/nonrel/preferences.py:122
 msgid "Show the bottom “jump to” navbar"
 msgstr "Afficher la barre de navigation « Raccourcis »"
 
-#: models/nonrel/preferences.py:104
+#: models/nonrel/preferences.py:123
 msgid ""
 "When you are in any reading list, either reading articles or just scrolling "
 "the list, you can have a navigation bar at the bottom of the screen, "
@@ -1364,11 +1381,11 @@ msgstr ""
 "Lorsque vous êtes dans une liste de lecture, vous pouvez afficher en bas de l'écran une barre de navigation proposant des raccourcis vers les autres listes de lecture principales, ainsi que le sélecteur. Cette barre est vouée dans l'avenir à offrir des fonctions plus spécifiques au flux ou au dossier courant.<br />\n"
 "<span class=\"muted\">Le comportement par défaut est de ne pas afficher cette barre de navigation.</span>"
 
-#: models/nonrel/preferences.py:117
+#: models/nonrel/preferences.py:136
 msgid "Feed names show unread count"
 msgstr "Les noms de flux affichent le nombre de non-lus"
 
-#: models/nonrel/preferences.py:118
+#: models/nonrel/preferences.py:137
 msgid ""
 "Activate this if you want to see the articles unread count in parenthesis "
 "near the feed titles."
@@ -1376,11 +1393,11 @@ msgstr ""
 "Activez cette option si vous voulez voir le nombre d'articles non-lus entre "
 "parenthèses à côté des noms de flux."
 
-#: models/nonrel/preferences.py:123
+#: models/nonrel/preferences.py:142
 msgid "Reading lists show unread count"
 msgstr "Les listes de lecture affichent le nombre d'éléments"
 
-#: models/nonrel/preferences.py:124
+#: models/nonrel/preferences.py:143
 msgid ""
 "Each reading list is appended the number of articles marked as being part of"
 " it."
@@ -1388,11 +1405,11 @@ msgstr ""
 "Chaque nom de liste de lecture affichera le nombre total d'articles qu'elle "
 "contient entre parenthèses."
 
-#: models/nonrel/preferences.py:129
+#: models/nonrel/preferences.py:148
 msgid "Folders show unread count"
 msgstr "Les dossiers affichent le nombre de non-lus"
 
-#: models/nonrel/preferences.py:130
+#: models/nonrel/preferences.py:149
 msgid ""
 "Each folder is appended the sum of unread articles of each of its subfolders"
 " and subscriptions."
@@ -1400,11 +1417,11 @@ msgstr ""
 "Chaque dossier sera suffixé du nombre total d'articles non-lus dans tous ses"
 " sous-dossiers et ses abonnements."
 
-#: models/nonrel/preferences.py:135
+#: models/nonrel/preferences.py:154
 msgid "folders can hold three levels of subfolders"
 msgstr "les dossiers peuvent avoir trois sous-niveaux de sous-dossiers"
 
-#: models/nonrel/preferences.py:136
+#: models/nonrel/preferences.py:155
 msgid ""
 "Folders have one level of subfolders in normal conditions. With this "
 "setting, you can push the limit to three (which makes a total classifying "
@@ -1419,11 +1436,11 @@ msgstr ""
 " lire. Un écran plus peut aider dans certains cas. Un hélicoptère, moins ; "
 "mais c'est sacrément cool si vous en avez un !</span>"
 
-#: models/nonrel/preferences.py:146
+#: models/nonrel/preferences.py:165
 msgid "Subscriptions can be attached to multiple folders"
 msgstr "Les abonnements peuvent être rattachées à plusieurs dossiers"
 
-#: models/nonrel/preferences.py:147
+#: models/nonrel/preferences.py:166
 msgid ""
 "In normal conditions, a given subscription can be attached to only one "
 "folder. With this settings, you can make any subscription show in multiple "
@@ -1433,11 +1450,11 @@ msgstr ""
 "fois dans le sélecteur de sources. Avec cette option, vous pouvez le faire "
 "apparaître à plusieurs endroits."
 
-#: models/nonrel/preferences.py:153
+#: models/nonrel/preferences.py:172
 msgid "Show closed streams"
 msgstr "Afficher les flux fermés"
 
-#: models/nonrel/preferences.py:154
+#: models/nonrel/preferences.py:173
 msgid ""
 "Display streams that have been closed by the system but to which you are "
 "still subscribed. As there will never be new content in them, it is safe to "
@@ -1451,11 +1468,11 @@ msgstr ""
 "ces flux sont toujours accessibles dans les listes de lectures globales "
 "ainsi que celles des dossiers dans lesquels ces flux sont contenus."
 
-#: models/nonrel/preferences.py:169
+#: models/nonrel/preferences.py:188
 msgid "Super powers enabled"
 msgstr "Super-pouvoirs activés"
 
-#: models/nonrel/preferences.py:170
+#: models/nonrel/preferences.py:189
 msgid ""
 "Globaly enable or not every bit of staff/superuser features in the 1flow "
 "interface. If disabled, only the <strong>MAINTENANCE_MODE</strong> label in "
@@ -1470,12 +1487,12 @@ msgstr ""
 "par la suite.<br /><span class=\"muted\">Valeur par défaut : les super-"
 "pouvoirs sont activés.</span>"
 
-#: models/nonrel/preferences.py:179
+#: models/nonrel/preferences.py:198
 msgid "Show duplicates, orphaned and other transient data"
 msgstr ""
 "Afficher les articles dupliqués/orphelins et les autres données transitoires"
 
-#: models/nonrel/preferences.py:180
+#: models/nonrel/preferences.py:199
 msgid ""
 "<strong>Warning</strong>: this breaks keyboard shortcut navigation whenever "
 "the first bad article is encountered.<br /><span class=\"muted\">Default: "
@@ -1486,11 +1503,11 @@ msgstr ""
 "article rencontré.<br /><span class=\"muted\">Valeur par défaut : "
 "désactivé.</span>"
 
-#: models/nonrel/preferences.py:187
+#: models/nonrel/preferences.py:206
 msgid "Selector shows admin links"
 msgstr "Afficher les liens pour les admins dans le sélecteur"
 
-#: models/nonrel/preferences.py:188
+#: models/nonrel/preferences.py:207
 msgid ""
 "Automatically link to the admin from the selector whenever "
 "folder/subscription has missing data.<br /><span class=\"muted\">Default: "
@@ -1500,11 +1517,11 @@ msgstr ""
 "sélecteur quand un dossier / abonnement est incomplet.<br /><span "
 "class=\"muted\">Valeur par défaut : activé.</span>"
 
-#: models/nonrel/preferences.py:194
+#: models/nonrel/preferences.py:213
 msgid "Landing page does not redirect to webapp"
 msgstr "La landing page ne redirige pas automatiquement vers l'appli web"
 
-#: models/nonrel/preferences.py:195
+#: models/nonrel/preferences.py:214
 msgid ""
 "As a staff member, you can have access to the landing page for testing / "
 "check purposes even if you are logged in, whereas standard logged in users "
@@ -1514,11 +1531,11 @@ msgstr ""
 "faire des tests / vérifications même si vous êtes identifié(e). Les "
 "utilisateurs standards, une fois identifiés, n'ont plus accès à la landing."
 
-#: models/nonrel/preferences.py:202
+#: models/nonrel/preferences.py:221
 msgid "Allow display of all articles"
 msgstr "Autoriser l'affichage de tous les articles"
 
-#: models/nonrel/preferences.py:203
+#: models/nonrel/preferences.py:222
 msgid ""
 "As a staff member, you can have access to all fulltext content for testing /"
 " checking purposes. PLEASE DO NOT ENABLE IN NORMAL CONDITIONS."
@@ -1527,35 +1544,35 @@ msgstr ""
 "texte archivés par les utilisateurs, à des fins de tests/vérification de "
 "conversion. MERCI DE NE PAS ACTIVER EN CONDITIONS NORMALES."
 
-#: models/nonrel/preferences.py:215
+#: models/nonrel/preferences.py:234
 msgid "Default share message"
 msgstr "Message de partage par défaut."
 
-#: models/nonrel/preferences.py:219
+#: models/nonrel/preferences.py:238
 msgid "Reading list"
 msgstr "Liste de lecture"
 
-#: models/nonrel/preferences.py:220
+#: models/nonrel/preferences.py:239
 msgid "Tiled News"
 msgstr "News en tuiles"
 
-#: models/nonrel/preferences.py:225
+#: models/nonrel/preferences.py:244
 msgid "Unread articles"
 msgstr "Articles non-lus"
 
-#: models/nonrel/preferences.py:226
+#: models/nonrel/preferences.py:245
 msgid "Source selector"
 msgstr "Sélecteur de source"
 
-#: models/nonrel/preferences.py:237
+#: models/nonrel/preferences.py:256
 msgid "How the user wants his 1flow home to appear"
 msgstr "Comment l'utilisateur veut voir sa home page"
 
-#: models/nonrel/preferences.py:242
+#: models/nonrel/preferences.py:261
 msgid "I want to play with my life"
 msgstr "Je veux jouer avec ma vie"
 
-#: models/nonrel/preferences.py:243
+#: models/nonrel/preferences.py:262
 msgid ""
 "With this setting, you will be able to tune the 1flow interface a lot more. "
 "<strong>But BEWARE:</strong> you will gain access to features which are not "
@@ -1572,11 +1589,11 @@ msgstr ""
 "défaut, c'est désactivé : nous voulons que votre expérience utilisateur soit"
 " agréable et fluide.</span>"
 
-#: models/nonrel/preferences.py:252
+#: models/nonrel/preferences.py:271
 msgid "Clicking <code>Read</code> displays:"
 msgstr "Cliquer sur <code>Lecture</code> affiche :"
 
-#: models/nonrel/preferences.py:255
+#: models/nonrel/preferences.py:274
 msgid ""
 "Define what 1flow will display when you click on the <code>Read</code> link "
 "in the top navbar of the interface. <br /><span class=\"muted\">Default: "
@@ -1587,11 +1604,11 @@ msgstr ""
 "/><span class=\"muted\">Le comportement standard est d'afficher le "
 "<strong>sélecteur de sources</strong>.</span>"
 
-#: models/nonrel/preferences.py:263
+#: models/nonrel/preferences.py:282
 msgid "Activate experimental features"
 msgstr "Activer les fonctionnalités expérimentales"
 
-#: models/nonrel/preferences.py:266
+#: models/nonrel/preferences.py:285
 msgid ""
 "Activate features that are currently under development, beiing tested or "
 "privately deployed. USE AT YOUR OWN RISK!"
@@ -1599,23 +1616,33 @@ msgstr ""
 "Ces fonctionnalités sont actuellement en développement, en cours de tests ou"
 " de déploiement restreint. UTILISEZ À VOS RISQUES ET PERILS !"
 
-#: models/nonrel/read.py:42
+#: models/nonrel/read.py:61
 msgid "Undefined"
 msgstr "Indéfini"
 
-#: models/nonrel/read.py:43
+#: models/nonrel/read.py:62
 msgid "This afternoon"
 msgstr "Cet après-midi"
 
-#: models/nonrel/read.py:44
+#: models/nonrel/read.py:63
 msgid "This week-end"
 msgstr "Ce week-end"
 
-#: models/nonrel/read.py:66
+#: models/nonrel/read.py:83
+msgid "Senders"
+msgstr "Lanceurs"
+
+#: models/nonrel/read.py:84
+msgid ""
+"All the users that have shared the article with the current owner of this "
+"read."
+msgstr ""
+
+#: models/nonrel/read.py:90
 msgid "good for use?"
 msgstr "bon à l'usage ?"
 
-#: models/nonrel/read.py:67
+#: models/nonrel/read.py:91
 msgid ""
 "The system has validated the underlying article, and the read can now be "
 "shown, used by its owner, and counted in statistics."
@@ -1624,11 +1651,11 @@ msgstr ""
 "maintenant être affichée, utilisée par son propriétaire, et comptée dans les"
 " statistiques."
 
-#: models/nonrel/read.py:73
+#: models/nonrel/read.py:97
 msgid "The Owner has read the content or has manually marked it as such."
 msgstr "Le propriétaire a lu le contenu, ou l'a marqué comme tél."
 
-#: models/nonrel/read.py:78
+#: models/nonrel/read.py:102
 msgid ""
 "The system has automatically marked it as read, in respect of a system rule "
 "or a user preference."
@@ -1636,13 +1663,13 @@ msgstr ""
 "Le système a automatiquement marqué le contenu comme lu, en application "
 "d'une règle système ou d'une préférence utilisateur."
 
-#: models/nonrel/read.py:83
+#: models/nonrel/read.py:107
 msgid "The Owner has archived this read to explicitely keep it accessible."
 msgstr ""
 "Le propriétaire de cette lecture l'a archivé pour la garder explicitement "
 "accessible."
 
-#: models/nonrel/read.py:90
+#: models/nonrel/read.py:114
 msgid ""
 "The owner has starred the content, signifying he/she loves it or that it is "
 "much of interest for him/her."
@@ -1650,7 +1677,7 @@ msgstr ""
 "Le propriétaire a sélectionné le contenu, signifiant ainsi qu'il l'aprécie "
 "ou qu'il est digne d'intérêt pour lui/elle."
 
-#: models/nonrel/read.py:95
+#: models/nonrel/read.py:119
 msgid ""
 "This content is marked to be read later. When, depends on the "
 "`.bookmark_type` attribute."
@@ -1658,43 +1685,43 @@ msgstr ""
 "Ce contenu est marqué à lire plus tard. « Quand » dépend de la valeur de "
 "l'attribut `.bookmark_type`."
 
-#: models/nonrel/read.py:103
+#: models/nonrel/read.py:127
 msgid "Qualifies a time-dependant fact."
 msgstr "Qualifie un fait relié à une date précise."
 
-#: models/nonrel/read.py:107
+#: models/nonrel/read.py:131
 msgid "Qualifies someone’s words, thoughts or intentions."
 msgstr "Qualifie les mots, pensées ou intentions de quelqu'un."
 
-#: models/nonrel/read.py:111
+#: models/nonrel/read.py:135
 msgid "Qualifies explicitely quantized data."
 msgstr "Qualifie des données explicitement quantifiées."
 
-#: models/nonrel/read.py:115
+#: models/nonrel/read.py:139
 msgid "Qualifies in-depth analysis, studies or research publications."
 msgstr ""
 "Qualifie une analyse en profondeur, des études ou des publications de "
 "travaux de recherches."
 
-#: models/nonrel/read.py:120
+#: models/nonrel/read.py:144
 msgid "Qualifies things that want to watch, that will happen or not."
 msgstr ""
 "Qualifie des choses que vous souhaitez surveiller, qui arriveront ou non."
 
-#: models/nonrel/read.py:125
+#: models/nonrel/read.py:149
 msgid ""
 "Qualifies anything about How-to-do things and profession best-practices."
 msgstr ""
 "Qualifie les savoirs-faires, les méthodes de travail, les bonnes-pratiques "
 "ou l'état de l'art d'une profession."
 
-#: models/nonrel/read.py:130
+#: models/nonrel/read.py:154
 msgid "Qualifies anything about laws, governments/public regulations."
 msgstr ""
 "Qualifie ce qui relève des lois, des règlementations ou tout ce qui est "
 "d'ordre juridique, gouvernemental ou officiel."
 
-#: models/nonrel/read.py:135
+#: models/nonrel/read.py:159
 msgid ""
 "Qualifies anything that the owner wants to retain as a “must know”, whatever"
 " the context."
@@ -1702,343 +1729,343 @@ msgstr ""
 "Qualifie n'importe quoi dont le propriétaire veut se souvenir, quel que soit"
 " le contexte ou le contenu."
 
-#: models/nonrel/read.py:141
+#: models/nonrel/read.py:165
 msgid "Qualifies anything that makes you laugh out loud."
 msgstr "Qualifie tout ce qui vous fait éclater de rire à pleins poumons."
 
-#: models/nonrel/read.py:148
+#: models/nonrel/read.py:172
 msgid "User set of tags for this read."
 msgstr "Ensemble des tags de l'utilisateur pour cette lecture."
 
-#: models/nonrel/read.py:232
+#: models/nonrel/read.py:256
 #, python-format
 msgid "%(count)s article"
 msgstr "%(count)s article"
 
-#: models/nonrel/read.py:233
+#: models/nonrel/read.py:257
 #, python-format
 msgid "%(count)s articles"
 msgstr "%(count)s articles"
 
-#: models/nonrel/read.py:237
+#: models/nonrel/read.py:261
 #, python-format
 msgid "%(count)s unread article"
 msgstr "%(count)s article non-lu"
 
-#: models/nonrel/read.py:238
+#: models/nonrel/read.py:262
 #, python-format
 msgid "%(count)s unread articles"
 msgstr "%(count)s articles non-lus"
 
-#: models/nonrel/read.py:244
+#: models/nonrel/read.py:268
 msgctxt "past participle, plural"
 msgid "read"
 msgstr "lus"
 
-#: models/nonrel/read.py:246
+#: models/nonrel/read.py:270
 msgid "^read/read/$"
 msgstr "^lire/lus/$"
 
-#: models/nonrel/read.py:247
+#: models/nonrel/read.py:271
 msgid "Mark as read"
 msgstr "Marquer lu"
 
-#: models/nonrel/read.py:248
+#: models/nonrel/read.py:272
 #, python-format
 msgid "%(count)s read article"
 msgstr "%(count)s article lu"
 
-#: models/nonrel/read.py:249
+#: models/nonrel/read.py:273
 #, python-format
 msgid "%(count)s read articles"
 msgstr "%(count)s articles lus"
 
-#: models/nonrel/read.py:250
+#: models/nonrel/read.py:274
 msgid "Mark as unread"
 msgstr "Marquer non-lu"
 
-#: models/nonrel/read.py:251
+#: models/nonrel/read.py:275
 msgid "Mark read"
 msgstr "Marquer lu"
 
-#: models/nonrel/read.py:252
+#: models/nonrel/read.py:276
 msgid "Mark unread"
 msgstr "Marquer non-lu"
 
-#: models/nonrel/read.py:253 models/nonrel/read.py:601
+#: models/nonrel/read.py:277 models/nonrel/read.py:625
 msgctxt "adjective"
 msgid "read"
 msgstr "lu"
 
-#: models/nonrel/read.py:255
+#: models/nonrel/read.py:279
 msgctxt "awesome-font icon name"
 msgid "check-empty"
 msgstr "check-empty"
 
-#: models/nonrel/read.py:256
+#: models/nonrel/read.py:280
 msgctxt "awesome-font icon name"
 msgid "check"
 msgstr "check"
 
-#: models/nonrel/read.py:262
+#: models/nonrel/read.py:286
 msgid "^read/starred/$"
 msgstr "^lire/selectionnes/$"
 
-#: models/nonrel/read.py:263
+#: models/nonrel/read.py:287
 msgid "Star (add to favorites)"
 msgstr "Sélectionner (ajouter aux favoris)"
 
-#: models/nonrel/read.py:264
+#: models/nonrel/read.py:288
 #, python-format
 msgid "%(count)s starred article"
 msgstr "%(count)s article sélectionné"
 
-#: models/nonrel/read.py:265
+#: models/nonrel/read.py:289
 #, python-format
 msgid "%(count)s starred articles"
 msgstr "%(count)s articles sélectionnés"
 
-#: models/nonrel/read.py:266
+#: models/nonrel/read.py:290
 msgid "Remove from starred/favorites"
 msgstr "Supprimer des favoris"
 
-#: models/nonrel/read.py:267
+#: models/nonrel/read.py:291
 msgctxt "verb"
 msgid "Star"
 msgstr "Sélectionner"
 
-#: models/nonrel/read.py:268
+#: models/nonrel/read.py:292
 msgid "Unstar"
 msgstr "Désélectionner"
 
-#: models/nonrel/read.py:271
+#: models/nonrel/read.py:295
 msgctxt "awesome-font icon name"
 msgid "star-empty"
 msgstr "star-empty"
 
-#: models/nonrel/read.py:272
+#: models/nonrel/read.py:296
 msgctxt "awesome-font icon name"
 msgid "star"
 msgstr "star"
 
-#: models/nonrel/read.py:276 models/nonrel/read.py:285
+#: models/nonrel/read.py:300 models/nonrel/read.py:309
 msgid "archived"
 msgstr "archivé"
 
-#: models/nonrel/read.py:278
+#: models/nonrel/read.py:302
 msgid "^read/archived/$"
 msgstr "^lire/archives/$"
 
-#: models/nonrel/read.py:279 models/nonrel/read.py:283
+#: models/nonrel/read.py:303 models/nonrel/read.py:307
 msgid "Archive"
 msgstr "Archiver"
 
-#: models/nonrel/read.py:280
+#: models/nonrel/read.py:304
 #, python-format
 msgid "%(count)s article archived"
 msgstr "%(count)s article archivé"
 
-#: models/nonrel/read.py:281
+#: models/nonrel/read.py:305
 #, python-format
 msgid "%(count)s articles archived"
 msgstr "%(count)s articles archivés"
 
-#: models/nonrel/read.py:282 models/nonrel/read.py:284
+#: models/nonrel/read.py:306 models/nonrel/read.py:308
 msgid "Delete"
 msgstr "Supprimer"
 
-#: models/nonrel/read.py:287
+#: models/nonrel/read.py:311
 msgctxt "awesome-font icon name"
 msgid "download"
 msgstr "download"
 
-#: models/nonrel/read.py:289
+#: models/nonrel/read.py:313
 msgctxt "awesome-font icon name"
 msgid "archive"
 msgstr "archive"
 
-#: models/nonrel/read.py:293
+#: models/nonrel/read.py:317
 msgid "later"
 msgstr "plus tard"
 
-#: models/nonrel/read.py:295
+#: models/nonrel/read.py:319
 msgid "^read/later/$"
 msgstr "^lire/plus-tard/$"
 
-#: models/nonrel/read.py:296
+#: models/nonrel/read.py:320
 msgid "Keep for reading later"
 msgstr "Garder pour lire plus tard"
 
-#: models/nonrel/read.py:297
+#: models/nonrel/read.py:321
 #, python-format
 msgid "%(count)s article to read later"
 msgstr "%(count)s article à lire plus tard"
 
-#: models/nonrel/read.py:298
+#: models/nonrel/read.py:322
 #, python-format
 msgid "%(count)s articles to read later"
 msgstr "%(count)s articles à lire plus tard"
 
-#: models/nonrel/read.py:299
+#: models/nonrel/read.py:323
 msgid "Remove from reading list"
 msgstr "Supprimer de la liste de lecture"
 
-#: models/nonrel/read.py:300 templates/navbars/read-endless.html:41
-#: templatetags/coretags.py:93
+#: models/nonrel/read.py:324 templates/navbars/read-endless.html:41
+#: templatetags/coretags.py:112
 msgid "Read later"
 msgstr "Lire plus tard"
 
-#: models/nonrel/read.py:301
+#: models/nonrel/read.py:325
 msgid "Do not read later"
 msgstr "Ne pas lire plus tard"
 
-#: models/nonrel/read.py:302
+#: models/nonrel/read.py:326
 msgid "kept for later"
 msgstr "gardé pour plus tard"
 
-#: models/nonrel/read.py:304
+#: models/nonrel/read.py:328
 msgctxt "awesome-font icon name"
 msgid "bookmark-empty"
 msgstr "bookmark-empty"
 
-#: models/nonrel/read.py:306
+#: models/nonrel/read.py:330
 msgctxt "awesome-font icon name"
 msgid "bookmark"
 msgstr "bookmark"
 
-#: models/nonrel/read.py:310
+#: models/nonrel/read.py:334
 msgid "facts"
 msgstr "faits"
 
-#: models/nonrel/read.py:312
+#: models/nonrel/read.py:336
 msgid "^read/facts/$"
 msgstr "^lire/faits/$"
 
-#: models/nonrel/read.py:313
+#: models/nonrel/read.py:337
 msgid "Mark as fact / important event"
 msgstr "Marquer comme évènement ou fait marquant"
 
-#: models/nonrel/read.py:314
+#: models/nonrel/read.py:338
 #, python-format
 msgid "%(count)s article containing fact(s)"
 msgstr "%(count)s article contenant un(des) fait(s) marquant(s)"
 
-#: models/nonrel/read.py:315
+#: models/nonrel/read.py:339
 #, python-format
 msgid "%(count)s articles containing fact(s)"
 msgstr "%(count)s articles contenant un(des) fait(s) marquant(s)"
 
-#: models/nonrel/read.py:316
+#: models/nonrel/read.py:340
 msgid "Remove from facts / important events"
 msgstr "Supprimer des faits marquants"
 
-#: models/nonrel/read.py:317
+#: models/nonrel/read.py:341
 msgid "This article contains one or more important facts"
 msgstr "Cet article contient un ou plusieurs faits marquants"
 
-#: models/nonrel/read.py:319
+#: models/nonrel/read.py:343
 msgid "Mark as fact"
 msgstr "Ajouter aux faits"
 
-#: models/nonrel/read.py:320
+#: models/nonrel/read.py:344
 msgid "Unmark fact"
 msgstr "Enlever des faits"
 
-#: models/nonrel/read.py:321
+#: models/nonrel/read.py:345
 msgid "fact"
 msgstr "fait"
 
-#: models/nonrel/read.py:323
+#: models/nonrel/read.py:347
 msgctxt "awesome-font icon name"
 msgid "circle-blank"
 msgstr "circle-blank"
 
-#: models/nonrel/read.py:325
+#: models/nonrel/read.py:349
 msgctxt "awesome-font icon name"
 msgid "bullseye"
 msgstr "bullseye"
 
-#: models/nonrel/read.py:329
+#: models/nonrel/read.py:353
 msgid "numbers"
 msgstr "chiffres"
 
-#: models/nonrel/read.py:331
+#: models/nonrel/read.py:355
 msgid "^read/numbers/$"
 msgstr "^lire/chiffres/$"
 
-#: models/nonrel/read.py:332
+#: models/nonrel/read.py:356
 msgid "Mark as valuable number"
 msgstr "Marquer comme chiffre clef"
 
-#: models/nonrel/read.py:333
+#: models/nonrel/read.py:357
 #, python-format
 msgid "%(count)s article containing number(s)"
 msgstr "%(count)s article contenant des chiffres clefs"
 
-#: models/nonrel/read.py:334
+#: models/nonrel/read.py:358
 #, python-format
 msgid "%(count)s articles containing number(s)"
 msgstr "%(count)s articles contenant des chiffres clefs"
 
-#: models/nonrel/read.py:335
+#: models/nonrel/read.py:359
 msgid "Remove from valuable numbers"
 msgstr "Supprimer des chiffres clefs"
 
-#: models/nonrel/read.py:336
+#: models/nonrel/read.py:360
 msgid "This article contains quantified numbers for a watch."
 msgstr "Cet article contient des chiffres clefs ou des données quantifiées."
 
-#: models/nonrel/read.py:338
+#: models/nonrel/read.py:362
 msgid "Mark as number"
 msgstr "Ajouter aux chiffres"
 
-#: models/nonrel/read.py:339
+#: models/nonrel/read.py:363
 msgid "Unmark number"
 msgstr "Enlever des chiffres"
 
-#: models/nonrel/read.py:340
+#: models/nonrel/read.py:364
 msgid "number"
 msgstr "chiffre clef"
 
-#: models/nonrel/read.py:342 models/nonrel/read.py:346
+#: models/nonrel/read.py:366 models/nonrel/read.py:370
 msgctxt "awesome-font icon name"
 msgid "bar-chart"
 msgstr "bar-chart"
 
-#: models/nonrel/read.py:344
+#: models/nonrel/read.py:368
 msgctxt "awesome-font icon name"
 msgid "bar-chart icon-flip-horizontal"
 msgstr "bar-chart icon-flip-horizontal"
 
-#: models/nonrel/read.py:351 models/nonrel/read.py:363
+#: models/nonrel/read.py:375 models/nonrel/read.py:387
 msgid "analysis"
 msgstr "analyse"
 
-#: models/nonrel/read.py:353
+#: models/nonrel/read.py:377
 msgid "^read/analysis/$"
 msgstr "^lire/analyses/$"
 
-#: models/nonrel/read.py:354
+#: models/nonrel/read.py:378
 msgid "Mark as analysis / study / research"
 msgstr "Ajouter aux analyses / études / travaux de recherches"
 
-#: models/nonrel/read.py:355
+#: models/nonrel/read.py:379
 #, python-format
 msgctxt "singular"
 msgid "%(count)s analysis"
 msgstr "%(count)s analyse"
 
-#: models/nonrel/read.py:356
+#: models/nonrel/read.py:380
 #, python-format
 msgctxt "plural"
 msgid "%(count)s analysis"
 msgstr "%(count)s analyses"
 
-#: models/nonrel/read.py:357
+#: models/nonrel/read.py:381
 msgid "Unmark analysis / study / research"
 msgstr "Supprimer des analyses / études / travaux de recherches"
 
-#: models/nonrel/read.py:358
+#: models/nonrel/read.py:382
 msgid ""
 "This article contains an analysis, an in-depth study or a research "
 "publication."
@@ -2046,384 +2073,384 @@ msgstr ""
 "Cet article contient une analyse, une étude de cas ou une publication de "
 "travaux de recherches."
 
-#: models/nonrel/read.py:361
+#: models/nonrel/read.py:385
 msgid "Mark as analysis"
 msgstr "Ajouter aux analyses"
 
-#: models/nonrel/read.py:362
+#: models/nonrel/read.py:386
 msgid "Unmark analysis"
 msgstr "Enlever des analyses"
 
-#: models/nonrel/read.py:365 models/nonrel/read.py:369
+#: models/nonrel/read.py:389 models/nonrel/read.py:393
 msgctxt "awesome-font icon name"
 msgid "beaker"
 msgstr "beaker"
 
-#: models/nonrel/read.py:367
+#: models/nonrel/read.py:391
 msgctxt "awesome-font icon name"
 msgid "beaker icon-rotate-90"
 msgstr "beaker icon-rotate-90"
 
-#: models/nonrel/read.py:373
+#: models/nonrel/read.py:397
 msgid "quotes"
 msgstr "citations"
 
-#: models/nonrel/read.py:375
+#: models/nonrel/read.py:399
 msgid "^read/quotes/$"
 msgstr "^lire/citations/$"
 
-#: models/nonrel/read.py:376
+#: models/nonrel/read.py:400
 msgid "Mark as containing quote(s) from people you consider important"
 msgstr ""
 "Marquer comme conteneur de citation(s) de personne(s) considérée(s) "
 "importante(s)"
 
-#: models/nonrel/read.py:378
+#: models/nonrel/read.py:402
 #, python-format
 msgid "%(count)s article containing quote(s)"
 msgstr "%(count)s article contenant une(des) citation(s)"
 
-#: models/nonrel/read.py:379
+#: models/nonrel/read.py:403
 #, python-format
 msgid "%(count)s articles containing quote(s)"
 msgstr "%(count)s articles contenant une(des) citation(s)"
 
-#: models/nonrel/read.py:380
+#: models/nonrel/read.py:404
 msgid "Unmark as containing quotes (people are not famous anymore?)"
 msgstr "Supprimer des citations"
 
-#: models/nonrel/read.py:382
+#: models/nonrel/read.py:406
 msgid "This article contains one or more quote from people you care about."
 msgstr ""
 "Cet article contient une ou plusieurs citations de personnes auxquelles vous"
 " tenez."
 
-#: models/nonrel/read.py:384
+#: models/nonrel/read.py:408
 msgid "Mark as quote"
 msgstr "Ajouter aux citations"
 
-#: models/nonrel/read.py:385
+#: models/nonrel/read.py:409
 msgid "Unmark quote"
 msgstr "Enlever des citations"
 
-#: models/nonrel/read.py:386
+#: models/nonrel/read.py:410
 msgctxt "noun"
 msgid "quote"
 msgstr "citation"
 
-#: models/nonrel/read.py:388 models/nonrel/read.py:392
+#: models/nonrel/read.py:412 models/nonrel/read.py:416
 msgctxt "awesome-font icon name"
 msgid "quote-left icon-flip-vertical"
 msgstr "quote-left icon-flip-vertical"
 
-#: models/nonrel/read.py:390
+#: models/nonrel/read.py:414
 msgctxt "awesome-font icon name"
 msgid "quote-right"
 msgstr "quote-right"
 
-#: models/nonrel/read.py:396 models/nonrel/read.py:407
+#: models/nonrel/read.py:420 models/nonrel/read.py:431
 msgid "prospective"
 msgstr "prospective"
 
-#: models/nonrel/read.py:398
+#: models/nonrel/read.py:422
 msgid "^read/prospective/$"
 msgstr "^read/prospectives/$"
 
-#: models/nonrel/read.py:399
+#: models/nonrel/read.py:423
 msgid "Mark as prospective-related content"
 msgstr "Marquer comme élément de prospective"
 
-#: models/nonrel/read.py:400
+#: models/nonrel/read.py:424
 #, python-format
 msgid "%(count)s prospective article"
 msgstr "%(count)s article de prospective"
 
-#: models/nonrel/read.py:401
+#: models/nonrel/read.py:425
 #, python-format
 msgid "%(count)s prospective articles"
 msgstr "%(count)s articles de prospective"
 
-#: models/nonrel/read.py:402
+#: models/nonrel/read.py:426
 msgid "Unmark as prospective-related content"
 msgstr "Supprimer des contenus à teneur prospective"
 
-#: models/nonrel/read.py:403
+#: models/nonrel/read.py:427
 msgid ""
 "This article contains prospective element(s) or must-remember hypothesis."
 msgstr ""
 "Cet article contient un ou plusieurs éléments de prospective, ou des "
 "hypothèses à retenir."
 
-#: models/nonrel/read.py:405
+#: models/nonrel/read.py:429
 msgid "Mark as prospective"
 msgstr "Ajouter aux prospectives"
 
-#: models/nonrel/read.py:406
+#: models/nonrel/read.py:430
 msgid "Unmark prospective"
 msgstr "Enlever des prospectives"
 
-#: models/nonrel/read.py:409 models/nonrel/read.py:413
+#: models/nonrel/read.py:433 models/nonrel/read.py:437
 msgctxt "awesome-font icon name"
 msgid "lightbulb"
 msgstr "lightbulb"
 
-#: models/nonrel/read.py:411
+#: models/nonrel/read.py:435
 msgctxt "awesome-font icon name"
 msgid "lightbulb icon-rotate-180"
 msgstr "lightbulb icon-rotate-180"
 
-#: models/nonrel/read.py:417
+#: models/nonrel/read.py:441
 msgid "rules"
 msgstr "règlementations"
 
-#: models/nonrel/read.py:419
+#: models/nonrel/read.py:443
 msgid "^read/rules/$"
 msgstr "^lire/reglementations/$"
 
-#: models/nonrel/read.py:420
+#: models/nonrel/read.py:444
 msgid "Mark as legal/regulations-related content"
 msgstr "Marquer comme point de règlementation ou texte de loi"
 
-#: models/nonrel/read.py:421
+#: models/nonrel/read.py:445
 #, python-format
 msgid "%(count)s regulation-related article"
 msgstr "%(count)s article lié à la réglementation"
 
-#: models/nonrel/read.py:422
+#: models/nonrel/read.py:446
 #, python-format
 msgid "%(count)s regulation-related articles"
 msgstr "%(count)s articles lié à la réglementation"
 
-#: models/nonrel/read.py:423
+#: models/nonrel/read.py:447
 msgid "Unmark as legal content (overriden laws?)"
 msgstr "Supprimer des point de règlementation / lois"
 
-#: models/nonrel/read.py:424
+#: models/nonrel/read.py:448
 msgid "This article contains regulations/law/rules element(s)"
 msgstr ""
 "Cet article contient une règlementation, des textes de loi ou des "
 "informations d'ordre juridique."
 
-#: models/nonrel/read.py:426
+#: models/nonrel/read.py:450
 msgid "Mark as law/regul."
 msgstr "Ajouter aux règlementations"
 
-#: models/nonrel/read.py:427
+#: models/nonrel/read.py:451
 msgid "Unmark law/regul."
 msgstr "Enlever des réglementations"
 
-#: models/nonrel/read.py:428
+#: models/nonrel/read.py:452
 msgid "regulations"
 msgstr "réglementation"
 
-#: models/nonrel/read.py:430 models/nonrel/read.py:434
+#: models/nonrel/read.py:454 models/nonrel/read.py:458
 msgctxt "awesome-font icon name"
 msgid "legal icon-flip-horizontal"
 msgstr "legal icon-flip-horizontal"
 
-#: models/nonrel/read.py:432
+#: models/nonrel/read.py:456
 msgctxt "awesome-font icon name"
 msgid "legal icon-rotate-180"
 msgstr "legal icon-rotate-180"
 
-#: models/nonrel/read.py:438
+#: models/nonrel/read.py:462
 msgid "best-practices"
 msgstr "best-practices"
 
-#: models/nonrel/read.py:441
+#: models/nonrel/read.py:465
 msgid "^read/best-practices/$"
 msgstr "^lire/best-practices/$"
 
-#: models/nonrel/read.py:442
+#: models/nonrel/read.py:466
 msgid "Mark as best-practices / state of art content"
 msgstr "Ajouter aux best-practices ou état-de-l'art"
 
-#: models/nonrel/read.py:444
+#: models/nonrel/read.py:468
 #, python-format
 msgid "%(count)s best-practices article"
 msgstr "%(count)s article de bonnes pratiques"
 
-#: models/nonrel/read.py:445
+#: models/nonrel/read.py:469
 #, python-format
 msgid "%(count)s best-practices articles"
 msgstr "%(count)s articles de bonnes pratiques"
 
-#: models/nonrel/read.py:446
+#: models/nonrel/read.py:470
 msgid "Unmark as best-practices / state of art (has it become obsolete?)"
 msgstr "Supprimer des best-practices (c'est devenu obsolète ?)"
 
-#: models/nonrel/read.py:448
+#: models/nonrel/read.py:472
 msgid "This article contains best-practices /  state of art element(s)."
 msgstr "Cet article contient des best-practices ou un état de l'art."
 
-#: models/nonrel/read.py:450
+#: models/nonrel/read.py:474
 msgid "Mark as best-practice"
 msgstr "Ajouter aux best-practices"
 
-#: models/nonrel/read.py:451
+#: models/nonrel/read.py:475
 msgid "Unmark best-practice"
 msgstr "Enlever des best-practices"
 
-#: models/nonrel/read.py:452
+#: models/nonrel/read.py:476
 msgctxt "noun"
 msgid "know-how"
 msgstr "bonne pratique"
 
-#: models/nonrel/read.py:454 models/nonrel/read.py:458
+#: models/nonrel/read.py:478 models/nonrel/read.py:482
 msgctxt "awesome-font icon name"
 msgid "trophy"
 msgstr "trophy"
 
-#: models/nonrel/read.py:456
+#: models/nonrel/read.py:480
 msgctxt "awesome-font icon name"
 msgid "trophy icon-flip-vertical"
 msgstr "trophy icon-flip-vertical"
 
-#: models/nonrel/read.py:462
+#: models/nonrel/read.py:486
 msgid "knowlegde"
 msgstr "savoirs"
 
-#: models/nonrel/read.py:464
+#: models/nonrel/read.py:488
 msgid "^read/knowledge/$"
 msgstr "^lire/savoirs/$"
 
-#: models/nonrel/read.py:465
+#: models/nonrel/read.py:489
 msgid "Mark as a valuable piece of knowlegde for your brain or life"
 msgstr "Marquer comme une pièce de valeur pour votre cerveau ou votre vie"
 
-#: models/nonrel/read.py:467
+#: models/nonrel/read.py:491
 #, python-format
 msgid "%(count)s knowledge article"
 msgstr "%(count)s élément de savoir"
 
-#: models/nonrel/read.py:468
+#: models/nonrel/read.py:492
 #, python-format
 msgid "%(count)s knowledge articles"
 msgstr "%(count)s éléments de savoir"
 
-#: models/nonrel/read.py:469
+#: models/nonrel/read.py:493
 msgid "Unmark as neuronal-exciting element(s)"
 msgstr "Supprimer des éléments excitateurs de neurones"
 
-#: models/nonrel/read.py:471
+#: models/nonrel/read.py:495
 msgid "This article contains a valuable piece of knowlegde."
 msgstr ""
 "Cet article contient un élément de savoir ou une connaissance important(e)"
 
-#: models/nonrel/read.py:473
+#: models/nonrel/read.py:497
 msgid "Mark as Knowledge"
 msgstr "Ajouter aux savoirs"
 
-#: models/nonrel/read.py:474
+#: models/nonrel/read.py:498
 msgid "Unmark knowlegde"
 msgstr "Enlever des savoirs"
 
-#: models/nonrel/read.py:475
+#: models/nonrel/read.py:499
 msgid "knowledge"
 msgstr "savoir"
 
-#: models/nonrel/read.py:476 models/nonrel/read.py:479
+#: models/nonrel/read.py:500 models/nonrel/read.py:503
 msgctxt "awesome-font icon name"
 msgid "globe"
 msgstr "globe"
 
-#: models/nonrel/read.py:478
+#: models/nonrel/read.py:502
 msgctxt "awesome-font icon name"
 msgid "globe icon-rotate-180"
 msgstr "globe icon-rotate-180"
 
-#: models/nonrel/read.py:483
+#: models/nonrel/read.py:507
 msgid "funbox"
 msgstr "funbox"
 
-#: models/nonrel/read.py:485
+#: models/nonrel/read.py:509
 msgid "^read/fun/$"
 msgstr "^lire/drole/$"
 
-#: models/nonrel/read.py:486
+#: models/nonrel/read.py:510
 msgid "Mark as being fun. Are you sure?"
 msgstr "Marquer comme drôle. Ça l'est vraiment ??"
 
-#: models/nonrel/read.py:487
+#: models/nonrel/read.py:511
 #, python-format
 msgid "%(count)s fun article"
 msgstr "%(count)s histoire drôle"
 
-#: models/nonrel/read.py:488
+#: models/nonrel/read.py:512
 #, python-format
 msgid "%(count)s fun articles"
 msgstr "%(count)s histoires drôles"
 
-#: models/nonrel/read.py:489
+#: models/nonrel/read.py:513
 msgid "Not fun anymore, sadly."
 msgstr "C'est plus drôle du tout. Je vais pleurer."
 
-#: models/nonrel/read.py:490
+#: models/nonrel/read.py:514
 msgid "OMG, this thing is sooooooooo fun! LMAO!"
 msgstr "Ce truc est trop poilant !!! Je me bidonne comme un dingue !"
 
-#: models/nonrel/read.py:491
+#: models/nonrel/read.py:515
 msgid "Mark as fun"
 msgstr "Mettre un peu d'humour"
 
-#: models/nonrel/read.py:492
+#: models/nonrel/read.py:516
 msgid "Mark as boring"
 msgstr "Supprimer des blagues"
 
-#: models/nonrel/read.py:493
+#: models/nonrel/read.py:517
 msgid "fun"
 msgstr "drôle"
 
-#: models/nonrel/read.py:494 models/nonrel/read.py:496
+#: models/nonrel/read.py:518 models/nonrel/read.py:520
 msgctxt "awesome-font icon name"
 msgid "smile"
 msgstr "smile"
 
-#: models/nonrel/read.py:495
+#: models/nonrel/read.py:519
 msgctxt "awesome-font icon name"
 msgid "frown"
 msgstr "frown"
 
-#: models/nonrel/read.py:597
+#: models/nonrel/read.py:621
 msgid "{0}∞{1} (#{2}∞#{3}→#{4}) {5} @{6}"
 msgstr "{0}∞{1} (#{2}∞#{3}→#{4}) {5} @{6}"
 
-#: models/nonrel/read.py:603
+#: models/nonrel/read.py:627
 msgctxt "adjective"
 msgid "unread"
 msgstr "non-lu"
 
-#: models/nonrel/read.py:636
+#: models/nonrel/read.py:660
 msgid " ({feed})"
 msgstr " ({feed}) "
 
-#: models/nonrel/read.py:641
+#: models/nonrel/read.py:665
 msgid "{title}{source}"
 msgstr "{title}{source}"
 
-#: models/nonrel/subscription.py:120
+#: models/nonrel/subscription.py:139
 msgid "Tags that will be applied to new reads in this subscription."
 msgstr ""
 "Tags qui seront appliqués automatiquement à toute nouvelle lecture de cet "
 "abonnement."
 
-#: models/nonrel/subscription.py:125
+#: models/nonrel/subscription.py:144
 msgid "Folder(s) in which this subscription appears."
 msgstr "Dossier(s) dans lesquel(s) cet abonnement apparaît."
 
-#: models/nonrel/subscription.py:159
+#: models/nonrel/subscription.py:178
 msgid "{0}+{1} (#{2})"
 msgstr "{0}+{1} (#{2})"
 
-#: models/nonrel/tag.py:51
+#: models/nonrel/tag.py:70
 msgid "language"
 msgstr "langue"
 
-#: models/nonrel/tag.py:57
+#: models/nonrel/tag.py:76
 msgid "Origin"
 msgstr "Origine"
 
-#: models/nonrel/tag.py:58
+#: models/nonrel/tag.py:77
 msgid ""
 "Initial origin from where the tag was created from, to eventually help "
 "defining other attributes."
@@ -2431,45 +2458,45 @@ msgstr ""
 "Origine initiale de création du tag. Ça peut éventuellement servir plus tard"
 " à définir d'autres attributs."
 
-#: models/nonrel/tag.py:64
+#: models/nonrel/tag.py:83
 msgid ""
 "Put a \"master\" tag here to help avoiding too much different tags (eg. "
 "singular and plurals) with the same meaning and loss of information."
 msgstr ""
 
-#: models/nonrel/tag.py:82
+#: models/nonrel/tag.py:101
 msgid "{0} {1}⚐ (#{2})"
 msgstr "{0} {1}⚐ (#{2})"
 
-#: models/nonrel/user.py:200
+#: models/nonrel/user.py:220
 msgid "Staff member"
 msgstr "Membre du staff"
 
-#: models/nonrel/user.py:201
+#: models/nonrel/user.py:221
 msgid "The user has staff permissions (see Django documentation)."
 msgstr "L'utilisateur est membre du staff (voir la documentation Django)."
 
-#: models/nonrel/user.py:203
+#: models/nonrel/user.py:223
 msgid "Superuser"
 msgstr "Super-utilisateur"
 
-#: models/nonrel/user.py:204
+#: models/nonrel/user.py:224
 msgid "The user has super user related permissions (see Django doc.)."
 msgstr "L'utilisateur est super-utilisateur (voir la documentation Django)."
 
-#: models/nonrel/user.py:207
+#: models/nonrel/user.py:227
 msgid "Friends"
 msgstr "Amis"
 
-#: models/nonrel/user.py:209
+#: models/nonrel/user.py:229
 msgid "Address book"
 msgstr "Carnet d'adresse"
 
-#: models/nonrel/user.py:516
+#: models/nonrel/user.py:535
 msgid "System group?"
 msgstr "Groupe système ?"
 
-#: models/nonrel/website.py:50
+#: models/nonrel/website.py:69
 #, python-format
 msgid "(dupe of #%s)"
 msgstr "(duplicata de #%s)"
@@ -2945,20 +2972,16 @@ msgstr ""
 msgid "Cannot disconnect from %(backend_name)s"
 msgstr "Impossible de déconnecter %(backend_name)s"
 
-#: templates/profile.html:132
-msgid "Synchronize contacts"
-msgstr "Synchroniser les contacts"
-
-#: templates/profile.html:141
+#: templates/profile.html:129
 #, python-format
 msgid "Disconnect from %(backend_name)s"
 msgstr "Se déconnecter de %(backend_name)s"
 
-#: templates/profile.html:151
+#: templates/profile.html:139
 msgid "Associate more accounts"
 msgstr "Associer d'autres comptes"
 
-#: templates/profile.html:153
+#: templates/profile.html:141
 msgid "Associate accounts"
 msgstr "Associer des comptes"
 
@@ -3114,11 +3137,11 @@ msgstr "Listes de lecture"
 msgid "All"
 msgstr "Tout"
 
-#: templates/navbars/read-endless.html:35 templatetags/coretags.py:103
+#: templates/navbars/read-endless.html:35 templatetags/coretags.py:122
 msgid "Funbox"
 msgstr "Funbox"
 
-#: templates/navbars/read-endless.html:37 templatetags/coretags.py:96
+#: templates/navbars/read-endless.html:37 templatetags/coretags.py:115
 msgid "Starred"
 msgstr "Sélectionné"
 
@@ -3131,19 +3154,19 @@ msgstr "Non-lu"
 msgid "Watching lists"
 msgstr "Listes de veille"
 
-#: templates/navbars/read-endless.html:57 templatetags/coretags.py:128
+#: templates/navbars/read-endless.html:57 templatetags/coretags.py:147
 msgid "Knowledge"
 msgstr "Savoirs"
 
-#: templates/navbars/read-endless.html:59 templatetags/coretags.py:125
+#: templates/navbars/read-endless.html:59 templatetags/coretags.py:144
 msgid "Quotes"
 msgstr "Citations"
 
-#: templates/navbars/read-endless.html:61 templatetags/coretags.py:116
+#: templates/navbars/read-endless.html:61 templatetags/coretags.py:135
 msgid "Prospective"
 msgstr "Prospective"
 
-#: templates/navbars/read-endless.html:63 templatetags/coretags.py:122
+#: templates/navbars/read-endless.html:63 templatetags/coretags.py:141
 msgid "Regulations"
 msgstr "Réglementations"
 
@@ -3151,15 +3174,15 @@ msgstr "Réglementations"
 msgid "Best-Practices"
 msgstr "Best-practices"
 
-#: templates/navbars/read-endless.html:70 templatetags/coretags.py:107
+#: templates/navbars/read-endless.html:70 templatetags/coretags.py:126
 msgid "Facts"
 msgstr "Faits"
 
-#: templates/navbars/read-endless.html:72 templatetags/coretags.py:110
+#: templates/navbars/read-endless.html:72 templatetags/coretags.py:129
 msgid "Numbers"
 msgstr "Chiffres clefs"
 
-#: templates/navbars/read-endless.html:74 templatetags/coretags.py:113
+#: templates/navbars/read-endless.html:74 templatetags/coretags.py:132
 msgid "Analysis"
 msgstr "Analyses"
 
@@ -3364,7 +3387,7 @@ msgstr "Besoin d'importer des données depuis Readability / Pocket ?"
 #: templates/snippets/import/import-web-pages.html:52
 #: templates/snippets/selector/manage-folder.html:38
 #: templates/snippets/selector/manage-subscription.html:119
-#: templates/snippets/share/share-one.html:87
+#: templates/snippets/share/share-one.html:81
 msgid "Cancel"
 msgstr "Annuler"
 
@@ -3720,29 +3743,29 @@ msgstr ""
 "Alternativement, vous pouvez <a href=\"%(article_url)s\" target=\"_blank\">le lire sur le site d'origine</a>. Désolé du désagrément.\n"
 
 #: templates/snippets/read/article-meta.html:59
-#: templates/snippets/read/read-meta-async.html:82
+#: templates/snippets/read/read-meta-async.html:84
 msgid "no date"
 msgstr "pas de date"
 
 #: templates/snippets/read/article-meta.html:65
-#: templates/snippets/read/read-meta-async.html:88
+#: templates/snippets/read/read-meta-async.html:90
 msgid "by"
 msgstr "par"
 
 #: templates/snippets/read/article-meta.html:76
-#: templates/snippets/read/read-meta-async.html:99
+#: templates/snippets/read/read-meta-async.html:101
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid "in"
 msgstr "dans"
 
 #: templates/snippets/read/read-action-original.html:2
-#: templatetags/coretags.py:354
+#: templatetags/coretags.py:373
 msgid "Display on the original website"
 msgstr "Afficher sur le site d'origine"
 
 #: templates/snippets/read/read-action-original.html:5
-#: templatetags/coretags.py:356
+#: templatetags/coretags.py:375
 msgid "Read original"
 msgstr "Voir l'original"
 
@@ -3753,14 +3776,6 @@ msgstr "Assigner ou supprimer des attributs de veille"
 #: templates/snippets/read/read-actions.html:52
 msgid "Watch"
 msgstr "Veille"
-
-#: templates/snippets/read/read-actions.html:60
-msgid "Share privately with individuals or your watch-teams"
-msgstr "Partagez en privé avec des personnes ou vos équipes de veille"
-
-#: templates/snippets/read/read-actions.html:63
-msgid "Share"
-msgstr "Partager"
 
 #: templates/snippets/read/read-admin-informations.html:9
 msgid "Read: "
@@ -3870,27 +3885,27 @@ msgstr ""
 msgid "Visit the website of this stream"
 msgstr "Visitez le site web de ce flux"
 
-#: templates/snippets/read/read-meta-async.html:69
+#: templates/snippets/read/read-meta-async.html:71
 msgid "Open original article in a new window/tab"
 msgstr "Ouvrir l'article original dans une nouvelle fenêtre/onglet."
 
-#: templates/snippets/read/read-meta-async.html:105
+#: templates/snippets/read/read-meta-async.html:107
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
 msgid ", rated "
 msgstr ", noté"
 
-#: templates/snippets/read/read-meta-async.html:122
-#: templates/snippets/read/read-meta-async.html:129
+#: templates/snippets/read/read-meta-async.html:124
+#: templates/snippets/read/read-meta-async.html:131
 msgid "Open posterior item"
 msgstr "Ouvrir l'élément postérieur"
 
-#: templates/snippets/read/read-meta-async.html:135
+#: templates/snippets/read/read-meta-async.html:137
 msgid "Close current item"
 msgstr "Fermer l'élément courant"
 
-#: templates/snippets/read/read-meta-async.html:141
-#: templates/snippets/read/read-meta-async.html:150
+#: templates/snippets/read/read-meta-async.html:143
+#: templates/snippets/read/read-meta-async.html:152
 msgid "Open anterior item"
 msgstr "Ouvrir l'élément antérieur"
 
@@ -4161,7 +4176,7 @@ msgstr "S'abonner à un flux"
 msgid "Inbox"
 msgstr "Boîte de réception"
 
-#: templates/snippets/selector/selector.html:47 templatetags/coretags.py:76
+#: templates/snippets/selector/selector.html:47 templatetags/coretags.py:95
 msgid "Imported elements"
 msgstr "Éléments importés"
 
@@ -4240,15 +4255,15 @@ msgstr "J'ai compris. Laisse-moi faire maintenant."
 msgid "Share <em>%(title)s</em>"
 msgstr "Partager <em>%(title)s</em>"
 
-#: templates/snippets/share/share-one.html:61
+#: templates/snippets/share/share-one.html:59
 msgid "Import your contacts"
 msgstr "Importer vos contacts"
 
-#: templates/snippets/share/share-one.html:69
+#: templates/snippets/share/share-one.html:65
 msgid "Would you like to customize the message?"
 msgstr "Personaliser le message ?"
 
-#: templates/snippets/share/share-one.html:83
+#: templates/snippets/share/share-one.html:77
 #, python-format
 msgid ""
 "\n"
@@ -4258,7 +4273,7 @@ msgstr ""
 "\n"
 " <a href=\"%(help_url)s#fonctionnalites-de-partage\" target=\"_blank\">Que se passe-t-il quand je clique sur « Envoyer » ?</a>"
 
-#: templates/snippets/share/share-one.html:88
+#: templates/snippets/share/share-one.html:82
 msgid "Send"
 msgstr "Envoyer"
 
@@ -4325,95 +4340,95 @@ msgstr "Enregistrer les changements"
 msgid "Reset"
 msgstr "Remettre à zéro"
 
-#: templatetags/coretags.py:78
+#: templatetags/coretags.py:97
 msgid "You have {0} newly imported items."
 msgstr "Vous avez {0} éléments récemment importés"
 
-#: templatetags/coretags.py:80
+#: templatetags/coretags.py:99
 msgid "You have {0} newly imported items, out of {1} so far"
 msgstr "Vous avez {0} éléments non-lus sur un total de {1}"
 
-#: templatetags/coretags.py:82
+#: templatetags/coretags.py:101
 msgid "You imported {0} web items so far"
 msgstr "Vous avez importé {0} éléments web"
 
-#: templatetags/coretags.py:84
+#: templatetags/coretags.py:103
 msgid "You did not import anything until now"
 msgstr "Vous n'avez rien importé pour l'instant"
 
-#: templatetags/coretags.py:87
+#: templatetags/coretags.py:106
 msgid "All articles"
 msgstr "Tous les articles"
 
-#: templatetags/coretags.py:88
+#: templatetags/coretags.py:107
 msgid "You have {0} articles in 1flow"
 msgstr "Vous avez {0} articles dans 1flow"
 
-#: templatetags/coretags.py:90
+#: templatetags/coretags.py:109
 msgid "All unread"
 msgstr "Tous les non-lus"
 
-#: templatetags/coretags.py:91
+#: templatetags/coretags.py:110
 msgid "You have {0} unread articles"
 msgstr "Vous avez {0} articles non-lus"
 
-#: templatetags/coretags.py:94
+#: templatetags/coretags.py:113
 msgid "You have {0} articles to read later"
 msgstr "Vous avez {0} articles à lire plus tard"
 
-#: templatetags/coretags.py:97
+#: templatetags/coretags.py:116
 msgid "You have {0} starred articles"
 msgstr "Vous avez {0} articles sélectionnés"
 
-#: templatetags/coretags.py:99
+#: templatetags/coretags.py:118
 msgid "Archived"
 msgstr "Archivé"
 
-#: templatetags/coretags.py:100
+#: templatetags/coretags.py:119
 msgid "You have {0} archived articles"
 msgstr "Vous avez {0} articles archivés"
 
-#: templatetags/coretags.py:104
+#: templatetags/coretags.py:123
 msgid "You have {0} fun articles"
 msgstr "Vous avez {0} articles tordants"
 
-#: templatetags/coretags.py:108
+#: templatetags/coretags.py:127
 msgid "You have {0} articles marked as fact(s)"
 msgstr "Vous avez {0} articles contenant des faits marquants"
 
-#: templatetags/coretags.py:111
+#: templatetags/coretags.py:130
 msgid "You have {0} articles marked as number(s)"
 msgstr "Vous avez {0} articles contenant des chiffres-clefs"
 
-#: templatetags/coretags.py:114
+#: templatetags/coretags.py:133
 msgid "You have {0} articles marked as analysis"
 msgstr "Vous avez {0} articles marqués comme analyses/études"
 
-#: templatetags/coretags.py:117
+#: templatetags/coretags.py:136
 msgid "You have {0} articles marked as prospective"
 msgstr "Vous avez {0} éléments de prospective"
 
-#: templatetags/coretags.py:119
+#: templatetags/coretags.py:138
 msgid "Best-practices"
 msgstr "Bonnes pratiques"
 
-#: templatetags/coretags.py:120
+#: templatetags/coretags.py:139
 msgid "You have {0} articles marked as best-practices"
 msgstr "Vous avez {0} articles marqués comme bonnes-pratiques/état de l'art"
 
-#: templatetags/coretags.py:123
+#: templatetags/coretags.py:142
 msgid "You have {0} articles marked as regulation/legal"
 msgstr "Vous avez {0} éléments marqués comme réglementation/juridique/légal"
 
-#: templatetags/coretags.py:126
+#: templatetags/coretags.py:145
 msgid "You have {0} articles marked as quote(s)"
 msgstr "Vous avez {0} articles contenant des citations"
 
-#: templatetags/coretags.py:129
+#: templatetags/coretags.py:148
 msgid "You have {0} articles marked as knowledge"
 msgstr "Vous avez {0} éléments marqués comme savoir ou connaissance"
 
-#: templatetags/coretags.py:144
+#: templatetags/coretags.py:163
 msgid ""
 "Feature coming soon. More information on the 1flow blog "
 "http://blog.1flow.io/ or Twitter @1flow_io."
@@ -4421,42 +4436,51 @@ msgstr ""
 "Fonctionnalité en cours de développement. Plus d'informations sur le blog "
 "1flow http://blog.1flow.io/ ou sur Twitter @1flow_io."
 
-#: templatetags/coretags.py:221
+#: templatetags/coretags.py:240
 msgid "You have nothing in this list yet."
 msgstr "Vous n'avez rien dans cette liste"
 
-#: templatetags/coretags.py:266
+#: templatetags/coretags.py:285
 msgid "M+"
 msgstr "M+"
 
-#: templatetags/coretags.py:271
+#: templatetags/coretags.py:290
 msgid "k+"
 msgstr "k+"
 
-#: templatetags/coretags.py:286
+#: templatetags/coretags.py:305
 msgid "{0} articles"
 msgstr "{0} articles"
 
-#: templatetags/coretags.py:447 templatetags/coretags.py:449
+#: templatetags/coretags.py:466 templatetags/coretags.py:468
 msgid "Convert to full-text"
 msgstr "Convertir en plein-texte"
 
-#: templatetags/coretags.py:448
+#: templatetags/coretags.py:467
 msgid "Switch back to original"
 msgstr "Revenir à l'original"
 
-#: templatetags/coretags.py:450
+#: templatetags/coretags.py:469
 msgid "View original"
 msgstr "Voir l'original"
 
-#: templatetags/coretags.py:451
+#: templatetags/coretags.py:470
 msgid "converted"
 msgstr "converti"
 
-#: templatetags/coretags.py:453 templatetags/coretags.py:455
+#: templatetags/coretags.py:472 templatetags/coretags.py:474
 msgctxt "awesome-font icon name"
 msgid "exchange"
 msgstr "exchange"
+
+#~ msgid "Synchronize contacts"
+#~ msgstr "Synchroniser les contacts"
+
+#~ msgid "Share privately with individuals or your watch-teams"
+#~ msgstr "Partagez en privé avec des personnes ou vos équipes de veille"
+
+#~ msgid "Share"
+#~ msgstr "Partager"
 
 #~ msgid "URL {0} is invalid, its pre-processing failed ({1})"
 #~ msgstr ""

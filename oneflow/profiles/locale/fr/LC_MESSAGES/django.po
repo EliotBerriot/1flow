@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-06-27 21:37+0200\n"
+"POT-Creation-Date: 2014-01-20 09:24+0100\n"
 "PO-Revision-Date: 2013-06-26 20:53+0009\n"
 "Last-Translator:   <oc@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -19,27 +19,27 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: models.py:30
+#: models.py:49
 msgid "Email announcements"
 msgstr "Annonces E-mail"
 
-#: models.py:32
+#: models.py:51
 msgid "Last modified"
 msgstr "Dernière modification"
 
-#: models.py:34
+#: models.py:53
 msgid "Register data, as JSON"
 msgstr "Données d'inscription (en JSON)"
 
-#: models.py:36
+#: models.py:55
 msgid "Validation codes, as JSON"
 msgstr "Codes de validation (en JSON)"
 
-#: models.py:39
+#: models.py:58
 msgid "sent emails names, as JSON"
 msgstr "Emails envoyés (en JSON)"
 
-#: models.py:41
+#: models.py:60
 msgid "Other user data, as JSON"
 msgstr "Autres données (en JSON)"
 

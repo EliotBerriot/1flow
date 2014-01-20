@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-23 20:04+0200\n"
-"PO-Revision-Date: 2013-08-30 18:44+0009\n"
+"POT-Creation-Date: 2014-01-20 09:24+0100\n"
+"PO-Revision-Date: 2014-01-20 11:27+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -19,56 +19,55 @@ msgstr ""
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 "X-Translated-Using: django-rosetta 0.7.2\n"
 
-#: admin.py:28
+#: admin.py:47
 msgid "language"
 msgstr "langue"
 
-#: models.py:15
+#: models.py:34
 msgid "Template variable name"
 msgstr "Nom de variable de template"
 
-#: models.py:17
+#: models.py:36
 msgid "Template variable content"
 msgstr "Contenu de variable de template"
 
-#: models.py:20
-#, python-brace-format
+#: models.py:39
 msgid "{field_name}: {truncated_field_value}"
 msgstr "{field_name} : {truncated_field_value}"
 
-#: models.py:26
+#: models.py:45
 msgid "Landing page content"
 msgstr "Contenu de landing page"
 
-#: models.py:27
+#: models.py:46
 msgid "Landing page contents"
 msgstr "Contenus de landing page"
 
-#: models.py:38
+#: models.py:57
 msgid "email address"
 msgstr "adresse email"
 
-#: models.py:39
+#: models.py:58
 msgid "Any valid email address."
 msgstr "N'importe quelle adresse valide."
 
-#: models.py:40
+#: models.py:59
 msgid "date joined"
 msgstr "date d'inscription"
 
-#: models.py:43
+#: models.py:62
 msgid "Landing page user"
 msgstr "Utilisateur via landing page"
 
-#: models.py:44
+#: models.py:63
 msgid "Landing page users"
 msgstr "Utilisateurs via landing page"
 
-#: urls.py:9
+#: urls.py:28
 msgid "^thanks/(?P<already_registered>\\w+)?$"
 msgstr "^merci/(?P<already_registered>\\w+)?$"
 
-#: views.py:48
+#: views.py:73
 msgid "again"
 msgstr "encore"
 
@@ -104,9 +103,97 @@ msgstr "Connexion"
 msgid "Follow us on twitter!"
 msgstr "Suivez-nous sur Twitter !"
 
-#: templates/landing_base.html:96
-msgid "©2013, all right reserved | <strong>1flow</strong> team"
-msgstr "©2013, tous droits réservés | équipe <strong>1flow</strong>"
+#: templates/landing_base.html:89
+msgid "1flow's copyrights & licenses"
+msgstr "Copyright et licences de 1flow"
+
+#: templates/landing_base.html:92
+msgid ""
+"\n"
+"\n"
+"## 1flow is free software\n"
+"\n"
+"Under the terms of the [GNU Affero General Public License version 3][affero] or later.\n"
+"\n"
+"You can always find the latest source code, and the source code of the version running this web application, in [the public repository][repo].\n"
+"\n"
+"\n"
+"### Graphical theme license\n"
+"\n"
+"Please note that **the graphical theme is not libre software**.\n"
+"This is stated and explained in details in the source code, in the `COPYING` file. This will change in the future as soon as a libre theme is contributed to the project, or if we find a deal with the theme creator.\n"
+"\n"
+"\n"
+"### 1flow.io help images\n"
+"\n"
+"As of 2014-01-17, [Matthieu Chaignot][mchai] offered these images under the CC-BY-SA 4.0 license. This could eventually change, but only in the way to make the new license compatible with the AGPLv3, if the current is proven not to be.\n"
+"\n"
+"\n"
+"## Copyrights\n"
+"\n"
+"- Copyright 2013-2014 [Olivier Cortès][kmk23] for the source code, most of the website design, the help/features text content, the project persona.\n"
+"- Copyright 2013 [Matthieu Chaignot][mchai] for the landing page contents and all email contents, the help/features images and the landing page background image,\n"
+"- Copyright 2013 K.P. for parts of design on the reading lists,\n"
+"- Copyright a lot of OpenSource® and Free Software developers for all software components on which 1flow is built (Python, Django, PostgreSQL, MongoDB, Redis, Bootstrap, jQuery, and a lot more).\n"
+"\n"
+"\n"
+"## Database contents copyrights\n"
+"\n"
+"The contents of the `1flow.io` database (mostly plain text or HTML, because we don't host images nor videos) are copyrights of their respective owner in their respective countries.\n"
+"\n"
+"In this case, licences may vary a lot given the content (some are CC-*, some are all rights reserved), and you may use the `1flow.io` platform at your own risk on these content, given what you do with it.\n"
+"\n"
+"  [affero]: http://www.gnu.org/licenses/agpl-3.0.html\n"
+"  [repo]: https://github.com/1flow/\n"
+"  [kmk23]: https://twitter.com/Karmak23\n"
+"  [mchai]: https://twitter.com/mchaignot\n"
+"\n"
+msgstr ""
+"\n"
+"## 1flow est un logiciel libre\n"
+"\n"
+"Selon les termes de la [licence publique générale Affero version 3][affero] ou supérieure.\n"
+"\n"
+"Vous pouvez toujours trouver le code source le plus récent, ainsi que le code source de la version qui fait tourner cette application web dans le [dépôt public][repo].\n"
+"\n"
+"\n"
+"### Licence du thème graphique\n"
+"\n"
+"Notez que **le thème graphique n'est pas libre**. C'est expliqué en détails dans le fichier `COPYING` du code source. Cela changera dans le futur, dès que le projet se verra doté d'un thème libre, ou si nous trouvons un accord avec le créateur du thème actuel.\n"
+"\n"
+"\n"
+"### Images sur site 1flow.io\n"
+"\n"
+"Le 17 Janvier 2014, [Matthieu Chaignot][mchai] a placé ces images sous licence CC-BY-SA 4.0. Cela pourra éventuellement changer, mais seulement dans le sens qui rendrait la nouvelle licence compatible avec l'AGPLv3, si tant est qu'il est prouvé que l'actuelle ne l'est pas.\n"
+"\n"
+"\n"
+"## Copyrights\n"
+"\n"
+"- Copyright 2013-2014 [Olivier Cortès][kmk23] pour le code source, la majorité du design, le texte de la rubrique d'aide/fonctionnalités, la persona du projet (à paraître).\n"
+"- Copyright 2013 [Matthieu Chaignot][mchai] pour le contenu de la landing page et le contenu de tous les emails envoyés, les images de la section d'aide/fonctionnalités et l'arrière-plan de la landing page,\n"
+"- Copyright 2013 K.P. pour une partie du design des listes de lecture,\n"
+"- Copyright un grand nombre de développeurs OpenSource® et logiciels libres pour tous les composants sur lesquels 1flow est bâti (Python, Django, PostgreSQL, MongoDB, Redis, Bootstrap, jQuery, et beaucoup d'autres).\n"
+"\n"
+"\n"
+"## Copyrights du contenu de la base de données 1flow.io\n"
+"\n"
+"Les contenus présents dans la base de données `1flow.io` (majoritairement du texte plein et de l'HTML, car nous n'hébergeons aucune image ni vidéo) sont couverts par le copyright de leurs propriétaires respectifs, dans leurs pays respectifs.\n"
+"\n"
+"Les licences peuvent varier du tout au tout (de la CC-* à \"tous droits réservés\"), et vous utilisez la plateforme 1flow.io sous votre propre responsabilité et à vos risques et périls, en fonction de ce que vous faites de ces contenus.\n"
+"\n"
+"[affero]: http://www.gnu.org/licenses/agpl-3.0.html\n"
+"[repo]: https://github.com/1flow/\n"
+"[kmk23]: https://twitter.com/Karmak23\n"
+"[mchai]: https://twitter.com/mchaignot\n"
+
+#: templates/landing_base.html:136
+msgid "Agreed"
+msgstr "Ça me va"
+
+#: templates/landing_base.html:151
+msgid "1flow is free software; copyright 2013-2014 Olivier Cortès and others"
+msgstr ""
+"1flow est un logiciel libre ; copyright 2013-2014 Olivier Cortès et d'autres"
 
 #: templates/landing_index.html:13
 msgid ""
@@ -155,6 +242,9 @@ msgstr "Inscrivez vous sur liste d'attente !"
 #, python-format
 msgid "Switch to %(name_local)s"
 msgstr "Basculer en %(name_local)s"
+
+#~ msgid "©2013, all right reserved | <strong>1flow</strong> team"
+#~ msgstr "©2013, tous droits réservés | équipe <strong>1flow</strong>"
 
 #~ msgid "Sign out"
 #~ msgstr "Déconnexion"
