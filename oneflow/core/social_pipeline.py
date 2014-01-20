@@ -37,8 +37,8 @@ def get_social_avatar(social_user, user, details, request, response, backend,
 
         if isinstance(backend, FacebookBackend):
             if 'id' in response:
-                url = 'http://graph.facebook.com/%s/picture?type=large' \
-                            % response['id']
+                url = u'http://graph.facebook.com/{}/picture?type=large'.format(
+                    response['id'])
 
         elif isinstance(backend, google.GoogleOAuth2Backend):
             url = response.get('picture', None)
