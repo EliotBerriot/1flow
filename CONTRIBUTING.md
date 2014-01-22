@@ -28,4 +28,7 @@ If you don't feel comfortable forking the project or modifying it, you can also 
 
 If you found a bug, please include anything that can help us reproduce it, **excluding any of your passwords**. Never give them to anybody. If we need to access some of your personal data for any reason, we will discuss it first, and ask for something like a read-only/partial-display screen-sharing with your approval.
 
+If you are not a developer and do not feel comfortable on `GitHub`, Just use the feedback form on http://1flow.io/ to submit ideas and feedback, we (developpers)
+will do our best to integrate them in our workflow.
+
 Thanks!
