@@ -18,10 +18,11 @@
     License along with 1flow.  If not, see http://www.gnu.org/licenses/
 
 """
-
 from django.conf import settings
 from django.conf.urls import patterns, include, url
 from django.conf.urls.i18n import i18n_patterns
+from django.core.urlresolvers import reverse_lazy
+from django.http import HttpResponsePermanentRedirect
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.cache import never_cache
 from django.views.generic import TemplateView
@@ -66,10 +67,29 @@ urlpatterns = patterns(
         name='import_contacts_authorized'),
 )
 
+# The 1flow landing page is not yet libre,
+# and is used only on http://1flow.io/ anyway.
+if u'oneflow.landing' in settings.INSTALLED_APPS:
+    urlpatterns += i18n_patterns(
+        '',
+        url(r'', include('oneflow.landing.urls')),
+    )
+else:
+    # When there is no landing page, '/' will lead to nothing.
+    # Just redirect it to the app home. This will handle the
+    # login phase implicitely, if the user is anonymous.
+    def root_redirects_to_home(request):
+        return HttpResponsePermanentRedirect(reverse_lazy('home'))
+
+    urlpatterns += i18n_patterns(
+        '',
+        url(r'^$', root_redirects_to_home, name='core_root'),
+    )
+
+
 urlpatterns += i18n_patterns(
     '',
     # NEVER use r'^$', this won't work as expected. Use r''.
-    url(r'', include('oneflow.landing.urls')),
     url(r'', include('oneflow.core.urls')),
 )
 

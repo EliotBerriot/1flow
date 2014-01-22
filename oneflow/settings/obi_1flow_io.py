@@ -29,8 +29,9 @@ include_snippets(
         # in "real-life-mode", as closer as possible of the real
         # production servers. Sentry will catch all errors, anyway.
         '00_production',
-        '1flow_io',
+        '1flow_io_pre_common',
         'common',
+        '1flow_io_post_common',
         'constance',
         'api_keys',
         'databases',

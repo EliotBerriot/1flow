@@ -7,7 +7,7 @@
 # Production will override only the needed directives.
 #
 """
-    Copyright 2013 Olivier Cortès <oc@1flow.io>
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
 
     This file is part of the 1flow project.
 
@@ -433,7 +433,9 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'oneflow.core.context_processors.social_things',
 )
 
-INSTALLED_APPS = (
+# NOTE: INSTALLED_APPS is a list (not a tuple)
+# in 1flow, because of the conditional landing.
+INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'django.contrib.auth',
     'django.contrib.contenttypes',
@@ -485,13 +487,12 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'oneflow.base',
     'oneflow.profiles',
-    'oneflow.landing',
     'oneflow.core',
     # OMG: order matters! as DSA depends on user model,
     # it must come after 'oneflow.base' wich contains it.
     # Without this, tests fail to create database!
     'social_auth',
-)
+]
 
 ENDLESS_PAGINATION_PER_PAGE = 100
 

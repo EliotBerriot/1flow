@@ -30,11 +30,15 @@ include_snippets(
         # Don't forget to deactivate nobother when we'ge got time to
         # fix other's bugs. Just kidding…
         '000_nobother',
+
+        # Deactivate 00_development, activate 00_production and _post_
+        # to test 404/500 and switch to full production configuration.
         '00_development',
-        # Activate this to test 404/500…
         #'00_production',
-        '1flow_io',
+
+        '1flow_io_pre_common',
         'common',
+        #'1flow_io_post_common',
         'constance',
         'api_keys',
         'databases',

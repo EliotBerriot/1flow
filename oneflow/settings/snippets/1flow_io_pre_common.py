@@ -1,5 +1,4 @@
 # -*- coding: utf-8 -*-
-# Settings for 1flow.net (production)
 """
     Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
 
@@ -20,25 +19,11 @@
 
 """
 
-from sparks.django.settings import include_snippets
+SITE_ID     = 1
+SITE_DOMAIN = '1flow.io'
+SITE_NAME   = '1flow'
 
-include_snippets(
-    (
-        '000_nobother',
-        '00_production',
-        '1flow_io_pre_common',
-        'common',
-        '1flow_io_post_common',
-        'constance',
-        'api_keys',
-        'databases',
-        'cache',
-        'celery',
-        'mail_production',
-        'common_production',
-        #NOTE: *NEVER* 'rosetta' here. We can't get the new translations
-        #   back from production to the git repo, due to to git-flow
-        #   design. Which makes perfect sense in production, anyway.
-    ),
-    __file__, globals()
-)
+# We now need full access to content editors in production for fast fixes.
+# This is not definitive, but will help making content more user-friendly
+# without hassling back-and-forth between development and production via CLI.
+FULL_ADMIN = True

@@ -48,7 +48,10 @@ INTERNAL_IPS = (
 
 PROJECT_APPS = (
     'oneflow.base',
+
+    # XXX: The landing should be conditional, no?
     'oneflow.landing',
+
     'oneflow.core',
 )
 
@@ -75,7 +78,9 @@ ALLOWED_HOSTS += [
     'localhost',
 ]
 
-INSTALLED_APPS += ('django_jenkins', 'django_nose', 'devserver', )
+# NOTE: INSTALLED_APPS is a list (not a tuple)
+# in 1flow, because of the conditional landing.
+INSTALLED_APPS += ['django_jenkins', 'django_nose', 'devserver', ]
                    #'template_debug', )
 
 DEVSERVER_DEFAULT_ADDR = '0.0.0.0'

@@ -21,7 +21,9 @@
 
 """
 
-INSTALLED_APPS += ('rosetta-grappelli', 'rosetta', )
+# NOTE: INSTALLED_APPS is a list (not a tuple)
+# in 1flow, because of the conditional landing.
+INSTALLED_APPS += ['rosetta-grappelli', 'rosetta', ]
 
 if 'dummycache' in CACHES['default']['BACKEND'].lower():
     CACHES['rosetta'] = {

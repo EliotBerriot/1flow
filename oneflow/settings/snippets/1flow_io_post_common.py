@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-    Copyright 2013 Olivier Cortès <oc@1flow.io>
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
 
     This file is part of the 1flow project.
 
@@ -21,15 +21,13 @@
 
 import datetime
 
-SITE_ID     = 1
-SITE_DOMAIN = '1flow.io'
-SITE_NAME   = '1flow'
+# On http://1flow.io/ there is a supplemental 'landing' Django
+# application to describe the project and register beta-users.
+# It must come before the 'core' and after the 'base'.
+# NOTE: because of this, INSTALLED_APPS is a list (not a tuple).
+INSTALLED_APPS.insert(INSTALLED_APPS.index('oneflow.core'),
+                      'oneflow.landing')
 
 # WARNING: keep this a date(), which is neither naive nor TZ aware.
 LANDING_BETA_DATE = datetime.date(2013, 07, 01)
 LANDING_BETA_INVITES = 100
-
-# We now need full access to content editors in production for fast fixes.
-# This is not definitive, but will help making content more user-friendly
-# without hassling back-and-forth between development and production via CLI.
-FULL_ADMIN = True

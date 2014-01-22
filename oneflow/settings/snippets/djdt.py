@@ -20,12 +20,14 @@
 
 """
 
-INSTALLED_APPS += (
+# NOTE: INSTALLED_APPS is a list (not a tuple)
+# in 1flow, because of the conditional landing.
+INSTALLED_APPS += [
     'debug_toolbar',
     #'debug_toolbar_user_panel',
     #'template_timings_panel',
     #'debug_toolbar_mongo',
-)
+]
 
 MIDDLEWARE_CLASSES += ('debug_toolbar.middleware.DebugToolbarMiddleware', )
 
