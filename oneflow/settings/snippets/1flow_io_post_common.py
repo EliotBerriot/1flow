@@ -31,3 +31,14 @@ INSTALLED_APPS.insert(INSTALLED_APPS.index('oneflow.core'),
 # WARNING: keep this a date(), which is neither naive nor TZ aware.
 LANDING_BETA_DATE = datetime.date(2013, 07, 01)
 LANDING_BETA_INVITES = 100
+
+PIPELINE_CSS.update({
+    'landing': {
+        # This one is not "compiled" but simply copied. We wanted it
+        # to be integrated into the pipeline for consistency only.
+        'source_filenames': (
+            'css/landing-styles.css',
+        ),
+        'output_filename': 'css/landing.css',
+    },
+})
