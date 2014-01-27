@@ -199,15 +199,16 @@ PIPELINE_CSS = {
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
 
-    'landing': {
-        # This one is not "compiled" but simply copied. We wanted it
-        # to be integrated into the pipeline for consistency only.
+    'core': {
         'source_filenames': (
-            'css/landing-styles.css',
+            'sass/styles-core.scss',
         ),
-        'output_filename': 'css/landing.css',
+
+        'output_filename': 'css/core.css',
     },
 
+    # TODO:
+    # The next 2 should be wiped out when BS3+Yeti migration is done.
     'core-bootstrap-detail': {
         'source_filenames': (
             'sass/detail-admin/bootstrap-overrides.scss',
@@ -215,29 +216,48 @@ PIPELINE_CSS = {
         ),
         'output_filename': 'css/core-details.css',
     },
-
     'core-bootstrap-bare': {
         'source_filenames': (
             'sass/styles-core-bootstrap-bare.scss',
         ),
         'output_filename': 'css/core.css',
     }
+    # END TODO wipe.
 }
 
 PIPELINE_JS = {
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• vendor
 
-    'vendor-all': {
+    'vendor-global': {
         # This one includes all external dependancies
         # (eg. non 1flow sources) for a one-file-only dep.
         'source_filenames': (
+
+            'vendor/raven.js/1.0.8/raven.js',
+            'vendor/underscorejs/1.5.1/underscore.js',
+            'vendor/mousetrap/1.4.2/mousetrap.js',
+            'vendor/hammerjs/1.0.5/hammer.js',
+            'vendor/pnotify/1.2/jquery.pnotify.js',
+            'vendor/jquery-easing/1.3/jquery.easing.js',
+            'vendor/jquery-color/2.1.2/jquery.color.js',
+
             # WARNING: order matters: tooltip must be included before popover.
             'vendor/bootstrap/js/bootstrap-[a-o]*.js',
             'vendor/bootstrap/js/bootstrap-t*.js',
             'vendor/bootstrap/js/bootstrap-p*.js',
             'vendor/bootstrap/js/bootstrap-[q-s]*.js',
             'vendor/bootstrap/js/bootstrap-[u-z]*.js',
+        ),
+
+        'output_filename': 'js/min/vendor-all.js',
+    },
+    #
+    # TODO: find CDNs versions of these, and merge
+    # the 2 vendor-* target for simplification.
+    #
+    'vendor-local': {
+        'source_filenames': (
 
             'vendor/showdown/showdown.js',
             'vendor/showdown/extensions/twitter.js',
@@ -251,34 +271,6 @@ PIPELINE_JS = {
             # of django-endless-pagination JS.
         ),
         'output_filename': 'js/min/vendor-all.js',
-    },
-
-    'vendor-bootstrap': {
-        'source_filenames': (
-            # WARNING: order matters: tooltip must be included before popover.
-            'vendor/bootstrap/js/bootstrap-[a-o]*.js',
-            'vendor/bootstrap/js/bootstrap-t*.js',
-            'vendor/bootstrap/js/bootstrap-p*.js',
-            'vendor/bootstrap/js/bootstrap-[q-s]*.js',
-            'vendor/bootstrap/js/bootstrap-[u-z]*.js',
-        ),
-        'output_filename': 'js/min/bootstrap.js',
-    },
-
-    'vendor-showdown': {
-        'source_filenames': (
-            'vendor/showdown/showdown.js',
-            'vendor/showdown/extensions/twitter.js',
-        ),
-        'output_filename': 'js/min/showdown.js',
-    },
-
-    'vendor-moment': {
-        'source_filenames': (
-            'vendor/moment/moment.js',
-            'vendor/moment/langs/*.js',
-        ),
-        'output_filename': 'js/min/moment.js',
     },
 
     # NOTE: we use or own implementation
@@ -645,7 +637,7 @@ SOCIAL_AUTH_PIPELINE = (
 # —————————————————————————————————————————————————————————————— 1flow settings
 
 
-DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+DEFAULT_USER_AGENT = u'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging
