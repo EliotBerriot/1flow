@@ -37,6 +37,28 @@ CONSTANCE_CONFIG = {
                               u'disabling this does not prevent any malicious '
                               u'code which bypasses this configuration flag.')),
 
+    # •••••••••••••••••••••••••••••••••••••••••••••• WEB / Templates / JS & CSS
+
+    'WEB_CDNS_ENABLED': (False, ugettext(u'Enable This to use public CDNs for '
+                         u'common JS and CSS (jQuery, bootstrap...). Disabled '
+                         u'by default to avoid tracking and allow autonomous '
+                         u'run.')),
+
+    # HEADS UP: the 3 next are translatable, to allow providing
+    #           different addresses for multi-language support.
+
+    'SUPPORT_EMAIL_ADDRESS': (ugettext(u'supportREMOVETHIS@1flow.io'),
+                              ugettext(u'Support email address. Set empty '
+                                       u'to disable displaying it in the '
+                                       u'support text message.')),
+
+    'IRC_SUPPORT_CHANNEL': (ugettext(u'#1flow'), ugettext(u'Support IRC '
+                            u'channel. Set empty to disable displaying it '
+                            u'in the support text message.')),
+
+    'IRC_SUPPORT_SERVER': (ugettext(u'irc.freenode.net'),
+                            ugettext(u'Support IRC server.')),
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
 
     'DOCUMENTS_ARCHIVING_DISABLED': (False, ugettext(u'Set this to True to '
