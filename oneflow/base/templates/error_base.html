@@ -4,18 +4,18 @@
 
 {% block lang_switcher %}{# intentionaly empty in error pages #}{% endblock lang_switcher %}
 
-{% block landing_features %}
-        <div class="container">
-          <div class="row-fluid">
-                <div class="span8 offset2 text-center">
-                    {% if request.sentry.id %}
-                        <p>
-                        {% blocktrans with sentry_id=request.sentry.id %}
-                            If you need assistance, you may reference this error as <code>{{ sentry_id }}</code>.
-                        {% endblocktrans %}
-                        </p>
-                    {% endif %}
-                </div>
-          </div><!-- /row-fluid -->
-        </div><!-- /container -->
-{% endblock landing_features %}
+{% block onlyme_content %}
+    <div class="row">
+        {% block error_content %}{% endblock error_content %}
+    </div>
+
+    {% if request.sentry.id %}
+        <div class="row">
+            <div class="col-xs-12">
+                {% blocktrans with sentry_id=request.sentry.id %}
+                    If you need assistance, you may reference this error as <code>{{ sentry_id }}</code>.
+                {% endblocktrans %}
+            </div>
+        </div>
+    {% endif %}
+{% endblock onlyme_content %}

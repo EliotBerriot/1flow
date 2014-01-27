@@ -1,0 +1,22 @@
+
+{% with supemail=config.SUPPORT_EMAIL_ADDRESS supchan=config.IRC_SUPPORT_CHANNEL supserv=config.IRC_SUPPORT_SERVER %}
+
+    {% if supmail and supchan %}
+
+        {% blocktrans %}If you have any trouble, contact us at <a href="mailto:{{ supmail }}">{{ supmail }}</a> or via <a href="irc://{{ supserv }}/{{ supchan}}"><code>{{ supchan }}</code> on <code>{{ supserv }}</code></a>.{% endblocktrans %}
+
+    {% elif supmail %}
+
+        {% blocktrans %}If you have any trouble, contact us at <a href="mailto:{{ supmail }}">{{ supmail }}</a>.{% endblocktrans %}
+
+    {% elif supchan %}
+
+        {% blocktrans %}If you have any trouble, contact us via <a href="irc://{{ supserv }}/{{ supchan}}"><code>{{ supchan }}</code> on <code>{{ supserv }}</code></a>.{% endblocktrans %}
+
+    {% else %}
+
+        {% blocktrans %}If you have any trouble, er… How to say it… Well, I can only sympathize because the local administrator has not configured any support information. Sorry for you!{% endblocktrans %}
+
+    {% endif %}
+
+{% endwith %}
