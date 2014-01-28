@@ -1,0 +1,35 @@
+{% extends "onlyme_base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Sign up closed" %}{% endblock %}
+
+{% block onlyme_content %}
+    <fieldset>
+        <legend><h2>{% trans "Sign up closed" %}</h2></legend>
+    {% if code %}
+        <p>{% blocktrans %}The code you provided was not accepted.{% endblocktrans %}</p>
+    {% else %}
+        <p>{% blocktrans %}Sign up is closed to the general public.{% endblocktrans %}</p>
+
+        <div class="spacer30"></div>
+
+        {% if social %}
+            <p>{% blocktrans %}
+                We thank you for your interest in the 1flow platform. Follow <a href="http://blog.1flow.io/">our blog</a> for more information, or {% endblocktrans %}{% include "snippets/contact-support.html" %}</p>
+
+        {% else %}
+
+            <p>{% trans "If you think you have the required qualities to get an account on our platform, " %}{% include "snippets/contact-support.html" %}</p>
+
+            <div class="spacer30"></div>
+
+            <p class="muted">{% trans "PS: do not contact us to explicit these qualities. It's up to you to define and argue them. Have fun!" %}
+
+        {% endif %}
+
+    {% endif %}
+    </fieldset>
+{% endblock %}
+
+{# Si vous pensez avoir les qualités requises pour ouvrir un compte sur notre plateforme, #}

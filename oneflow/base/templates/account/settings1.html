@@ -1,0 +1,19 @@
+{% extends "onlyme_base.html" %}
+
+{% load url from future %}
+
+{% block title %}Account{% endblock %}
+
+{% block onlyme_content %}
+    <form method="POST" action="{% url "account_settings" %}">
+        <legend><h2>Account</h2></legend>
+
+        {% csrf_token %}
+
+        {{ form.as_p }}
+
+        <div class="form-actions">
+            <button class="btn btn-primary" type="submit">Save</button>
+        </div>
+    </form>
+{% endblock %}

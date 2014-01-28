@@ -1,0 +1,14 @@
+{% extends "onlyme_base.html" %}
+{% load i18n %}
+
+{# NOT USED IN 1FLOW BUT KEPT AS REFERENCE. #}
+
+{% block title %}{% trans "Email confirmed" %}{% endblock %}
+
+{% block onlyme_content %}
+
+    <h1>{% trans "Email confirmed" %}</h1>
+
+    <p>{% blocktrans with email=confirmation.email_address.email %}You have confirmed <b>{{ email }}</b>. Thanks.{% endblocktrans %}</p>
+
+{% endblock %}

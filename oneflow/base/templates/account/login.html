@@ -1,0 +1,146 @@
+{# NOTE: base.html is in core/templates/ #}
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans 'Sign in' %}{% endblock title %}
+
+{% block body %}
+<div class="container">
+
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
+            <div class="spacer50 hidden-xs"></div>
+            <div class="spacer10 visible-xs"></div>
+          <h1 class="centered">{% trans "Welcome to 1flow" %}</h1>
+        </div>
+    </div>
+
+    <div class="row">
+
+    {% if not config.LOCAL_LOGIN_ENABLED and not config.SOCIAL_LOGIN_ENABLED %}
+
+        <div class="spacer50"></div>
+        <div class="col-xs-12 col-md-6 col-md-offset-3 jumbotron">
+            <fieldset>
+                <legend><h2>{% trans "Configuration problem" %}</h2></legend>
+
+                <p>{% blocktrans %}WARNING: none of <code>LOCAL_LOGIN_ENABLED</code>
+                nor <code>SOCIAL_LOGIN_ENABLED</code> directives are enabled in the
+                web application <a href="/admin/constance/config/"
+                    target="_blank">dynamic configuration</a>.{% endblocktrans %}</p>
+                <p>{% blocktrans %}This will prevent any user to
+                login, and is probably an error. If you need any help troubleshooting
+                this problem, {% endblocktrans %}
+                {% include "snippets/contact-support.html" %}</p>
+
+            </fieldset>
+        </div>
+
+    {% else %}
+
+        {% if config.LOCAL_LOGIN_ENABLED %}
+
+            <div class="col-xs-12 col-md-8 col-md-offset-2 {% if config.SOCIAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-1{% else %}col-lg-6 col-lg-offset-3{% endif %}">
+
+                <div class="spacer50 hidden-xs"></div>
+                <div class="spacer25 visible-xs"></div>
+
+                <div class="jumbotron only-me centered">
+
+                    <form method="POST"
+                        action="{% url "signin" %}"
+                        autocapitalize="off" class="form-horizontal"
+                        {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+                        <legend><h2>
+                            {% if config.SOCIAL_LOGIN_ENABLED %}{% trans "Sign in with your 1flow account" %}{% else %}{% trans "Please sign in" %}{% endif %}</h2></legend>
+                        {% csrf_token %}
+
+                        <fieldset>
+
+                        {% if form.non_field_errors %}
+                        <div class="alert alert-warning">{{ form.non_field_errors|join:', ' }}</div>
+
+                        {% endif %}
+
+                        {% for field in form %}
+                            {% include "widgets/forms/field-generic.html" with field=field %}
+
+                        {% endfor %}
+
+                        {% if redirect_field_value %}
+                            <input type="hidden"
+                                name="{{ redirect_field_name }}"
+                                value="{{ redirect_field_value }}" />
+                        {% endif %}
+
+                        </fieldset>
+                        <div class="form-actions">
+                            <div class="pull-right">
+                                <button type="submit"
+                                    class="btn btn-primary">{% trans "Log in" %}</button>
+                            </div>
+                            <div class="pull-left">
+                                <span class="small">
+                                <a href="{% url "account_password_reset" %}">{% trans "Forgot your password?" %}</a></span>
+                            </div>
+
+                            {# Without clearfix, the form seems cut at the bottom. #}
+                            <div class="clearfix"></div>
+
+                            {% if config.LOCAL_REGISTRATION_ENABLED %}
+
+                                <div class="spacer50"></div>
+
+                                <div class="small">
+                                    <a href="{% url "account_signup" %}"><i class="icon-plus-sign"></i> {% trans "Register a new account?" %}</a>
+                                </div>
+
+                            {% endif %}
+
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+        {% endif %}
+
+        {% if config.SOCIAL_LOGIN_ENABLED %}
+
+            <div class="col-xs-12 col-md-8 col-md-offset-2 {% if config.LOCAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-0{% else %}col-lg-6 col-lg-offset-3{% endif %}">
+
+                <div class="spacer50 hidden-xs"></div>
+                <div class="spacer25 visible-xs"></div>
+                <div class="jumbotron only-me centered">
+                  <legend><h2>{% trans "Authenticate via a social network" %}</h2></legend>
+                  <div class="spacer25"></div>
+
+                  <fieldset>
+                  {% include "snippets/social-auth-signin.html" %}
+
+                  </fieldset>
+
+                  <div class="row">
+                    <div class="spacer25"></div>
+                    {% if config.SOCIAL_REGISTRATION_ENABLED %}
+                        <p class="muted small"><br />{% trans "If you never signed in before, this will automatically create an account for you." %}</p>
+
+                    {% endif %}
+                  </div>
+                 </div>
+            </div>
+
+        {% endif %}
+
+    {% endif %}
+
+    </div>
+</div>
+{% endblock body %}
+
+{% block extrajs_footer %}
+  {{ block.super }}
+  <script>
+    $('#id_username').focus();
+  </script>
+{% endblock extrajs_footer %}

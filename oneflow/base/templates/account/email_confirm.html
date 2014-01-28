@@ -1,0 +1,29 @@
+{% extends "onlyme_base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Confirm email" %}{% endblock %}
+
+{% block onlyme_content %}
+    <form method="post" class="form-horizontal"
+            action="{% url "account_confirm_email" key=confirmation.key %}" >
+
+        {% csrf_token %}
+
+        <fieldset>
+            <legend><h2>{% trans "Confirm email address" %}</h2></legend>
+
+            <p>{% blocktrans %}To make sure you are a human – or a skilled-enough robot with now-obvious strange intentions – please click below:{% endblocktrans %}</p>
+
+            <div class="spacer25"></div>
+
+            <div class="form-actions centered">
+                <button type="submit" class="btn btn-success">{% blocktrans  with email=confirmation.email_address.email %}Confirm <b>{{ email }}</b>{% endblocktrans %}</button>
+            </div>
+
+            <div class="spacer30"></div>
+
+            <p>{% blocktrans %}If it works, you will be redirected to the signin page, and will be able to login immediately.{% endblocktrans %}</p>
+        </fieldset>
+    </form>
+{% endblock %}
