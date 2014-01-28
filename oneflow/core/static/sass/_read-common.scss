@@ -325,6 +325,17 @@
     }
 }
 
+.restricted-read {
+
+    .article-title {
+        border-bottom: none;
+    }
+
+    .action-read-original {
+        display: none;
+    }
+}
+
 .article-iframe-wrapper {
     // overwrite the dotted line, this doesn't mix beautifully with the iframe.
     margin-top: -3.5em;
