@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-01-20 09:24+0100\n"
-"PO-Revision-Date: 2014-01-20 11:31+0009\n"
+"POT-Creation-Date: 2014-01-28 16:19+0100\n"
+"PO-Revision-Date: 2014-01-28 17:14+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -428,14 +428,6 @@ msgstr "^etatgr/$"
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: urls.py:256
-msgid "^signin/$"
-msgstr "^connexion/$"
-
-#: urls.py:258
-msgid "^signout/$"
-msgstr "^deconnexion/$"
-
 #: views.py:240
 msgid "Save <em>{0}</em> failed: {1}"
 msgstr "Enregistrement de <em>{0}</em> impossible : {1}"
@@ -630,6 +622,8 @@ msgid ""
 "Your message does not validate. Please check for missing brackets or typos "
 "in fields names; raw error: %s."
 msgstr ""
+"Votre message ne passe pas la validation. Merci de vérifier les accolades, "
+"et la syntaxe des champs dynamiques ; erreur brute : %s."
 
 #: forms/selector.py:48 forms/selector.py:263
 msgid "(None)"
@@ -719,15 +713,11 @@ msgstr "Confirmation"
 msgid "Enter the same password as above, for verification."
 msgstr "Saisissez le même mot de passe pour vérification."
 
-#: models/oldrel.py:77 models/reldb.py:233
-msgid "Categories"
-msgstr "Catégories"
-
-#: models/reldb.py:285
+#: models/reldb.py:51
 msgid "Help section label"
 msgstr "Label de section d'aide"
 
-#: models/reldb.py:287
+#: models/reldb.py:53
 msgid ""
 "Any text. Will NOT show anywhere, but is used to distinguish sections from "
 "one another."
@@ -735,49 +725,49 @@ msgstr ""
 "N'importe quel texte (mais doit être unique). Il N'APPARAIT NULLE PART, mais"
 " est simplement utilisé pour distinguer les sections les unes des autres."
 
-#: models/reldb.py:291
+#: models/reldb.py:57
 msgid "Ordering"
 msgstr "Ordre d'apparition"
 
-#: models/reldb.py:291
+#: models/reldb.py:57
 msgid "An integer that will be used to order help sections on the help page."
 msgstr ""
 "Un nombre entier positif qui sera utilisé pour ordonner les sections dans la"
 " page d'aide."
 
-#: models/reldb.py:294
+#: models/reldb.py:60
 msgid "is this help section currently displayed on the website?"
 msgstr ""
 "Cette section est-elle affichée ? (décocher pour rédiger une section "
 "tranquillement avant de la mettre en ligne)"
 
-#: models/reldb.py:297
+#: models/reldb.py:63
 msgid "Help section name"
 msgstr "Nom de section d'aide"
 
-#: models/reldb.py:298
+#: models/reldb.py:64
 msgid "Any text. Will be the title of the help section."
 msgstr "Le titre de la section. Du texte, quoi."
 
-#: models/reldb.py:300
+#: models/reldb.py:66
 msgid "Help section content"
 msgstr "Contenu de la section d'aide"
 
-#: models/reldb.py:301
+#: models/reldb.py:67
 msgid "Any text. Entered as Markdown."
 msgstr ""
 "Du texte, en markdown. Je crois qu'il y a une limite à 4096 caractères, mais"
 " je ne suis pas sûr…"
 
-#: models/reldb.py:304
+#: models/reldb.py:70
 msgid "{field_name}: {truncated_field_value}"
 msgstr "{field_name} : {truncated_field_value}"
 
-#: models/reldb.py:316
+#: models/reldb.py:82
 msgid "Help section"
 msgstr "Section d'aide"
 
-#: models/reldb.py:317
+#: models/reldb.py:83
 msgid "Help contents"
 msgstr "Contenu de l'aide"
 
@@ -1637,6 +1627,8 @@ msgid ""
 "All the users that have shared the article with the current owner of this "
 "read."
 msgstr ""
+"Tous les utilisateurs qui ont partagé l'article avec le propriétaire de "
+"cette lecture."
 
 #: models/nonrel/read.py:90
 msgid "good for use?"
@@ -2492,7 +2484,7 @@ msgstr "Amis"
 msgid "Address book"
 msgstr "Carnet d'adresse"
 
-#: models/nonrel/user.py:535
+#: models/nonrel/user.py:539
 msgid "System group?"
 msgstr "Groupe système ?"
 
@@ -2677,7 +2669,23 @@ msgstr "pas de vignette !"
 msgid "Admin stuff:"
 msgstr "Trucs d'admins :"
 
-#: templates/help.html:3 templates/snippets/navbar.html:202
+#: templates/base_footer.html:13
+msgid "1flow's copyrights & licenses"
+msgstr "Licences & Copyrights de 1flow"
+
+#: templates/base_footer.html:20
+msgid "Agreed"
+msgstr "J'ai compris"
+
+#: templates/base_footer.html:34
+msgid "1flow is libre software, © 2013-2014 Olivier Cortès and others"
+msgstr "1flow est un logiciel libre,  © 2013-2014 Olivier Cortès et d'autres"
+
+#: templates/base_footer.html:35
+msgid "contributions welcomed!"
+msgstr "les contributions sont bienvenues !"
+
+#: templates/help.html:3 templates/snippets/navbar.html:211
 msgid "Features"
 msgstr "Fonctionnalités"
 
@@ -2718,19 +2726,19 @@ msgstr ""
 msgid "Home"
 msgstr "Accueil"
 
-#: templates/home.html:189
+#: templates/home.html:190
 msgid "Returning to source selector…"
 msgstr "Retour au sélecteur de source…"
 
-#: templates/home.html:206
+#: templates/home.html:207
 msgid "Heading to features / help…"
 msgstr "Affichage des fonctionnalités & de l'aide…"
 
-#: templates/home.html:216
+#: templates/home.html:217
 msgid "Opening your preferences…"
 msgstr "Ouverture de vos préférences…"
 
-#: templates/home.html:226
+#: templates/home.html:227
 msgid "Opening your account…"
 msgstr "Ouverture de votre compte…"
 
@@ -2852,7 +2860,7 @@ msgstr ""
 "<a href=\"javascript:window.open('', '_self', '');window.close()\">Fermer cet onglet/fenêtre.</a>"
 
 #: templates/preferences.html:5 templates/preferences.html.py:13
-#: templates/snippets/navbar.html:38
+#: templates/snippets/navbar.html:43
 msgid "Preferences"
 msgstr "Préférences"
 
@@ -2883,109 +2891,7 @@ msgstr "Général"
 msgid "Profile"
 msgstr "Profil"
 
-#: templates/profile.html:20
-msgid "Your profile"
-msgstr "Profil"
-
-#: templates/profile.html:27
-msgid "username"
-msgstr "identifiant"
-
-#: templates/profile.html:31
-msgid "First name"
-msgstr "Prénom"
-
-#: templates/profile.html:35
-msgid "Last name"
-msgstr "Nom"
-
-#: templates/profile.html:39
-msgid "e-mail"
-msgstr "courriel"
-
-#: templates/profile.html:43
-msgid "Last login: "
-msgstr "Dernière connexion :"
-
-#: templates/profile.html:47
-msgid "Registered:"
-msgstr "Enregistré(e) :"
-
-#: templates/profile.html:53
-msgid ""
-"These data are not stored durably in 1flow. They are offered courtesy of "
-"your social account provider (eg. Google, Twitter…). Change any parameter "
-"directly there, it will be reflected here next time you sign in."
-msgstr ""
-"Ces données ne sont pas stockées durablement dans 1flow, car elles sont "
-"courtoisement offertes par votre fournisseur de compte de réseau social "
-"(Google, Twitter…). Modifiez-les directement là-bas, et les changements "
-"apparaîtrons dans 1flow à votre prochaine identification."
-
-#: templates/profile.html:56
-msgid "Super-user access"
-msgstr "Accès super-utilisateur"
-
-#: templates/profile.html:59
-msgid "PostgreSQL"
-msgstr "PostgreSQL"
-
-#: templates/profile.html:63
-msgid "MongoDB"
-msgstr "MongoDB"
-
-#: templates/profile.html:79 templates/snippets/selector/manage-folder.html:39
-#: templates/snippets/selector/manage-subscription.html:120
-msgid "Save"
-msgstr "Enregistrer"
-
-#: templates/profile.html:86
-msgid "Social accounts"
-msgstr "Comptes de réseaux sociaux"
-
-#: templates/profile.html:90
-msgid "Currently associated"
-msgstr "Actuellement associés"
-
-#: templates/profile.html:94
-msgid ""
-"\n"
-"Click to disassociate any of your accounts, but beware:\n"
-"if it's the account you're signed in, you will be\n"
-"immediately disconnected from **1flow**.\n"
-msgstr ""
-"\n"
-"Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**.\n"
-
-#: templates/profile.html:100
-msgid ""
-"\n"
-"As you have currently only one social account, you cannot de-associate it\n"
-"from **1flow**: this would leave you lost in cyberspace without any way to\n"
-"find back the spaceport.\n"
-msgstr ""
-"\n"
-"Vous n'avez actuellement qu'un seul compte social ; vous ne pouvez pas le déconnecter de **1flow** : cela vous perdrait dans le cyber-espace sans aucun moyen de revenir au spacio-port. \n"
-
-#: templates/profile.html:123
-#, python-format
-msgid "Cannot disconnect from %(backend_name)s"
-msgstr "Impossible de déconnecter %(backend_name)s"
-
-#: templates/profile.html:129
-#, python-format
-msgid "Disconnect from %(backend_name)s"
-msgstr "Se déconnecter de %(backend_name)s"
-
-#: templates/profile.html:139
-msgid "Associate more accounts"
-msgstr "Associer d'autres comptes"
-
-#: templates/profile.html:141
-msgid "Associate accounts"
-msgstr "Associer des comptes"
-
-#: templates/read-endless.html:3 templates/snippets/navbar.html:77
+#: templates/read-endless.html:3 templates/snippets/navbar.html:86
 msgid "Read"
 msgstr "Lecture"
 
@@ -3049,36 +2955,6 @@ msgstr ""
 "\n"
 "Vous pouvez utiliser un compte de réseau social pour vous enregistrer en un clic sur <strong>1flow</strong>. Ceci importera automatiquement vos données dans  <strong>1flow</strong>. D'une pierre deux coups !"
 
-#: templates/signin.html:3 templates/snippets/navbar.html:61
-msgid "Sign in…"
-msgstr "Connexion…"
-
-#: templates/signin.html:11
-msgid "1flow authentication"
-msgstr "Identification 1flow"
-
-#: templates/signin.html:26
-msgid "(or any registrered email address)"
-msgstr "(ou n'importe quelle adresse email enregistrée)"
-
-#: templates/signin.html:42
-#, python-format
-msgid ""
-"\n"
-"              New to 1flow? <a href=\"%(register_url)s\">Register</a>.\n"
-"          "
-msgstr ""
-"\n"
-"Pas encore de compte ? <a href=\"%(register_url)s\">Enregistrez-vous</a>."
-
-#: templates/signin.html:47
-msgid "Sign in!"
-msgstr "Connexion !"
-
-#: templates/signin.html:56
-msgid "Social authentication"
-msgstr "Identification sociale"
-
 #: templates/signin_error.html:3 templates/signin_error.html.py:7
 msgid "Error Signin in."
 msgstr "Erreur de connexion."
@@ -3100,28 +2976,6 @@ msgstr ""
 "\n"
 "Soit vous n'avez pas autorisé <strong>1flow</strong> à accéder à votre compte de réseau social, soit le site distant nous a envoyé une boule puante. Nous en sommes désolés.<br />\n"
 "Voulez-vous retourner <a href=\"%(home_url)s\">à l'accueil</a> ?"
-
-#: templates/signout.html:3 templates/signout.html.py:7
-msgid "Signed out."
-msgstr "Déconnecté."
-
-#: templates/signout.html:8
-msgid "Welcome back to anonymous world."
-msgstr "Bon retour dans le monde de l'anonymat."
-
-#: templates/signout.html:8
-msgid "Thanks for spending some time on <strong>1flow</strong>."
-msgstr "Merci pour le temps que vous avez passé sur <strong>1flow</strong>."
-
-#: templates/signout.html:10
-#, python-format
-msgid ""
-"\n"
-"        Would you like to <a href=\"%(signin_url)s\">sign in again</a> with another account?\n"
-"    "
-msgstr ""
-"\n"
-"Désirez-vous <a href=\"%(signin_url)s\">vous identifier à nouveau</a> avec un autre compte ?"
 
 #: templates/navbars/read-endless.html:8
 msgid "Jump to:"
@@ -3302,52 +3156,56 @@ msgstr ""
 "\n"
 "Pour importer vos données Google Reader, merci de <a href=\"%(gg_url)s\">vous connecter via Google</a> d'abord."
 
-#: templates/snippets/navbar.html:41
+#: templates/snippets/navbar.html:46
 msgid "Account"
 msgstr "Compte"
 
-#: templates/snippets/navbar.html:48
+#: templates/snippets/navbar.html:53
 msgid "Constance config."
 msgstr "Config. constance"
 
-#: templates/snippets/navbar.html:49
+#: templates/snippets/navbar.html:54
 msgid "Django admin."
 msgstr "Admin. Django"
 
-#: templates/snippets/navbar.html:50
+#: templates/snippets/navbar.html:55
 msgid "1flow translations"
 msgstr "Traductions 1flow"
 
-#: templates/snippets/navbar.html:54
+#: templates/snippets/navbar.html:59 templates/snippets/navbar.html.py:63
 msgid "Sign Out"
 msgstr "Déconnexion"
 
-#: templates/snippets/navbar.html:75
+#: templates/snippets/navbar.html:70
+msgid "Sign in"
+msgstr "Connexion"
+
+#: templates/snippets/navbar.html:84
 msgctxt "verb"
 msgid "read"
 msgstr "lire"
 
-#: templates/snippets/navbar.html:84
+#: templates/snippets/navbar.html:93
 msgid "Write"
 msgstr "Écrire"
 
-#: templates/snippets/navbar.html:89
+#: templates/snippets/navbar.html:98
 msgid "Collaborate"
 msgstr "Collaborer"
 
-#: templates/snippets/navbar.html:98
+#: templates/snippets/navbar.html:107
 msgid "Search…"
 msgstr "Rechercher…"
 
-#: templates/snippets/navbar.html:113
+#: templates/snippets/navbar.html:122
 msgid "Maintenance"
 msgstr "Maintenance"
 
-#: templates/snippets/navbar.html:208
+#: templates/snippets/navbar.html:217
 msgid "About"
 msgstr "À propos"
 
-#: templates/snippets/navbar.html:209
+#: templates/snippets/navbar.html:218
 msgid "Contact"
 msgstr "Contact"
 
@@ -4096,6 +3954,11 @@ msgid "Delete this folder"
 msgstr "Supprimer ce dossier"
 
 #: templates/snippets/selector/manage-folder.html:39
+#: templates/snippets/selector/manage-subscription.html:120
+msgid "Save"
+msgstr "Enregistrer"
+
+#: templates/snippets/selector/manage-folder.html:39
 msgid "Create"
 msgstr "Créer"
 
@@ -4278,57 +4141,94 @@ msgid "Send"
 msgstr "Envoyer"
 
 #: templates/snippets/wizards/welcome-beta/welcome-beta.html:8
+msgid "Welcome to 1flow,"
+msgstr "Bienvenue sur 1flow,"
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:9
+msgid "your new home to read and write digital content."
+msgstr "votre nouvelle maison pour lire et écrire du contenu numérique."
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:11
 #, python-format
 msgid ""
-"\n"
-"\n"
-"# Welcome to 1flow,\n"
-"\n"
-"## your new home to read and write digital content.\n"
-"\n"
-"We hope to bring the best possible experience in these domains. Please take time to discover the interface. At any time, refer to the [features button](%(help_url)s \"Get the most of the 1flow app\") to get the most of the application.\n"
-"\n"
-"Please keep in mind that we are a small team and a young project. Some things could feel unpolished to you. In the meantime, we fix problems very quickly. **1flow gets better everyday.** Sometimes even faster, when our developer had a kitesurfing session.\n"
-"\n"
-"If you need human help, you can reach us via the [feedback chat](%(chat_fake_url)s) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.\n"
-"\n"
-"We hope you'll enjoy 1flow as much as we enjoy building it.\n"
-"\n"
-"Cheers,\n"
-"\n"
-"--\n"
-"[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),\n"
-"1flow founders\n"
-"\n"
+"We hope to bring a delightful experience in these domains. Please take time "
+"to discover the interface and refer to the <a href=\"%(help_url)s\" "
+"title=\"Get the most of the application\">features button</a> to get the "
+"most of the application."
 msgstr ""
-"\n"
-"# Bienvenue sur 1flow,\n"
-"\n"
-"## votre nouvelle maison pour la lecture et l'écriture de contenus numériques.\n"
-"\n"
-"Nous espérons vous apporter la meilleure expérience possible dans ces domaines. Prenez le temps de découvrir l'interface. À tout moment, référez-vous au [lien « Fonctionnalités »](%(help_url)s \"Obtenir le meilleur de l'application\") pour tirer le meilleur de l'application 1flow.\n"
-"\n"
-"S'il vous plait, gardez en tête que nous sommes une petite équipe et un jeune projet. Certaines fonctionnalités vous paraîtront sans doute un peu frustes. D'un autre côté, nous sommes super réactifs pour résoudre tous les problèmes. **1flow s'améliore tous les jours.** Et même plusieurs fois par jour, quand notre développeur a pu faire du kitesurf.\n"
-"\n"
-"Si vous avez besoin d'aide humaine, vous pouvez nous joindre via le [chat](%(chat_fake_url)s), ou nous laisser une demande de fonctionnalité sur notre [forum de support](http://1flow.userecho.com/). Nous serons *enchantés* d'avoir quelques mots de votre part.\n"
-"\n"
-"Nous espérons que vous profiterez autant de 1flow que nous prenons plaisir à le construire.\n"
-"\n"
-"À très bientôt,\n"
-"\n"
-"--\n"
-"[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),\n"
-"Fondateurs de 1flow\n"
+"Nous espérons vous apporter une expérience rafraîchissante dans ces "
+"domaines. Merci de prendre le temps de découvrir notre interface, et vous "
+"référer aux <a href=\"%(help_url)s\" title=\"Tirer le meilleur parti de "
+"l'application\">fonctionnalités</a> tirer le meilleur parti de "
+"l'application."
 
-#: templates/snippets/wizards/welcome-beta/welcome-beta.html:39
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:13
+msgid ""
+"Keep in mind that we are a young project. Some things will feel unpolished "
+"but we fix problems quickly. <strong>1flow gets better everyday.</strong> "
+"Sometimes faster, when our developer had a kitesurfing session."
+msgstr ""
+"Gardez en tête que 1flow est un jeune projet. Certaines choses vous "
+"paraîtront rustres mais nous résolvons les problèmes rapidement. "
+"<strong>1flow s'améliore tous les jours.</strong> Quelque fois plus vite, "
+"quand notre développeur a pu profiter d'une bonne session de kitesurf."
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:18
+#, python-format
+msgid ""
+"If you need help, reach us via the <a href=\"%(chat_fake_url)s\">live "
+"chat</a> or <a href=\"irc://%(supserv)s/%(supchan)s\">via IRC</a>."
+msgstr ""
+"Si vous avez besoin d'aide, contactez-nous via <a "
+"href=\"%(chat_fake_url)s\">la discussion live</a> ou <a "
+"href=\"irc://%(supserv)s/%(supchan)s\">via IRC</a>."
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:22
+#, python-format
+msgid ""
+"If you need help, reach us via the <a href=\"%(chat_fake_url)s\">live "
+"chat</a>."
+msgstr ""
+"Si vous avez besoin d'aide, contactez-nous via <a "
+"href=\"%(chat_fake_url)s\">la discussion live</a>."
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:25
+msgid ""
+"Leave feature requests and questions in our <a "
+"href=\"http://1flow.userecho.com/\">support forum</a>. We are hardly waiting"
+" for your feedback ;-)"
+msgstr ""
+"Proposez des nouvelles fonctionnalités et posez vos questions sur <a "
+"href=\"http://1flow.userecho.com/\">le forum</a>. On attend vos retours avec"
+" impatience ;-)"
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:27
+msgid "We hope you'll enjoy 1flow as much as we enjoy building it."
+msgstr ""
+"Nous espérons que vous aprécierez 1flow autant que nous avons plaisir à le "
+"construire."
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:29
+msgid "Cheers,"
+msgstr "Salutations,"
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:32
+msgid ""
+"<a href=\"https://twitter.com/Karmak23\">Olivier</a> &amp; <a href=\"https://twitter.com/mchaignot\">Matthieu</a>,<br />\n"
+"            1flow founders"
+msgstr ""
+"<a href=\"https://twitter.com/Karmak23\">Olivier</a> &amp; <a href=\"https://twitter.com/mchaignot\">Matthieu</a>,<br />\n"
+"fondateurs de 1flow"
+
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:50
 msgid "Bring me to my news!"
 msgstr "Amène-moi à mon contenu !"
 
-#: templates/snippets/wizards/welcome-beta/welcome-beta.html:41
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:52
 msgid "(Next time you'll get there directly)"
 msgstr "(À votre prochaine connexion, vous serez amené(e) directement là-bas)"
 
-#: templates/snippets/wizards/welcome-beta/welcome-beta.html:52
+#: templates/snippets/wizards/welcome-beta/welcome-beta.html:63
 msgid "Start adding some sources to read news from"
 msgstr "Commençons par ajouter des sources d'informations"
 
@@ -4472,6 +4372,169 @@ msgstr "converti"
 msgctxt "awesome-font icon name"
 msgid "exchange"
 msgstr "exchange"
+
+#~ msgid "Categories"
+#~ msgstr "Catégories"
+
+#~ msgid "Your profile"
+#~ msgstr "Profil"
+
+#~ msgid "username"
+#~ msgstr "identifiant"
+
+#~ msgid "First name"
+#~ msgstr "Prénom"
+
+#~ msgid "Last name"
+#~ msgstr "Nom"
+
+#~ msgid "e-mail"
+#~ msgstr "courriel"
+
+#~ msgid "Last login: "
+#~ msgstr "Dernière connexion :"
+
+#~ msgid "Registered:"
+#~ msgstr "Enregistré(e) :"
+
+#~ msgid ""
+#~ "These data are not stored durably in 1flow. They are offered courtesy of "
+#~ "your social account provider (eg. Google, Twitter…). Change any parameter "
+#~ "directly there, it will be reflected here next time you sign in."
+#~ msgstr ""
+#~ "Ces données ne sont pas stockées durablement dans 1flow, car elles sont "
+#~ "courtoisement offertes par votre fournisseur de compte de réseau social "
+#~ "(Google, Twitter…). Modifiez-les directement là-bas, et les changements "
+#~ "apparaîtrons dans 1flow à votre prochaine identification."
+
+#~ msgid "Super-user access"
+#~ msgstr "Accès super-utilisateur"
+
+#~ msgid "PostgreSQL"
+#~ msgstr "PostgreSQL"
+
+#~ msgid "MongoDB"
+#~ msgstr "MongoDB"
+
+#~ msgid "Social accounts"
+#~ msgstr "Comptes de réseaux sociaux"
+
+#~ msgid "Currently associated"
+#~ msgstr "Actuellement associés"
+
+#~ msgid ""
+#~ "\n"
+#~ "Click to disassociate any of your accounts, but beware:\n"
+#~ "if it's the account you're signed in, you will be\n"
+#~ "immediately disconnected from **1flow**.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Cliquez pour désassocier l'un de vos comptes sociaux, mais attention : si c'est le compte avec lequel vous êtes connecté(e), vous serez immédiatement déconnecté(e) de **1flow**.\n"
+
+#~ msgid ""
+#~ "\n"
+#~ "As you have currently only one social account, you cannot de-associate it\n"
+#~ "from **1flow**: this would leave you lost in cyberspace without any way to\n"
+#~ "find back the spaceport.\n"
+#~ msgstr ""
+#~ "\n"
+#~ "Vous n'avez actuellement qu'un seul compte social ; vous ne pouvez pas le déconnecter de **1flow** : cela vous perdrait dans le cyber-espace sans aucun moyen de revenir au spacio-port. \n"
+
+#~ msgid "Cannot disconnect from %(backend_name)s"
+#~ msgstr "Impossible de déconnecter %(backend_name)s"
+
+#~ msgid "Disconnect from %(backend_name)s"
+#~ msgstr "Se déconnecter de %(backend_name)s"
+
+#~ msgid "Associate more accounts"
+#~ msgstr "Associer d'autres comptes"
+
+#~ msgid "Associate accounts"
+#~ msgstr "Associer des comptes"
+
+#~ msgid ""
+#~ "\n"
+#~ "\n"
+#~ "# Welcome to 1flow,\n"
+#~ "\n"
+#~ "## your new home to read and write digital content.\n"
+#~ "\n"
+#~ "We hope to bring the best possible experience in these domains. Please take time to discover the interface. At any time, refer to the [features button](%(help_url)s \"Get the most of the 1flow app\") to get the most of the application.\n"
+#~ "\n"
+#~ "Please keep in mind that we are a small team and a young project. Some things could feel unpolished to you. In the meantime, we fix problems very quickly. **1flow gets better everyday.** Sometimes even faster, when our developer had a kitesurfing session.\n"
+#~ "\n"
+#~ "If you need human help, you can reach us via the [feedback chat](%(chat_fake_url)s) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.\n"
+#~ "\n"
+#~ "We hope you'll enjoy 1flow as much as we enjoy building it.\n"
+#~ "\n"
+#~ "Cheers,\n"
+#~ "\n"
+#~ "--\n"
+#~ "[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),\n"
+#~ "1flow founders\n"
+#~ "\n"
+#~ msgstr ""
+#~ "\n"
+#~ "# Bienvenue sur 1flow,\n"
+#~ "\n"
+#~ "## votre nouvelle maison pour la lecture et l'écriture de contenus numériques.\n"
+#~ "\n"
+#~ "Nous espérons vous apporter la meilleure expérience possible dans ces domaines. Prenez le temps de découvrir l'interface. À tout moment, référez-vous au [lien « Fonctionnalités »](%(help_url)s \"Obtenir le meilleur de l'application\") pour tirer le meilleur de l'application 1flow.\n"
+#~ "\n"
+#~ "S'il vous plait, gardez en tête que nous sommes une petite équipe et un jeune projet. Certaines fonctionnalités vous paraîtront sans doute un peu frustes. D'un autre côté, nous sommes super réactifs pour résoudre tous les problèmes. **1flow s'améliore tous les jours.** Et même plusieurs fois par jour, quand notre développeur a pu faire du kitesurf.\n"
+#~ "\n"
+#~ "Si vous avez besoin d'aide humaine, vous pouvez nous joindre via le [chat](%(chat_fake_url)s), ou nous laisser une demande de fonctionnalité sur notre [forum de support](http://1flow.userecho.com/). Nous serons *enchantés* d'avoir quelques mots de votre part.\n"
+#~ "\n"
+#~ "Nous espérons que vous profiterez autant de 1flow que nous prenons plaisir à le construire.\n"
+#~ "\n"
+#~ "À très bientôt,\n"
+#~ "\n"
+#~ "--\n"
+#~ "[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),\n"
+#~ "Fondateurs de 1flow\n"
+
+#~ msgid "^signin/$"
+#~ msgstr "^connexion/$"
+
+#~ msgid "^signout/$"
+#~ msgstr "^deconnexion/$"
+
+#~ msgid "Sign in…"
+#~ msgstr "Connexion…"
+
+#~ msgid "1flow authentication"
+#~ msgstr "Identification 1flow"
+
+#~ msgid "(or any registrered email address)"
+#~ msgstr "(ou n'importe quelle adresse email enregistrée)"
+
+#~ msgid ""
+#~ "\n"
+#~ "              New to 1flow? <a href=\"%(register_url)s\">Register</a>.\n"
+#~ "          "
+#~ msgstr ""
+#~ "\n"
+#~ "Pas encore de compte ? <a href=\"%(register_url)s\">Enregistrez-vous</a>."
+
+#~ msgid "Social authentication"
+#~ msgstr "Identification sociale"
+
+#~ msgid "Signed out."
+#~ msgstr "Déconnecté."
+
+#~ msgid "Welcome back to anonymous world."
+#~ msgstr "Bon retour dans le monde de l'anonymat."
+
+#~ msgid "Thanks for spending some time on <strong>1flow</strong>."
+#~ msgstr "Merci pour le temps que vous avez passé sur <strong>1flow</strong>."
+
+#~ msgid ""
+#~ "\n"
+#~ "        Would you like to <a href=\"%(signin_url)s\">sign in again</a> with another account?\n"
+#~ "    "
+#~ msgstr ""
+#~ "\n"
+#~ "Désirez-vous <a href=\"%(signin_url)s\">vous identifier à nouveau</a> avec un autre compte ?"
 
 #~ msgid "Synchronize contacts"
 #~ msgstr "Synchroniser les contacts"
