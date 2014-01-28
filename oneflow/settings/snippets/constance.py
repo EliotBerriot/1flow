@@ -2,6 +2,25 @@
 #
 # Default constance keys, and their values.
 #
+"""
+    Copyright 2013 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import datetime
 
@@ -10,6 +29,30 @@ CONSTANCE_BACKEND      = 'constance.backends.redisd.RedisBackend'
 CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 
 CONSTANCE_CONFIG = {
+
+    # ———————————————————————————————————————————— Allow new users to register?
+
+    'SOCIAL_LOGIN_ENABLED': (True, ugettext(u'Already known users are allowed '
+                             u'to sign in via social network accounts. '
+                             u'Default: True. See SOCIAL_REGISTRATION_ENABLED '
+                             u'for new accounts.')),
+
+    'SOCIAL_REGISTRATION_ENABLED': (True, ugettext(u'New users are allowed to '
+                                    u'auto-register accounts via social '
+                                    u'networks signins. Default: False.')),
+
+    'LOCAL_LOGIN_ENABLED': (True, ugettext(u'Already known users are allowed '
+                            u'to sign in via local accounts. Default: True. '
+                            u'You can disable this to allow only social '
+                            u'signins.')),
+
+    'LOCAL_REGISTRATION_ENABLED': (True, ugettext(u'New users are allowed to '
+                                    u'register local accounts. Default: '
+                                    u'False. NOTE2: the underlying code does '
+                                    u'not currently use this dynamic '
+                                    u'configuration. We have to contribute a '
+                                    u'patch, but the configuration directive '
+                                    u'exists, at least.')),
 
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
 
