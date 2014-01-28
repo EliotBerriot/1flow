@@ -250,11 +250,3 @@ urlpatterns = patterns(
 
     *read_patterns
 )
-
-urlpatterns += patterns(
-    'django.contrib.auth.views',
-    url(_(ur'^signin/$'), 'login',
-        {'template_name': 'signin.html'}, name='signin'),
-    url(_(ur'^signout/$'), 'logout',
-        {'template_name': 'signout.html'}, name='signout'),
-)
