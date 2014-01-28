@@ -59,6 +59,30 @@ CONSTANCE_CONFIG = {
     'IRC_SUPPORT_SERVER': (ugettext(u'irc.freenode.net'),
                             ugettext(u'Support IRC server.')),
 
+    # ———————————————————————————————————————————— Allow new users to register?
+
+    'SOCIAL_LOGIN_ENABLED': (True, ugettext(u'Already known users are allowed '
+                             u'to sign in via social network accounts. '
+                             u'Default: True. See SOCIAL_REGISTRATION_ENABLED '
+                             u'for new accounts.')),
+
+    'SOCIAL_REGISTRATION_ENABLED': (True, ugettext(u'New users are allowed to '
+                                    u'auto-register accounts via social '
+                                    u'networks signins. Default: False.')),
+
+    'LOCAL_LOGIN_ENABLED': (True, ugettext(u'Already known users are allowed '
+                            u'to sign in via local accounts. Default: True. '
+                            u'You can disable this to allow only social '
+                            u'signins.')),
+
+    'LOCAL_REGISTRATION_ENABLED': (True, ugettext(u'New users are allowed to '
+                                    u'register local accounts. Default: '
+                                    u'False. NOTE2: the underlying code does '
+                                    u'not currently use this dynamic '
+                                    u'configuration. We have to contribute a '
+                                    u'patch, but the configuration directive '
+                                    u'exists, at least.')),
+
     # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Read webapp
 
     'DOCUMENTS_ARCHIVING_DISABLED': (False, ugettext(u'Set this to True to '
