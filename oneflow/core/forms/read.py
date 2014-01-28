@@ -51,8 +51,8 @@ class ReadShareForm(forms.Form):
         self.default_placeholder = \
             self.sharer.preferences.share.default_message or \
             _(u'Hi {{fullname}},\n\n'
-              u'I wanted to share this article “{{title}}” that '
-              u'you may find interesting. Read it on 1flow:\n\n'
+              u'Here is the item “{{title}}”, you may find it interesting.\n'
+              u'Read it on 1flow:\n\n'
               u'{{link}}\n\n'
               u'Cheers,\n'
               u'--\n{0}').format(self.sharer.get_full_name())
