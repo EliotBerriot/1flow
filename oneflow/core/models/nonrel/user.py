@@ -31,7 +31,8 @@ from pymongo.errors import DuplicateKeyError
 
 from mongoengine import Q, Document, NULLIFY, CASCADE, PULL
 from mongoengine.fields import (IntField, StringField, URLField,
-                                BooleanField, ListField, ReferenceField)
+                                BooleanField, ListField, ReferenceField,
+                                EmbeddedDocumentField)
 from mongoengine.errors import NotUniqueError
 
 from django.conf import settings
@@ -40,7 +41,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from ....base.fields import IntRedisDescriptor
 
-from .common import DocumentHelperMixin
+from .common import DocumentHelperMixin, BackendSource
 from .preferences import Preferences
 
 LOGGER     = logging.getLogger(__name__)
@@ -224,8 +225,6 @@ class User(Document, DocumentHelperMixin):
                                 help_text=_(u'The user has super user related '
                                             u'permissions (see Django doc.).'))
 
-    friends     = ListField(ReferenceField('self'), verbose_name=_(u'Friends'))
-
     address_book = ListField(StringField(), verbose_name=_(u'Address book'))
 
     all_articles_count = IntRedisDescriptor(
@@ -298,13 +297,104 @@ class User(Document, DocumentHelperMixin):
         set_default=True, min_value=0)
 
     @property
-    def relations(self):
+    def groups(self):
+        """ Return groups created by the current user.
+            This property voluntarily excludes system and internal groups.
+        """
+        return Group.objects(creator=self, internal_name=u'')
+
+    @property
+    def all_groups(self):
+        """ Returns all groups (including system /
+            internal ones) of the current user. """
+
+        return Group.objects(creator=self)
+
+    @property
+    def system_groups(self):
+        """ Returns system and internal groups of the current user. """
+
+        return Group.objects(creator=self, internal_name__ne=u'')
+
+    def __cached_system_group__(self, cache_attr_name,
+                                group_name, internal_group_name):
+
+        try:
+            return getattr(self, cache_attr_name)
+
+        except:
+            try:
+                setattr(self, cache_attr_name,
+                        self.system_groups.get(
+                            internal_name=internal_group_name))
+
+            except Group.DoesNotExist:
+                try:
+                    setattr(self, cache_attr_name, Group(
+                            name=group_name, creator=self,
+                            internal_name=internal_group_name).save())
+
+                except (NotUniqueError, DuplicateKeyError):
+                    # Woops. Race condition? On a user?? Weird.
+
+                    setattr(self, cache_attr_name,
+                            self.system_groups.get(
+                                internal_name=internal_group_name))
+
+            return getattr(self, cache_attr_name)
+
+    @property
+    def blocked_group(self):
+        """
+            When you block someone:
+            - you'll remain in their circles, but:
+            - you won't see their content in the stream or on Incoming
+            - They'll be removed from any circles of yours that they appear in.
+            - They'll be removed from your extended circles even if you
+                have mutual connections [with intermediate people].
+            - They won't be able to comment on your content that was posted
+                after they were blocked. (TODO on the date part)
+            - They won't be able to view content shared with your circles
+              ~~(although they can still see content you post publicly) — G+ ~~
+            - They won't be able to see what you post publicly — 1flow only.
+            - They won't be able to mention you in posts or comments.
+
+        """
+        return self.__cached_system_group__('__blocked_group_cache__',
+                                            _('Blocked'), '__blocked__')
+
+    @property
+    def all_relations_group(self):
+        """ The underlying "meta" group that holds all my relations. Not
+            visible to me in the interface, not removable, not editable.  """
+
+        return self.__cached_system_group__('__all_relations_group_cache__',
+                                            _('All relations'),
+                                            '__all_relations__')
+
+    @property
+    def in_relations_of_group(self):
+        """ The group that holds persons which I am in group of, but who are
+            not in any of my groups. If they are in any of my groups, they
+            won't be here anymore, and will be moved to "all relations" group.
+        """
+
+        return self.__cached_system_group__('__in_relations_of_group_cache__',
+                                            _(u'In their relations'),
+                                            '__in_relations_of__')
+
+    @property
+    def relations_choices(self):
         """ Meant to generate a list of choices suitable
             for a Django form ``choices`` argument. """
 
-        for friend in self.friends:
-            # MongoDB ID, full name or username
-            yield (friend.id, friend.display_name)
+        for group in self.groups:
+            for contact in group.members:
+                try:
+                    yield contact.email, contact.display_name
+                except:
+                    LOGGER.warning(u'Cannot yield %s > %s', contact,
+                                   contact.__class__.__name__)
 
         for contact in self.address_book:
             try:
@@ -402,6 +492,27 @@ class User(Document, DocumentHelperMixin):
                                           self.username)
 
         return u'@{0}'.format(self.username)
+
+    @classmethod
+    def get_or_create(cls, username, email, first_name=None, last_name=None):
+        """ Get or create a new user account from the parameters given, and
+            and set it as relation of the current instance.
+
+            Creating a user account means doing it in both models (Django's
+            User model and our MongoDB one) at once.
+        """
+
+        try:
+            dj_user = DjangoUser.objects.get(email=email)
+
+        except DjangoUser.DoesNotExist:
+            dj_user = DjangoUser.objects.create_user(username=email,
+                                                     email=email,
+                                                     first_name=first_name,
+                                                     last_name=last_name)
+
+        # This creates the MongoDB user on the fly.
+        return dj_user.mongo
 
     @classmethod
     def signal_post_save_handler(cls, sender, document,
@@ -535,8 +646,10 @@ DjangoUser.save  = DjangoUser__save__method
 
 class Group(Document, DocumentHelperMixin):
     name           = StringField(unique_with='creator')
-    is_system      = BooleanField(default=False,
-                                  verbose_name=_(u'System group?'))
+    internal_name  = StringField(default=u'',
+                                 help_text=_(u'This field should not be '
+                                             u'editable by any user, nor '
+                                             u'in the admin.'))
     creator        = ReferenceField('User', reverse_delete_rule=CASCADE)
     administrators = ListField(ReferenceField('User',
                                reverse_delete_rule=PULL))
@@ -544,6 +657,120 @@ class Group(Document, DocumentHelperMixin):
                         reverse_delete_rule=PULL))
     guests  = ListField(ReferenceField('User',
                         reverse_delete_rule=PULL))
+
+    backend = EmbeddedDocumentField(BackendSource)
+
+    def __unicode__(self):
+        return u'{0}{1} of {2}: {3} member(s){4}'.format(
+            u'%' if self.internal_name else u'',
+            self.name, self.creator, len(self.members),
+            u' [{0}]'.format(self.backend.name) if self.backend else u'')
+
+    @classmethod
+    def get_or_create(cls, *args, **kwargs):
+        """
+
+            .. todo:: move this method in ``common.DocumentHelperMixin``.
+                The move is the easy part, because we have to refactor it
+                in all other nonrel classes.
+
+        """
+
+        created = False
+
+        try:
+            instance = cls.objects.get(*args, **kwargs)
+
+        except cls.DoesNotExist:
+            try:
+                instance = cls(*args, **kwargs).save()
+
+            except (NotUniqueError, DuplicateKeyError):
+                instance = cls.objects.get(*args, **kwargs)
+
+            else:
+                created = True
+
+        return instance, created
+
+    # —————————————————————————————————————————————————————— Eyes-burning start
+
+    def add_administrator(self, administrator, commit=True):
+
+        self.add(self.administrators, administrator, commit)
+
+    def delete_administrator(self, administrator, commit=True):
+
+        self.delete(self.administrators, administrator, commit)
+
+    def add_member(self, member, commit=True):
+
+        self.add(self.members, member, commit)
+
+    def delete_member(self, member, commit=True):
+
+        self.delete(self.members, member, commit)
+
+    def add_guest(self, guest, commit=True):
+
+        self.add(self.guests, guest, commit)
+
+    def delete_guest(self, guest, commit=True):
+
+        self.delete(self.guests, guest, commit)
+
+    # ———————————————————————————————————————————————————————— Eyes-burning end
+
+    def add(self, relation_list, user, commit=True):
+
+        if user in relation_list:
+            return relation_list
+
+        relation_list.append(user)
+
+        if commit:
+            self.save()
+
+        if self.internal_name != u'':
+            self.creator.all_relations_group.add_member(user)
+
+            in_relations_of = True
+
+            XXXX
+
+        return relation_list
+
+    def delete(self, relation_list, user, commit=True):
+
+        if self.internal_name != u'':
+
+            no_more_relation = True
+
+            for group in self.creator.groups.exclude(name=self.name):
+                if user in group:
+                    no_more_relation = False
+                    break
+
+            if no_more_relation:
+                self.creator.all_relations_group.delete_member(user)
+
+            XXX
+
+            in_relations_of = []
+
+            if in_relations_of:
+                self.creator.in_relations_of_group.add_member(user)
+
+        try:
+            relation_list.remove(user)
+
+        except:
+            return relation_list
+
+        if commit:
+            self.save()
+
+        return relation_list
 
     #
     # disabled on 20131031. Kept commented for future use/reference

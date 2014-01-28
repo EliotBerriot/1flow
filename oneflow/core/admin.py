@@ -288,7 +288,7 @@ class MongoUserAdmin(admin.DocumentAdmin):
     change_list_filter_template = "admin/filter_listing.html"
     #filter_horizontal = ('parents', 'children', )
     form = MongoUserAdminForm
-    raw_id_fields = ('friends', )
+    # raw_id_fields = ()
     fieldsets = (
         ('Main', {
             'fields': (
@@ -301,7 +301,6 @@ class MongoUserAdmin(admin.DocumentAdmin):
         ('Friends', {
             'classes': ('grp-collapse grp-closed', ),
             'fields': (
-                'friends',
                 'address_book',
             ),
         }),
@@ -327,8 +326,50 @@ class MongoUserAdmin(admin.DocumentAdmin):
 admin.site.register(MongoUser, MongoUserAdmin)
 
 
+class MongoGroupAdminForm(DocumentForm):
+    class Meta:
+        model = MongoGroup
+        exclude = ('backend', )
+        widgets = {
+            'name': TextInput(attrs={'class': 'vURLField'}),
+            'internal_name': TextInput(attrs={'class': 'vURLField'}),
+        }
+
+
 class MongoGroupAdmin(admin.DocumentAdmin):
-    pass
+    list_display = ('id', 'name', 'internal_name', 'creator',
+                    'backend', )
+    list_display_links = ('id', 'name',  'internal_name', )
+    search_fields = ('name', 'internal_name', )
+    change_list_filter_template = "admin/filter_listing.html"
+    #filter_horizontal = ('parents', 'children', )
+    form = MongoGroupAdminForm
+    raw_id_fields = ('members', 'administrators', 'guests', )
+    fieldsets = (
+        ('Main', {
+            'fields': (
+                ('name', 'internal_name', ),
+            ),
+        }),
+        ('Members', {
+            'fields': (
+                'members',
+            ),
+        }),
+        ('Administrators', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields': (
+                'administrators',
+            ),
+        }),
+        ('Guests', {
+            'classes': ('grp-collapse grp-closed', ),
+            'fields': (
+                'guests',
+            ),
+        }),
+    )
+
 
 admin.site.register(MongoGroup, MongoGroupAdmin)
 

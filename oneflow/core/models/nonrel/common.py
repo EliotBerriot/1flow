@@ -57,7 +57,8 @@ from statsd import statsd
 from operator import attrgetter
 from constance import config
 
-from mongoengine import Q
+from mongoengine import Q, EmbeddedDocument
+from mongoengine.fields import StringField
 
 from django.db import models
 from django.conf import settings
@@ -589,6 +590,25 @@ class PseudoQuerySet(list):
         new_pqs[:] = [res for res in results if res in self]
 
         return new_pqs
+
+
+class BackendSource(EmbeddedDocument):
+    """ Used to store social-auth backend specific data.
+
+        For example, to store Google+ groups data in our own :class:`Group`::
+
+            {
+                'name': u'google-oauth2',
+                'text': <the gg2 'content' attribute>,
+                'remote_id': <the gg2 'id' attribute>,
+                'remote_url': <the gg2 'link::self' attribute>,
+            }
+    """
+
+    name = StringField()
+    text = StringField()
+    remote_id = StringField()
+    remote_url = StringField()
 
 
 class CorePermissions(models.Model):
