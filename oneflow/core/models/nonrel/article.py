@@ -57,6 +57,7 @@ from .common import (DocumentHelperMixin,
                      CONTENT_FETCH_LIKELY_MULTIPAGE,
                      ORIGIN_TYPE_NONE,
                      ORIGIN_TYPE_FEEDPARSER,
+                     ORIGIN_TYPE_WEBIMPORT,
                      ORIGIN_TYPE_GOOGLE_READER,
                      ARTICLE_ORPHANED_BASE,
                      REQUEST_BASE_HEADERS,
@@ -717,7 +718,7 @@ class Article(Document, DocumentHelperMixin):
                             # Sometimes, t['term'] can be None.
                             # http://dev.1flow.net/webapps/1flow/group/4082/
                             for t in fpod['tags'] if t['term'] is not None),
-                            origin=self))
+                    origin=self))
 
                 self.update_tags(tags, initial=True, need_reload=False)
                 self.safe_reload()
@@ -731,7 +732,7 @@ class Article(Document, DocumentHelperMixin):
 
                 if language is None:
                     language = fpod.get('title_detail', {}).get(
-                                        'language', None)
+                        'language', None)
 
                 if language is not None:
                     try:
@@ -1295,6 +1296,36 @@ class Article(Document, DocumentHelperMixin):
                                    u"but %s." % content_type,
                                    response=response)
 
+    def extract_and_set_title(self, content=None, commit=True):
+        """ Try to extract title from the HTML content, and set """
+
+        if content is None:
+            if self.content_type == CONTENT_TYPE_HTML:
+                content = self.content
+
+            else:
+                if self.title and not self.title.endswith(self.url):
+                    raise RuntimeError(u'Non-sense to call this method '
+                                       u'on an already set title.')
+
+                # Sadly, we have to reget/reparse the content.
+                # Hopefully, this is only used in extreme cases,
+                # and not the common one.
+                content, encoding = self.prepare_content_text(url=self.url)
+
+        try:
+            self.title = BeautifulSoup(content).find('title').contents[0]
+
+        except:
+            LOGGER.exception(u'Could not extract title of imported '
+                             u'article %s', self)
+
+        else:
+            LOGGER.info(u'Successfully set title to “%s”', self.title)
+
+        if commit:
+            self.save()
+
     def fetch_content_text_one_page(self, url=None):
         """ Internal function. Please do not call.
             Use :meth:`fetch_content_text` instead. """
@@ -1316,6 +1347,16 @@ class Article(Document, DocumentHelperMixin):
             except:
                 LOGGER.exception(u'Could not log source HTML content of '
                                  u'article %s.', self)
+
+        LOGGER.warning(u'%s %s %s %s %s', self.origin_type,
+                       self.origin_type == ORIGIN_TYPE_WEBIMPORT,
+                       self.title, self.url, self.title.endswith(self.url))
+
+        if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
+                and self.title.endswith(self.url):
+
+            LOGGER.warning(u'Setting title of imported item...')
+            self.extract_and_set_title(content, commit=False)
 
         STRAINER_EXTRACTOR = strainer.Strainer(parser='lxml', add_score=True)
         content = STRAINER_EXTRACTOR.feed(content, encoding=encoding)
