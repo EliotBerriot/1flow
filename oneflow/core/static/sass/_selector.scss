@@ -495,12 +495,6 @@ $folder-border-width-default: 2px;
     }
 }
 
-.modal {
-    .modal-body {
-        // override the Bootstrap default, it's a little short somethimes.
-        max-height: 500px;
-    }
-}
 
 #manage-folder.modal,
 #manage-subscription.modal,

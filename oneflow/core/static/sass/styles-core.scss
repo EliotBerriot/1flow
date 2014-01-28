@@ -24,9 +24,9 @@ $default-transition-duration: 0.5s;
 @import "variables";
 @import "forms";
 
-@import "detail-admin/layout";
-@import "detail-admin/elements";
-
+@import "bootstrap-overrides";
+@import "bootstrap-additions";
+@import "mixins";
 @import "various";
 @import "home";
 @import "selector";

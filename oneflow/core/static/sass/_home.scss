@@ -1,6 +1,10 @@
 
 /* --------------------------------------------------------------- Overrides */
 
+html {
+    // To make the footer stick at the bottom.
+    height: 100%;
+}
 body {
     /*
         olive 20130915: replicate Bootstrap's
@@ -10,6 +14,13 @@ body {
 
     /* Our navbar is 47px + 1px border-bottom. */
     padding-top: 48px;
+
+    // To make the footer stick at the bottom.
+    min-height: 100%;
+
+    // Height of the footer + padding for visual breathing
+    // to make the footer stick to the bottom of page.
+    padding-bottom: 8em;
 }
 
 .navbar {
@@ -77,13 +88,13 @@ body {
     }
 }
 
-/* ------------------------------------------------------- External overrides */
+// ————————————————————————————————————————————————————————— External overrides
 
 .ui-pnotify-history-container {
     display: none;
 }
 
-/* ------------------------------------------------------------- Home / index */
+//  ————————————————————————————————————————————————————————————— Home / common
 
 section {}
 
@@ -93,22 +104,26 @@ section {}
     }
 }
 
-#home-styles-chooser {
+.footer {
+    position: absolute;
+    bottom: 0;
+    height: 4em;
+    padding-top: 1em;
+    width: 100%;
+    border-top: 1px solid beige;
+}
 
-    /* Separate chooser from the intro text. */
-    padding-top: 30px;
+.footer-title {
+    margin-top: 0;
+    margin-bottom: 0;
+}
 
-    .home-style {
-        text-align: center;
-        cursor: pointer;
+.footer-right {
+    height: 28px;
+    text-align: right;
 
-        /* Cancel the bootstrap "alert" padding-right. */
-        padding-right: 14px;
-    }
-
-    .home-style-secondary {
-        margin-top: 40px;
-    }
+    // doesn't work: vertical-align: bottom;
+    padding-top: 7px;
 }
 
 .side-nav.affix {
@@ -243,7 +258,7 @@ header {
 }
 
 
-/* ------------------------------------------------------------------ Welcome */
+// ———————————————————————————————————————————————————————————————————— Welcome
 
 #welcome-beta {
 
@@ -254,29 +269,20 @@ header {
         }
     }
 
-    h1 {
-        font-size: 500%;
-        padding: 50px 0 20px;
-    }
-
     h2 {
         font-size: 250%;
-        padding: 20px 0 50px;
+        padding: 75px 0 50px;
     }
 
     p {
-        font-size: 150%;
+        font-size: 120%;
         font-weight: 300;
         padding-bottom: 10px;
     }
 }
 
-#welcome-beta-page-2 {
-    margin-top: 50px;
-}
 
-
-/* ------------------------------------------------------- Endless pagination */
+// ————————————————————————————————————————————————————————— Endless pagination
 
 .endless_container {
 
@@ -299,21 +305,3 @@ header {
 
     display: none;
 }
-
-/* -------------------------------------------------------------------- Other */
-
-/*  fullscreen for bootstrap modal
-
-    Unused as of 20130826, but keeping it because
-    it took me long to find how to do it.
-
-#read-item-modal {
-    width: 100%;
-    left: 0;
-    margin-left: 0;
-    top: 0;
-    margin-top: 0 !important;
-    height: 100%;
-}
-*/
-
