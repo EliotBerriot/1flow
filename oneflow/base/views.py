@@ -71,6 +71,14 @@ def unsubscribe(request, email, hash_code):
     return HttpResponseNotFound(_('Invalid email or unsubscribe token.'))
 
 
+def social_signup_closed(request):
+    """ This is a mimic of `account.SignupView.closed()` method, used
+        when social registration is closed, but local registration is not.
+    """
+
+    return render(request, 'account/signup_closed.html', {'social': True})
+
+
 # •••••••••••••••••••••••••••••••••••••••••••••••••••••••• error / system views
 
 

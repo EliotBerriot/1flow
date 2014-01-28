@@ -18,15 +18,20 @@
     License along with 1flow.  If not, see http://www.gnu.org/licenses/
 
 """
-
+#from __future__ import unicode_literals
 from django.conf.urls import patterns, url
+#from django.conf.urls.i18n import i18n_patterns
 from django.utils.translation import ugettext_lazy as _
+#from django.core.urlresolvers import reverse_lazy
 
 urlpatterns = patterns(
     'oneflow.base.views',
 
     url(_(r'^unsubscribe/(?P<email>[^/]+)/(?P<hash_code>\w{32,32})?$'),
         'unsubscribe', name='unsubscribe'),
+
+    url(_(r'^social_signup_closed/$'), 'social_signup_closed',
+        name='social_signup_closed'),
 
     url(r'^500/?$', 'error_handler',
         name='view_500', kwargs={'raise_exception': False}),

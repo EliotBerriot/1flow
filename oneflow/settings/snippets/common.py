@@ -377,6 +377,18 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+
+    # account's MW must come after 'auth', else they crash.
+    #
+    # BTW, account's LocaleMiddleware produces a strange bug
+    # where /en/ doesn't exist anymore and we have two /fr/
+    # entries, making / fail to load. The logout process
+    # behave badly because of that. BTW again, I didn't see
+    # what it brought / added to the current implementation,
+    # leaving it disabled changes nothing.
+    #'account.middleware.LocaleMiddleware',
+    'account.middleware.TimezoneMiddleware',
+
     # TODO: activate this if needed.
     #'social_auth.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -408,6 +420,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'absolute.context_processors.absolute',
     'constance.context_processors.config',
     'django.contrib.auth.context_processors.auth',
+    'account.context_processors.account',
     'django.contrib.messages.context_processors.messages',
 
     # Only one of them is needed.
@@ -430,6 +443,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'django.contrib.auth',
+    'account',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     #'django.contrib.sites',
@@ -452,6 +466,13 @@ INSTALLED_APPS = [
     'south_admin',
     #'maintenancemode', — not needed at all, the middleware is sufficient.
     'transmeta',
+
+    # Order matters for inplace & friends.
+    'inplaceeditform_bootstrap',
+    'inplaceeditform',
+    #'inplaceeditform_extra_fields',
+    #'bootstrap3_datetime',
+
     'logentry_admin',
     'constance',
     'tastypie',
@@ -486,15 +507,65 @@ INSTALLED_APPS = [
     'social_auth',
 ]
 
+# ———————————————————————————————————————————————————————— django-user-accounts
+
+ACCOUNT_EMAIL_UNIQUE = True
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
+# ACCOUNT_LOGIN_REDIRECT_URL =
+ACCOUNT_LOGOUT_REDIRECT_URL = u'signin'
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = u'signin'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = u'home'
+ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL = u'profile'
+ACCOUNT_PASSWORD_RESET_REDIRECT_URL = u'signin'
+
+# —————————————————————————————————————————————————————————— django-inplaceedit
+
+INPLACEEDIT_EDIT_EMPTY_VALUE = ugettext_lazy(u'Click to edit')
+INPLACEEDIT_AUTO_SAVE = True
+INPLACEEDIT_EVENT = "click"
+#INPLACEEDIT_DISABLE_CLICK = True  # For inplace edit text into a link tag
+#INPLACEEDIT_EDIT_MESSAGE_TRANSLATION = 'Write a translation' # transmeta option
+INPLACEEDIT_SUCCESS_TEXT = ugettext_lazy(u'Successfully saved')
+INPLACEEDIT_UNSAVED_TEXT = ugettext_lazy(u'You have unsaved changes')
+#INPLACE_ENABLE_CLASS = 'form-control'
+DEFAULT_INPLACE_EDIT_OPTIONS = {
+    'auto_height': 1,            # be gentle, don't try to guess anything.
+    'class_inplace': 'form',     # Be a little bootstrap compatible.
+    'tag_name_cover': 'div',     # Make the editables more clickable.
+    '__widget_class': 'form-control',   # DOES NOT WORK, ISSUE Github #53
+}
+# modify the behavior of the DEFAULT_INPLACE_EDIT_OPTIONS usage, if True
+# then it use the default values not specified in your template, if False
+# it uses these options only when the dictionnary is empty (when you do put
+            # any options in your template)
+#DEFAULT_INPLACE_EDIT_OPTIONS_ONE_BY_ONE = True
+ADAPTOR_INPLACEEDIT_EDIT = 'oneflow.base.models.OwnerOrSuperuserEditAdaptor'
+ADAPTOR_INPLACEEDIT = {
+    #example: 'tiny': 'inplaceeditform_extra_fields.fields.AdaptorTinyMCEField'
+    #'date': 'inplaceeditform_bootstrap.fields.AdaptorDateBootStrapField',
+    #'datetime': 'inplaceeditform_bootstrap.fields.AdaptorDateTimeBootStrapField',
+}
+#INPLACE_GET_FIELD_URL = None # to change the url where django-inplaceedit use to get a field
+#INPLACE_SAVE_URL = None # to change the url where django-inplaceedit use to save a field
+
+# A django-inplaceedit-bootstrap setting.
+INPLACEEDIT_EDIT_TOOLTIP_TEXT = ugettext_lazy(u'Click to edit')
+
+# ———————————————————————————————————————————————————— django-endlesspagination
+
 ENDLESS_PAGINATION_PER_PAGE = 100
 
 # This is done directly in the templates.
 #ENDLESS_PAGINATION_LOADING  = ugettext_lazy(u'loading more entries…')
 
+# —————————————————————————————————————————————————————————————— django-select2
+
 AUTO_RENDER_SELECT2_STATICS = False
 GENERATE_RANDOM_SELECT2_ID = True
 ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
 # See cache.py for Select2 memcache settings.
+
+# ———————————————————————————————————————————————————— Other
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
@@ -632,6 +703,11 @@ SOCIAL_AUTH_PIPELINE = (
 
     #'oneflow.core.social_pipeline.check_1flow_requirements',
     'oneflow.core.social_pipeline.get_social_avatar',
+
+    # Given the current configuration, we do allow any user to register,
+    # or not. In both cases, we create the account, but will deactivate
+    # it if registration is disabled.
+    'oneflow.core.social_pipeline.throttle_new_user_accounts',
 )
 
 # —————————————————————————————————————————————————————————————— 1flow settings
