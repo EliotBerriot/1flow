@@ -1,18 +1,22 @@
 <!-- navbar-static-top -->
-<div class="navbar navbar-inverse navbar-fixed-top">
+<div class="navbar navbar-default navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
-
-      <a class="brand" href="{% url 'home' %}">
-          <span class="nowrap">
-            <span class="{% reverse_active 'home' %}">1flow </span>
-            <span class="badge badge-warning badge-beta hidden-phone">BETA</span>
-            <span class="badge badge-warning badge-beta visible-phone">β</span>
+      <div class="navbar-header">
+        <a class="navbar-brand" href="{% url 'home' %}">
+          <span class="{% reverse_active 'home' %}">
+            <span class="hidden-xs">
+              1flow <span class="badge badge-warning">BETA</span>
+            </span>
+            <span class="visible-xs">
+              1flow <span class="badge badge-warning">β</span>
+            </span>
           </span>
-      </a>
+        </a>
+      </div>
 
       {% if user.is_authenticated %}
-        <ul class="nav pull-right">
+        <ul class="nav navbar-nav navbar-right">
 
           {# nowrap is necessary, else the username gets to next line on Safari+iPad@portrait #}
           <li class="dropdown nowrap">
@@ -28,7 +32,8 @@
                 {# We use align-icon-phone to align the icon correctly on the baseline. #}
                 <span class="align-icon-phone"><i class="icon-user"></i></span>
               {% endif %}
-              <span class="hidden-phone">
+
+              <span class="hidden-inline-xs">
                 {{ user.username }}
                 <b class="caret"></b>
               </span>
@@ -51,22 +56,26 @@
             {% endif %}
 
               <li class="divider"></li>
-              <li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>
+              <!--<li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>-->
+              <li><form id="signout-from-menu-form" method="POST" class="form"
+                  action="{% url "signout" %}">
+                {% csrf_token %}</form><a href="#"
+                  onclick="$('#signout-from-menu-form').submit()">{% trans 'Sign Out' %}</a></li>
             </ul>
           </li>
         </ul>
 
       {% else %}
-        <ul class="nav pull-right">
-          <li><a href="{% url 'signin' %}">{% trans 'Sign in…' %}</a></li>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'signin' %}">{% trans 'Sign in' %}</a></li>
         </ul>
 
       {% endif %}
 
-      <ul class="nav">
+      <ul class="nav navbar-nav">
         {% if user.is_authenticated and wizards.welcome_beta_shown %}
 
-          <li class="nowrap hidden-phone">
+          <li class="nowrap hidden-inline-block-xs">
             {% if preferences.home.read_shows == 1 %}
                 <a href="{% url 'read' %}"
             {% else %}
@@ -79,12 +88,12 @@
           </li>
 
           <!--
-          <li class="nowrap hidden-phone">
+          <li class="nowrap hidden-xs">
                 <a href="{% url 'read' %}" class="">
               {% trans 'Write' %}
             </a>
           </li>
-          <li class="nowrap hidden-phone">
+          <li class="nowrap hidden-xs">
                 <a href="{% url 'read' %}" class="">
               {% trans 'Collaborate' %}
             </a>
@@ -92,7 +101,7 @@
           -->
 
           <!-- HIDDEN everywhere. Intended, because it doesn't work yet. -->
-          <li class="hidden-phone hidden-desktop hidden-tablet">
+          <li class="invisible">
               <form>
                 <input class="search"
                     placeholder="{% trans 'Search…' %}" />
@@ -100,7 +109,7 @@
           </li>
 
         </ul>
-        <ul class="nav pull-right">
+        <ul class="nav navbar-nav navbar-right">
 
 
           {% if user.is_staff or user.is_superuser %}
@@ -118,7 +127,7 @@
 
             {% if preferences.staff.super_powers_enabled %}
 
-              <li id="system-informations" class="visible-desktop"><a href="#"
+              <li id="system-informations" class="hidden-inline-block-xs"><a href="#"
                 data-toggle="popover" data-placement="bottom"
                 data-original-title="System Informations" data-html="true"
                 data-content="
@@ -178,7 +187,7 @@
 
           {% endif %}{# superuser #}
 
-          <li class="nowrap visible-phone">
+          <li class="nowrap visible-xs">
             {% if preferences.home.read_shows == 1 %}
                 <a href="{% url 'read' %}"
             {% else %}
@@ -189,14 +198,14 @@
             </a>
           </li>
 
-          <li class="visible-phone nowrap">
+          <li class="visible-xs nowrap">
             <a href="{% url 'help' %}"
                 class="{% reverse_active 'help' %} align-icon-phone">
               <i class="icon-question icon-2x"></i>
             </a>
           </li>
 
-          <li class="hidden-phone nowrap">
+          <li class="hidden-xs nowrap">
             <a href="{% url 'help' %}"
                 class="{% reverse_active 'help' %}">
               {% trans 'Features' %}

@@ -3,37 +3,48 @@
 {% captureas chat_fake_url %}#chat-fake-url{% endcaptureas %}
 
 <div id="welcome-beta">
-    <div class="row-fluid">
-        <div id="welcome-beta-page-1" class="span6 offset3">
-{% filter markdown %}{% blocktrans %}
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2 col-ld-6 col-ld-offset-3">
+            <h2>{% trans "Welcome to 1flow," %}<br />
+                <small>{% trans "your new home to read and write digital content." %}</small></h2>
 
-# Welcome to 1flow,
+            <p>{% blocktrans %}We hope to bring a delightful experience in these domains. Please take time to discover the interface and refer to the <a href="{{ help_url }}" title="Get the most of the application">features button</a> to get the most of the application.{% endblocktrans %}</p>
 
-## your new home to read and write digital content.
+            <p>{% blocktrans %}Keep in mind that we are a young project. Some things will feel unpolished but we fix problems quickly. <strong>1flow gets better everyday.</strong> Sometimes faster, when our developer had a kitesurfing session.{% endblocktrans %}</p>
 
-We hope to bring the best possible experience in these domains. Please take time to discover the interface. At any time, refer to the [features button]({{ help_url }} "Get the most of the 1flow app") to get the most of the application.
+            <p>{% if config.IRC_SUPPORT_CHANNEL %}
+                {% with supchan=config.IRC_SUPPORT_CHANNEL supserv=config.IRC_SUPPORT_SERVER %}
 
-Please keep in mind that we are a small team and a young project. Some things could feel unpolished to you. In the meantime, we fix problems very quickly. **1flow gets better everyday.** Sometimes even faster, when our developer had a kitesurfing session.
+                    {% blocktrans %}If you need help, reach us via the <a href="{{ chat_fake_url }}">live chat</a> or <a href="irc://{{ supserv }}/{{ supchan }}">via IRC</a>.{% endblocktrans %}
+                {% endwith %}
+            {% else %}
 
-If you need human help, you can reach us via the [feedback chat]({{ chat_fake_url }}) or leave a feature request or any question in our [support forum](http://1flow.userecho.com/). We will *really* be delighted to hear from you.
+                {% blocktrans %}If you need help, reach us via the <a href="{{ chat_fake_url }}">live chat</a>.{% endblocktrans %}
+            {% endif %}
 
-We hope you'll enjoy 1flow as much as we enjoy building it.
+            {% blocktrans %}Leave feature requests and questions in our <a href="http://1flow.userecho.com/">support forum</a>. We are hardly waiting for your feedback ;-){% endblocktrans %}</p>
 
-Cheers,
+            <p>{% trans "We hope you'll enjoy 1flow as much as we enjoy building it." %}</p>
 
---
-[Olivier](https://twitter.com/Karmak23) & [Matthieu](https://twitter.com/mchaignot),
-1flow founders
+            <p>{% trans "Cheers," %}</p>
 
-{% endblocktrans %}{% endfilter %}
+            <p>——<br />
+            {% blocktrans %}<a href="https://twitter.com/Karmak23">Olivier</a> &amp; <a href="https://twitter.com/mchaignot">Matthieu</a>,<br />
+            1flow founders{% endblocktrans %}</p>
+
         </div>
+    </div>
 
-        <div id="welcome-beta-page-2" class="span2 welcome-next hide">
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2 col-ld-6 col-ld-offset-3">
+
+            <div class="spacer50"></div>
+            <div class="spacer25"></div>
 
             {% if mongodb_user.has_content %}
-                <div class="row-fluid">
-                    <div class="span12 centered">
-                        <a class="btn-flat btn-block btn-flat.info"
+                <div class="row">
+                    <div class="col-xs-12 centered">
+                        <a class="btn btn-info btn-lg"
                             href="{% url 'skip_welcome_beta' %}"
                             ><i class="icon-bolt">
                         </i> {% trans "Bring me to my news!" %}</a>
@@ -44,9 +55,9 @@ Cheers,
 
             {% else %}
 
-                <div class="row-fluid">
-                    <div class="span12 centered">
-                        <a class="btn-flat btn-block btn-flat.success"
+                <div class="row">
+                    <div class="col-xs-12 centered">
+                        <a class="btn btn-success btn-lg"
                             href="{% url 'skip_welcome_beta' %}"
                                 title=""><i class="icon-plus">
                             </i> {% trans "Start adding some sources to read news from" %}</a>
@@ -56,6 +67,7 @@ Cheers,
 
             {% endif %}
 
+            <div class="spacer100"></div>
         </div>
     </div>
 </div>
@@ -64,7 +76,6 @@ Cheers,
 
         $('#welcome-beta a[href^="http"]').attr('target','_blank');
         //$('#welcome-beta-page-1 img').parent().addClass('float-right');
-        $('#welcome-beta-page-2').delay(2000).fadeIn();
 
     });
 </script>

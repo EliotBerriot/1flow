@@ -1,13 +1,16 @@
-<div class="control-group">
-    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
+<div class="form-group {% if field.errors %}has-error{% endif %}">
+    <label class="control-label col-sm-5" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
 
-    <div class="controls">
-        {% render_field field class+="span3" %}
+    <div class="controls col-sm-7">
+        {% render_field field class+="form-control" %}
     </div>
 
+    <div class="col-xs-12">
+
     {% if field.errors %}
-        <span class="help-block">{{ field.errors|join:", " }}</span>
+        <div class="help-block">{{ field.errors|join:", " }}</div>
     {% endif %}
 
-    <span class="help-block">{{ field.help_text|safe }}</span>
+    <div class="help-block">{{ field.help_text|safe }}</div>
+    </div>
 </div>
