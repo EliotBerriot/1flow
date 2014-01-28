@@ -36,7 +36,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import add_to_builtins
 #from django.views.generic import ListView
 from django.contrib.auth import authenticate, login, get_user_model
@@ -162,9 +162,9 @@ def skip_welcome_beta(request):
     #       be synched with the home() view.
 
     if user.has_content:
-        return HttpResponseRedirect(reverse('source_selector'))
+        return redirect('source_selector')
 
-    return HttpResponseRedirect(reverse('add_subscription'))
+    return redirect('add_subscription')
 
 
 def home(request):
@@ -179,9 +179,9 @@ def home(request):
         #       with the skip_welcome_beta() view.
 
         if user.has_content:
-            return HttpResponseRedirect(reverse('source_selector'))
+            return redirect('source_selector')
 
-        return HttpResponseRedirect(reverse('add_subscription'))
+        return redirect('add_subscription')
 
     return render(request, 'home.html', {
         'gr_import': GoogleReaderImport(request.user.id),
@@ -279,7 +279,7 @@ def delete_folder(request, folder):
 
     if request.user.is_superuser or folder.owner == request.user.mongo:
         folder.delete()
-        return HttpResponseRedirect(reverse('source_selector'))
+        return redirect('source_selector')
 
     return HttpResponseForbidden()
 
@@ -430,7 +430,7 @@ def delete_subscription(request, **kwargs):
                       u'deleted.').format(subscription.name),
                       extra_tags=u'safe')
 
-        return HttpResponseRedirect(reverse('source_selector'))
+        return redirect('source_selector')
 
     return HttpResponseForbidden()
 
@@ -998,7 +998,7 @@ def preferences(request):
 
             request.user.mongo.preferences.save()
 
-            return HttpResponseRedirect(reverse('preferences'))
+            return redirect('preferences')
     else:
         home_form = HomePreferencesForm(
             instance=request.user.mongo.preferences.home)
@@ -1371,7 +1371,7 @@ def register(request):
 
             #post_register_actions.delay((user.id, ))
 
-            return HttpResponseRedirect(reverse('home'))
+            return redirect('home')
 
     return render(request, 'register.html', {'form': creation_form})
 
