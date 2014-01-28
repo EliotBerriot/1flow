@@ -5,17 +5,10 @@
 {% block lang_switcher %}{# intentionaly empty in error pages #}{% endblock lang_switcher %}
 
 {% block onlyme_content %}
-    <div class="row">
-        {% block error_content %}{% endblock error_content %}
-    </div>
+    {% block error_content %}{% endblock error_content %}
 
     {% if request.sentry.id %}
-        <div class="row">
-            <div class="col-xs-12">
-                {% blocktrans with sentry_id=request.sentry.id %}
-                    If you need assistance, you may reference this error as <code>{{ sentry_id }}</code>.
-                {% endblocktrans %}
-            </div>
-        </div>
+        <p>{% blocktrans with sentry_id=request.sentry.id %}
+        If you need assistance, you can reference this error as <code>{{ sentry_id }}</code>.{% endblocktrans %}</p>
     {% endif %}
 {% endblock onlyme_content %}
