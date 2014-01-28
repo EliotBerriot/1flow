@@ -698,7 +698,7 @@ def read_with_endless_pagination(request, **kwargs):
         subscription = Subscription.get_or_404(subscription)
 
         if subscription.user != user:
-            if user.user.is_staff_or_superuser_and_enabled:
+            if user.is_staff_or_superuser_and_enabled:
 
                 messages.warning(request, _(u'As administrator, you are '
                                  u'accessing the feed of another user. '
