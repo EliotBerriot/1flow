@@ -32,6 +32,10 @@ INSTALLED_APPS.insert(INSTALLED_APPS.index('oneflow.core'),
 LANDING_BETA_DATE = datetime.date(2013, 07, 01)
 LANDING_BETA_INVITES = 100
 
+# As of 201401, local signups are disabled on 1flow.io, until
+# we can cope with the scaling and potential legal issues.
+ACCOUNT_OPEN_SIGNUP = False
+
 PIPELINE_CSS.update({
     'landing': {
         # This one is not "compiled" but simply copied. We wanted it
