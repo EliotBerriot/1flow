@@ -318,6 +318,10 @@ class User(Document, DocumentHelperMixin):
             yield email, full_name
 
     @property
+    def is_local(self):
+        return self.django.password != u'!'
+
+    @property
     def has_content(self):
 
         return self.all_articles_count > 0 or [
