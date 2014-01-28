@@ -739,7 +739,7 @@ class Feed(Document, DocumentHelperMixin):
         try:
             new_article, created = Article.create_article(
                 url=url.replace(' ', '%20'),
-                title=_(u'Imported item from {0}').format(url),
+                title=_(u'Imported item from {0}').format(clean_url(url)),
                 feeds=[self], origin_type=ORIGIN_TYPE_WEBIMPORT)
 
         except:
