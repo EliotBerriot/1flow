@@ -44,6 +44,19 @@ CONSTANCE_CONFIG = {
                          u'by default to avoid tracking and allow autonomous '
                          u'run.')),
 
+    'WEB_BOOTSWATCH_THEME': (u'', ugettext(u'Choose your bootswatch '
+                             u'theme here. If you have CDNs enabled, you '
+                             u'must choose a public theme. Default: no '
+                             u'bootswatch theme, meaning that 1flow uses its '
+                             u'original detail-admin. Possible values include '
+                             u'"flatly", "yeti", and all other bootswatch '
+                             u'themes, including your own if you deactivate '
+                             u'the CDN utilization.')),
+
+    'WEB_THEME_NAVBAR_INVERSE': (True, ugettext(u'Does the bootstrap navbar '
+                                 u'uses inverse colors. Default: true, for '
+                                 u'detail-admin theme.')),
+
     # HEADS UP: the 3 next are translatable, to allow providing
     #           different addresses for multi-language support.
 
