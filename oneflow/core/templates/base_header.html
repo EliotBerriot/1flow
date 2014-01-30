@@ -1,0 +1,82 @@
+
+  {% if config.WEB_BOOTSWATCH_THEME %}
+
+    {% if config.WEB_CDNS_ENABLED %}
+      <link rel="stylesheet"
+          href="//netdna.bootstrapcdn.com/bootswatch/3.0.3/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
+
+    {% else %}
+      <link rel="stylesheet"
+          href="{{ STATIC_URL}}/vendor/bootswatch/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
+    {% endif %}
+
+    {# NOTE: bootswatch already includes bootstrap CSS #}
+    {% compressed_css 'core-bootswatch' %}
+
+  {% else %}
+
+    {% compressed_css 'bootstrap' %}
+    {% compressed_css 'core-detail-admin' %}
+
+  {% endif %}
+
+{% if config.WEB_CDNS_ENABLED %}
+
+  <link rel="stylesheet"
+      href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" />
+  <script type="text/javascript"
+      src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
+
+{% else %}
+
+  <link rel="stylesheet"
+      href="{{ STATIC_URL}}/vendor/font-awesome/font-awesome.css" />
+  <script type="text/javascript"
+      src="{{ STATIC_URL}}/vendor/bootswatch/bower_components/jquery/jquery.min.js"></script>
+
+{% endif %}
+
+{% comment %}
+
+<!--[if lt IE 9]>
+  <script src="../bower_components/respond/dest/respond.min.js"></script>
+<![endif]-->
+
+{% endcomment %}
+
+{# ———————————————————————————————————————————————————— OLD Internet Explorer #}
+
+<!--[if IE 7]>
+  {% compressed_css 'font-awesome-ie7' %}
+<![endif]-->
+
+{# HTML5 shim, for IE6-8 support of HTML5 elements #}
+
+<!--[if lt IE 9]>
+{% if config.WEB_CDNS_ENABLED %}
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+
+{% else %}
+  <script src="{{ STATIC_URL}}/vendor/bootswatch/bower_components/html5shiv/dist/html5shiv.js"></script>
+
+{% endif %}
+
+<![endif]-->
+
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
+
+{# —————————————————————————————————————— Hash loader for navbar compensation #}
+
+<script type="text/javascript">
+  var scrollForHash = function() { scrollBy(0, -70) };
+
+  window.addEventListener("hashchange", scrollForHash);
+
+  function loadScrollForHash() { if (window.location.hash) scrollForHash(); }
+</script>

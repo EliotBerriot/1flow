@@ -8,6 +8,8 @@
 // dedicated section there.
 //
 
+/* Some overrides from default bootstrap styles */
+
 h1,h2,h3,h4,h5,h6{
   font-weight: normal;
 }
@@ -49,19 +51,6 @@ h1,h2,h3,h4,h5,h6{
 .alert-error [class^="icon-"],
 .alert-error [class*=" icon-"] {
   color: #d5393e;
-}
-
-.ui-pnotify {
-    // make the notifications not overlap the navbar.
-    // TODO: make this dynamic, back to 25px when the navbar is hidden.
-    top: 72px;
-}
-
-.ui-pnotify-sticker [class^="icon-"],
-.ui-pnotify-sticker [class*=" icon-"],
-.ui-pnotify-closer [class^="icon-"],
-.ui-pnotify-closer [class*=" icon-"] {
-    top: 0;
 }
 
 /* code*/
@@ -391,8 +380,4 @@ table th span.line{
 
 .tooltip {
   z-index: 1080;
-}
-
-.btn {
-  white-space: inherit;
 }

@@ -1,4 +1,3 @@
-
 // •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Compass
 // NOTE: bootstrap should be imported ahead of here.
 
@@ -17,27 +16,3 @@ $default-transition-duration: 0.5s;
 //@import "compass/css3/text-shadow";
 @import "compass/css3/transition";
 @import "compass/css3/filter";
-
-// •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
-
-
-@import "variables";
-@import "forms";
-
-@import "bootstrap-overrides";
-@import "bootstrap-additions";
-@import "mixins";
-@import "various";
-@import "home";
-@import "selector";
-@import "read-common";
-@import "read-list";
-@import "read-individual";
-@import "read-icons";
-@import "read-article-content";
-
-@import "responsive-desktop";
-@import "responsive-mobile";
-
-//@import "header";
-//@import "footer";

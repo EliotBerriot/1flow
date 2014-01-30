@@ -1,6 +1,10 @@
 
-// ———————————————————————————————————————————————————————— Bootstrap overrides
 
+// —————————————————————————————————————————————————————— Bootstrap 3 overrides
+
+.btn {
+  white-space: inherit;
+}
 
 a.brand {
     text-transform: none;

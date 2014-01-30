@@ -1,16 +1,14 @@
 
-// •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Compass
+// ———————————————————————————————————————————————————————————————————— Compass
 // NOTE: bootstrap should be imported ahead of here.
 
 @import "compass/utilities";
 @import "compass/css3";
 @import "blueprint/grid";
 
-// •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
+// —————————————————————————————————————————————————————————————————————— 1flow
 
-@import "variables";
-@import "forms";
-@import "various";
-@import "home";
-//@import "header";
-//@import "footer";
+@import "1flow/variables";
+@import "1flow/forms";
+@import "1flow/various";
+@import "1flow/home";

@@ -5,6 +5,7 @@ html {
     // To make the footer stick at the bottom.
     height: 100%;
 }
+
 body {
     /*
         olive 20130915: replicate Bootstrap's
@@ -13,7 +14,7 @@ body {
     position: relative;
 
     /* Our navbar is 47px + 1px border-bottom. */
-    padding-top: 48px;
+    padding-top: 48px + 25px;
 
     // To make the footer stick at the bottom.
     min-height: 100%;
@@ -24,9 +25,10 @@ body {
 }
 
 .navbar {
-    .brand {
+    .navbar-brand {
         /* Avoid ALLCAPS text, this is sooooo ugly on 1flow name. */
         text-transform: none;
+        font-weight: 700;
 
         span.active {
             text-shadow: 0 0 10px #fff;
@@ -44,7 +46,7 @@ body {
         }
     }
 
-    .nav {
+    .navbar-nav {
 
         font-size: 120%;
 

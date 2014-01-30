@@ -9,70 +9,7 @@
     <link type="text/plain" rel="author" href="http://1flow.io/humans.txt" />
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}favicon.png" />
 
-    {% if config.WEB_CDNS_ENABLED %}
-
-      <link rel="stylesheet"
-          href="//netdna.bootstrapcdn.com/bootswatch/3.0.3/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
-      <link rel="stylesheet"
-          href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" />
-
-      <script type="text/javascript"
-          src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-    {% else %}
-
-      <link rel="stylesheet"
-          href="{{ STATIC_URL}}/vendor/bootswatch/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
-      <link rel="stylesheet"
-          href="{{ STATIC_URL}}/vendor/font-awesome/font-awesome.css" />
-
-      <script type="text/javascript"
-          src="{{ STATIC_URL}}/vendor/bootswatch/bower_components/jquery/jquery.min.js"></script>
-
-    {% endif %}
-
-        {% comment %}
-
-    <!--[if lt IE 9]>
-      <script src="../bower_components/respond/dest/respond.min.js"></script>
-    <![endif]-->
-
-        {% endcomment %}
-
-    <!--[if IE 7]>
-      {% compressed_css 'font-awesome-ie7' %}
-    <![endif]-->
-
-    {# HTML5 shim, for IE6-8 support of HTML5 elements #}
-
-    <!--[if lt IE 9]>
-    {% if config.WEB_CDNS_ENABLED %}
-        <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-
-    {% else %}
-      <script src="{{ STATIC_URL}}/vendor/bootswatch/bower_components/html5shiv/dist/html5shiv.js"></script>
-
-    {% endif %}
-
-    <![endif]-->
-
-    <!--[if gte IE 9]>
-      <style type="text/css">
-        .gradient {
-           filter: none;
-        }
-      </style>
-    <![endif]-->
-
-    {% compressed_css 'core' %}
-
-    <script type="text/javascript">
-      var scrollForHash = function() { scrollBy(0, -70) };
-
-      window.addEventListener("hashchange", scrollForHash);
-
-      function loadScrollForHash() { if (window.location.hash) scrollForHash(); }
-    </script>
+    {% include "base_header.html" %}
 
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
@@ -94,18 +31,21 @@
 
     {% block body %}{% endblock body %}
 
-    {% block extrajs_footer %}{% endblock extrajs_footer %}
+    {# 20130130: is it still usefull here ? #}
+    {% csrf_token %}
 
-    {% comment %}
-        Caching this block is not easy.
-        It would depend on user_echo_page,
-        would require a dedicated template
-        tag which would probably anihilate
-        the cache gain.
-    {% endcomment %}
+    {% block extrajs_footer %}{% endblock extrajs_footer %}
 
     {# HOW UGLY IS THIS… When calling a function would be so simple… #}
     {% captureas user_echo_page %}{% reverse_active 'home' %}{% reverse_active 'source_selector' %}{% reverse_active 'profile' %}{% reverse_active 'help' %}{% endcaptureas %}
+
+    {% comment %}
+        Caching the user_echo block is not easy.
+        It would depend on user_echo_page, would require
+        a dedicated template tag which would probably
+        anihilate the cache benefit.
+    {% endcomment %}
+
     {% if not debug and user_echo_page %}
       {% include 'snippets/userecho.html' %}
       {% if user.is_anonymous or not user.is_superuser %}
