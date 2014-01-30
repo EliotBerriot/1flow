@@ -170,19 +170,31 @@ PIPELINE_CSS = {
 
     # TODO: the 'vendor-all' target.
 
+    # ——————————————————————————————————————————————————————————————— Bootstrap
+
     'bootstrap': {
         'source_filenames': (
-            'vendor/bootstrap/less/bootstrap.less',
+            'vendor/bootstrap/3.0.3/less/bootstrap.less',
         ),
         'output_filename': 'css/bootstrap.css',
     },
-    'bootstrap-responsive': {
+
+    'bootstrap-2': {
         'source_filenames': (
-            'vendor/bootstrap/less/bootstrap.less',
-            'vendor/bootstrap/less/responsive.less',
+            'vendor/bootstrap/2.3.2/less/bootstrap.less',
         ),
-        'output_filename': 'css/bootstrap-responsive.css',
+        'output_filename': 'css/bootstrap-2.css',
     },
+
+    'bootstrap-2-responsive': {
+        'source_filenames': (
+            'vendor/bootstrap/2.3.2/less/bootstrap.less',
+            'vendor/bootstrap/2.3.2/less/responsive.less',
+        ),
+        'output_filename': 'css/bootstrap-2-responsive.css',
+    },
+
+    # ———————————————————————————————————————————————————————————— Font-awesome
 
     'font-awesome': {
         'source_filenames': (
@@ -197,32 +209,34 @@ PIPELINE_CSS = {
         'output_filename': 'css/font-awesome-ie7.css',
     },
 
-    # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
+    # —————————————————————————————————————————————————————————————— 1flow core
+    # The core uses Bootstrap 3. Either Detail-Admin donated by Erick Alvarez,
+    # or any bootswatch theme: just change the value in the constance config.
 
-    'core': {
+    'core-bootswatch': {
         'source_filenames': (
-            'sass/styles-core.scss',
+            'sass/styles-core-bootswatch.scss',
         ),
 
-        'output_filename': 'css/core.css',
+        'output_filename': 'css/core-bootswatch.css',
     },
 
-    # TODO:
-    # The next 2 should be wiped out when BS3+Yeti migration is done.
-    'core-bootstrap-detail': {
+    'core-detail-admin': {
         'source_filenames': (
-            'sass/detail-admin/bootstrap-overrides.scss',
-            'sass/styles-core-bootstrap-detail.scss',
+            'sass/styles-core-detail-admin.scss',
         ),
-        'output_filename': 'css/core-details.css',
+        'output_filename': 'css/core-detail-admin.css',
     },
+
+    # —————————————————————————————————————————————————————— 1flow landing page
+    # As of 201401xx, the landing page is still Bootstrap 2.
+
     'core-bootstrap-bare': {
         'source_filenames': (
             'sass/styles-core-bootstrap-bare.scss',
         ),
-        'output_filename': 'css/core.css',
+        'output_filename': 'css/core-bootstrap-bare.css',
     }
-    # END TODO wipe.
 }
 
 PIPELINE_JS = {
@@ -233,7 +247,6 @@ PIPELINE_JS = {
         # This one includes all external dependancies
         # (eg. non 1flow sources) for a one-file-only dep.
         'source_filenames': (
-
             'vendor/raven.js/1.0.8/raven.js',
             'vendor/underscorejs/1.5.1/underscore.js',
             'vendor/mousetrap/1.4.2/mousetrap.js',
@@ -243,14 +256,22 @@ PIPELINE_JS = {
             'vendor/jquery-color/2.1.2/jquery.color.js',
 
             # WARNING: order matters: tooltip must be included before popover.
-            'vendor/bootstrap/js/bootstrap-[a-o]*.js',
-            'vendor/bootstrap/js/bootstrap-t*.js',
-            'vendor/bootstrap/js/bootstrap-p*.js',
-            'vendor/bootstrap/js/bootstrap-[q-s]*.js',
-            'vendor/bootstrap/js/bootstrap-[u-z]*.js',
+            # This order is a copy-n-paste of Bootstrap 3.0.3's Gruntfile.js.
+            'vendor/bootstrap/3.0.3/js/transition.js',
+            'vendor/bootstrap/3.0.3/js/alert.js',
+            'vendor/bootstrap/3.0.3/js/button.js',
+            'vendor/bootstrap/3.0.3/js/carousel.js',
+            'vendor/bootstrap/3.0.3/js/collapse.js',
+            'vendor/bootstrap/3.0.3/js/dropdown.js',
+            'vendor/bootstrap/3.0.3/js/modal.js',
+            'vendor/bootstrap/3.0.3/js/tooltip.js',
+            'vendor/bootstrap/3.0.3/js/popover.js',
+            'vendor/bootstrap/3.0.3/js/scrollspy.js',
+            'vendor/bootstrap/3.0.3/js/tab.js',
+            'vendor/bootstrap/3.0.3/js/affix.js',
         ),
 
-        'output_filename': 'js/min/vendor-all.js',
+        'output_filename': 'js/min/vendor-global.js',
     },
     #
     # TODO: find CDNs versions of these, and merge
@@ -270,7 +291,7 @@ PIPELINE_JS = {
             # NOTE: we use or own implementation
             # of django-endless-pagination JS.
         ),
-        'output_filename': 'js/min/vendor-all.js',
+        'output_filename': 'js/min/vendor-local.js',
     },
 
     # NOTE: we use or own implementation
