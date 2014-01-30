@@ -15,6 +15,7 @@
 
         <div class="spacer25"></div>
 
-        <p><a href="{{ success_url }}">Proceed to signin</a> or <a href="javascript:window.open('', '_self', '');window.close()">close this window/tab</a>.</p>
+        <p>{% blocktrans %}<a href="{{ success_url }}">Proceed to signin</a> or
+        {% endblocktrans %}" %}<a href="javascript:window.open('', '_self', '');window.close()">{% trans "close this window/tab" %}</a>.</p>
     </fieldset>
 {% endblock %}
