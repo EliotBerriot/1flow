@@ -862,31 +862,33 @@ function setup_everything(parent) {
     console.debug('Setup everything...');
 
     try {
+
         if (!Modernizr.touch){
             setup_tooltips(parent);
             setup_hover_muters(parent);
         }
+
+        setup_popovers(parent);
+        setup_clicker_muters(parent);
+        setup_collapsibles(parent);
+
+        // bindable_hovered NOT USED YET
+        //setup_hover_notifiers(parent);
+
+        setup_clickovers(parent);
+        setup_delayed_loaders(parent);
+        launch_faders(parent);
+
+        setup_modals(parent);
+
+        setup_post_processors(parent);
+
+        // not fully tested, and not needed yet.
+        //launch_async_gets(parent);
+
     } catch (err) {
-        console.log('Modernizr seems not to be present: ' + err);
+        console.warn('Something is not properly loaded/initialized: ' + err);
     }
-
-    setup_popovers(parent);
-    setup_clicker_muters(parent);
-    setup_collapsibles(parent);
-
-    // bindable_hovered NOT USED YET
-    //setup_hover_notifiers(parent);
-
-    setup_clickovers(parent);
-    setup_delayed_loaders(parent);
-    launch_faders(parent);
-
-    setup_modals(parent);
-
-    setup_post_processors(parent);
-
-    // not fully tested, and not needed yet.
-    //launch_async_gets(parent);
 
     try {
         // Given we are in <body#home>, try to run home_setup(), and so on.
