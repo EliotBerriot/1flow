@@ -6,6 +6,7 @@
 {% block title %}{% trans 'Home' %}{% endblock title %}
 
 {% block extrajs_header %}
+    {{ block.super }}
 
     {% if config.WEB_CDNS_ENABLE %}
 
@@ -89,146 +90,47 @@
 
 {% block extrajs_footer %}
 
-    {% csrf_token %}
-
     {% cache 86400 home_extrajs_footer_immutable %}
 
-    {# block is empty in base.html {{ block.super }} #}
+        {{ block.super }}
 
-    {% if config.WEB_CDNS_ENABLED %}
-        <script type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/raven.js/1.0.8/raven.min.js"></script>
-        <script type="text/javascript"
-            src="//cdn.jsdelivr.net/underscorejs/1.5.1/underscore-min.js"></script>
-        <script type="text/javascript"
-            src="//cdn.jsdelivr.net/mousetrap/1.4.2/mousetrap.min.js"></script>
-        <script type="text/javascript"
-            src="//cdn.jsdelivr.net/hammerjs/1.0.5/hammer.min.js"></script>
-        <script type="text/javascript"
-            src="//cdn.jsdelivr.net/pnotify/1.2/jquery.pnotify.js"></script>
-        <script type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
-        <script type="text/javascript"
-            src="//cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
+        {% if config.WEB_CDNS_ENABLED %}
 
-    {% else %}
-        {% compressed_js 'vendor-global' %}
-    {% endif %}
+            <script type="text/javascript"
+                src="//cdnjs.cloudflare.com/ajax/libs/raven.js/1.0.8/raven.min.js"></script>
+            <script type="text/javascript"
+                src="//cdn.jsdelivr.net/underscorejs/1.5.1/underscore-min.js"></script>
+            <script type="text/javascript"
+                src="//cdn.jsdelivr.net/mousetrap/1.4.2/mousetrap.min.js"></script>
+            <script type="text/javascript"
+                src="//cdn.jsdelivr.net/hammerjs/1.0.5/hammer.min.js"></script>
+            <script type="text/javascript"
+                src="//cdn.jsdelivr.net/pnotify/1.2/jquery.pnotify.js"></script>
+            <script type="text/javascript"
+                src="//cdnjs.cloudflare.com/ajax/libs/jquery-easing/1.3/jquery.easing.min.js"></script>
+            <script type="text/javascript"
+                src="//cdnjs.cloudflare.com/ajax/libs/jquery-color/2.1.2/jquery.color.min.js"></script>
 
-    {# I didn't find CDNs for these, or they files of ours. #}
-    {% compressed_js 'vendor-local' %}
+        {% else %}
+            {% compressed_js 'vendor-global' %}
+        {% endif %}
 
-    <script type="text/javascript">
-        Raven.config('{% sentry_public_dsn %}').install();
-    </script>
+        {# I didn't find CDNs for these; or some are our own files. #}
+        {% compressed_js 'vendor-local' %}
 
-    {# NOTE: JS inclusion order matters. #}
-    {% django_js jquery=false %}
+        <script type="text/javascript">
+            Raven.config('{% sentry_public_dsn %}').install();
+        </script>
 
-    {% comment %}
-        This version is not the same as on Github
-            https://github.com/jeresig/jquery.hotkeys
+        {# NOTE: JS inclusion order matters. #}
+        {% django_js jquery=false %}
 
-        Syntax is different, as commented at
-            https://github.com/tzuryby/jquery.hotkeys/issues/1#issuecomment-5930686
-
-        <script type="text/javascript"
-            src="http://cdn.jsdelivr.net/jquery.hotkeys/0.8b/jquery.hotkeys.js"></script>
-
-        Thus, we use MouseTrap, which is simpler and allows combinations.
-
-
-        For Later, perhaps:
-        <script type="text/javascript"
-            src="//ajax.googleapis.com/ajax/libs/jqueryui/1.10.3/jquery-ui.min.js"></script>
-
-        No jealous:
-        http://www.asp.net/ajaxlibrary/CDNjQueryMobile132.ashx
-    {% endcomment %}
-
-    {% import_django_select2_js %}
-
-    {% compressed_js 'vendor-all' %}
+        {% import_django_select2_js %}
 
     {% endcache %}
 
     {% cache 3600 home_extrajs_footer_mutable LANGUAGE_CODE %}
-
-    {% comment %}
-        Each special section has its own JS pipeline.
-        The one who haven't benefit from the default "core".
-    {% endcomment %}
-
-    <script type="text/javascript">
-        {% comment %}
-            This must stay here (in the template, not an
-            external JS file) to get the server-side language.
-
-            Moment is disabled, we do not use it yet client-side.
-
-            moment.lang('{{ LANGUAGE_CODE }}');
-        {% endcomment %}
-
-        // —————————————————————————————————————————— common keyboard shortcuts
-
-        // “Add Item”, “Import Item”
-        Mousetrap.bind(['a i', 'i i'], function() {
-            $("#import-web-item-trigger").click();
-            return false;
-        });
-
-        // “Goto Selector”, “Goto Sources”
-        Mousetrap.bind(['g s'], function() {
-
-            var $back_to_selector = $("a#back-to-selector");
-
-            notify({
-                text: "{% trans "Returning to source selector…" %}",
-                icon: false
-            });
-
-            if ($back_to_selector.length) {
-                document.location = $back_to_selector.attr('href');
-
-            } else {
-                document.location = "{% url 'source_selector' %}";
-            }
-
-            return false;
-        });
-
-        // “Goto Features
-        Mousetrap.bind(['g f'], function() {
-            notify({
-                text: "{% trans "Heading to features / help…" %}",
-                icon: false
-            });
-            document.location = "{% url 'help' %}";
-            return false;
-        });
-
-        // “Goto Preferences”
-        Mousetrap.bind(['g p'], function() {
-            notify({
-                text: "{% trans "Opening your preferences…" %}",
-                icon: false
-            });
-            document.location = "{% url 'preferences' %}";
-            return false;
-        });
-
-        // “Goto Account”
-        Mousetrap.bind(['g a'], function() {
-            notify({
-                text: "{% trans "Opening your account…" %}",
-                icon: false
-            });
-            document.location = "{% url 'profile' %}";
-            return false;
-        });
-
-    </script>
-
+        {% include "snippets/home/extrajs-footer.js.html" %}
     {% endcache %}
 
 {% endblock extrajs_footer %}
