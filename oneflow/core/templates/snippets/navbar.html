@@ -1,16 +1,19 @@
 <!-- navbar-static-top -->
-<div class="navbar navbar-default navbar-fixed-top">
+<div class="navbar navbar-{{ config.WEB_THEME_NAVBAR_INVERSE|yesno:"inverse,default"}} navbar-fixed-top">
   <div class="navbar-inner">
     <div class="container">
       <div class="navbar-header">
         <a class="navbar-brand" href="{% url 'home' %}">
-          <span class="{% reverse_active 'home' %}">
-            <span class="hidden-xs">
-              1flow <span class="badge badge-warning">BETA</span>
-            </span>
-            <span class="visible-xs">
-              1flow <span class="badge badge-warning">β</span>
-            </span>
+          <span class="{% reverse_active 'home' %} {% reverse_active 'source_selector' %}">
+            1flow
+            <!--
+              <span class="hidden-inline-xs">
+                <span class="badge badge-warning">BETA</span>
+              </span>
+              <span class="visible-inline-xs">
+                <span class="badge badge-warning">β</span>
+              </span>
+            -->
           </span>
         </a>
       </div>
@@ -112,8 +115,8 @@
         <ul class="nav navbar-nav navbar-right">
 
 
+          {# Do NOT hide, even if not super_powers_enabled, we need to know about maintenance mode. #}
           {% if user.is_staff or user.is_superuser %}
-            {# Life or Death: do not hide, even if not super_powers_enabled #}
 
             {% if MAINTENANCE_MODE %}
               <li>
@@ -164,13 +167,18 @@
 
                 <script type="text/javascript">
                 $(document).ready(function(){
-                  $("#system-informations").popover();
+                    try {
+                      $("#system-informations").popover();
+                    } catch (err) {
+                      console.debug("Is bootstrap JS loaded/initialized: "
+                                    + err);
+                    }
                 });
                 </script>
 
               <li>
                 <a href="{% url 'preference_toggle' base='staff' sub='super_powers_enabled' %}">
-                  <span class="badge badge-warning">
+                  <span class="badge badge-info">
 
             {% else %}
 
