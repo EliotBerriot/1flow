@@ -28,14 +28,14 @@
     </div>
 </div>
 
-<div id="lists" class="clearfix">
+<div id="lists">
     <form>
         <div class="row">
-            <fieldset id="reading-lists" class="col-xs-6">
+            <fieldset id="reading-lists" class="col-xs-12 col-sm-6">
                 <legend>{% trans "Reading lists" %}</legend>
                 <div class="row">
                     <div class="col-xs-6">
-                        <ul>
+                        <ul class="list-unstyled">
                             <li class="muted not-ready" {% feature_not_ready %}>
                                 {% trans "Inbox" %}</li>
 
@@ -53,7 +53,7 @@
                         </ul>
                     </div>
                     <div class="col-xs-6">
-                        <ul>
+                        <ul class="list-unstyled">
                             <li>{% reading_list_with_count mongodb_user 'read_fun' %}</li>
                             <li>{% reading_list_with_count mongodb_user 'read_starred' %}</li>
 
@@ -66,11 +66,11 @@
                 </div>
             </fieldset>
 
-            <fieldset id="watching-lists" class="col-xs-6">
+            <fieldset id="watching-lists" class="col-xs-12 col-sm-6">
                 <legend>{% trans "Watching lists" %}</legend>
                 <div class="row">
                     <div class="col-xs-6">
-                        <ul>
+                        <ul class="list-unstyled">
                           <li>{% reading_list_with_count mongodb_user 'read_facts' %}</li>
                           <li>{% reading_list_with_count mongodb_user 'read_numbers' %}</li>
                           <li>{% reading_list_with_count mongodb_user 'read_analysis' %}</li>
@@ -78,7 +78,7 @@
                         </ul>
                     </div>
                     <div class="col-xs-6">
-                        <ul>
+                        <ul class="list-unstyled">
                           <li>{% reading_list_with_count mongodb_user 'read_know_how' %}</li>
                           <li>{% reading_list_with_count mongodb_user 'read_rules' %}</li>
                           <li>{% reading_list_with_count mongodb_user 'read_quotes' %}</li>
@@ -90,6 +90,8 @@
         </div>
     </form>
 </div>
+
+<div class="clearfix"></div>
 
 <div id="folders">
     {% for folder in mongodb_user.top_folders %}
@@ -112,7 +114,9 @@
         {% trans "Unclassified information streams" as nofolder_open_subscriptions_trans %}
         {% captureas folder_color_border %}{% html_background_color_for_name nofolder_open_subscriptions_trans 0.5 %}{% endcaptureas %}
 
-        <div class="folder-wrapper clearfix level-0"
+        <div class="clearfix"></div>
+
+        <div class="folder-wrapper level-0 col-xs-12"
                 style="border-left-color: {{ folder_color_border }}">
             <div class="folder-border-top" style="background-color: {{ folder_color_border }}"></div>
 
@@ -139,7 +143,9 @@
         {% trans "Closed streams" as closed_streams_trans %}
         {% captureas folder_color_border %}{% html_background_color_for_name closed_streams_trans 0.5 %}{% endcaptureas %}
 
-        <div class="folder-wrapper clearfix level-0"
+        <div class="clearfix"></div>
+
+        <div class="folder-wrapper level-0 col-xs-12"
                 style="border-left-color: {{ folder_color_border }}">
             <div class="folder-border-top" style="background-color: {{ folder_color_border  }}"></div>
 
