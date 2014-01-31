@@ -213,6 +213,68 @@ def reading_list_with_count(user, view_name, show_unreads=False,
 
 
 @register.simple_tag
+def subscription_css(subscription, folder, level):
+
+    css_classes = u'subscription'
+
+    if subscription.has_unread:
+        css_classes += u' has-unread'
+
+    if subscription.is_closed:
+        css_classes += u' is_closed'
+
+    # On small devices, any level takes the whole width.
+    css_classes += u' col-xs-12'
+
+    if level == 1:
+        if folder:
+            nb_subscriptions = folder.subscriptions.count()
+
+        else:
+            # We don't care.
+            nb_subscriptions = 1
+
+        if nb_subscriptions > 8:
+            css_classes += u' col-sm-6 col-md-4 col-lg-4'
+
+        elif nb_subscriptions > 3:
+            css_classes += u' col-sm-6 col-md-6 col-lg-6'
+
+    else:
+
+        css_classes += u' col-sm-6 col-md-4 col-lg-3'
+
+    return css_classes
+
+
+@register.simple_tag
+def folder_css(folder, level):
+
+    nb_subscriptions = folder.subscriptions.count()
+
+    #css_classes = u'folder'
+    css_classes = u''
+
+    if folder.has_content:
+        css_classes += u' has_content'
+
+    # On small devices, any level takes the whole width.
+    css_classes += u' col-xs-12'
+
+    if level == 1:
+        if nb_subscriptions > 8:
+            css_classes += u' col-sm-12 col-md-12 col-lg-9'
+
+        elif nb_subscriptions > 3:
+            css_classes += u' col-sm-12 col-md-8 col-lg-6'
+
+        else:
+            css_classes += u' col-sm-12 col-md-4 col-lg-3'
+
+    return css_classes
+
+
+@register.simple_tag
 def special_subscription_list_with_count(user, special_name, css_classes=None):
 
     list_name, tooltip_both, tooltip_unread, tooltip_all, tooltip_none = \
