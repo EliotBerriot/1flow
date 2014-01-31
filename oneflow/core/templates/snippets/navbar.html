@@ -1,22 +1,31 @@
 <!-- navbar-static-top -->
 <div class="navbar navbar-{{ config.WEB_THEME_NAVBAR_INVERSE|yesno:"inverse,default"}} navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
-      <div class="navbar-header">
-        <a class="navbar-brand" href="{% url 'home' %}">
-          <span class="{% reverse_active 'home' %} {% reverse_active 'source_selector' %}">
-            1flow
-            <!--
-              <span class="hidden-inline-xs">
-                <span class="badge badge-warning">BETA</span>
-              </span>
-              <span class="visible-inline-xs">
-                <span class="badge badge-warning">β</span>
-              </span>
-            -->
-          </span>
-        </a>
-      </div>
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse"
+          data-target="#navbar-collapsible-content">
+        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
+
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <span class="{% reverse_active 'home' %} {% reverse_active 'source_selector' %}">
+          1flow
+          <!--
+            <span class="hidden-inline-xs">
+              <span class="badge badge-warning">BETA</span>
+            </span>
+            <span class="visible-inline-xs">
+              <span class="badge badge-warning">β</span>
+            </span>
+          -->
+        </span>
+      </a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbar-collapsible-content">
 
       {% if user.is_authenticated %}
         <ul class="nav navbar-nav navbar-right">
@@ -75,10 +84,10 @@
 
       {% endif %}
 
-      <ul class="nav navbar-nav">
+      <ul class="nav navbar-nav hidden-inline-block-xs">
         {% if user.is_authenticated and wizards.welcome_beta_shown %}
 
-          <li class="nowrap hidden-inline-block-xs">
+          <li class="nowrap ">
             {% if preferences.home.read_shows == 1 %}
                 <a href="{% url 'read' %}"
             {% else %}
@@ -195,7 +204,7 @@
 
           {% endif %}{# superuser #}
 
-          <li class="nowrap visible-xs">
+          <li class="nowrap visible-inline-xs">
             {% if preferences.home.read_shows == 1 %}
                 <a href="{% url 'read' %}"
             {% else %}
@@ -206,14 +215,14 @@
             </a>
           </li>
 
-          <li class="visible-xs nowrap">
+          <li class="visible-inline-xs nowrap">
             <a href="{% url 'help' %}"
                 class="{% reverse_active 'help' %} align-icon-phone">
               <i class="icon-question icon-2x"></i>
             </a>
           </li>
 
-          <li class="hidden-xs nowrap">
+          <li class="hidden-inline-xs nowrap">
             <a href="{% url 'help' %}"
                 class="{% reverse_active 'help' %}">
               {% trans 'Features' %}
@@ -229,6 +238,6 @@
         {% endif %}
       </ul>
 
-    </div><!-- .container -->
-  </div><!--/.navbar-inner -->
+    </div><!-- .collapsible -->
+  </div><!-- .container -->
 </div><!--/.navbar -->
