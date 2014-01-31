@@ -15,7 +15,7 @@
 		box-shadow: 1px 0px 0px 0px white;
 
 		&.last {
-			border-right: 0px;	
+			border-right: 0px;
 		}
 		.data {
 			color: #29323a;
@@ -26,13 +26,13 @@
 			.number {
 				color: #32a0ee;
 				font-size: 25px;
-				margin-right: 15px;	
+				margin-right: 15px;
 			}
 		}
 		.date {
 			color: rgb(180, 184, 187);
 			font-weight: lighter;
-			font-family:  'Lato', 'Open Sans';
+			font-family:  "Source Sans Pro", 'Open Sans', sans-serif;
 			font-style: italic;
 			font-size: 13px;
 			position: absolute;
@@ -59,7 +59,7 @@
 /* specific chart styles */
 .legendLabel {
 	font-size: 12px;
-	font-family: "Open Sans", Arial;
+	font-family: "Source Sans Pro", "Open Sans", sans-serif;
 	color: #9da3a9
 }
 
@@ -73,7 +73,7 @@
 		text-transform: uppercase;
 		&.icon {
 			text-transform: none;
-			i {	
+			i {
 				margin-right: 3px;
 			}
 		}
@@ -212,14 +212,14 @@
 	.pagination{
 		float: right;
 		margin-top: 35px;
-	} 
+	}
 }
 
 
 /* responsive */
 
 @media (max-width: 480px) {
-	
+
 }
 @media (max-width: 767px) {
 	#main-stats {
@@ -251,7 +251,7 @@
 		}
 	}
 }
-@media (min-width: 768px) and (max-width: 979px) { 
+@media (min-width: 768px) and (max-width: 979px) {
 
 }
 @media (max-width: 979px) {

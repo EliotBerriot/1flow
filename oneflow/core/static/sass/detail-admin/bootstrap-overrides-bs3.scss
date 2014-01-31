@@ -1,13 +1,15 @@
 /* Some overrides from default bootstrap styles */
 
 html, body {
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Source Sans Pro", 'Open Sans', sans-serif;
 }
-
+body {
+	background-color: #f7f7f7;
+}
 
 h1,h2,h3,h4,h5,h6{
 	font-weight: normal;
-	font-family: 'Open Sans', sans-serif;
+	font-family: "Source Sans Pro", 'Open Sans', sans-serif;
 }
 
 /* COMPONENTS */
@@ -60,7 +62,7 @@ input,
 button,
 select,
 textarea {
-  font-family: "Open Sans", Arial;
+  font-family: "Source Sans Pro", "Open Sans", Arial;
 }
 input[type="text"],
 input[type="password"],
@@ -150,21 +152,21 @@ input[disabled], textarea[disabled], input[readonly], textarea[readonly] {
 input:-moz-placeholder,
 textarea:-moz-placeholder {
   color: #9ba0a5;
-  font-family: "Open Sans", Arial;
+  font-family: "Source Sans Pro", "Open Sans", Arial;
   font-size: 13px;
 }
 
 input:-ms-input-placeholder,
 textarea:-ms-input-placeholder {
   color: #9ba0a5;
-  font-family: "Open Sans", Arial;
+  font-family: "Source Sans Pro", "Open Sans", Arial;
   font-size: 12px;
 }
 
 input::-webkit-input-placeholder,
 textarea::-webkit-input-placeholder {
   color: #9ba0a5;
-  font-family: "Open Sans", Arial;
+  font-family: "Source Sans Pro", "Open Sans", Arial;
   font-size: 12px;
 }
 
@@ -205,16 +207,21 @@ textarea::-webkit-input-placeholder {
 }
 /* menu toggler */
 .navbar-inverse .navbar-toggle {
-	float: left;
+	// Olive 20140131: back to float:right, please. It's awfull on the left.
+	//float: left;
 	margin-top: 10px;
-	margin-left: 15px;
+	//margin-left: 15px;
 }
 /* navbar brand*/
 .navbar-inverse .navbar-brand {
 	color: #ffffff;
 	text-transform: uppercase;
 	font-weight: lighter;
-	padding: 11px 20px;
+
+	// Olive 20140131: align on baseline, please.
+	//padding: 11px 20px;
+
+	padding: 12px 20px;
 }
 .navbar-inverse .navbar-brand strong {
 	font-weight: normal;
@@ -339,6 +346,12 @@ table th span.line{
   .navbar-toggle {
     display: block !important;
   }
+
+	.navbar-inverse .navbar-brand {
+		// Olive 20140131: BS3 navbar is bigger on small mobile devices.
+
+		padding: 15px 20px;
+	}
 }
 
 

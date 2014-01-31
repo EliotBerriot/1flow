@@ -1,4 +1,98 @@
 
+#reads-list-header {
+    // Align text on the list content (not edge).
+    padding-left: 10px;
+    padding-right: 10px;
+
+    .h1-wrapper {
+        position: relative;
+        height: 25px;
+        margin-top: 50px;
+        margin-bottom: 25px;
+    }
+
+
+    /* The big squared background, kept for memories.
+    .h1-background {
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 25px;
+        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
+        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
+        background-color: $light-grey;
+    }
+    */
+
+    // The thin-lined background
+    .h1-background {
+        position: absolute;
+        top: 14px;
+        left: 0;
+        right: 0;
+        height: 2px;
+        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
+        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
+        //background-color: $light-grey;
+        background-color: $red-blood;
+    }
+
+    h1 {
+        position: absolute;
+        top: 0;
+        height: 25px;
+        line-height: 25px;
+        color: $dark-grey;
+        background-color: $backgroundLightColor;
+
+        white-space: nowrap;
+    }
+
+    h1.left-side {
+        left: 50px;
+        max-width: 70%;
+
+        padding-left: 15px;
+        padding-right: 15px;
+
+        font-size: 150%;
+        font-weight: 700;
+        color: $navbar-grey;
+
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+        -o-text-overflow: ellipsis;
+
+    }
+
+    h1.right-side {
+        right: 50px;
+        max-width: 150px;
+
+        padding-left: 15px;
+        padding-right: 15px;
+
+        font-size: 125%;
+    }
+}
+
+.initial-loading .loading {
+    margin: 15px 0 25px;
+}
+
+#no-items {
+    margin: 15% 0 0;
+
+    .title {
+        margin-bottom: 20px;
+    }
+}
+
+
+// —————————————————————————————————————————————————————— reading-list sidebars
+
 #sidebars-wrapper {
     position: fixed;
     top: 50px;
@@ -100,6 +194,8 @@
 #article-meta-right {
     right: 20px;
 }
+
+// —————————————————————————————————————————————————————————— reading-list item
 
 .read-list-item {
     position: relative;
@@ -285,6 +381,8 @@
     }
 }
 
+// ——————————————————————————————————————————————————— icons next to item title
+
 // .not_is_bookmarked.not_is_starred
 .read-list-item.not_is_read {
     .only_when_collapsed .article-title {
@@ -303,93 +401,3 @@
     }
 }
 
-#reads-list-header {
-    // Align text on the list content (not edge).
-    padding-left: 10px;
-    padding-right: 10px;
-
-    .h1-wrapper {
-        position: relative;
-        height: 25px;
-        margin-top: 50px;
-        margin-bottom: 25px;
-    }
-
-
-    /* The big squared background, kept for memories.
-    .h1-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 25px;
-        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
-        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
-        background-color: $light-grey;
-    }
-    */
-
-    // The thin-lined background
-    .h1-background {
-        position: absolute;
-        top: 14px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
-        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
-        //background-color: $light-grey;
-        background-color: $red-blood;
-    }
-
-    h1 {
-        position: absolute;
-        top: 0;
-        height: 25px;
-        line-height: 25px;
-        color: $dark-grey;
-        background-color: $backgroundLightColor;
-
-        white-space: nowrap;
-    }
-
-    h1.left-side {
-        left: 50px;
-        max-width: 70%;
-
-        padding-left: 15px;
-        padding-right: 15px;
-
-        font-size: 150%;
-        font-weight: 700;
-        color: $navbar-grey;
-
-
-        overflow: hidden;
-        text-overflow: ellipsis;
-        -o-text-overflow: ellipsis;
-
-    }
-
-    h1.right-side {
-        right: 50px;
-        max-width: 150px;
-
-        padding-left: 15px;
-        padding-right: 15px;
-
-        font-size: 125%;
-    }
-}
-
-.initial-loading .loading {
-    margin: 15px 0 25px;
-}
-
-#no-items {
-    margin: 15% 0 0;
-
-    .title {
-        margin-bottom: 20px;
-    }
-}

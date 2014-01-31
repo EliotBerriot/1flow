@@ -1,0 +1,165 @@
+
+#manage-folder.modal,
+#manage-subscription.modal,
+#share-read.modal,
+#import-web-pages.modal {
+
+    form {
+        margin-bottom: 0;
+    }
+
+    .select2-container:not(.select2-container-multi) {
+        padding-top: 6px;
+    }
+
+    .sub-modal h4 {
+        margin-top: 1em;
+        margin-bottom: 1em;
+    }
+
+    label,
+    input,
+    select {
+        font-size: 150%;
+    }
+
+    input {
+        // cancel Bootstrap's padding, but align
+        // label and input content from the top.
+        padding: 5px 0 0;
+
+        // Make the field "Medium"-like
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+
+        // But see it when not focused
+        border-bottom: 1px dotted #ddd;
+
+        &:focus {
+            // when editing, make things clear.
+            border: none;
+        }
+    }
+
+    label,
+    input {
+        // `select` is already overriden in globals.
+        height: 30px;
+        line-height: 30px;
+    }
+
+    textarea {
+        // try to align the textarea on the
+        // select2 and other fields, if any.
+        width: 81%;
+    }
+
+    .thumbnail {
+        float: left;
+
+        border: 0;
+        padding: 0;
+        margin: 0;
+
+        @include thumbnail-img-styles($subscription-image-size * 3);
+    }
+
+    label.note {
+        padding-top: 0px;
+        vertical-align: top;
+    }
+
+    .manage-admin-actions {
+        padding: 10px 15px 0;
+        margin-left: -15px;
+        margin-right: -15px;
+        border-top: 1px solid #bbb;
+        text-align: center;
+    }
+}
+
+#import-web-pages.modal {
+    // http://stackoverflow.com/a/10169597/654755
+    width: 750px;
+    // must be half of the width, minus scrollbar on the left (30px)
+    margin-left: -375px;
+
+    textarea {
+        font-size: 80%;
+    }
+}
+
+#add-subscription #application .form-wrapper {
+    margin-top: 5em;
+    margin-bottom: 5em;
+    padding: 0 25%;
+
+    h1 {
+        text-align: center;
+        margin-bottom: 2em;
+    }
+
+    h3 {
+        text-align: center;
+        margin-top: 40px;
+        margin-bottom: 20px;
+    }
+
+    .bookmarklet-container {
+        float: right;
+        min-height: 100px;
+        margin: 10px 20px;
+        text-align: center;
+    }
+
+    .form-actions {
+        // override Bootstrap's form-horizontal value.
+        padding-left: 20px;
+        margin-top: 80px;
+    }
+
+    .control-label:last-child {
+        padding-top: 10px;
+    }
+
+    .help-block:last-child {
+        margin-top: 2em;
+        text-align: center;
+    }
+
+    .select2-container {
+        max-width: 80%;
+        width: inherit;
+        min-width: 45%;
+    }
+    input[type="text"]:last-child {
+        width: 80%;
+    }
+    .or-choice {
+        text-align: center;
+        margin: 2em 40%;
+        width: 20%;
+        position: relative;
+        font-size: 250%;
+
+        &:before,
+        &:after {
+            display: block;
+            content: ' ';
+            position: absolute;
+            top: 50%;
+            width: 200%;
+            height: 1px;
+            border-top: 1px solid #ccc;
+        }
+        &:before {
+            left: -200%;
+        }
+        &:after {
+            //left: 20px;
+            right: -200%;
+
+        }
+    }
+}
