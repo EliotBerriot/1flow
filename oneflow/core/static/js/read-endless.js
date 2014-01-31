@@ -968,7 +968,7 @@ function setup_snappers() {
 function hide_initial_loading() {
 
     try {
-        $(".initial-loading").stop(true, true).slideUp(function(){
+        $(".initial-loading").addClass("hidden", function(){
             // WARNING: do not use sole document.location.
             // In case of a '#' inside it will loop all the
             // articles in the counter span!!
@@ -986,10 +986,10 @@ function hide_initial_loading() {
 
 function show_initial_loading() {
 
-    $(".initial-loading").stop(true, true).fadeIn();
+    $(".initial-loading").removeClass("hidden");
 }
 
 function show_no_items() {
 
-    $("#no-items").fadeIn();
+    $("#no-items").removeClass("hidden");
 }

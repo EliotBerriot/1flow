@@ -1,30 +1,30 @@
 
-<li id="no-items" class="hide">
+<li id="no-items" class="hidden">
     <div class="centered">
         <h3 class="title"><i class="icon-coffee icon-large"></i>
             &nbsp;{% trans "No items" %}</h3>
-        <h4 class="descr1 hide">{% trans "Time for a break :-)" %}</h4>
-        <h4 class="descr2 hide">
+        <h4 class="descr1 hidden fade in">{% trans "Time for a break :-)" %}</h4>
+        <h4 class="descr2 hidden fade in">
             {% url 'read' as read_url %}
             {% blocktrans %}
                 Or <a href="{{read_url}}">get some fresh news</a>?
             {% endblocktrans %}
         </h4>
-        <h4 class="descr3 hide">
+        <h4 class="descr3 hidden fade in">
             {% trans "Is it really possible you didn't put anything in here?" %}
         </h4>
-        <h4 class="descr4 hide">
+        <h4 class="descr4 hidden fade in">
             {% trans "I just don't believe it." %}
         </h4>
-        <h4 class="descr5 hide">
+        <h4 class="descr5 hidden fade in">
             {% trans "Wait, I'm double-checking on the server." %}
         </h4>
 
-        <h4 class="descr6 hide">
+        <h4 class="descr6 hidden fade in">
             {% trans "Just kidding. I'm not evolved enough to do it on my own." %}
         </h4>
 
-        <h4 class="descr7 hide">
+        <h4 class="descr7 hidden fade in">
             {% trans "Hey, are you still here?" %}
         </h4>
 
@@ -32,48 +32,48 @@
 
             function cycle_messages() {
 
-                $('#no-items .descr7').slideUp();
-                $('#no-items .descr1').slideDown();
+                $('#no-items .descr7').addClass("hidden");
+                $('#no-items .descr1').removeClass("hidden");
 
                 setTimeout(function() {
                     try {
-                        $('#no-items .descr1').slideUp();
-                        $('#no-items .descr2').slideDown();
+                        $('#no-items .descr1').addClass("hidden");
+                        $('#no-items .descr2').removeClass("hidden");
                     } catch (err) {}
                 }, 5000);
 
                 setTimeout(function() {
                     try {
-                        $('#no-items .descr2').slideUp();
-                        $('#no-items .descr3').slideDown();
+                        $('#no-items .descr2').addClass("hidden");
+                        $('#no-items .descr3').removeClass("hidden");
                     } catch (err) {}
                 }, 10000);
 
                 setTimeout(function() {
                     try {
-                        $('#no-items .descr3').slideUp();
-                        $('#no-items .descr4').slideDown();
+                        $('#no-items .descr3').addClass("hidden");
+                        $('#no-items .descr4').removeClass("hidden");
                     } catch (err) {}
                 }, 13000);
 
                 setTimeout(function() {
                     try {
-                        $('#no-items .descr4').slideUp();
-                        $('#no-items .descr5').slideDown();
+                        $('#no-items .descr4').addClass("hidden");
+                        $('#no-items .descr5').removeClass("hidden");
                     } catch (err) {}
                 }, 18000);
 
                 setTimeout(function() {
                     try {
-                        $('#no-items .descr5').slideUp();
-                        $('#no-items .descr6').slideDown();
+                        $('#no-items .descr5').addClass("hidden");
+                        $('#no-items .descr6').removeClass("hidden");
                     } catch (err) {}
                 }, 21000);
 
                 setTimeout(function() {
                     try {
-                        $('#no-items .descr6').slideUp();
-                        $('#no-items .descr7').slideDown();
+                        $('#no-items .descr6').addClass("hidden");
+                        $('#no-items .descr7').removeClass("hidden");
                     } catch (err) {}
                 }, 28000);
 
