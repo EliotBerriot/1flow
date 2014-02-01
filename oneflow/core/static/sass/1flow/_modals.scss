@@ -79,11 +79,8 @@
     }
 }
 
-#import-web-pages.modal {
-    // http://stackoverflow.com/a/10169597/654755
-    width: 750px;
-    // must be half of the width, minus scrollbar on the left (30px)
-    margin-left: -375px;
+#import-web-pages .modal-dialog {
+    width: 70%;
 
     textarea {
         font-size: 80%;
