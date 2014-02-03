@@ -10,8 +10,6 @@
 
     <div class="row">
         <div class="col-xs-12 col-md-8 col-md-offset-2">
-            <div class="spacer50 hidden-xs"></div>
-            <div class="spacer10 visible-xs"></div>
           <h1 class="centered">{% trans "Welcome to 1flow" %}</h1>
         </div>
     </div>
@@ -20,7 +18,7 @@
 
     {% if not config.LOCAL_LOGIN_ENABLED and not config.SOCIAL_LOGIN_ENABLED %}
 
-        <div class="spacer50"></div>
+        <div class="spacer25"></div>
         <div class="col-xs-12 col-md-6 col-md-offset-3 jumbotron">
             <fieldset>
                 <legend><h2>{% trans "Configuration problem" %}</h2></legend>
@@ -43,8 +41,7 @@
 
             <div class="col-xs-12 col-md-8 col-md-offset-2 {% if config.SOCIAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-1{% else %}col-lg-6 col-lg-offset-3{% endif %}">
 
-                <div class="spacer50 hidden-xs"></div>
-                <div class="spacer25 visible-xs"></div>
+                <div class="spacer25 hidden-xs"></div>
 
                 <div class="jumbotron only-me centered">
 
@@ -52,11 +49,14 @@
                         action="{% url "signin" %}"
                         autocapitalize="off" class="form-horizontal"
                         {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+
+                        <fieldset>
+
                         <legend><h2>
                             {% if config.SOCIAL_LOGIN_ENABLED %}{% trans "Sign in with your 1flow account" %}{% else %}{% trans "Please sign in" %}{% endif %}</h2></legend>
                         {% csrf_token %}
 
-                        <fieldset>
+                        <div class="spacer25"></div>
 
                         {% if form.non_field_errors %}
                         <div class="alert alert-warning">{{ form.non_field_errors|join:', ' }}</div>
@@ -109,13 +109,13 @@
 
             <div class="col-xs-12 col-md-8 col-md-offset-2 {% if config.LOCAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-0{% else %}col-lg-6 col-lg-offset-3{% endif %}">
 
-                <div class="spacer50 hidden-xs"></div>
-                <div class="spacer25 visible-xs"></div>
+                <div class="spacer25 hidden-xs"></div>
                 <div class="jumbotron only-me centered">
+                  <fieldset>
+
                   <legend><h2>{% trans "Authenticate via a social network" %}</h2></legend>
                   <div class="spacer25"></div>
 
-                  <fieldset>
                   {% include "snippets/social-auth-signin.html" %}
 
                   </fieldset>
