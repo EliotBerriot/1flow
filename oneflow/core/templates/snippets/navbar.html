@@ -45,7 +45,7 @@
                 <span class="align-icon-phone"><i class="icon-user"></i></span>
               {% endif %}
 
-              <span class="hidden-inline-xs">
+              <span>
                 {{ user.username }}
                 <b class="caret"></b>
               </span>
@@ -84,10 +84,10 @@
 
       {% endif %}
 
-      <ul class="nav navbar-nav hidden-inline-block-xs">
+      <ul class="nav navbar-nav">
         {% if user.is_authenticated and wizards.welcome_beta_shown %}
 
-          <li class="nowrap ">
+          <li class="nowrap">
             {% if preferences.home.read_shows == 1 %}
                 <a href="{% url 'read' %}"
             {% else %}
@@ -113,7 +113,7 @@
           -->
 
           <!-- HIDDEN everywhere. Intended, because it doesn't work yet. -->
-          <li class="invisible">
+          <li class="hidden">
               <form>
                 <input class="search"
                     placeholder="{% trans 'Search…' %}" />
@@ -121,10 +121,10 @@
           </li>
 
         </ul>
+
         <ul class="nav navbar-nav navbar-right">
 
-
-          {# Do NOT hide, even if not super_powers_enabled, we need to know about maintenance mode. #}
+          {#  NOT hide, even if not super_powers_enabled, we need to know about maintenance mode. #}
           {% if user.is_staff or user.is_superuser %}
 
             {% if MAINTENANCE_MODE %}
@@ -204,25 +204,7 @@
 
           {% endif %}{# superuser #}
 
-          <li class="nowrap visible-inline-xs">
-            {% if preferences.home.read_shows == 1 %}
-                <a href="{% url 'read' %}"
-            {% else %}
-                <a href="{% url 'source_selector' %}"
-            {% endif %}
-                class="{% reverse_active 'read' %} align-icon-phone-lower">
-              <i class="icon-rss icon-2x"></i>
-            </a>
-          </li>
-
-          <li class="visible-inline-xs nowrap">
-            <a href="{% url 'help' %}"
-                class="{% reverse_active 'help' %} align-icon-phone">
-              <i class="icon-question icon-2x"></i>
-            </a>
-          </li>
-
-          <li class="hidden-inline-xs nowrap">
+          <li class="nowrap">
             <a href="{% url 'help' %}"
                 class="{% reverse_active 'help' %}">
               {% trans 'Features' %}
