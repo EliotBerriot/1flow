@@ -1,9 +1,5 @@
-<div class="control-group">
+{% extends "widgets/forms/field-generic.html" %}
 
-    <label class="checkbox">
-        {% render_field field %} {{ field.label|safe }}
-    </label>
-
-    <span class="help-block">{{ field.help_text|safe }}</span>
-
-</div>
+{% block field_input_field %}
+    {% render_field field class+="pull-left" %}
+{% endblock field_input_field %}

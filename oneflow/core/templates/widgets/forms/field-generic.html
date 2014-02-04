@@ -3,11 +3,11 @@
     {% block field_extra_header %}{% endblock field_extra_header %}
 
     {% block field_label %}
-        <label class="control-label {% block field_label_css %}col-sm-4{% endblock field_label_css %}" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
+        <label class="control-label {% block field_label_css %}{% firstof field_label_css_class "col-sm-4" %}{% endblock field_label_css %}" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
     {% endblock field_label %}
 
     {% block field_input %}
-        <div class="controls {% block field_input_css %}col-sm-8{% endblock field_input_css %}">
+        <div class="controls {% block field_input_css %}{% firstof field_input_css_class "col-sm-8" %}{% endblock field_input_css %}">
             {% block field_input_field %}
                 {% render_field field class+="form-control" %}
             {% endblock field_input_field %}
