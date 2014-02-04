@@ -1,23 +1,19 @@
-<div class="control-group">
-    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
+{% extends "widgets/forms/field-generic.html" %}
 
-    <div class="controls">
-        {% render_field field %}
-    </div>
+{% block field_label_css %}col-sm-3{% endblock field_label_css %}
+{# It's voluntary not to fill the 12-grid. #}
+{% block field_input_css %}col-sm-8{% endblock field_input_css %}
 
-    {% if field.errors %}
-        <span class="help-block">{{ field.errors|join:", " }}</span>
-    {% endif %}
+{% block field_input_field %}
+    {% render_field field class+="form-control full-width" %}
+{% endblock field_input_field %}
 
-    {% if not hide_help_text %}
-        <div class="controls">
-            <span class="help-block">{{ field.help_text|safe }}</span>
-        </div>
-    {% endif %}
+{% block field_extra_footer %}
+    {{ block.super }}
 
     <script type="text/javascript">
         $('#{{ field.auto_id }}[data-placeholder]').each(function(index) {
             $(this).val($(this).data('placeholder'));
         });
     </script>
-</div>
+{% endblock field_extra_footer %}

@@ -1,16 +1,36 @@
 <div class="form-group {% if field.errors %}has-error{% endif %}">
-    <label class="control-label col-sm-5" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
 
-    <div class="controls col-sm-7">
-        {% render_field field class+="form-control" %}
-    </div>
+    {% block field_extra_header %}{% endblock field_extra_header %}
 
-    <div class="col-xs-12">
+    {% block field_label %}
+        <label class="control-label {% block field_label_css %}col-sm-4{% endblock field_label_css %}" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
+    {% endblock field_label %}
 
-    {% if field.errors %}
-        <div class="help-block">{{ field.errors|join:", " }}</div>
-    {% endif %}
+    {% block field_input %}
+        <div class="controls {% block field_input_css %}col-sm-8{% endblock field_input_css %}">
+            {% block field_input_field %}
+                {% render_field field class+="form-control" %}
+            {% endblock field_input_field %}
+        </div>
+    {% endblock field_input %}
 
-    <div class="help-block">{{ field.help_text|safe }}</div>
-    </div>
+    {% block field_error_and_help %}
+
+        <div class="col-xs-12">
+
+            {% block field_error %}
+                {% if field.errors %}
+                    <div class="help-block">{{ field.errors|join:", " }}</div>
+                {% endif %}
+            {% endblock field_error %}
+
+            {% block field_held_text %}
+                <div class="help-block">{{ field.help_text|safe }}</div>
+            {% endblock field_held_text %}
+
+        </div>
+
+    {% endblock field_error_and_help %}
+
+    {% block field_extra_footer %}{% endblock field_extra_footer %}
 </div>
