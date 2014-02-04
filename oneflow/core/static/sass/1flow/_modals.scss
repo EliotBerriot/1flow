@@ -8,10 +8,6 @@
         margin-bottom: 0;
     }
 
-    .select2-container:not(.select2-container-multi) {
-        padding-top: 6px;
-    }
-
     .sub-modal h4 {
         margin-top: 1em;
         margin-bottom: 1em;
@@ -72,7 +68,7 @@
     }
 
     .manage-admin-actions {
-        padding: 10px 15px 0;
+        padding: 20px 15px 0;
         margin-left: -15px;
         margin-right: -15px;
         border-top: 1px solid #bbb;
@@ -129,11 +125,6 @@
         text-align: center;
     }
 
-    .select2-container {
-        max-width: 80%;
-        width: inherit;
-        min-width: 45%;
-    }
     input[type="text"]:last-child {
         width: 80%;
     }

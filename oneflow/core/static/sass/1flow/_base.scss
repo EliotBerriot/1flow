@@ -46,6 +46,50 @@ a.brand {
     padding-right: 0;
 }
 
+// —————————————————————————————————————————————————————————— Select2 overrides
+
+
+.select2-container:not(.select2-container-multi) {
+    padding-top: 6px;
+}
+
+.select2-container {
+    //max-width: 80%;
+    //width: inherit;
+    //min-width: 45%;
+
+    font-size: 20px;
+
+    a.select2-choice {
+        height: 40px;
+
+        .select2-chosen {
+            padding: 5px;
+        }
+    }
+}
+
+.select2-arrow {
+    padding-top: 5px;
+}
+
+.select2-search-choice {
+  padding-left: 24px;
+  padding-right: 8px;
+}
+
+// HEADS UP: multi-level selectors are required,
+//           else select2 CSS still overrides ours.
+
+.select2-container-multi .select2-choices .select2-search-choice {
+  line-height: 24px;
+}
+
+.select2-container-multi .select2-search-choice-close {
+  top: 9px;
+  left: 5px;
+}
+
 // ————————————————————————————————————————————————————————————————— Our mixins
 
 @mixin fainted-anchors() {
