@@ -52,9 +52,10 @@
     textarea {
         // try to align the textarea on the
         // select2 and other fields, if any.
+
+        // NOTE: in some modals, this is overriden by a .full-width.
         width: 81%;
     }
-
     .thumbnail {
         float: left;
 
@@ -79,11 +80,14 @@
     }
 }
 
-#import-web-pages .modal-dialog {
-    width: 70%;
+@media (min-width: $screen-md-min) {
 
-    textarea {
-        font-size: 80%;
+    #import-web-pages .modal-dialog {
+        width: 70%;
+
+        textarea {
+            font-size: 80%;
+        }
     }
 }
 
