@@ -15,7 +15,7 @@
     {% endif %}
 
     {% with hide_help_text=1 %}
-        {% include "widgets/forms/field-textarea.html" with field=form.urls|attr:"rows:6"|add_class:"col-xs-12" %}
+        {% include "widgets/forms/field-textarea-large.html" with field=form.urls|attr:"rows:6" %}
     {% endwith %}
 
     <div class="centered">
