@@ -1,0 +1,9 @@
+{% extends "widgets/forms/field-textarea.html" %}
+
+{% block field_label_css %}col-sm-3{% endblock field_label_css %}
+{# It's voluntary not to fill the 12-grid. #}
+{% block field_input_css %}col-sm-8{% endblock field_input_css %}
+
+{% block field_input_field %}
+    {% render_field field class+="form-control full-width" %}
+{% endblock field_input_field %}
