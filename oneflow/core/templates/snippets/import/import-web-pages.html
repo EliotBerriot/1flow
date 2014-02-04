@@ -11,31 +11,34 @@
 
     {% if in_modal %}
         <div class="modal-body">
+            <div class="spacer25"></div>
     {% endif %}
 
     {% with hide_help_text=1 %}
-        {% include "widgets/forms/field-textarea.html" with field=form.urls|attr:"rows:6"|add_class:"span5" %}
+        {% include "widgets/forms/field-textarea.html" with field=form.urls|attr:"rows:6"|add_class:"col-xs-12" %}
     {% endwith %}
 
-    <ul class="controls">
-        <li>{% blocktrans %}
-        Type or copy-paste full addresses <strong class="popover-tooltip"
-        title="You can import anything in 1flow (front pages, blog articles, streamed videos, audio files… 1flow currently only display text-pages, but as soon as custom renderers are implemented, your imported content will show correctly." >of any type</strong>, eg. <em>https://www.site.org/page.html</em>.
-        {% endblocktrans %}</li>
+    <div class="centered">
+        <ul style="display: inline-block; text-align: left; padding-left: 20px">
+            <li>{% blocktrans %}
+            Type or copy-paste full addresses <strong class="popover-tooltip"
+            title="You can import anything in 1flow (front pages, blog articles, streamed videos, audio files… 1flow currently only display text-pages, but as soon as custom renderers are implemented, your imported content will show correctly." >of any type</strong>, eg. <em>https://www.site.org/page.html</em>.
+            {% endblocktrans %}</li>
 
-        <li>{% trans "Use this bookmarklet to import while browsing:" %}
+            <li>{% trans "Use this bookmarklet to import while browsing:" %}
 
-        {% trans "Drag this button to your bookmarks toolbar to install it." as drag_help_text %}
+            {% trans "Drag this button to your bookmarks toolbar to install it." as drag_help_text %}
 
-        {# BOOKMARK Unicode: U+1F516 (U+D83D U+DD16), UTF-8: F0 9F 94 96 #}
-        <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'import_web_url' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-mini btn-success popover-tooltip"
-        onclick="javascript:alert(&quot;{{ drag_help_text }}&quot;);return false;"
-        title="{{ drag_help_text }}"><i class="icon-bookmark"></i>&nbsp;{% trans "Import in 1flow" %}</a>
+            {# BOOKMARK Unicode: U+1F516 (U+D83D U+DD16), UTF-8: F0 9F 94 96 #}
+            <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'import_web_url' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-mini btn-success popover-tooltip"
+            onclick="javascript:alert(&quot;{{ drag_help_text }}&quot;);return false;"
+            title="{{ drag_help_text }}"><i class="icon-bookmark"></i>&nbsp;{% trans "Import in 1flow" %}</a>
 
-        </li>
+            </li>
 
-        <li><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Need to import data from Readability / Pocket?" %}</a></li>
-    </ul>
+            <li><a href="{% url 'help' %}#{% trans "importing-data-from-other-services" %}" target="_blank">{% trans "Need to import data from Readability / Pocket?" %}</a></li>
+        </ul>
+    </div>
 
 
     {% if in_modal %}
