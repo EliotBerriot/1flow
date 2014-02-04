@@ -738,13 +738,20 @@ function handle_modal(e) {
 
         $.get(url, function(data) {
 
-            $(data).modal().on("shown", function () {
+            $(data).modal().on("shown.bs.modal", function () {
+
+                var $first_input = null,
+                    $first_textarea = null;
 
                 $('body').addClass('modal-open');
 
                 setup_everything($(this));
 
-                var $first_input = $('input:visible:enabled').first();
+                $(this).focus();
+
+                //console.debug("input auto-focus...");
+
+                $first_input = $(this).find('input:visible:enabled').first();
 
                 if ($first_input.length) {
 
@@ -759,15 +766,15 @@ function handle_modal(e) {
                     // If there is no input, try with textarea.
                     // For example in the web import form…
 
-                    var $first_textarea = $('textarea:visible:enabled').first();
-                    if ($first_textarea.length) {
+                    $first_textarea = $('textarea:visible:enabled').first();
 
+                    if ($first_textarea.length) {
                         $first_textarea.focus();
                     }
                 }
 
 
-            }).on('hidden', function () {
+            }).on('hidden.bs.modal', function () {
 
                 $('body').removeClass('modal-open');
                 $(this).remove();
