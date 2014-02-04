@@ -32,6 +32,7 @@ a.brand {
   width: 100% !important;
 }
 
+
 // ————————————————————————————————————————————————————— Font-awesome overrides
 
 
@@ -331,9 +332,11 @@ img.centered {
     background: linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0) 4px);
     background-color: #fff;
 }
+
 .sub-modal .modal-header{
     display: none;
 }
+
 .sub-modal-backdrop{
     position: absolute;
     top: 0;
@@ -341,10 +344,12 @@ img.centered {
     right: 0;
     bottom: 0;
 }
+
 .modal-header{
     border-color: #ccc;
 }
-@media (max-width:767px){
+
+@media (max-width: $screen-xs-max){
     .sub-modal{
         left: 10%;
     }
