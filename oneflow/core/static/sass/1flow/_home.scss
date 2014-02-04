@@ -109,23 +109,34 @@ section {}
 .footer {
     position: absolute;
     bottom: 0;
-    height: 4em;
-    padding-top: 1em;
+    min-height: 3em;
     width: 100%;
-    border-top: 1px solid beige;
+    //border-top: 1px solid beige;
 }
 
 .footer-title {
     margin-top: 0;
     margin-bottom: 0;
+    text-align: center;
 }
 
 .footer-right {
-    height: 28px;
-    text-align: right;
+    min-height: 28px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
 
-    // doesn't work: vertical-align: bottom;
-    padding-top: 7px;
+@media (min-width: $screen-md-min) {
+    .footer-title {
+        text-align: left;
+    }
+
+    .footer-right {
+        padding-top: 7px;
+        text-align: right;
+        padding-bottom: 0;
+    }
 }
 
 .side-nav.affix {
