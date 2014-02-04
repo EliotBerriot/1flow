@@ -9,7 +9,7 @@
 <div class="container">
 
     <div class="row">
-        <div class="col-xs-12 col-md-8 col-md-offset-2">
+        <div class="col-md-8 col-md-offset-2">
           <h1 class="centered">{% trans "Welcome to 1flow" %}</h1>
         </div>
     </div>
@@ -19,7 +19,7 @@
     {% if not config.LOCAL_LOGIN_ENABLED and not config.SOCIAL_LOGIN_ENABLED %}
 
         <div class="spacer25"></div>
-        <div class="col-xs-12 col-md-6 col-md-offset-3 jumbotron">
+        <div class="col-md-6 col-md-offset-3 jumbotron">
             <fieldset>
                 <legend><h2>{% trans "Configuration problem" %}</h2></legend>
 
@@ -39,9 +39,9 @@
 
         {% if config.LOCAL_LOGIN_ENABLED %}
 
-            <div class="col-xs-12 col-md-8 col-md-offset-2 {% if config.SOCIAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-1{% else %}col-lg-6 col-lg-offset-3{% endif %}">
+            <div class="col-md-8 col-md-offset-2 {% if config.SOCIAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-1{% else %}col-lg-6 col-lg-offset-3{% endif %}">
 
-                <div class="spacer25 hidden-xs"></div>
+                <div class="spacer25"></div>
 
                 <div class="jumbotron only-me centered">
 
@@ -64,7 +64,13 @@
                         {% endif %}
 
                         {% for field in form %}
-                            {% include "widgets/forms/field-generic.html" with field=field %}
+                        {% if field.name == 'remember' %}
+                            {% include "widgets/forms/field-checkbox.html" with field=field field_label_css_class='col-xs-8 col-sm-5' field_input_css_class='col-xs-4 col-sm-7 form-field-padding-top' %}
+
+                        {% else %}
+                            {% include "widgets/forms/field-generic.html" with field=field field_label_css_class='col-sm-5' field_input_css_class='col-sm-7' %}
+
+                        {% endif %}
 
                         {% endfor %}
 
@@ -107,7 +113,7 @@
 
         {% if config.SOCIAL_LOGIN_ENABLED %}
 
-            <div class="col-xs-12 col-md-8 col-md-offset-2 {% if config.LOCAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-0{% else %}col-lg-6 col-lg-offset-3{% endif %}">
+            <div class="col-md-8 col-md-offset-2 {% if config.LOCAL_LOGIN_ENABLED %}col-lg-5 col-lg-offset-0{% else %}col-lg-6 col-lg-offset-3{% endif %}">
 
                 <div class="spacer25 hidden-xs"></div>
                 <div class="jumbotron only-me centered">
