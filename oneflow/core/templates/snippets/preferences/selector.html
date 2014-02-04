@@ -1,31 +1,35 @@
 <fieldset>
   <legend>{% trans "Unread display" %}</legend>
 
-  {% include "widgets/forms/field-checkbox.html" with field=sources_form.titles_show_unread_count %}
+{% with field_label_css_class=checkbox_label_css field_input_css_class=checkbox_input_css %}
 
-{% if preferences.home.show_advanced_preferences %}
+    {% include "widgets/forms/field-checkbox.html" with field=sources_form.titles_show_unread_count %}
 
-  {% include "widgets/forms/field-checkbox.html" with field=sources_form.folders_show_unread_count %}
-  {% include "widgets/forms/field-checkbox.html" with field=sources_form.lists_show_unread_count %}
+  {% if preferences.home.show_advanced_preferences %}
 
-{% endif %}
-</fieldset>
+    {% include "widgets/forms/field-checkbox.html" with field=sources_form.folders_show_unread_count %}
+    {% include "widgets/forms/field-checkbox.html" with field=sources_form.lists_show_unread_count %}
 
-{% if preferences.home.show_advanced_preferences %}
+  {% endif %}
+  </fieldset>
 
-    <fieldset>
-      <legend>{% trans "Folders and subscriptions" %}</legend>
+  {% if preferences.home.show_advanced_preferences %}
 
-      {% include "widgets/forms/field-checkbox.html" with field=sources_form.extended_folders_depth %}
-      {% include "widgets/forms/field-checkbox.html" with field=sources_form.subscriptions_in_multiple_folders %}
-    </fieldset>
+      <fieldset>
+        <legend>{% trans "Folders and subscriptions" %}</legend>
 
-    <fieldset>
-      <legend>{% trans "Closed streams" %}</legend>
+        {% include "widgets/forms/field-checkbox.html" with field=sources_form.extended_folders_depth %}
+        {% include "widgets/forms/field-checkbox.html" with field=sources_form.subscriptions_in_multiple_folders %}
+      </fieldset>
 
-      {% include "widgets/forms/field-checkbox.html" with field=sources_form.show_closed_streams %}
-    </fieldset>
-{% endif %}
+      <fieldset>
+        <legend>{% trans "Closed streams" %}</legend>
+
+        {% include "widgets/forms/field-checkbox.html" with field=sources_form.show_closed_streams %}
+      </fieldset>
+  {% endif %}
+
+{% endwith %}
 
 <fieldset class="form-end-notice">
 <p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}

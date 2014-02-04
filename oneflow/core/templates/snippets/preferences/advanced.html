@@ -1,20 +1,23 @@
 
-<fieldset>
-  <legend>{% trans "Advanced preferences" %}</legend>
-
-  {% include "widgets/forms/field-checkbox.html" with field=home_form.show_advanced_preferences %}
-</fieldset>
-
-{% if mongodb_user.is_staff_or_superuser_and_enabled and preferences.home.show_advanced_preferences %}
+{% with field_label_css_class=checkbox_label_css field_input_css_class=checkbox_input_css %}
 
     <fieldset>
-      <legend>{% trans "Experimental features" %}</legend>
+      <legend>{% trans "Advanced preferences" %}</legend>
 
-      {% include "widgets/forms/field-checkbox.html" with field=home_form.experimental_features %}
+      {% include "widgets/forms/field-checkbox.html" with field=home_form.show_advanced_preferences %}
     </fieldset>
 
-{% endif %}
+    {% if mongodb_user.is_staff_or_superuser_and_enabled and preferences.home.show_advanced_preferences %}
 
+        <fieldset>
+          <legend>{% trans "Experimental features" %}</legend>
+
+          {% include "widgets/forms/field-checkbox.html" with field=home_form.experimental_features %}
+        </fieldset>
+
+    {% endif %}
+
+{% endwith %}
 
 <fieldset class="form-end-notice">
 <p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}
