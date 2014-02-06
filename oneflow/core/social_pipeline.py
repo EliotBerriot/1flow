@@ -29,6 +29,7 @@ from social_auth.backends.facebook import FacebookBackend
 from social_auth.backends.twitter import TwitterBackend
 from social_auth.backends import google
 
+
 LOGGER = logging.getLogger(__name__)
 
 
