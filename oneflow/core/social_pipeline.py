@@ -2,6 +2,10 @@
 
 import logging
 
+from constance import config
+
+from django.shortcuts import redirect
+
 from social_auth.backends.facebook import FacebookBackend
 from social_auth.backends.twitter import TwitterBackend
 from social_auth.backends import google
@@ -46,3 +50,20 @@ def get_social_avatar(social_user, user, details, request, response, backend,
     except:
         LOGGER.exception(u'Could not get avatar for user %s from '
                          u'backend %s.', user, social_user)
+
+
+def throttle_new_user_accounts(social_user, user, details, request,
+                               response, backend, is_new=False,
+                               *args, **kwargs):
+
+    if is_new and not config.SOCIAL_REGISTRATION_ENABLED:
+
+        user.is_active = False
+        user.save()
+
+        LOGGER.warning(u'De-activated new user account %s from backend %s on '
+                       u'the fly because social registrations are currently '
+                       u'disabled.', user, social_user)
+
+        # Wrap the 'official' account view to signify the user we are closed.
+        return redirect('signin_error')
