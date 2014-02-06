@@ -1,11 +1,11 @@
 {% extends "onlyme_base.html" %}
 
-{% block title %}{% trans 'Error Signin in.') }}{% endblock title %}
+{% block title %}{% trans 'Error Signin in.' %}{% endblock title %}
 
 {% block onlyme_content %}
 
-    <h1>{% trans 'Unable to Sign in.') }}</h1>
-    <h2>{% trans 'A problem occured while processing your signin request.') }}</h2>
+    <h1>{% trans 'Unable to Sign in.' %}</h1>
+    <h2>{% trans 'A problem occured while processing your signin request.' %}</h2>
     {% url 'home' as home_url %}
     <p>{% filter markdown %}{% blocktrans %}
 
