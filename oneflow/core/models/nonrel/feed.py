@@ -912,7 +912,7 @@ class Feed(Document, DocumentHelperMixin):
         return False
 
     @classmethod
-    def check_feedparser_error(cls, parsed_feed):
+    def check_feedparser_error(cls, parsed_feed, feed=None):
 
         if parsed_feed.get('bozo', None) is None:
             return
@@ -923,8 +923,9 @@ class Feed(Document, DocumentHelperMixin):
             return
 
         # Charset declaration problems are harmless (until they are not).
-        if str(error).startswith('document declared as'):
-            LOGGER.warning('Feed parsing: %s', error)
+        if str(error).startswith(u'document declared as'):
+            LOGGER.warning(u'While checking %s: %s',
+                           feed or parsed_feed, error)
             return
 
         # Different error values were observed on:
@@ -1080,7 +1081,7 @@ class Feed(Document, DocumentHelperMixin):
             return
 
         try:
-            Feed.check_feedparser_error(parsed_feed)
+            Feed.check_feedparser_error(parsed_feed, self)
 
         except Exception, e:
             self.close(reason=str(e))
