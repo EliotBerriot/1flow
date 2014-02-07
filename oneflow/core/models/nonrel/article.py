@@ -1367,9 +1367,9 @@ class Article(Document, DocumentHelperMixin):
                 LOGGER.exception(u'Could not log source HTML content of '
                                  u'article %s.', self)
 
-        LOGGER.warning(u'%s %s %s %s %s', self.origin_type,
-                       self.origin_type == ORIGIN_TYPE_WEBIMPORT,
-                       self.title, self.url, self.title.endswith(self.url))
+        # LOGGER.warning(u'%s %s %s %s %s', self.origin_type,
+        #                self.origin_type == ORIGIN_TYPE_WEBIMPORT,
+        #                self.title, self.url, self.title.endswith(self.url))
 
         if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
                 and self.title.endswith(self.url):
