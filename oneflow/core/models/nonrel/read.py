@@ -810,19 +810,23 @@ class Read(Document, DocumentHelperMixin):
 
             to_change = [only + '_articles_count' for only in update_only]
 
-        for subscription in self.subscriptions:
             for attr_name in to_change:
-                setattr(subscription, attr_name,
-                        op(getattr(subscription, attr_name), 1))
+                try:
 
-            for folder in subscription.folders:
-                for attr_name in to_change:
-                    setattr(folder, attr_name,
-                            op(getattr(folder, attr_name), 1))
+                    for subscription in self.subscriptions:
+                        setattr(subscription, attr_name,
+                                op(getattr(subscription, attr_name), 1))
 
-        for attr_name in to_change:
-            setattr(self.user, attr_name,
-                    op(getattr(self.user, attr_name), 1))
+                    for folder in subscription.folders:
+                        setattr(folder, attr_name,
+                                op(getattr(folder, attr_name), 1))
+
+                    setattr(self.user, attr_name,
+                            op(getattr(self.user, attr_name), 1))
+
+                except AttributeError, e:
+                    LOGGER.warning(u'Skipped cache descriptor update for %s '
+                                   u'from %s: %s', attr_name, self, e)
 
     def is_read_changed(self):
 
