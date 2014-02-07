@@ -22,10 +22,10 @@ compass:
 collectstatic:
 	./manage.py collectstatic
 
-run:
+run: clean
 	honcho -f Procfile.development start --quiet flower,shell,celery_beat
 
-runweb:
+runweb: clean
 	honcho -f Procfile.development start web
 
 runworkers:
