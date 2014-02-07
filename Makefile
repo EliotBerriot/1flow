@@ -37,7 +37,9 @@ runshell:
 	honcho -f Procfile.development --quiet shell start shell
 
 clean:
-	ps ax | grep manage.py | grep -v grep | awk '{print $$1}' | xargs kill -9
+	ps ax | grep manage.py | grep -v grep | awk '{print $$1}' | xargs kill -9 || true
+	ps ax | grep celeryd | grep -v grep | awk '{print $$1}' | xargs kill -9 || true
+	rm -f celery*.pid
 
 purge:
 	./manage.py celery purge
