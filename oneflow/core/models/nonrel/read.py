@@ -40,7 +40,7 @@ from mongoengine.errors import NotUniqueError, ValidationError
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
-from ....base.utils.dateutils import now
+from ....base.utils.dateutils import now, timedelta, naturaldelta
 
 from .common import DocumentHelperMixin  # , CACHE_ONE_DAY
 
@@ -695,6 +695,53 @@ class Read(Document, DocumentHelperMixin):
             return _(u'Multiple sources ({0} feeds)').format(sources_count)
 
         return u' / '.join(x.name for x in source)
+
+    @property
+    def reading_time(self):
+        """ Return a rounded value of the approximate reading time,
+            for the user and the article. """
+
+        wc = self.article.word_count_TRANSIENT
+
+        if wc is None:
+            return None
+
+        return wc / self.user.preferences.read.reading_speed
+
+    @property
+    def reading_time_display(self):
+
+        rtm = self.reading_time
+
+        if rtm is None:
+            return u''
+
+        return _(u'{0} read').format(naturaldelta(timedelta(seconds=rtm * 60)))
+
+    @property
+    def reading_time_abstracted(self):
+
+        rtm = self.reading_time
+
+        if rtm is None:
+            return u''
+
+        tmpl = _(u'<span class="popover-top" data-toggle="tooltip" '
+                 u'title="Reading time: {0}">{1}</span>')
+        icon = u'∎'  # u'<i class="icon-time"></i>'
+        time = naturaldelta(timedelta(seconds=rtm * 60))
+        inum = 1
+
+        if rtm > 8:
+            inum = 4
+
+        elif rtm > 3:
+            inum = 3
+
+        elif rtm > 1:
+            inum = 2
+
+        return tmpl.format(time, inum * icon)
 
     # ————————————————————————————————————————————————————————————————— Methods
 

@@ -36,8 +36,7 @@ from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
 #from cache_utils.decorators import cached
 
-from ...base.utils.dateutils import (now, timedelta,
-                                     naturaldelta as onef_naturaldelta)
+from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
 
 from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN  # , CACHE_ONE_WEEK
 
@@ -382,21 +381,6 @@ def read_action_toggle_url(read):
         any_key, u'@@KEY@@')
 
     return u'data-url-action-toggle={0}'.format(url_base)
-
-
-@register.simple_tag
-def article_reading_time(article, user):
-
-    wc = article.word_count_TRANSIENT
-
-    if wc:
-        LOGGER.warning('%s %s', wc, user.mongo.preferences.read.reading_speed)
-
-        return _(u'{0} read').format(naturaldelta(timedelta(
-            seconds=wc / user.mongo.preferences.read.reading_speed * 60)))
-
-    else:
-        return _(u'')
 
 
 #@cached(CACHE_ONE_WEEK)

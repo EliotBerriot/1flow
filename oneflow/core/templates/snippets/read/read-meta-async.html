@@ -63,8 +63,8 @@
     <div class="spacer50"></div>
 
     <div class="read-time">
-      {% cache 86400 article_read_time article user %}
-        {% article_reading_time article user %}
+      {% cache 86400 article_read_time read %}
+        {{ read.reading_time_display }}
       {% endcache %}
     </div>
 
