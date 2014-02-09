@@ -119,6 +119,12 @@ CONSTANCE_CONFIG = {
                                 u'content. Set to 0 to always display '
                                 u'Markdown content to users, whatever it is.')),
 
+    # Cf. http://mindbluff.com/askread.htm
+    'READ_AVERAGE_READING_SPEED': (200, ugettext(u'The average number of '
+                                   u'words per minutes that an adult can '
+                                   u'read. When the user has not configured '
+                                   u'his/her own, this one will be used.')),
+
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
 
     # SEMANTIC NOTE: we use 'disabled' (and not 'enabled') because the rss

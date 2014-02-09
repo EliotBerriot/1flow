@@ -19,6 +19,8 @@
 
 """
 
+from constance import config
+
 from mongoengine import Document, EmbeddedDocument
 from mongoengine.fields import (IntField, BooleanField, StringField,
                                 EmbeddedDocumentField)
@@ -51,6 +53,25 @@ AUTO_MARK_READ_DELAY_CHOICES = (
     (30000, _(u'After 30 seconds')),
     (-1, _(u'Never (do not auto mark as read)')),
 )
+
+READING_SPEED_CHOICES = (
+    (50, _(u'under 100 wpm')),
+    (100, _(u'around 100 wpm')),
+    (200, _(u'around 200 wpm')),
+    (300, _(u'around 300 wpm')),
+    (400, _(u'around 400 wpm')),
+    (500, _(u'around 500 wpm')),
+    (600, _(u'around 600 wpm')),
+    (800, _(u'around 800 wpm')),
+    (800, _(u'around 1000 wpm (really?)')),
+)
+
+
+def Read_default_reading_speed():
+    return (config.READ_AVERAGE_READING_SPEED
+            if config.READ_AVERAGE_READING_SPEED
+            in [x[0] for x in READING_SPEED_CHOICES]
+            else 200)
 
 
 class ReadPreferences(EmbeddedDocument):
@@ -98,6 +119,12 @@ class ReadPreferences(EmbeddedDocument):
                     u'As a consequence, articles to read later are counted '
                     u'in unread when this setting is enabled (default: true).'),
         default=True)
+
+    reading_speed = IntField(
+        verbose_name=_(u'Average reading speed'),
+        help_text=_(u'Set your reading speed for accurate reading time '
+                    u'computations on text content.'),
+        default=Read_default_reading_speed, choices=READING_SPEED_CHOICES)
 
     auto_mark_read_delay = IntField(
         verbose_name=_(u'Auto mark-read delay'),
