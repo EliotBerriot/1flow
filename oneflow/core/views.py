@@ -686,7 +686,7 @@ def read_with_endless_pagination(request, **kwargs):
     order_by       = _rwep_generate_order_by(request, **kwargs)
     djuser         = request.user
     user           = djuser.mongo
-    preferences    = user.preferences
+    #preferences    = user.preferences
 
     # —————————————————————————————————————————————————— subscription or folder
 
