@@ -6,11 +6,10 @@
     <div class="read-actions actions end-actions side-actions">
 
   {% else %}
-    <div class="read-actions actions start-actions hover-muted hide hidden-phone"
-      data-hover-muter-block="actions-start-{{ article.id }}">
+    <div data-hover-muter-block="actions-start-{{ article.id }}"
+        class="read-actions actions start-actions hover-muted hidden-xs hidden-sm">
 
   {% endif %}
-
 
   {% if side_actions %}
     {% if read.is_restricted %}
@@ -22,7 +21,7 @@
 
     {% endif %}
 
-    <div class="spacer25"></div>
+    <div class="spacer25 visible-lg"></div>
 
   {% endif %}
 
@@ -36,7 +35,7 @@
 
     {% if side_actions %}
 
-      <div class="spacer25"></div>
+      <div class="spacer25 visible-lg"></div>
 
       {% include "snippets/read/watch-actions.html" with with_text=0 %}
 
@@ -44,12 +43,12 @@
 
     {# ——————————————————————————————— WATCH ——————————————————————————————— #}
 
-    <span class="action {{ with_text|yesno:",popover-tooltip" }} popover-{{ side_actions|yesno:"left,top" }}" data-toggle="tooltip"
+    <span class="action popover-tooltip popover-top" data-toggle="tooltip"
         title="{% trans "Assign or remove watch-related attributes" %}">
       <a class="clicker-muter-toggle nowrap" href="#"
           data-clicker-muter-group="watch-{{ end_actions|yesno:"end,start" }}-{{ article.id }}">
         <i class="icon-fixed-width icon-eye-open"></i>{% if with_text %}<span
-            class="hidden-phone">&nbsp;{% trans "Watch" %}</span>{% endif %}
+            class="hidden-inline-xs hidden-inline-sm">&nbsp;{% trans "Watch" %}</span>{% endif %}
       </a>
     </span>
 
@@ -57,24 +56,23 @@
 
     {# ——————————————————————————————— SHARE ——————————————————————————————— #}
 
-    <span class="action popover-{{ side_actions|yesno:"left,top" }}"
-        {{ with_text|yesno:"data-toggle='tooltip'," }}
+    <span class="action popover-top popover-tooltip"
         title="{% trans "Share privately with individuals or your watch-teams" %}">
       <a class="nowrap" href="{% url "share_one" article.id %}" data-target="#" data-toggle="modal">
         <i class="icon-fixed-width icon-share"></i>{% if with_text %}<span
-            class="hidden-phone">&nbsp;{% trans "Share" %}</span>{% endif %}
+            class="hidden-inline-xs hidden-inline-sm">&nbsp;{% trans "Share" %}</span>{% endif %}
       </a>
     </span>
 
     {# ————————————————————————————— BROADCAST ————————————————————————————— #}
     {# title="{% trans "Broadcast globally to your followers, via your self-feeded informations streams" %}" #}
 
-    <span class="not-ready action {{ with_text|yesno:",popover-tooltip" }} popover-{{ side_actions|yesno:"left,top" }}"
+    <span class="not-ready action popover-tooltip popover-top"
         data-toggle="tooltip"
         title="{% trans "This feature is under development. Thanks for your patience." %}">
       <a class="clicker-muter-toggle nowrap" href="#">
         <i class="icon-fixed-width icon-bullhorn"></i>{% if with_text %}<span
-            class="hidden-phone">&nbsp;{% trans "Broadcast" %}</span>{% endif %}
+            class="hidden-inline-xs hidden-inline-sm">&nbsp;{% trans "Broadcast" %}</span>{% endif %}
       </a>
     </span>
 

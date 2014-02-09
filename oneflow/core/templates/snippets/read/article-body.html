@@ -1,18 +1,10 @@
 {# make sure you have the add_to_builtins(…cache) else this will fail. #}
 {# HEADS UP: with Django 1.6, replace 0 by None and set using="persistent" #}
 
-{% if read_in_list %}
+<div class="reading-meta-container article-meta-information"></div>
+<div class="reading-meta-container article-meta-attributes"></div>
 
-    {% cache 0 article_meta_top article LANGUAGE_CODE %}
-
-      {% with with_title_first=1 with_actions=1 with_tags=1 with_rating=1 with_meta_muted=1 with_delta=1 meta_class='top only_when_collapsed' %}
-            {% include "snippets/read/article-meta.html" %}
-      {% endwith %}
-
-    {% endcache %}
-{% endif %}
-
-<div class="article {{ read_in_list|yesno:'slide-togglable slide-toggle-notice,' }}"
+<div class="article acceptable-scrollbars white-bg-scrollbars {{ read_in_list|yesno:'slide-togglable slide-toggle-notice,' }}"
     {% if read_in_list %}
       data-toggle-id="{{ article.id }}"
       data-toggle-function="toggle_content"
@@ -21,6 +13,8 @@
     >
 
     {% include 'snippets/read/read-admin-informations.html' %}
+
+    {% comment %}
 
     {% cache 0 article_meta_bottom article LANGUAGE_CODE %}
 
@@ -31,6 +25,8 @@
 
     {% endcache %}
 
+    {% endcomment %}
+
   <div class="read-content-wrapper only_when_open" id="content-{{ article.id }}">
     <div class="article-content"
 
@@ -38,8 +34,8 @@
                 data-content-async="{% url "article_content" article.id %}"
                 data-meta-async="{% url "read_meta" read.id %}">
 
-            <div class="loading centered">
-                <h3 class="loading"><i class="icon-spinner icon-spin icon-large"></i>
+            <div class="article-body-loading">
+                <h3><i class="icon-spinner icon-spin icon-large"></i>
                 &nbsp;&nbsp;{% trans "Loading…" %}</h3>
             </div>
 
@@ -50,7 +46,10 @@
             {% article_content article read.is_restricted perms.core.can_read_full_text %}
 
         {% endif %}
+
     </div>
+
+    {% comment %}
 
     {% cache 0 article_bottom article LANGUAGE_CODE %}
 
@@ -66,6 +65,8 @@
     </div>
 
     {% endcache %}
+
+    {% endcomment %}
 
   </div><!-- .article-content-wrapper -->
 </div><!-- .article -->

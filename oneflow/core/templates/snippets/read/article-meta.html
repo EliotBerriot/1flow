@@ -1,129 +1,103 @@
-<div class="article-meta article-meta-{% firstof meta_class 'UNSET' %} {{ read_in_list|yesno:'article-meta-row,article-meta-individual' }} clicker-muter-constrainer"
+<div class="article-meta article-meta-row clicker-muter-constrainer"
     data-toggle-id="{{ article.id }}">
 
-    {% if with_delta and article.date_published %}
-        <div class="freshness"
-            data-post-process="momentFromNow"
-             {% comment %}
-                 data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
-             {% endcomment %}
-             >
-            {{ article.date_published|date:'c' }}
-        </div>
-    {% endif %}
-
-
-  {% if with_actions %}
-      {% with with_text=0 %}
-        {# with_admin_actions=1 #}
-        {% include "snippets/read/read-actions.html" %}
-      {% endwith %}
-  {% endif %}
-
-  <div class="meta content-toggle"
+  <div class="row content-toggle"
       data-toggle-id="{{ article.id }}"
       data-toggle-function="toggle_content"
       data-toggle-callback="notice_element">
 
-    {% spaceless %}
+    <div class="meta-thumbnail col-xs-2 col-lg-1 only_when_collapsed">
+      <i class="placeholder icon-picture"></i>
+    </div><!-- .meta-thumbnail -->
 
-  {% if with_title_first %}
+    <div class="meta-back-to-list col-xs-2 col-lg-1 only_when_open">
+      <i class="icon-angle-left"></i>
+    </div><!-- .meta-back-to-list -->
 
-    <{% firstof meta_hX "h2" %}
-        class="article-title">
-      {{ article.title }}
-    </{% firstof meta_hX "h2" %}>
-  {% endif %}
+    <div class="meta-wrapper col-xs-10 col-lg-11">
+      <div class="row">
 
-    <div class="meta-sub">
+        {% spaceless %}
 
-      <span class="source muted">
-        {# read, not article: we want subscriptions names, not feed names. #}
-        {# NOOOOOOOOOO: now that the article is cached, we cannot get the read anymore here… #}
-        {{ article.get_source_unicode }}
-      </span>
+        <div class="meta-content col-xs-12 row">
 
-      <span class="status-icons watch-status">
-        {% include "snippets/read/watch-status.html" %}
-      </span>
+          <h2 class="article-title col-xs-12">
+            {{ article.title }}
+          </h2>
 
-      {% if with_meta_muted %}
-        <span class="hover-muted hide">
-      {% endif %}
+          <div class="meta-sub col-xs-10">
 
-      <span class="date">
-        {% if article.date_published %}
-          {{ article.date_published }}
-        {% else %}
-          <span class="no-date">{% trans "no date" %}</span>
-        {% endif %}
-      </span>
+            <span class="source muted">
+              {# read, not article: we want subscriptions names, not feed names. #}
+              {# NOOOOOOOOOO: now that the article is cached, we cannot get the read anymore here… #}
+              {{ article.get_source_unicode }}
+            </span>
 
-      {% if article.authors %}
-        <span class="author">
-            <span class="muted">{% trans "by" %}</span>
-            {% for author in article.authors %}
-                {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-        </span>
-      {% endif %}
+            <span class="status-icons watch-status">
+              {% include "snippets/read/watch-status.html" %}
+            </span>
 
-      {% if with_tags %}
-        {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
-        {% if article.tags %}
-          <span class="tags">
-            <span class="muted">{% trans "in" %}</span> {% for tag in article.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-          </span>
-        {% endif %}
-      {% endif %}
+            <span class="hover-muted hide">
 
-      {% comment %}
-            No more possible with the cached article.
+            <span class="date">
+              {% if article.date_published %}
+                {{ article.date_published }}
+              {% else %}
+                <span class="no-date">{% trans "no date" %}</span>
+              {% endif %}
+            </span>
 
-          {% if with_rating %}
-            {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
+            {% if article.authors %}
+              <span class="author">
+                  <span class="muted">{% trans "by" %}</span>
+                  {% for author in article.authors %}
+                      {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+                  {% endfor %}
+              </span>
+            {% endif %}
+
+            {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
+            {% if article.tags %}
+              <span class="tags">
+                <span class="muted">{% trans "in" %}</span> {% for tag in article.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+              </span>
+            {% endif %}
+
+            {% comment %}
+                No more possible with the cached article.
+
+                {% if with_rating %}
+                  {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
+                {% endif %}
+            {% endcomment %}
+
+            </span>
+          </div>
+
+          {% if article.date_published %}
+            <div class="freshness col-xs-2"
+                data-post-process="momentFromNow"
+                 {% comment %}
+                     data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
+                 {% endcomment %}
+                 >
+                {{ article.date_published|date:'c' }}
+            </div>
           {% endif %}
-      {% endcomment %}
 
-      {% if with_meta_muted %}
-        </span>
-      {% endif %}
+        </div>
 
-    </div>
-
-    {% endspaceless %}
-  </div>
-
-  {% comment %}
-
-      Disabled on 20130926. We don't need them here anymore, they don't
-      fit in the workflow.
-
-      User must read content before setting watch attributes, for quality
-      reasons. Setting a watch attribute without having read — or at least
-      rapidly looked over — makes the operation prone to setting false
-      attributes.
-
-      Only in rare case the user can pre-set attributes without reading
-      the content. For this, he has keyboard shortcuts, which makes the
-      operation very fast and aleviate the need to have the first of icons.
-
-
-      {% if with_actions %}
+        <div class="meta-actions visible-lg">
           {% with with_text=0 %}
-            {% include "snippets/read/watch-actions.html" %}
+            {# with_admin_actions=1 #}
+            {% include "snippets/read/read-actions.html" %}
           {% endwith %}
-      {% endif %}
+        </div>
 
-  {% endcomment %}
+        {% endspaceless %}
 
-  {% if not with_title_first %}
-    <div class="clearfix"></div>
+      </div><!-- .row -->
+    </div><!-- .meta-wrapper -->
 
-    <{% firstof meta_hX "h1" %}
-        class="article-title">
-      {{ article.title }}
-    </{% firstof meta_hX "h1" %}>
-  {% endif %}
-
+  </div><!-- .row -->
 </div><!-- .article-meta -->

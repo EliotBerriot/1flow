@@ -3,5 +3,5 @@
     title="{{ action_data.status_title }}">
   <i class="icon-{% firstof action_data.status_icon action_data.undo_icon %}"
       alt="{{ action_data.status_title }}"></i>
-      {% if with_text %}<span class="hidden-phone">&nbsp;{{ action_data.status_label }}</span>{% endif %}
+      {% if with_text %}<span class="hidden-inline-xs hidden-inline-sm">&nbsp;{{ action_data.status_label }}</span>{% endif %}
 </span>
