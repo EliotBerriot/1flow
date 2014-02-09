@@ -62,6 +62,12 @@
 
     <div class="spacer50"></div>
 
+    <div class="read-time">
+      {% cache 86400 article_read_time article user %}
+        {% article_reading_time article user %}
+      {% endcache %}
+    </div>
+
     <h4 class="article-title">
       <a href="{{ article.url }}" class="popover-tooltip popover-bottom"
             title="{% trans "Open original article in a new window/tab" %}"
