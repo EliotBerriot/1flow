@@ -859,7 +859,7 @@ def read_meta(request, read_id):
     except:
         return HttpResponseTemporaryServerError()
 
-    if not request.is_ajax():
+    if not request.is_ajax() and not settings.DEBUG:
         return HttpResponseBadRequest('Must be called via Ajax')
 
     return render(request,
