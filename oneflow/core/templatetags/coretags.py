@@ -449,9 +449,8 @@ def read_original(article, with_text=None):
       <i class="icon-fixed-width icon-globe"></i>&nbsp;{3}</a></span>'''.format(
         u'popover-tooltip' if with_text else u'',
         _(u"Display on the original website"), article.url,
-        u'<span class="hidden-phone">{0}&nbsp;</span>'.format(
-            _(u'Read original')
-        )
+        u'<span class="hidden-inline-xs hidden-inline-sm">'
+        u'{0}&nbsp;</span>'.format(_(u'Read original'))
     )
 
 
