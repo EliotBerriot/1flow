@@ -25,7 +25,7 @@
             {{ article.title }}
           </h2>
 
-          <div class="meta-sub col-xs-10">
+          <div class="meta-sub col-xs-9">
 
             <span class="source muted">
               {# read, not article: we want subscriptions names, not feed names. #}
@@ -74,16 +74,25 @@
             </span>
           </div>
 
-          {% if article.date_published %}
-            <div class="freshness col-xs-2"
-                data-post-process="momentFromNow"
-                 {% comment %}
-                     data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
-                 {% endcomment %}
-                 >
-                {{ article.date_published|date:'c' }}
+          <div class="col-xs-3">
+            <div class="reading-time pull-left">
+              {% if article.word_count_TRANSIENT %}
+                {{ read.reading_time_abstracted|safe }}
+              {% endif %}
             </div>
-          {% endif %}
+
+            <div class="freshness pull-right"
+
+            {% if article.date_published %}
+              data-post-process="momentFromNow"
+               {% comment %}
+                   data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
+               {% endcomment %}
+               >
+              {{ article.date_published|date:'c' }}
+
+            {% endif %}
+          </div>
 
         </div>
 
