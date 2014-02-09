@@ -138,6 +138,8 @@
 
             {% if preferences.staff.super_powers_enabled %}
 
+              <li><a href="javascript: $('.navbar').first().addClass('hidden'); return false"><span class="badge muted"><i class="icon-eye-close"></i></span></a></li>
+
               <li id="system-informations" class="hidden-inline-block-xs"><a href="#"
                 data-toggle="popover" data-placement="bottom"
                 data-original-title="System Informations" data-html="true"
@@ -200,7 +202,6 @@
                   </span>
                 </a>
               </li>
-              <li><a href="javascript: $('.navbar').first().addClass('hidden'); return false"><span class="badge muted"><i class="icon-eye-close"></i></span></a></li>
 
           {% endif %}{# superuser #}
 
