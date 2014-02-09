@@ -13,7 +13,7 @@
 
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
-  <body id="{% block body_id %}{% endblock body_id %}" {% block body_data %}{% endblock body_data %} onload="loadScrollForHash()">
+  <body id="{% block body_id %}{% endblock body_id %}" {% block body_data %}{% endblock body_data %} class="acceptable-scrollbars" onload="loadScrollForHash()">
     {% block navbar %}
       {% if user.is_superuser %}
         {# Never cache the navbar for admins, we must know about maintenance mode #}
