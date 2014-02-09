@@ -350,6 +350,24 @@ class Article(Document, DocumentHelperMixin):
             return _(u'{0} ago').format(naturaldelta(self.date_published))
 
     @property
+    def word_count_TRANSIENT(self):
+        """ TRANSIENT: until we store the words count, which implies to
+            be able to compute it correctly, we do all the work here. """
+
+        if self.word_count:
+            return self.word_count
+
+        else:
+            if self.content_type in CONTENT_TYPES_FINAL:
+
+                # TODO: exclude video / audio...
+
+                if len(self.content) > config.READ_ARTICLE_MIN_LENGTH:
+                    return len(self.content.split())
+
+        return None
+
+    @property
     def get_source(self):
 
         if self.source:
