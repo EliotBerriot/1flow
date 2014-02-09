@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2014-02-09 11:15+0100\n"
-"PO-Revision-Date: 2014-02-09 11:37+0009\n"
+"PO-Revision-Date: 2014-02-09 11:40+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -4391,7 +4391,7 @@ msgstr "{0} articles"
 
 #: templatetags/coretags.py:395
 msgid "{0} read"
-msgstr "lecture de "
+msgstr "lecture de {0}"
 
 #: templatetags/coretags.py:543 templatetags/coretags.py:545
 msgid "Convert to full-text"
