@@ -8,7 +8,9 @@
     font-family: georgia, times, serif;
     text-align: justify;
 
-    padding: 0 $article-padding-side 5em;
+    // Required when we have an iframe inside.
+    height: 100%;
+    width: 100%;
 
     .selected { background: #ff9; }
 
@@ -34,6 +36,7 @@
     }
 
     h1 {
+        font-size: $article-font-size-h1;
         padding-bottom: 0.5em;
         border-bottom: 1px dotted #ddd;
         margin-bottom: 1.5em;
@@ -44,9 +47,17 @@
         margin-bottom: 1em;
     }
 
+    h2 {
+        font-size: $article-font-size-h2;
+    }
+
+    h3 {
+        font-size: $article-font-size-h3;
+    }
+
     p, ul, ol {
-        font-size: 1.75em;
-        line-height: 1.45em;
+        font-size: $article-font-size;
+        line-height: $article-font-size * 1.1;
         margin: 1.5em 0;
     }
 
@@ -195,3 +206,39 @@
 // .content-toggle {
 //     cursor: pointer;
 // }
+
+
+// ——————————————————— responsive
+
+@media (max-width: $screen-md-max) {
+    .article-content {
+        padding: 0 $article-padding-side-xs;
+    }
+}
+
+@media (min-width: $screen-md-max) {
+    .article-content {
+        h1 {
+            font-size: $article-font-size-h1 * 1.25;
+
+        }
+        h2 {
+            font-size: $article-font-size-h2 * 1.25;
+
+        }
+        h3 {
+            font-size: $article-font-size-h3 * 1.25;
+
+        }
+
+        p, ul, ol {
+            font-size: $article-font-size * 1.25;
+            line-height: $article-font-size * 1.25 * 1.25;
+        }
+    }
+}
+@media (min-width: $screen-lg-min) {
+    .article-content {
+        padding: 0 $article-padding-side-sm;
+    }
+}

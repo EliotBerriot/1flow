@@ -13,8 +13,7 @@ body {
     */
     position: relative;
 
-    /* Our navbar is 47px + 1px border-bottom. */
-    padding-top: 48px + 25px;
+    padding-top: $navbar-height-xs;
 
     // To make the footer stick at the bottom.
     min-height: 100%;
@@ -24,10 +23,19 @@ body {
     padding-bottom: 8em;
 }
 
+@media (min-width: $screen-lg-min) {
+
+    body {
+        padding-top: $navbar-height-sm + 25px;
+    }
+}
+
 .navbar {
     .navbar-brand {
-        /* Avoid ALLCAPS text, this is sooooo ugly on 1flow name. */
+
+        // Avoid ALLCAPS text, this is sooooo ugly on 1flow name.
         text-transform: none;
+
         font-weight: 700;
 
         span.active {
@@ -36,7 +44,7 @@ body {
     }
 
     .avatar-frame {
-        /* Cuts the image on the right. padding-right: 5px; */
+        // Cuts the image on the right, thus disabled. padding-right: 5px;
 
         img {
             width: 24px;
@@ -48,18 +56,8 @@ body {
 
     .navbar-nav {
 
-        //font-size: 120%;
-
         /*  For some reason, <i> only in span is not happily
             aligned with 1flow logo and user avatar. */
-
-        .align-icon-phone {
-            padding-top: 10px;
-        }
-
-        .align-icon-phone-lower {
-            padding-top: 11px;
-        }
 
         li a {
             /*  Simplify the visual (no border at all)

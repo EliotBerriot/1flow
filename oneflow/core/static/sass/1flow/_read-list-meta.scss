@@ -1,0 +1,167 @@
+
+.reading-meta-container {
+    position: fixed;
+    display: none;
+}
+
+.open_content {
+    .article-meta-information {
+        // Nothing, this one stays hidden on mini-devices.
+    }
+
+    .article-meta-attributes {
+        display: block;
+    }
+}
+
+
+// ————————————————————————————————————————————————————————————————— responsive
+
+
+@media (max-width: $screen-md-max) {
+
+    .open_content .article-meta-attributes {
+        // displayed at the bottom of screen on XS/SM/MD.
+        // For LG devices, see responsive section.
+
+        height: 60px;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        padding: 10px 10px 10px 25%;
+
+        .paddle {
+            // debug: background-color: #eee;
+            position: absolute;
+            top: 10px;
+            left: 0;
+            width: 25%;
+            font-size: 150%;
+
+            td {
+                padding: 0;
+                margin: 0;
+                text-align: center;
+
+                a {
+                    // make the link fill the cell, easier to click.
+                    display: block;
+                }
+            }
+
+            td.closer {
+                display: none;
+            }
+
+            @include fainted-anchors();
+        }
+    }
+}
+
+@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+
+
+}
+
+@media (min-width: $screen-lg-min) {
+
+    .open_content .reading-meta-container {
+        top: $navbar-height-sm;
+        bottom: 0;
+        overflow: hidden;
+
+        padding: 100px 20px;
+
+        background-color: $backgroundLightColor;
+
+        @include single-transition(opacity, 0.01s, ease-out, 0.25s);
+
+        @include thumbnail($size: 64px, $absolute: 0, $bwbase: 0);
+
+        // &:hover {
+        //     opacity: 1;
+        //     //background-color: #fff;
+        // }
+
+        .watch-status {
+            min-height: 20px;
+            margin-bottom: 20px;
+
+            span {
+                font-size: 15px;
+                margin-right: 5px;
+            }
+        }
+
+        h3.source {
+            line-height: 1.1em;
+        }
+
+        .subscription-meta .management {
+            font-size: 200%;
+        }
+
+        // only one read-action per line (for displays > 1280x800)
+        .read-actions .action {
+            width: 100%;
+        }
+
+        // but still, all watch icons on one line
+        .watch-actions .action {
+            width: auto;
+        }
+    }
+
+    .open_content .article-meta-information {
+        // not displayed on small/medium devices.
+        // For bigger screens, see responsive section.
+
+        display: inherit;
+        left: 0;
+        width: $reading-list-split-lg;
+        text-align: right;
+
+        @include clean-anchors();
+    }
+
+    .open_content .article-meta-attributes {
+        width: $reading-list-split-lg;
+        right: 0;
+
+        // padding-right: 20px;
+
+        .paddle {
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            right: 20px;
+
+            font-size: 200%;
+
+            td {
+                padding: 0;
+                margin: 0;
+                text-align: center;
+
+                a {
+                    // make the link fill the cell, easier to click.
+                    display: block;
+                }
+            }
+
+            .closer {
+                width: 100px;
+            }
+
+            .next {
+                text-align: left;
+            }
+            .previous {
+                text-align: right;
+            }
+
+            @include fainted-anchors();
+        }
+    }
+}
+

@@ -293,6 +293,71 @@ img.centered {
     overflow: hidden;
 }
 
+
+// ————————————————————————————————————————————————————————————Fancy scrollbars
+// Thanks http://stackoverflow.com/questions/7725652/css-scrollbar-style-cross-browser
+
+$sb-border-radius: 3px;
+
+.acceptable-scrollbars {
+  -webkit-overflow-scrolling: touch;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-button:start:decrement,
+.acceptable-scrollbars::-webkit-scrollbar-button:end:increment {
+  background: transparent;
+  display: none;
+  }
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece {
+  background: $backgroundLightColor;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:vertical:start {
+  border-top-left-radius: $sb-border-radius;
+  border-top-right-radius: $sb-border-radius;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:vertical:end {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: $sb-border-radius;
+  border-bottom-left-radius: $sb-border-radius;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:horizontal:start {
+  border-top-left-radius: $sb-border-radius;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: $sb-border-radius;
+}
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:horizontal:end {
+  border-top-left-radius: 0;
+  border-top-right-radius: $sb-border-radius;
+  border-bottom-right-radius: $sb-border-radius;
+  border-bottom-left-radius: 0;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-thumb:vertical,
+.acceptable-scrollbars::-webkit-scrollbar-thumb:horizontal {
+  background: $grayLighterMedium;
+  border-radius: $sb-border-radius;
+  display: block;
+  height: 50px;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-button {
+  display: block;
+  height: 4px;
+}
+
 // ———————————————————— Thanks https://github.com/twitter/bootstrap/issues/4286
 
 .spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }

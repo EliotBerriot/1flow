@@ -12,8 +12,8 @@
         // need 5em for the same comfortable reading effect.
         // NOTE: specified in pixels because eventual iframes need to overlap
         // it for best container space usage.
-        padding-left: $article-padding-side;
-        padding-right: $article-padding-side;
+        padding-left: $article-padding-side-xs;
+        padding-right: $article-padding-side-xs;
     }
 
     .article-meta-top {

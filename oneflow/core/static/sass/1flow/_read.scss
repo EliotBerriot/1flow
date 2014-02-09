@@ -1,16 +1,17 @@
 
-#read {
-    #reads-number {
-        //padding: 0 10px;
-
-        h2 small {
-            margin-left: 0;
-        }
-    }
-}
-
 @import "read-base";
 @import "read-list";
 @import "read-individual";
 @import "read-icons";
 @import "read-article-content";
+
+
+// This must come after article-content, else H3 is not centered.
+.article-body-loading {
+    margin: 100px 0;
+
+    h3 {
+        font-size: 200%;
+        text-align: center;
+    }
+}

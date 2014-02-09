@@ -1,85 +1,31 @@
 
-#reads-list-header {
-    // Align text on the list content (not edge).
-    padding-left: 10px;
-    padding-right: 10px;
+#read {
+    nav {
+        margin-bottom: 0;
 
-    .h1-wrapper {
-        position: relative;
-        height: 25px;
-        margin-top: 50px;
-        margin-bottom: 25px;
-    }
+        .navbar-brand {
+            // cancel the bold from default navbar style.
+            font-weight: normal;
 
+            // Make the line vertically aligned
+            padding-top: 20px;
 
-    /* The big squared background, kept for memories.
-    .h1-background {
-        position: absolute;
-        top: 0;
-        left: 0;
-        right: 0;
-        height: 25px;
-        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
-        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
-        background-color: $light-grey;
-    }
-    */
+            i {
+                font-size: 20px;
+            }
+        }
 
-    // The thin-lined background
-    .h1-background {
-        position: absolute;
-        top: 14px;
-        left: 0;
-        right: 0;
-        height: 2px;
-        //@include background-image(linear-gradient(left, $grayLighter 80%, $backgroundLightColor 100%));
-        //@include background-image(linear-gradient(left, $grayLighter 50%, $backgroundLightColor 75%));
-        //background-color: $light-grey;
-        background-color: $red-blood;
-    }
+        .navbar-toggle {
 
-    h1 {
-        position: absolute;
-        top: 0;
-        height: 25px;
-        line-height: 25px;
-        color: $dark-grey;
-        background-color: $backgroundLightColor;
-
-        white-space: nowrap;
-    }
-
-    h1.left-side {
-        left: 50px;
-        max-width: 70%;
-
-        padding-left: 15px;
-        padding-right: 15px;
-
-        font-size: 150%;
-        font-weight: 700;
-        color: $navbar-grey;
-
-
-        overflow: hidden;
-        text-overflow: ellipsis;
-        -o-text-overflow: ellipsis;
-
-    }
-
-    h1.right-side {
-        right: 50px;
-        max-width: 150px;
-
-        padding-left: 15px;
-        padding-right: 15px;
-
-        font-size: 125%;
+            // Align on right, like the brand is aligned on left.
+            // Or at least, fake the effect so that both seem.
+            margin-right: 0;
+        }
     }
 }
 
 .initial-loading .loading {
-    margin: 15px 0 25px;
+    margin: 30px 0;
 }
 
 #no-items {
@@ -90,115 +36,12 @@
     }
 }
 
-
-// —————————————————————————————————————————————————————— reading-list sidebars
-
-#sidebars-wrapper {
-    position: fixed;
-    top: 50px;
-    bottom: 0;
-    left: 0;
-    right: 0;
-
-    background-color: 000;
-
-    //z-index: 0;
-
-    &:hover .reading-sidebar {
-        opacity: 1;
-    }
-}
-
-.reading-sidebar {
-    position: fixed;
-    top: 70px;
-    bottom: 20px;
-    overflow: hidden;
-    opacity: 0;
-
-    @include single-transition(opacity, 0.25s, ease-out, 0.25s);
-
-    @include thumbnail($size: 64px, $absolute: 0, $bwbase: 0);
-
-    // &:hover {
-    //     opacity: 1;
-    //     //background-color: #fff;
-    // }
-
-    .watch-status {
-        min-height: 20px;
-        margin-bottom: 20px;
-
-        span {
-            font-size: 15px;
-            margin-right: 5px;
-        }
-    }
-
-    h3.source {
-        line-height: 1.1em;
-    }
-
-    .subscription-meta .management {
-        font-size: 200%;
-    }
-
-    // only one read-action per line (for displays > 1280x800)
-    .read-actions .action {
-        width: 100%;
-    }
-
-    // but still, all watch icons on one line
-    .watch-actions .action {
-        width: auto;
-    }
-
-    .paddle {
-        position: absolute;
-        top: 0;
-        left: 0;
-        width: 100%;
-        //margin-left: 20px;
-        //margin-right: auto;
-        font-size: 200%;
-
-        td {
-            padding: 0;
-            margin: 0;
-            text-align: center;
-
-            a {
-                // make the link fill the cell, easier to click.
-                display: block;
-            }
-        }
-
-        .next {
-            text-align: left;
-        }
-        .previous {
-            text-align: right;
-        }
-
-        @include fainted-anchors();
-    }
-}
-
-#article-meta-left {
-    left: 20px;
-    text-align: right;
-
-    @include clean-anchors();
-}
-
-#article-meta-right {
-    right: 20px;
-}
+@import "read-list-meta";
 
 // —————————————————————————————————————————————————————————— reading-list item
 
 .read-list-item {
-    position: relative;
+    //position: relative;
     padding: 15px 10px;
     border-bottom: 1px solid #ddd;
 
@@ -234,16 +77,72 @@
         margin-bottom: 0;
     }
 
-    .list-item-number {
-        font-size: 500%;
-        line-height: 100%;
-        vertical-align: center;
-        text-align: right;
+    &:nth-child(2) {
+        background-color: #ccc;
+        padding-top: 0;
+
     }
 
     &:last-child {
         margin-bottom: 8em;
         border-bottom: none;
+    }
+
+    .article-meta {
+
+        .meta-thumbnail {
+            height: 32px;
+            text-align: center;
+            vertical-align: middle;
+
+            i.placeholder {
+                color: $grayLightMax;
+                font-size: 36px;
+            }
+        }
+
+        .meta-back-to-list {
+            text-align: center;
+            font-size: 40px;
+            line-height: 40px;
+            margin-top: -10px;
+
+            i {
+                padding-right: 10px;
+            }
+        }
+
+        .meta-content {
+            // debug background-color: #cce;
+            // debug opacity: 0.8;
+        }
+
+        .row,
+        .row .row,
+        .row .row .row {
+            // cancel BS3 -15px, it hurts in the list.
+            margin: 0;
+        }
+
+        .col-xs-2,
+        .col-xs-10,
+        .col-xs-12 {
+            padding-left: 0;
+            padding-right: 0;
+            margin: 0;
+        }
+
+        h2.article-title {
+            font-size: 16px;
+        }
+
+        .freshness {
+            // compensate the font-size for bottom alignment.
+            padding-top: 2px;
+
+            font-size: 12px;
+            text-align: right;
+        }
     }
 
     .start-actions {
@@ -255,85 +154,17 @@
         // Make a little room for the gradient
         // for 5 icons: width: 325px;
         // for 2 icons:
-        width: 125px;
+        width: 150px;
 
         @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(247,247,247,1) 15%));
 
         /* Keep the icons over the title. */
-        z-index: 20;
+        z-index: 100;
     }
 
     .read-actions {
-	padding-right: 30px;
+	    padding-right: 30px;
     }
-
-    .article-meta-bottom {
-        padding-top: 2em;
-
-        padding-left: $article-padding-side;
-        padding-right: $article-padding-side;
-
-        // this one starts hidden and
-        // will be shown by .open_content.
-        display: none;
-
-        .article-title {
-            font-weight: 600;
-        }
-    }
-}
-
-.top-marker {
-    // this one starts hidden and
-    // will be shown by .open_content.
-    display: none;
-
-    position: absolute;
-    // -1px to overlap the <li> border.
-    top: -1px;
-    left: 0;
-    right: 0;
-
-    // get over everything in the <li>
-    z-index: 30;
-
-    background-color: white;
-    min-height: 5px;
-
-    .top-horizontal-rule {
-        min-height: 5px;
-        background-color: #ddd;
-
-        // This matches the .article-content margin
-        // to align with the article's text.
-        margin: 0 60px;
-    }
-}
-
-.top-closer {
-    position: absolute;
-
-    // 9px because the .top-marker adds +1 to the side of the whole <li>.
-    top: 19px;
-    right: 20px;
-
-    font-size: 32px;
-
-    a {
-        color: #586a7f;
-        text-decoration: none;
-
-        &:visited, &:active {
-            color: #ccc;
-        }
-
-        &:hover {
-            color: black;
-        }
-    }
-
-    // over the .top-marker.
-    z-index: 40;
 }
 
 .only_when_open {
@@ -343,19 +174,57 @@
 }
 
 .open_content {
+    // HEADS UP: this is for mobile. Settings for others at EOF.
+
+    position: fixed;
+
+    // stay above all navbars.
+    z-index: $open-content-z-index-xs;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
     // Make the content white, like the hover. this avoids
     // disgracefull flip/flaps on mouse out while we read.
     background-color: #fff;
 
-    // make the previous list item be far when positioning
-    // the current open one to the top of the window.
-    margin-top: 60px;
+    .article-meta {
 
-    .article-meta .start-actions {
-        // http://www.colorzilla.com/gradient-editor/#ffffff+0,ffffff+20&0+0,1+20;Custom
-        // @include filter-gradient(#00ffffff, #ffffff, horizontal); // IE6-8
-        // IE9 SVG, needs conditional override of 'filter' to 'none'
-        @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 15%));
+        .start-actions {
+            // http://www.colorzilla.com/gradient-editor/#ffffff+0,ffffff+20&0+0,1+20;Custom
+            // @include filter-gradient(#00ffffff, #ffffff, horizontal); // IE6-8
+            // IE9 SVG, needs conditional override of 'filter' to 'none'
+            @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 15%));
+        }
+    }
+
+    .article-wrapper {
+        position: fixed;
+
+        // Get back the margins for full-width display.
+        left: 0;
+        right: 0;
+
+        // 15px + 40px (.read-list-item::padding-top + .article-meta.height)
+        top: 65px;
+
+        // 15px + 40px (.read-list-item::padding-top + .article-actions.height)
+        bottom: 65px;
+
+        padding: 0 5px;
+        margin: 0;
+    }
+
+    .article {
+        width: 100%;
+        height: 100%;
+
+        padding: 0 5px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
     }
 
     .only_when_open {
@@ -367,30 +236,14 @@
     }
 }
 
-.restricted-read,
-.original-view {
-    // These are hidden, even if the read is open,
-    // because they are useless in iframe mode.
-
-    .top-marker,
-    .top-closer,
-    .article-meta-bottom {
-        display: none;
-
-        @include single-transition(opacity, 0.25s, ease-out, 0.25s);
-    }
-}
 
 // ——————————————————————————————————————————————————— icons next to item title
-
 // .not_is_bookmarked.not_is_starred
-.read-list-item.not_is_read {
-    .only_when_collapsed .article-title {
-        font-weight: 600;
 
-        // #a2b1c3 #29323d #29313c #586a7f
-        //text-shadow: 0 0 2px #bbb;
-        // @include text-full-outline(#ccc);
+
+.read-list-item.not_is_read {
+    .article-title {
+        font-weight: 600;
     }
 }
 
@@ -401,3 +254,80 @@
     }
 }
 
+
+// ———————————————————————————————————————————————————————— articles in iframes
+
+
+.article-iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+
+    // NOTE: using negative margins is OK for left,
+    //       but doesn't work for right. Thus we don't
+    //       do anything about it. article-content
+    //       padding is lost.
+}
+
+
+// ————————————————————————————————————————————————————————————————— responsive
+
+
+@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    .open_content {
+
+        // is this really useful?
+        padding-left: 5%;
+        padding-right: 5%;
+
+        .article-wrapper {
+            // Get back the margins for full-width display.
+            left: 10%;
+            right: 10%;
+        }
+    }
+}
+
+@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+    .open_content {
+
+        // is this really useful?
+        padding-left: 10%;
+        padding-right: 10%;
+
+        .article-wrapper {
+            // Get back the margins for full-width display.
+            left: 20%;
+            right: 20%;
+        }
+    }
+}
+
+@media (min-width: $screen-lg-min) {
+
+    .open_content {
+        // stay under the tooltips.
+        z-index: $open-content-z-index-lg;
+
+        top: $navbar-height-sm;
+
+        left: $reading-list-split-lg;
+        right: $reading-list-split-lg;
+
+        .article-meta-row {
+            display: none;
+        }
+
+        .article-wrapper {
+            // Get back the margins for full-width display.
+            left: $reading-list-split-lg-inner;
+            right: $reading-list-split-lg-inner;
+        }
+
+        .article {
+            padding: 0 10px;
+        }
+    }
+}
