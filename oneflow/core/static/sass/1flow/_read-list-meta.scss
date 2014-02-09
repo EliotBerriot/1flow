@@ -74,14 +74,9 @@
 
         background-color: $backgroundLightColor;
 
-        @include single-transition(opacity, 0.01s, ease-out, 0.25s);
+        //@include single-transition(opacity, 0.01s, ease-out, 0.25s);
 
         @include thumbnail($size: 64px, $absolute: 0, $bwbase: 0);
-
-        // &:hover {
-        //     opacity: 1;
-        //     //background-color: #fff;
-        // }
 
         .watch-status {
             min-height: 20px;

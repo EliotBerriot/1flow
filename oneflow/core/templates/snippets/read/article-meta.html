@@ -84,16 +84,23 @@
             <div class="freshness pull-right"
 
             {% if article.date_published %}
+
               data-post-process="momentFromNow"
+
                {% comment %}
                    data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
                {% endcomment %}
+
                >
               {{ article.date_published|date:'c' }}
 
-            {% endif %}
-          </div>
+            {% else %}
+              >
 
+            {% endif %}
+
+            </div>
+          </div>
         </div>
 
         <div class="meta-actions visible-lg">
