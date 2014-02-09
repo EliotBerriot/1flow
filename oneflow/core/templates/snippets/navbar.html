@@ -37,12 +37,11 @@
 
               {% if mongodb_user.avatar_url %}
                 <span class="avatar-frame">
-                  <img src="{{ mongodb_user.avatar_url }}" />
+                  <img src="{{ mongodb_user.avatar_url }}" style="max-height: 100px; max-width: 100px;" />
                 </span>
               {% else %}
 
-                {# We use align-icon-phone to align the icon correctly on the baseline. #}
-                <span class="align-icon-phone"><i class="icon-user"></i></span>
+                <i class="icon-user"></i>
               {% endif %}
 
               <span>
@@ -201,6 +200,7 @@
                   </span>
                 </a>
               </li>
+              <li><a href="javascript: $('.navbar').first().addClass('hidden'); return false"><span class="badge muted"><i class="icon-eye-close"></i></span></a></li>
 
           {% endif %}{# superuser #}
 
