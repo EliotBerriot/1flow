@@ -641,6 +641,12 @@ class Read(Document, DocumentHelperMixin):
 
         return any(map(lambda sub: sub.feed.restricted, self.subscriptions))
 
+        # TODO: refresh/implement this to avoid fetching content from the
+        #       database if the remote article is not available anymore.
+        # NOTE: This is clearly overkill in the libre version, as 1flow
+        #       is just a personnal RSS / web crawler tool. This makes
+        #       sense for legal issues only if 1flow.io is a paid service.
+        #
         # delta_from_now = timedelda(now() - self.date_published)
         # if self.is_read:
         #     if self.is_archived:

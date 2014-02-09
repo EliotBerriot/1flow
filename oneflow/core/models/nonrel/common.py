@@ -619,8 +619,14 @@ class CorePermissions(models.Model):
     class Meta:
         app_label   = 'core'
         permissions = (
-            ('can_read_full_text',
-             _(u'User can read articles with full-text contents')),
-            ('can_import_web_items',
-             _(u'User can import any web items')),
+            # As of 2014-02 and 1flow going Libre Software, there is no
+            # need for these permissions anymore. I removed the related
+            # parts in the templates, but kept some other in models, as
+            # a reference for any future implementation where we would
+            # like to re-use the Django permissions model against MongoDB.
+
+            #('can_read_full_text',
+            # _(u'User can read articles with full-text contents')),
+            #('can_import_web_items',
+            # _(u'User can import any web items')),
         )

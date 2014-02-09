@@ -1108,7 +1108,7 @@ class Article(Document, DocumentHelperMixin):
 
         # build a fake permissions object for the template to be happy.
         perms = SimpleObject()
-        perms.core = SimpleObject()
+        #perms.core = SimpleObject()
 
         context = {
             'article': self,
@@ -1150,12 +1150,12 @@ class Article(Document, DocumentHelperMixin):
         # TODO: with Django 1.6, check if cache is already present or not:
         # https://docs.djangoproject.com/en/dev/topics/cache/#django.core.cache.utils.make_template_fragment_key # NOQA
 
-        for full_text_value in (True, False):
-            context['perms'].core.can_read_full_text = full_text_value
+        #for full_text_value in (True, False):
+        #    context['perms'].core.can_read_full_text = full_text_value
 
-            for lang in languages:
-                context['LANGUAGE_CODE'] = lang
-                render_to_string('snippets/read/article-body.html', context)
+        for lang in languages:
+            context['LANGUAGE_CODE'] = lang
+            render_to_string('snippets/read/article-body.html', context)
 
     @property
     def is_good(self):

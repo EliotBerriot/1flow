@@ -39,14 +39,7 @@
                             <li class="muted not-ready" {% feature_not_ready %}>
                                 {% trans "Inbox" %}</li>
 
-                            {% if perms.core.can_import_web_items %}
-                                <li>{% special_subscription_list_with_count mongodb_user 'web_import' %}</li>
-
-                            {% else %}
-                                <li class="muted not-ready" {% feature_not_ready %}>
-                                    {% trans "Imported elements" %}</li>
-
-                            {% endif %}
+                            <li>{% special_subscription_list_with_count mongodb_user 'web_import' %}</li>
 
                             <li>{% reading_list_with_count mongodb_user 'read_later' True %}</li>
                             <li>{% reading_list_with_count mongodb_user 'read' True %}</li>

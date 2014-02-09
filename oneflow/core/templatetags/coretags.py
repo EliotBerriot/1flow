@@ -475,27 +475,28 @@ def article_excerpt_content_display(article):
 
 @register.inclusion_tag('snippets/read/article-content.html',
                         takes_context=True)
-def article_content(context, article, is_restricted, with_full_text):
+def article_read_content(context, read):
 
-    if is_restricted:
+    if read.is_restricted:
+        #content = article_excerpt_content_display(article)
+        #excerpt = True
+
+        # Having None triggers the iframe display, which is more elegant
+        # and directly useful to the user than displaying just an excerpt.
         content = None
         excerpt = None
 
-    elif with_full_text:
-        content = article_full_content_display(article)
-        excerpt = False
-
     else:
-        content = article_excerpt_content_display(article)
-        excerpt = True
+        content = article_full_content_display(read.article)
+        excerpt = False
 
     return {
         # Make these up, because the context is not forwarded
         # to the final template. And that's a Django feature.
         # http://stackoverflow.com/q/5842538/654755
-        'article_url': article.url,
+        'article_url': read.article.url,
         'STATIC_URL': settings.STATIC_URL,
-        'is_restricted': is_restricted,
+        'is_restricted': read.is_restricted,
 
         # We don't mark_safe() here, else mark_safe(None) outputs "None"
         # in the templates, and "if content" tests fail because content
