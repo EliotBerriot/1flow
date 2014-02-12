@@ -317,6 +317,17 @@
 
         top: $navbar-height-sm;
 
+        // NO bottom action bar on desktops,
+        //open_content fills the whole height.
+        bottom: 0;
+
+        &:last-child {
+            // remove the margin of the last item in list when it's open,
+            // else the article content displays outside, this is ugly.
+            margin-bottom: 0;
+
+        }
+
         left: $reading-list-split-lg;
         right: $reading-list-split-lg;
 
@@ -325,13 +336,22 @@
         }
 
         .article-wrapper {
-            // Get back the margins for full-width display.
-            left: $reading-list-split-lg-inner;
-            right: $reading-list-split-lg-inner;
+            // On desktops, the wrapper is full-width, and the .article
+            // is padded left/right. This moves the scrollbar far from
+            // the text and gives a better reading experience.
+
+            left: $reading-list-split-lg;
+            right: $reading-list-split-lg;
+
+            // 15px (.read-list-item::padding-top)
+            // NO bottom action bar on desktops.
+            bottom: 15px;
+
         }
 
         .article {
-            padding: 0 10px;
+            padding: 0 17%;
+            //width: 700px;
         }
     }
 }
