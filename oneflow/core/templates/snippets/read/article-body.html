@@ -4,7 +4,7 @@
 <div class="reading-meta-container article-meta-information"></div>
 <div class="reading-meta-container article-meta-attributes"></div>
 
-<div class="article acceptable-scrollbars white-bg-scrollbars {{ read_in_list|yesno:'slide-togglable slide-toggle-notice,' }}"
+<div class="article acceptable-scrollbars white-scrollbars {{ read_in_list|yesno:'slide-togglable slide-toggle-notice,' }}"
     {% if read_in_list %}
       data-toggle-id="{{ article.id }}"
       data-toggle-function="toggle_content"

@@ -358,6 +358,14 @@ $sb-border-radius: 3px;
   height: 4px;
 }
 
+.white-scrollbars::-webkit-scrollbar-track-piece {
+  background: $white;
+}
+
+.white-scrollbars::-webkit-scrollbar-thumb:vertical,
+.white-scrollbars::-webkit-scrollbar-thumb:horizontal {
+  background: $grayLightMaxer;
+}
 // ———————————————————— Thanks https://github.com/twitter/bootstrap/issues/4286
 
 .spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
