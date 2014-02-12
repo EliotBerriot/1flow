@@ -416,7 +416,10 @@ def article_full_content_display(article):
             # END temporary measure.
 
             try:
-                return markdown(transient_content)
+                # On large screens, make the article start a little far from
+                # the top of the screen, it makes a better reading experience.
+                return (u'<div class="spacer50 visible-lg"></div>'
+                        + markdown(transient_content))
 
             except Exception:
                 LOGGER.exception(u'Live Markdown to HTML conversion '
