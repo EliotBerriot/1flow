@@ -722,6 +722,9 @@ class Read(Document, DocumentHelperMixin):
         if rtm is None:
             return u''
 
+        if rtm == 0:
+            return _(u'a quick read')
+
         return _(u'{0} read').format(naturaldelta(timedelta(seconds=rtm * 60)))
 
     @property
