@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-09 11:15+0100\n"
-"PO-Revision-Date: 2014-02-09 11:40+0009\n"
+"POT-Creation-Date: 2014-02-12 11:30+0100\n"
+"PO-Revision-Date: 2014-02-12 11:31+0009\n"
 "Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -43,8 +43,8 @@ msgstr "lectures"
 #: admin.py:137 models/nonrel/read.py:284 models/nonrel/read.py:293
 #: templates/snippets/read/reading-list-header-OLD.html:44
 #: templates/snippets/read/reading-list-header-OLD.html:76
-#: templates/snippets/read/reading-list-header.html:51
-#: templates/snippets/read/reading-list-header.html:83
+#: templates/snippets/read/reading-list-header.html:52
+#: templates/snippets/read/reading-list-header.html:84
 #: templates/snippets/selector/folder.html:37
 #: templates/snippets/selector/subscription.html:69
 msgid "starred"
@@ -957,7 +957,7 @@ msgstr "il y a {0}"
 msgid "Unknown source"
 msgstr "Source inconnue"
 
-#: models/nonrel/article.py:392 models/nonrel/read.py:695
+#: models/nonrel/article.py:392 models/nonrel/read.py:701
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
 
@@ -1016,14 +1016,6 @@ msgid ""
 msgstr ""
 "{0} est déjà dans la chaine de parents de {1}. Enregistrer ce dernier comme "
 "parent du premier cité provoquerait un cycle et ce n'est pas autorisé."
-
-#: models/nonrel/common.py:623
-msgid "User can read articles with full-text contents"
-msgstr "L'utilisateur peut lire le contenu complet (full-text) de l'article."
-
-#: models/nonrel/common.py:625
-msgid "User can import any web items"
-msgstr "L'utilisateur peut importer n'importe quel élément web"
 
 #: models/nonrel/feed.py:159 models/nonrel/tag.py:68
 msgid "name"
@@ -1955,7 +1947,7 @@ msgid "Remove from reading list"
 msgstr "Supprimer de la liste de lecture"
 
 #: models/nonrel/read.py:324 templates/navbars/read-endless.html:46
-#: templatetags/coretags.py:113
+#: templatetags/coretags.py:112
 msgid "Read later"
 msgstr "Lire plus tard"
 
@@ -2464,13 +2456,33 @@ msgctxt "adjective"
 msgid "unread"
 msgstr "non-lu"
 
-#: models/nonrel/read.py:660
+#: models/nonrel/read.py:666
 msgid " ({feed})"
 msgstr " ({feed}) "
 
-#: models/nonrel/read.py:665
+#: models/nonrel/read.py:671
 msgid "{title}{source}"
 msgstr "{title}{source}"
+
+#: models/nonrel/read.py:726
+msgid "a quick read"
+msgstr "brève lecture "
+
+#: models/nonrel/read.py:728
+msgid "{0} read"
+msgstr "lecture de {0}"
+
+#: models/nonrel/read.py:740
+msgid ""
+"<span class=\"popover-top\" data-toggle=\"tooltip\" title=\"Reading time: "
+"{0}\">{1}</span>"
+msgstr ""
+"<span class=\"popover-top\" data-toggle=\"tooltip\" title=\"Temps de lecture"
+" : {0}\">{1}</span>"
+
+#: models/nonrel/read.py:755
+msgid "very quick (<1 min)"
+msgstr "très bref (<1 min)"
 
 #: models/nonrel/subscription.py:139
 msgid "Tags that will be applied to new reads in this subscription."
@@ -2747,7 +2759,7 @@ msgstr "1flow est un logiciel libre,  © 2013-2014 Olivier Cortès et d'autres"
 msgid "contributions welcomed!"
 msgstr "les contributions sont bienvenues !"
 
-#: templates/help.html:3 templates/snippets/navbar.html:210
+#: templates/help.html:3 templates/snippets/navbar.html:211
 msgid "Features"
 msgstr "Fonctionnalités"
 
@@ -2972,11 +2984,11 @@ msgstr "Listes de lecture"
 msgid "All"
 msgstr "Tout"
 
-#: templates/navbars/read-endless.html:38 templatetags/coretags.py:123
+#: templates/navbars/read-endless.html:38 templatetags/coretags.py:122
 msgid "Funbox"
 msgstr "Funbox"
 
-#: templates/navbars/read-endless.html:41 templatetags/coretags.py:116
+#: templates/navbars/read-endless.html:41 templatetags/coretags.py:115
 msgid "Starred"
 msgstr "Sélectionné"
 
@@ -2985,23 +2997,23 @@ msgid "Unread"
 msgstr "Non-lu"
 
 #: templates/navbars/read-endless.html:56
-#: templates/snippets/selector/selector.html:70
+#: templates/snippets/selector/selector.html:63
 msgid "Watching lists"
 msgstr "Listes de veille"
 
-#: templates/navbars/read-endless.html:63 templatetags/coretags.py:148
+#: templates/navbars/read-endless.html:63 templatetags/coretags.py:147
 msgid "Knowledge"
 msgstr "Savoirs"
 
-#: templates/navbars/read-endless.html:65 templatetags/coretags.py:145
+#: templates/navbars/read-endless.html:65 templatetags/coretags.py:144
 msgid "Quotes"
 msgstr "Citations"
 
-#: templates/navbars/read-endless.html:67 templatetags/coretags.py:136
+#: templates/navbars/read-endless.html:67 templatetags/coretags.py:135
 msgid "Prospective"
 msgstr "Prospective"
 
-#: templates/navbars/read-endless.html:69 templatetags/coretags.py:142
+#: templates/navbars/read-endless.html:69 templatetags/coretags.py:141
 msgid "Regulations"
 msgstr "Réglementations"
 
@@ -3009,15 +3021,15 @@ msgstr "Réglementations"
 msgid "Best-Practices"
 msgstr "Best-practices"
 
-#: templates/navbars/read-endless.html:76 templatetags/coretags.py:127
+#: templates/navbars/read-endless.html:76 templatetags/coretags.py:126
 msgid "Facts"
 msgstr "Faits"
 
-#: templates/navbars/read-endless.html:78 templatetags/coretags.py:130
+#: templates/navbars/read-endless.html:78 templatetags/coretags.py:129
 msgid "Numbers"
 msgstr "Chiffres clefs"
 
-#: templates/navbars/read-endless.html:80 templatetags/coretags.py:133
+#: templates/navbars/read-endless.html:80 templatetags/coretags.py:132
 msgid "Analysis"
 msgstr "Analyses"
 
@@ -3186,11 +3198,11 @@ msgstr "Rechercher…"
 msgid "Maintenance"
 msgstr "Maintenance"
 
-#: templates/snippets/navbar.html:216
+#: templates/snippets/navbar.html:217
 msgid "About"
 msgstr "À propos"
 
-#: templates/snippets/navbar.html:217
+#: templates/snippets/navbar.html:218
 msgid "Contact"
 msgstr "Contact"
 
@@ -3324,7 +3336,7 @@ msgid "Folders and subscriptions"
 msgstr "Dossiers et abonnements"
 
 #: templates/snippets/preferences/selector.html:26
-#: templates/snippets/selector/selector.html:144
+#: templates/snippets/selector/selector.html:137
 msgid "Closed streams"
 msgstr "Flux fermés"
 
@@ -3619,20 +3631,20 @@ msgid "in"
 msgstr "dans"
 
 #: templates/snippets/read/read-action-original.html:2
-#: templatetags/coretags.py:451
+#: templatetags/coretags.py:438
 msgid "Display on the original website"
 msgstr "Afficher sur le site d'origine"
 
 #: templates/snippets/read/read-action-original.html:5
-#: templatetags/coretags.py:453
+#: templatetags/coretags.py:440
 msgid "Read original"
 msgstr "Voir l'original"
 
-#: templates/snippets/read/read-actions.html:47
+#: templates/snippets/read/read-actions.html:55
 msgid "Assign or remove watch-related attributes"
 msgstr "Assigner ou supprimer des attributs de veille"
 
-#: templates/snippets/read/read-actions.html:51
+#: templates/snippets/read/read-actions.html:59
 msgid "Watch"
 msgstr "Veille"
 
@@ -3800,8 +3812,8 @@ msgstr "Retourner au sélecteur de source"
 
 #: templates/snippets/read/reading-list-header-OLD.html:36
 #: templates/snippets/read/reading-list-header-OLD.html:68
-#: templates/snippets/read/reading-list-header.html:43
-#: templates/snippets/read/reading-list-header.html:75
+#: templates/snippets/read/reading-list-header.html:44
+#: templates/snippets/read/reading-list-header.html:76
 #: templates/snippets/selector/folder.html:35
 #: templates/snippets/selector/subscription.html:67
 msgid "unread"
@@ -3809,8 +3821,8 @@ msgstr "non-lu"
 
 #: templates/snippets/read/reading-list-header-OLD.html:40
 #: templates/snippets/read/reading-list-header-OLD.html:72
-#: templates/snippets/read/reading-list-header.html:47
-#: templates/snippets/read/reading-list-header.html:79
+#: templates/snippets/read/reading-list-header.html:48
+#: templates/snippets/read/reading-list-header.html:80
 #: templates/snippets/selector/folder.html:36
 #: templates/snippets/selector/subscription.html:68
 msgid "for later"
@@ -3818,8 +3830,8 @@ msgstr "plus tard"
 
 #: templates/snippets/read/reading-list-header-OLD.html:48
 #: templates/snippets/read/reading-list-header-OLD.html:80
-#: templates/snippets/read/reading-list-header.html:55
-#: templates/snippets/read/reading-list-header.html:87
+#: templates/snippets/read/reading-list-header.html:56
+#: templates/snippets/read/reading-list-header.html:88
 #: templates/snippets/selector/folder.html:38
 #: templates/snippets/selector/subscription.html:70
 msgid "all"
@@ -3958,12 +3970,11 @@ msgstr ""
 "\n"
 "L'import de l'adresse <code>%(failed_url)s</code> a échoué : %(failed_reason)s"
 
-#: templates/snippets/selector/import-web-items-trigger.html:22
+#: templates/snippets/selector/import-web-items-trigger.html:21
 #: templates/snippets/selector/selector.html:14
 msgid "Import web pages"
 msgstr "Importer des pages web"
 
-#: templates/snippets/selector/import-web-items-trigger.html:35
 #: templates/snippets/selector/import-web-pages.html:6
 msgid "Import web item(s)"
 msgstr "Importer des éléments web"
@@ -4076,23 +4087,19 @@ msgstr "S'abonner à un flux"
 msgid "Inbox"
 msgstr "Boîte de réception"
 
-#: templates/snippets/selector/selector.html:47 templatetags/coretags.py:96
-msgid "Imported elements"
-msgstr "Éléments importés"
-
-#: templates/snippets/selector/selector.html:61
+#: templates/snippets/selector/selector.html:54
 msgid "Sent Articles"
 msgstr "Articles envoyés"
 
-#: templates/snippets/selector/selector.html:115
+#: templates/snippets/selector/selector.html:108
 msgid "Unclassified information streams"
 msgstr "Flux d'informations non-classés"
 
-#: templates/snippets/selector/selector.html:124
+#: templates/snippets/selector/selector.html:117
 msgid "unclassified-streams"
 msgstr "flux-non-classes"
 
-#: templates/snippets/selector/selector.html:153
+#: templates/snippets/selector/selector.html:146
 msgid "closed-streams"
 msgstr "flux-fermes"
 
@@ -4277,95 +4284,99 @@ msgstr "Enregistrer les changements"
 msgid "Reset"
 msgstr "Remettre à zéro"
 
-#: templatetags/coretags.py:98
+#: templatetags/coretags.py:95
+msgid "Imported elements"
+msgstr "Éléments importés"
+
+#: templatetags/coretags.py:97
 msgid "You have {0} newly imported items."
 msgstr "Vous avez {0} éléments récemment importés"
 
-#: templatetags/coretags.py:100
+#: templatetags/coretags.py:99
 msgid "You have {0} newly imported items, out of {1} so far"
 msgstr "Vous avez {0} éléments non-lus sur un total de {1}"
 
-#: templatetags/coretags.py:102
+#: templatetags/coretags.py:101
 msgid "You imported {0} web items so far"
 msgstr "Vous avez importé {0} éléments web"
 
-#: templatetags/coretags.py:104
+#: templatetags/coretags.py:103
 msgid "You did not import anything until now"
 msgstr "Vous n'avez rien importé pour l'instant"
 
-#: templatetags/coretags.py:107
+#: templatetags/coretags.py:106
 msgid "All articles"
 msgstr "Tous les articles"
 
-#: templatetags/coretags.py:108
+#: templatetags/coretags.py:107
 msgid "You have {0} articles in 1flow"
 msgstr "Vous avez {0} articles dans 1flow"
 
-#: templatetags/coretags.py:110
+#: templatetags/coretags.py:109
 msgid "All unread"
 msgstr "Tous les non-lus"
 
-#: templatetags/coretags.py:111
+#: templatetags/coretags.py:110
 msgid "You have {0} unread articles"
 msgstr "Vous avez {0} articles non-lus"
 
-#: templatetags/coretags.py:114
+#: templatetags/coretags.py:113
 msgid "You have {0} articles to read later"
 msgstr "Vous avez {0} articles à lire plus tard"
 
-#: templatetags/coretags.py:117
+#: templatetags/coretags.py:116
 msgid "You have {0} starred articles"
 msgstr "Vous avez {0} articles sélectionnés"
 
-#: templatetags/coretags.py:119
+#: templatetags/coretags.py:118
 msgid "Archived"
 msgstr "Archivé"
 
-#: templatetags/coretags.py:120
+#: templatetags/coretags.py:119
 msgid "You have {0} archived articles"
 msgstr "Vous avez {0} articles archivés"
 
-#: templatetags/coretags.py:124
+#: templatetags/coretags.py:123
 msgid "You have {0} fun articles"
 msgstr "Vous avez {0} articles tordants"
 
-#: templatetags/coretags.py:128
+#: templatetags/coretags.py:127
 msgid "You have {0} articles marked as fact(s)"
 msgstr "Vous avez {0} articles contenant des faits marquants"
 
-#: templatetags/coretags.py:131
+#: templatetags/coretags.py:130
 msgid "You have {0} articles marked as number(s)"
 msgstr "Vous avez {0} articles contenant des chiffres-clefs"
 
-#: templatetags/coretags.py:134
+#: templatetags/coretags.py:133
 msgid "You have {0} articles marked as analysis"
 msgstr "Vous avez {0} articles marqués comme analyses/études"
 
-#: templatetags/coretags.py:137
+#: templatetags/coretags.py:136
 msgid "You have {0} articles marked as prospective"
 msgstr "Vous avez {0} éléments de prospective"
 
-#: templatetags/coretags.py:139
+#: templatetags/coretags.py:138
 msgid "Best-practices"
 msgstr "Bonnes pratiques"
 
-#: templatetags/coretags.py:140
+#: templatetags/coretags.py:139
 msgid "You have {0} articles marked as best-practices"
 msgstr "Vous avez {0} articles marqués comme bonnes-pratiques/état de l'art"
 
-#: templatetags/coretags.py:143
+#: templatetags/coretags.py:142
 msgid "You have {0} articles marked as regulation/legal"
 msgstr "Vous avez {0} éléments marqués comme réglementation/juridique/légal"
 
-#: templatetags/coretags.py:146
+#: templatetags/coretags.py:145
 msgid "You have {0} articles marked as quote(s)"
 msgstr "Vous avez {0} articles contenant des citations"
 
-#: templatetags/coretags.py:149
+#: templatetags/coretags.py:148
 msgid "You have {0} articles marked as knowledge"
 msgstr "Vous avez {0} éléments marqués comme savoir ou connaissance"
 
-#: templatetags/coretags.py:164
+#: templatetags/coretags.py:163
 msgid ""
 "Feature coming soon. More information on the 1flow blog "
 "http://blog.1flow.io/ or Twitter @1flow_io."
@@ -4373,46 +4384,48 @@ msgstr ""
 "Fonctionnalité en cours de développement. Plus d'informations sur le blog "
 "1flow http://blog.1flow.io/ ou sur Twitter @1flow_io."
 
-#: templatetags/coretags.py:303
+#: templatetags/coretags.py:302
 msgid "You have nothing in this list yet."
 msgstr "Vous n'avez rien dans cette liste"
 
-#: templatetags/coretags.py:348
+#: templatetags/coretags.py:347
 msgid "M+"
 msgstr "M+"
 
-#: templatetags/coretags.py:353
+#: templatetags/coretags.py:352
 msgid "k+"
 msgstr "k+"
 
-#: templatetags/coretags.py:368
+#: templatetags/coretags.py:367
 msgid "{0} articles"
 msgstr "{0} articles"
 
-#: templatetags/coretags.py:395
-msgid "{0} read"
-msgstr "lecture de {0}"
-
-#: templatetags/coretags.py:543 templatetags/coretags.py:545
+#: templatetags/coretags.py:531 templatetags/coretags.py:533
 msgid "Convert to full-text"
 msgstr "Convertir en plein-texte"
 
-#: templatetags/coretags.py:544
+#: templatetags/coretags.py:532
 msgid "Switch back to original"
 msgstr "Revenir à l'original"
 
-#: templatetags/coretags.py:546
+#: templatetags/coretags.py:534
 msgid "View original"
 msgstr "Voir l'original"
 
-#: templatetags/coretags.py:547
+#: templatetags/coretags.py:535
 msgid "converted"
 msgstr "converti"
 
-#: templatetags/coretags.py:549 templatetags/coretags.py:551
+#: templatetags/coretags.py:537 templatetags/coretags.py:539
 msgctxt "awesome-font icon name"
 msgid "exchange"
 msgstr "exchange"
+
+#~ msgid "User can read articles with full-text contents"
+#~ msgstr "L'utilisateur peut lire le contenu complet (full-text) de l'article."
+
+#~ msgid "User can import any web items"
+#~ msgstr "L'utilisateur peut importer n'importe quel élément web"
 
 #~ msgid "Friends"
 #~ msgstr "Amis"
