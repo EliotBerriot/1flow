@@ -6,11 +6,20 @@
 
 .article-content {
     font-family: georgia, times, serif;
-    text-align: justify;
+
+    // This could be implemented via dynamic CSS class,
+    // set via JS with a popup for example,
+    // and saved to a user preference (but invisible in
+    // standard preferences ??) ==> DESIGN NEEDED.
+    //
+    //text-align: justify;
 
     // Required when we have an iframe inside.
     height: 100%;
     width: 100%;
+
+    // This will be overriden in responsive, as font-size and line-height.
+    padding: 0 $article-padding-side-xs;
 
     .selected { background: #ff9; }
 
@@ -36,7 +45,7 @@
     }
 
     h1 {
-        font-size: $article-font-size-h1;
+        font-size: $article-font-size-h1-xs;
         padding-bottom: 0.5em;
         border-bottom: 1px dotted #ddd;
         margin-bottom: 1.5em;
@@ -48,16 +57,16 @@
     }
 
     h2 {
-        font-size: $article-font-size-h2;
+        font-size: $article-font-size-h2-xs;
     }
 
     h3 {
-        font-size: $article-font-size-h3;
+        font-size: $article-font-size-h3-xs;
     }
 
     p, ul, ol {
-        font-size: $article-font-size;
-        line-height: $article-font-size * 1.1;
+        font-size: $article-font-size-xs;
+        line-height: $article-line-height-xs;
         margin: 1.5em 0;
     }
 
@@ -208,37 +217,63 @@
 // }
 
 
-// ——————————————————— responsive
+// ————————————————————————————————————————————————————————————————— responsive
 
-@media (max-width: $screen-md-max) {
-    .article-content {
-        padding: 0 $article-padding-side-xs;
-    }
-}
 
-@media (min-width: $screen-md-max) {
+@media (min-width: $screen-md-min) and (max-width: $screen-md-max){
     .article-content {
+        padding: 0 $article-padding-side-md;
+
         h1 {
-            font-size: $article-font-size-h1 * 1.25;
+            font-size: $article-font-size-h1-md;
 
         }
         h2 {
-            font-size: $article-font-size-h2 * 1.25;
+            font-size: $article-font-size-h2-md;
 
         }
         h3 {
-            font-size: $article-font-size-h3 * 1.25;
+            font-size: $article-font-size-h3-md;
 
         }
 
         p, ul, ol {
-            font-size: $article-font-size * 1.25;
-            line-height: $article-font-size * 1.25 * 1.25;
+            font-size: $article-font-size-md;
+            line-height: $article-line-height-md;
         }
     }
 }
+
 @media (min-width: $screen-lg-min) {
     .article-content {
-        padding: 0 $article-padding-side-sm;
+
+        // Fix the max-width for more comfortable reading: on BIG
+        // screens, making the text full width or with %-dependant
+        // margins will slow down the reading speed.
+        //
+        // TODO: this could go into a CSS/pref like the "justify"
+        // of text-align.
+        width: 750px;
+        margin: 0 auto;
+
+        padding: 0 $article-padding-side-lg;
+
+        h1 {
+            font-size: $article-font-size-h1-lg;
+
+        }
+        h2 {
+            font-size: $article-font-size-h2-lg;
+
+        }
+        h3 {
+            font-size: $article-font-size-h3-lg;
+
+        }
+
+        p, ul, ol {
+            font-size: $article-font-size-lg;
+            line-height: $article-line-height-lg;
+        }
     }
 }

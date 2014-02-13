@@ -63,11 +63,6 @@ $subscription-opacity-default:  0.4;
 
 $subscription-border-color:    #d7d7d7;
 
-$article-padding-side-xs: 10px;
-$article-padding-side-sm: 15px;
-$article-padding-side-md: 30px;
-$article-padding-side-lg: 75px;
-
 $reading-list-split-lg: 18%;
 $reading-list-split-lg-inner: 25%;
 
@@ -76,8 +71,28 @@ $open-content-z-index-lg: 1000;
 
 // ——————————————————————————————————————————————————————————— article contents
 
-$article-font-size-h1: 28px;
-$article-font-size-h2: 22px;
-$article-font-size-h3: 20px;
-$article-font-size-h4: 18px;
-$article-font-size: 16px;
+$article-padding-side-xs: 15px;
+$article-padding-side-sm: 15px;
+$article-padding-side-md: 20px;
+$article-padding-side-lg: 15px;
+
+$article-font-size-xs: 16px;
+$article-line-height-xs: 20px;
+$article-font-size-h1-xs: 28px;
+$article-font-size-h2-xs: 22px;
+$article-font-size-h3-xs: 20px;
+$article-font-size-h4-xs: 18px;
+
+$article-font-size-md: 20px;
+$article-line-height-md: 26px;
+$article-font-size-h1-md: 32px;
+$article-font-size-h2-md: 28px;
+$article-font-size-h3-md: 24px;
+$article-font-size-h4-md: 22px;
+
+$article-font-size-lg: 22px;
+$article-line-height-lg: 30px;
+$article-font-size-h1-lg: 36px;
+$article-font-size-h2-lg: 32px;
+$article-font-size-h3-lg: 28px;
+$article-font-size-h4-lg: 24px;
