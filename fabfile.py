@@ -44,8 +44,11 @@ JENKINS_ROOT = '/var/lib/jenkins/jobs/{0}/workspace'.format(JENKINS_JOB)
 # The Django project name
 env.project    = 'oneflow'
 env.virtualenv = '1flow'
-env.parallel   = bool(os.environ.get('SPARKS_PARALLEL', True))
+env.parallel   = {'true': True, 'false': False}[
+    os.environ.get('SPARKS_PARALLEL', 'true').lower()]
 env.encoding   = 'utf-8'
+# cf. http://stackoverflow.com/q/9181153/654755
+env.shell      = '/bin/bash -l -c'
 
 # WARNING: don't set `env.user` here, it creates false-negatives when
 # bare-connecting to servers manually from the current directory. Eg.:

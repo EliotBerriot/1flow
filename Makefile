@@ -4,7 +4,9 @@ bootstrap:
 	pip install -r config/dev-requirements.txt
 	fab -H localhost local sdf.fabfile.dev_django_full
 	sudo chown -R `whoami`: ~/.virtualenvs/1flow
-	fab local runable
+    # This variable is required for the first installation,
+    # but not subsequent runs.
+    SPARKS_PARALLEL=false fab local runable
 
 runable:
 	fab local runable
