@@ -735,11 +735,11 @@ class Read(Document, DocumentHelperMixin):
         if rtm is None:
             return u''
 
+        inum = 1
+        icon = u'∎'  # u'<i class="icon-time"></i>'
         tmpl = _(u'<span class="popover-top" data-toggle="tooltip" '
                  u'title="Reading time: {0}">{1}</span>')
-        icon = u'∎'  # u'<i class="icon-time"></i>'
         time = naturaldelta(timedelta(seconds=rtm * 60))
-        inum = 1
 
         if rtm > 8:
             inum = 4
@@ -749,6 +749,10 @@ class Read(Document, DocumentHelperMixin):
 
         elif rtm > 1:
             inum = 2
+
+        elif rtm == 0:
+            # HEADS UP: patch/hack; non-breakable spaces everywhere.
+            time = _(u'very quick (<1 min)')
 
         return tmpl.format(time, inum * icon)
 
