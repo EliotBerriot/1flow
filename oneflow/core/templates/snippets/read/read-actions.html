@@ -33,13 +33,20 @@
     {% read_action article 'is_archived' with_text %}
     {% read_action article 'is_starred' with_text %}
 
-    {% if side_actions %}
+    {% comment %}
 
-      <div class="spacer25 visible-lg"></div>
+      DISABLED UNTIL JS FIXED,
+      to allow first libre release.
 
-      {% include "snippets/read/watch-actions.html" with with_text=0 %}
+      {% if side_actions %}
 
-    {% endif %}
+        <div class="spacer25 visible-lg"></div>
+
+        {% include "snippets/read/watch-actions.html" with with_text=0 %}
+
+      {% endif %}
+
+    {% endcomment %}
 
     {# ——————————————————————————————— WATCH ——————————————————————————————— #}
 

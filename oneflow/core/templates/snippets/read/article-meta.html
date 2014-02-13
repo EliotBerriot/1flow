@@ -103,12 +103,19 @@
           </div>
         </div>
 
-        <div class="meta-actions visible-lg">
-          {% with with_text=0 %}
-            {# with_admin_actions=1 #}
-            {% include "snippets/read/read-actions.html" %}
-          {% endwith %}
-        </div>
+        {% comment %}
+
+          DISABLED UNTIL JS IS FIXED,
+          to allow first libre release.
+
+          <div class="meta-actions visible-lg">
+            {% with with_text=0 %}
+              {# with_admin_actions=1 #}
+              {% include "snippets/read/read-actions.html" %}
+            {% endwith %}
+          </div>
+
+        {% endcomment %}
 
         {% endspaceless %}
 
