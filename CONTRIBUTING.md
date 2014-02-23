@@ -1,6 +1,8 @@
 Contributing Changes to 1flow
 -----------------------------
 
+Contribution areas are listed in `AUTHORS.md`. If you have any other idea, feel free to [suggest it on IRC][irc].
+
 Contributing to the project is both welcomed and encouraged. To do so, you have at least two options:
 
 # Hacking the code directly
@@ -32,3 +34,6 @@ If you are not a developer and do not feel comfortable on `GitHub`, Just use the
 will do our best to integrate them in our workflow.
 
 Thanks!
+
+
+  [irc]: irc://chat.freenode.net/#1flow

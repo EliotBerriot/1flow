@@ -5,15 +5,66 @@
 - a collaborative editing platform,
 - a trusted and decentralized storage space across the internet for sensible and common information.
 
-# 1flow core developers
+# Developers
 
- * Olivier Cortès (BDFL)
+ * **[Olivier Cortès (BDFL)][oc]**
+ 	- project initiator and lead developer
+ 	- software and infrastructure architect
+ 	- project advocate (public institutions, FOSS conferences)
+ 	- core manifesto ideas, sustainable crowdfunding ideas
+ 	- project funder (infrastructure hosting, soon legal research)
+ 	- features ideas and specifications
+ 	- emotional design, graphical design (but I will be happy to share/delegate with anyone having real aptitudes on this point)
 
-# 1flow contributors
+ * **YOUR NAME HERE**
+ 	- you are welcomed to participate!
+ 	- come [discuss on IRC][irc], take over issues, submit PRs :-)
+ 	- see `CONTRIBUTING.md` for development guidelines
 
-1flow is also the recipient of contributions from the following list of authors:
 
- * Matthieu Chaignot (manifesto ideas, features ideas, drawings, text content, design ideas)
- * Nicolas de Laitre (manifesto ideas and structure)
- * Kim Paletou (design ideas)
- * Willian Ver Valen Paiva (fetching/parsing code in the early phases, test suite, Jenkins setup and other source-code-related contributions)
+# Contributors
+
+ * **[Matthieu Chaignot][mc]**
+
+ 	- core-developer human supporter since the beginning :-)
+ 	- project advocate (users and customers, public institutions)
+ 	- manifesto ideas and involvement
+ 	- legal research initiator and handler
+ 	- project funder (legal research, infrastructure hosting)
+ 	- features ideas and specifications
+ 	- drawings and text content
+ 	- design ideas
+
+ * **[Nicolas de Laitre][ndl]**
+
+ 	- core-developer human supporter
+ 	- manifesto initiator, structure and involvement
+ 	- regular discussions, various ideas
+ 	- public institutions relationships management
+
+ * **[Willian Ver Valen Paiva][wvvp]**
+ 	- RSS fetching code prototype and research
+ 	- full-content parsing benchmarking and prototypes
+ 	- test suite development
+ 	- Jenkins setup
+ 	- various code contributions
+
+ * **[Kim Paletou][kimp]**
+ 	- design discussions and ideas
+ 	- graphical enhancements
+
+ * **YOUR NAME HERE**
+ 	- *you are welcomed to participate! We need help on the following subjects:*
+ 	- human support (come and discuss with us!)
+ 	- beta testing
+ 	- features voting and prioritization
+ 	- project advocacy
+ 	- translations
+ 	- documentation
+
+  [oc]: https://twitter.com/Karmak23
+  [mc]: https://twitter.com/mchaignot
+  [ndl]: https://twitter.com/nicolasdelaitre
+  [wvvp]: https://plus.google.com/106139807779820356822/about
+  [kimp]: https://plus.google.com/111093537055059678693/about
+  [irc]: irc://chat.freenode.net/#1flow
