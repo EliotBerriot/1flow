@@ -2,11 +2,11 @@
 
 {% load i18n %}
 
-{% block landing_title %}{% trans "That's a bad catch!" %}{% endblock landing_title %}
+{% block title %}{% trans "That's a bad catch!" %}{% endblock title %}
 
-{% block onlyme_content %}
-    <h1>{{ _('Oh my!') }}</h1>
-    <h2>{{ _("The server encountered an error and couldn't recover.") }}</h2>
-    <p>{{ _('We apologize for this situation. Developers have been automatically alerted about this problem.') }}</p>
-    <p>{{ _('Please try again a little later, or navigate to <a href="/">elsewhere</a>.') }}</p>
-{% endblock onlyme_content %}
+{% block error_content %}
+    <h1>{% trans 'Oh my!' %}</h1>
+    <h2>{% trans "The server encountered an error and couldn't recover." %}</h2>
+    <p>{% trans 'We apologize for this situation. Developers have been automatically alerted about this problem.' %}</p>
+    <p>{% trans 'Please try again a little later, or navigate to <a href="/">elsewhere</a>.' %}</p>
+{% endblock error_content %}

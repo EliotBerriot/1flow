@@ -1,0 +1,200 @@
+
+// HEADS UP: some `.folder` styles are in _selector-subscriptions
+//           to avoid duplication.
+
+.folder .folder-wrapper {
+    // second level (= level-1) of folder
+    // takes half the size of the parent.
+    float: left;
+
+    // The top part of this margin must be in sync (or
+    // not, if explicitely wanted) with @@SYNC-MT-FW@@
+    margin-top: 2em;
+}
+
+.folder {
+    // Just for memories, with a div.clearfix every two folders, we use
+    // &:nth-child(3n+1) to get the next just after the div.clearfix.
+
+    .name-wrapper {
+        font-size: 225%;
+        font-family: Georgia, Serif;
+        color: rgba(44, 55, 66, $subscription-opacity-default);
+        padding: 0 0.25em;
+
+        .links.css-hover-muted {
+            // reset the font-size so it's not as huge as title.
+            font-size: 16px;
+            font-family: inherit;
+            height: auto;
+        }
+
+        &:hover {
+            .css-hover-muted {
+                opacity: 1;
+                height: auto;
+            }
+
+            .links.css-hover-muted {
+                opacity: 1;
+                height: auto;
+            }
+        }
+    }
+
+    .no-subscription {
+        color: $subscription-link-color;
+        opacity: $subscription-opacity-default;
+        font-size: 150%;
+        margin-bottom: 50px;
+
+        // Replicate padding-{left,right} in
+        // .name-wrapper, minus negative margin…
+        padding-left: 0.75em;
+        padding-right: 0.75em;
+    }
+
+    .folder .name-wrapper {
+        font-size: 200%;
+    }
+
+    .folder .folder .name-wrapper {
+        font-size: 200%;
+    }
+
+    .folder .folder .folder .name-wrapper {
+        font-size: 150%;
+    }
+}
+
+.folder-wrapper {
+    // This margin-top must be in sync (or not,
+    // if explicitely wanted) with @@SYNC-MT-FW@@
+    margin-top: 4em;
+
+    .name-wrapper {
+        margin-top: 0.5em;
+
+        .name {
+            position: relative;
+
+            &:before {
+                position: absolute;
+                content: '';
+                border-top-color: inherit;
+                border-top-style: solid;
+            }
+        }
+    }
+}
+
+.folder-border-top {
+    width: 33%;
+    height: $folder-border-width-default;
+
+    // DUNNO: why "-$folder-border-width-default" doesn't work.
+    margin: 0 0 -2px 0;
+}
+
+
+// ——————————————————————————————————————————— Order and splitting matter START
+// eg, we can't group *.level-* like we did before,
+// due to CSS-nature-related inheriting consequences.
+
+.folder-wrapper.level-0 {
+    border-left-style: solid;
+    border-left-width: $folder-border-width-default;
+
+    .folder-border-top {
+        float: left;
+
+        // bootstrap3 .col padding
+        margin-left: -15px;
+    }
+
+    .name-wrapper.level-0 {
+        text-align: left;
+    }
+
+    &:hover .name-wrapper.level-0 {
+        color: rgba(44, 55, 66, 1);
+    }
+}
+.folder-wrapper.level-1 {
+    border-right-style: solid;
+    border-right-width: $folder-border-width-default;
+
+    .folder-border-top {
+        float: right;
+
+        // bootstrap3 .col padding
+        margin-right: -15px;
+    }
+
+    .name-wrapper.level-1 {
+        text-align: right;
+    }
+
+    &:hover .name-wrapper.level-1 {
+        color: rgba(44, 55, 66, 1);
+    }
+}
+.folder-wrapper.level-2 {
+    border-left-style: solid;
+    border-left-width: $folder-border-width-default;
+
+    .folder-border-top {
+        float: left;
+
+        // bootstrap3 .col padding
+        margin-left: -15px;
+    }
+
+    .name-wrapper.level-2 {
+        text-align: left;
+    }
+
+    &:hover .name-wrapper.level-2 {
+        color: rgba(44, 55, 66, 1);
+    }
+}
+.folder-wrapper.level-3 {
+    border-right-style: solid;
+    border-right-width: $folder-border-width-default;
+
+    .folder-border-top {
+        float: right;
+
+        // bootstrap3 .col padding
+        margin-right: -15px;
+    }
+
+    .name-wrapper.level-3 {
+        text-align: right;
+    }
+
+    &:hover .name-wrapper.level-3 {
+        color: rgba(44, 55, 66, 1);
+    }
+}
+.folder-wrapper.level-4 {
+    border-left-style: solid;
+    border-left-width: $folder-border-width-default;
+
+    .folder-border-top {
+        float: left;
+
+        // bootstrap3 .col padding
+        margin-left: -15px;
+    }
+
+    .name-wrapper.level-4 {
+        text-align: left;
+    }
+
+    &:hover .name-wrapper.level-4 {
+        color: rgba(44, 55, 66, 1);
+    }
+}
+
+// ————————————————————————————————————————————— Order and splitting matter END

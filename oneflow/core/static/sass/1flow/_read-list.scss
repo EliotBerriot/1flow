@@ -1,0 +1,352 @@
+
+#read {
+    nav {
+        margin-bottom: 0;
+
+        .navbar-brand {
+            // cancel the bold from default navbar style.
+            font-weight: normal;
+
+            // Make the line vertically aligned
+            padding-top: 20px;
+
+            i {
+                font-size: 20px;
+            }
+        }
+
+        .navbar-toggle {
+
+            // Align on right, like the brand is aligned on left.
+            // Or at least, fake the effect so that both seem.
+            margin-right: 0;
+        }
+    }
+}
+
+.initial-loading .loading {
+    margin: 30px 0;
+}
+
+#no-items {
+    margin: 15% 0 0;
+
+    .title {
+        margin-bottom: 20px;
+    }
+}
+
+@import "read-list-meta";
+
+// —————————————————————————————————————————————————————————— reading-list item
+
+.read-list-item {
+    //position: relative;
+    padding: 15px 10px;
+    border-bottom: 1px solid #ddd;
+
+    /*
+        START flash_fade():
+        bring the body color here
+        for the flash_fade() to work.
+
+        Thus, we need to reset the H* colors.
+    */
+
+    color: #29323d;
+
+    h1, h2, h3 {
+        color: inherit;
+    }
+
+    /* END flash_fade() */
+
+    &:hover {
+        background-color: #fff;
+
+        .article-meta .start-actions {
+            // http://www.colorzilla.com/gradient-editor/#ffffff+0,ffffff+20&0+0,1+20;Custom
+            //@include filter-gradient(#00ffffff, #ffffff, horizontal); // IE6-8
+            // IE9 SVG, needs conditional override of 'filter' to 'none'
+            @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 15%));
+        }
+    }
+
+    p {
+        /* cancel Bootstrap's media margin. */
+        margin-bottom: 0;
+    }
+
+    &:nth-child(2) {
+        background-color: #ccc;
+        padding-top: 0;
+
+    }
+
+    &:last-child {
+        margin-bottom: 8em;
+        border-bottom: none;
+    }
+
+    .article-meta {
+
+        .meta-thumbnail {
+            height: 32px;
+            text-align: center;
+            vertical-align: middle;
+
+            i.placeholder {
+                color: $grayLightMax;
+                font-size: 36px;
+            }
+        }
+
+        .meta-back-to-list {
+            text-align: center;
+            font-size: 40px;
+            line-height: 40px;
+            margin-top: -10px;
+
+            i {
+                padding-right: 10px;
+            }
+        }
+
+        .meta-content {
+            // debug background-color: #cce;
+            // debug opacity: 0.8;
+        }
+
+        .row,
+        .row .row,
+        .row .row .row {
+            // cancel BS3 -15px, it hurts in the list.
+            margin: 0;
+        }
+
+        .col-xs-2,
+        .col-xs-10,
+        .col-xs-12 {
+            padding-left: 0;
+            padding-right: 0;
+            margin: 0;
+        }
+
+        h2.article-title {
+            font-size: 16px;
+        }
+
+        .reading-time {
+            color: $grayLighter;
+        }
+
+        .freshness {
+            // compensate the font-size for bottom alignment.
+            padding-top: 2px;
+
+            font-size: 12px;
+            text-align: right;
+        }
+    }
+
+    .start-actions {
+        position: absolute;
+        top: -15px;
+        right: -10px;
+        text-align: right;
+
+        // Make a little room for the gradient
+        // for 5 icons: width: 325px;
+        // for 2 icons:
+        width: 150px;
+
+        @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(247,247,247,1) 15%));
+
+        /* Keep the icons over the title. */
+        z-index: 100;
+    }
+
+    .read-actions {
+	    padding-right: 30px;
+    }
+}
+
+.only_when_open {
+    // this one starts hidden and
+    // will be shown by .open_content.
+    display: none;
+}
+
+.open_content {
+    // HEADS UP: this is for mobile. Settings for others at EOF.
+
+    position: fixed;
+
+    // stay above all navbars.
+    z-index: $open-content-z-index-xs;
+
+    top: 0;
+    bottom: 0;
+    left: 0;
+    right: 0;
+
+    // Make the content white, like the hover. this avoids
+    // disgracefull flip/flaps on mouse out while we read.
+    background-color: #fff;
+
+    .article-meta {
+
+        .start-actions {
+            // http://www.colorzilla.com/gradient-editor/#ffffff+0,ffffff+20&0+0,1+20;Custom
+            // @include filter-gradient(#00ffffff, #ffffff, horizontal); // IE6-8
+            // IE9 SVG, needs conditional override of 'filter' to 'none'
+            @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 15%));
+        }
+    }
+
+    .article-wrapper {
+        position: fixed;
+
+        // Get back the margins for full-width display.
+        left: 0;
+        right: 0;
+
+        // 15px + 40px (.read-list-item::padding-top + .article-meta.height)
+        top: 65px;
+
+        // 15px + 40px (.read-list-item::padding-top + .article-actions.height)
+        bottom: 65px;
+
+        padding: 0 5px;
+        margin: 0;
+    }
+
+    .article {
+        width: 100%;
+        height: 100%;
+
+        padding: 0 5px;
+
+        overflow-y: auto;
+        overflow-x: hidden;
+    }
+
+    .only_when_open {
+        display: block;
+    }
+
+    .only_when_collapsed {
+        display: none;
+    }
+}
+
+
+// ——————————————————————————————————————————————————— icons next to item title
+// .not_is_bookmarked.not_is_starred
+
+
+.read-list-item.not_is_read {
+    .article-title {
+        font-weight: 600;
+    }
+}
+
+.read-list-item.is_read.not_is_bookmarked.not_is_starred {
+    .article-title,
+    .article-meta .meta {
+        opacity: 0.9;
+    }
+}
+
+
+// ———————————————————————————————————————————————————————— articles in iframes
+
+
+.article-iframe {
+    border: 0;
+    width: 100%;
+    height: 100%;
+    padding: 0;
+    margin: 0;
+
+    // NOTE: using negative margins is OK for left,
+    //       but doesn't work for right. Thus we don't
+    //       do anything about it. article-content
+    //       padding is lost.
+}
+
+
+// ————————————————————————————————————————————————————————————————— responsive
+
+
+@media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
+    .open_content {
+
+        // is this really useful?
+        padding-left: 5%;
+        padding-right: 5%;
+
+        .article-wrapper {
+            // Get back the margins for full-width display.
+            left: 10%;
+            right: 10%;
+        }
+    }
+}
+
+@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+    .open_content {
+
+        // is this really useful?
+        padding-left: 10%;
+        padding-right: 10%;
+
+        .article-wrapper {
+            // Get back the margins for full-width display.
+            left: 20%;
+            right: 20%;
+        }
+    }
+}
+
+@media (min-width: $screen-lg-min) {
+
+    .open_content {
+        // stay under the tooltips.
+        z-index: $open-content-z-index-lg;
+
+        top: $navbar-height-sm;
+
+        // NO bottom action bar on desktops,
+        //open_content fills the whole height.
+        bottom: 0;
+
+        &:last-child {
+            // remove the margin of the last item in list when it's open,
+            // else the article content displays outside, this is ugly.
+            margin-bottom: 0;
+
+        }
+
+        left: $reading-list-split-lg;
+        right: $reading-list-split-lg;
+
+        .article-meta-row {
+            display: none;
+        }
+
+        .article-wrapper {
+            // On desktops, the wrapper is full-width, and the .article
+            // is padded left/right. This moves the scrollbar far from
+            // the text and gives a better reading experience.
+
+            left: $reading-list-split-lg;
+            right: $reading-list-split-lg;
+
+            // 15px (.read-list-item::padding-top)
+            // NO bottom action bar on desktops.
+            bottom: 15px;
+
+        }
+    }
+}

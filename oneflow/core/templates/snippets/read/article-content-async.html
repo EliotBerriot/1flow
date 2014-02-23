@@ -1,3 +1,3 @@
     {# This calls a templatetag, which in turn calls sub-templates… #}
     {# HEADS UP: this call must be the same as in 'snippets/read/article-body.html:31' #}
-    {% article_content article read.is_restricted perms.core.can_read_full_text %}
+    {% article_read_content read %}

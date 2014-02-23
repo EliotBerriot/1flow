@@ -1,0 +1,70 @@
+{% load i18n markdown_deux_tags %}
+
+<h1>{% trans "Social accounts" %}</h1>
+
+{% if social_auth.associated %}
+
+  <h3>{% trans "Currently associated" %}
+  </h3>
+  <p class="muted small">
+      {% if social_count > 1 %}
+        {% filter markdown %}{% blocktrans %}
+Click to disassociate any of your accounts, but beware:
+if it's the account you're signed in, you will be
+immediately disconnected from **1flow**.
+{% endblocktrans %}{% endfilter %}
+      {% else %}
+        {% filter markdown %}{% blocktrans %}
+As you have currently only one social account, you cannot de-associate it
+from **1flow**: this would leave you lost in cyberspace without any way to
+find back the spaceport.
+{% endblocktrans %}{% endfilter %}
+
+      {% endif %}
+  </p>
+
+  <ul class="social-auth">
+    {% for backend in social_auth.associated %}
+      {% if backend.provider == "google-oauth2" %}
+        {% captureas backend_name %}Google{% endcaptureas %}
+        {% captureas backend_full_name %}{{backend|slice:'-6'}}{% endcaptureas %}
+
+      {% else %}
+        {% captureas backend_name %}{{ backend.name }}{% endcaptureas %}
+        {% captureas backend_full_name %}{{backend}}{% endcaptureas %}
+
+      {% endif %}
+
+      {% if social_count == 1 %}
+        <li><a class="btn btn-danger btn-block btn-huge" href="#" disabled="disabled"
+          title="{% blocktrans %}Cannot disconnect from {{ backend_name }}{% endblocktrans %}"
+          ><i class="icon-signout"></i> {{backend_full_name|title}}</a></li>
+
+        {% else %}
+          <li><a class="btn btn-warning btn-block btn-huge"
+            href="{% url 'socialauth_disconnect_individual' backend.provider backend.id %}?next={% absolute 'profile' %}"
+            title="{% blocktrans %}Disconnect from {{ backend_name }}{% endblocktrans %}"
+            ><i class="icon-signout"></i> {{backend_full_name|title}}</a></li>
+
+        {% endif %}
+
+    {% endfor %}
+  </ul>
+
+  <div class="spacer50"></div>
+
+  <h3>{% trans "Associate more accounts" %}</h3>
+{% else %}
+  <h3>{% trans "Associate accounts" %}</h3>
+
+{% endif %}
+  {% captureas next_url%}?next={% absolute 'profile' %}{% endcaptureas %}
+  {% include "snippets/social-auth-signin.html" %}
+
+  <div class="spacer50"></div>
+  <div class="jumbotron">
+    <fieldset>
+      <legend><h2>{% trans "Danger zone" %}</h2></legend>
+      <p><a class="btn btn-danger btn-small" href="{% url "account_delete" %}">{% trans "Delete account" %}</a></p>
+    </fieldset>
+  </div>

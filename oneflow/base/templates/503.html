@@ -2,14 +2,16 @@
 
 {% load i18n %}
 
-{% block landing_title %}{% trans "Maintenance mode" %}{% endblock landing_title %}
+{% block title %}{% trans "Maintenance mode" %}{% endblock title %}
 
-{% block onlyme_content %}
-    <h1>{{ _('Maintenance mode') }}</h1>
-    <h2>{{ _('We are upgrading the plane engines with a major booster.') }}</h2>
-    <p>{{ _('<strong>1flow</strong> should be able to fly again in a few moments.') }}
-    {{ _('Please retry in a little while (just reload this page).') }}
-    <p>{{ _('If the plane stays on the ground for too long, you should be able to get <a href="https://twitter.com/1flow_io">more information on our twitter feed</a>.') }}</p>
-    <p>{{ _('Thanks for your patience.') }}</p>
+{% block error_content %}
 
-{% endblock onlyme_content %}
+    <h1>{% trans 'Maintenance mode' %}</h1>
+
+    <h2>{% trans 'We are upgrading the plane engines with a major booster.' %}</h2>
+    <p>{% trans '<strong>1flow</strong> should be able to fly again in a few moments.' %}
+    {% trans 'Please retry in a little while (just reload this page).' %}
+    <p>{% trans 'If the plane stays on the ground for too long, you should be able to get <a href="https://twitter.com/1flow_io">more information on our twitter feed</a>.' %}</p>
+    <p>{% trans 'Thanks for your patience.' %}</p>
+
+{% endblock error_content %}

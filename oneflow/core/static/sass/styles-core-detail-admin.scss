@@ -1,0 +1,11 @@
+
+@import "common/common-header";
+
+@import "detail-admin/bootstrap-overrides-bs3";
+
+//
+// NOTE: include more things from detail-admin/ when we need them.
+//       for now the inclusion is the base theme minimum to avoid clutter.
+//
+
+@import "common/common-footer";

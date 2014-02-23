@@ -1,0 +1,25 @@
+{# 20140207: this template should vanish when full-responsive implementation of v0.26 is ready #}
+
+
+<div id="article-meta-wrappers" class="row">
+
+    {% if ACTIVATE_THIS_WHEN_PREFERENCE_IS_READY %}
+    <style type="text/css">
+
+    {# Don't let things fade on mobile devices, touch avoids the :hover thing. #}
+    {# TODO: factorize "992px" python-side, make it dynamic in SCSS code. #}
+    @media (min-width: 992px) {
+
+    .reading-meta-container {
+        opacity: 0;
+    }
+
+    #article-meta-wrappers:hover .reading-meta-container {
+        opacity: 1;
+    }
+    </style>
+    {% endif %}
+
+    <div id="article-meta-information" class="reading-meta-container"></div>
+    <div id="article-meta-attributes" class="reading-meta-container"></div>
+</div>

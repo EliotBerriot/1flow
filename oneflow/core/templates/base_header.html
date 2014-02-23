@@ -1,0 +1,101 @@
+{% load django_select2_tags %}
+
+  {% if config.WEB_BOOTSWATCH_THEME %}
+
+    {% if config.WEB_CDNS_ENABLED %}
+      <link rel="stylesheet"
+          href="//netdna.bootstrapcdn.com/bootswatch/3.0.3/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
+
+    {% else %}
+      <link rel="stylesheet"
+          href="{{ STATIC_URL}}/vendor/bootswatch/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
+    {% endif %}
+
+    {# NOTE: bootswatch already includes bootstrap CSS #}
+    {% compressed_css 'core-bootswatch' %}
+
+  {% else %}
+
+    {# HEADS UP: order matters, we override so many things in core theme. #}
+    {% compressed_css 'bootstrap' %}
+    {% import_django_select2_css %}
+    {% compressed_css 'core-detail-admin' %}
+
+  {% endif %}
+
+{% if config.WEB_CDNS_ENABLED %}
+
+  <link rel="stylesheet"
+      href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" />
+  <script type="text/javascript"
+      src="//cdn.jsdelivr.net/jquery/2.0.3/jquery-2.0.3.min.js"></script>
+
+      {% comment %}
+
+  <link rel='stylesheet' type='text/css'
+    href='http://fonts.googleapis.com/css?family=Open+Sans:300italic,400italic,600italic,700italic,800italic,400,300,600,700,800'>
+      {% endcomment %}
+
+  <link href='http://fonts.googleapis.com/css?family=Source+Sans+Pro:200,300,400,600,700,900,200italic,300italic,400italic,600italic,700italic,900italic' rel='stylesheet' type='text/css'>
+
+{% else %}
+
+  <link rel="stylesheet"
+      href="{{ STATIC_URL}}/vendor/font-awesome/font-awesome.css" />
+  <script type="text/javascript"
+      src="{{ STATIC_URL}}/vendor/jquery/2.0.3/jquery.min.js"></script>
+
+    {% comment %}
+      <link rel="stylesheet"
+        href="{{ STATIC_URL}}/vendor/fonts/Open_Sans/Open_Sans.css" />
+    {% endcomment %}
+
+      <link rel="stylesheet"
+        href="{{ STATIC_URL}}/vendor/fonts/Source_Sans_Pro/Source_Sans_Pro.css" />
+
+{% endif %}
+
+{% comment %}
+
+<!--[if lt IE 9]>
+  <script src="../bower_components/respond/dest/respond.min.js"></script>
+<![endif]-->
+
+{% endcomment %}
+
+{# ———————————————————————————————————————————————————— OLD Internet Explorer #}
+
+<!--[if IE 7]>
+  {% compressed_css 'font-awesome-ie7' %}
+<![endif]-->
+
+{# HTML5 shim, for IE6-8 support of HTML5 elements #}
+
+<!--[if lt IE 9]>
+{% if config.WEB_CDNS_ENABLED %}
+    <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
+
+{% else %}
+  <script src="{{ STATIC_URL}}/vendor/bootswatch/bower_components/html5shiv/dist/html5shiv.js"></script>
+
+{% endif %}
+
+<![endif]-->
+
+<!--[if gte IE 9]>
+  <style type="text/css">
+    .gradient {
+       filter: none;
+    }
+  </style>
+<![endif]-->
+
+{# —————————————————————————————————————— Hash loader for navbar compensation #}
+
+<script type="text/javascript">
+  var scrollForHash = function() { scrollBy(0, -70) };
+
+  window.addEventListener("hashchange", scrollForHash);
+
+  function loadScrollForHash() { if (window.location.hash) scrollForHash(); }
+</script>

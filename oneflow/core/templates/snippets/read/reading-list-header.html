@@ -1,0 +1,117 @@
+
+<nav class="navbar navbar-default navbar-static-top col-lg-10 col-lg-offset-1" role="navigation">
+    <!-- Brand and toggle get grouped for better mobile display -->
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse"
+          data-target="#reading-list-header-collapsible">
+        <span class="sr-only">{% trans "Switch items" %}</span>
+        <i class="icon-eye-open"></i>
+      </button>
+
+      <a id="back-to-selector"
+          data-toggle="tooltip"
+          class="navbar-brand popover-bottom"
+          title="{% trans "Go back to source selector" %}"
+          href="{% url 'source_selector' %}{% spaceless %}
+
+          {% if folder %}
+              #{{ folder.id }}
+
+          {% elif subscription %}
+              #{{ subscription.id }}
+
+          {% endif %}
+
+          {% endspaceless %}"><i class="icon-angle-left"></i>
+      {{ read_page_header_text_left|safe }}</a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="reading-list-header-collapsible">
+
+      {% if folder or subscription %}
+
+        <ul class="nav navbar-nav navbar-right">
+          <li class="dropdown">
+            <button type="button" data-toggle="dropdown" data-target="#"
+                class="btn btn-default navbar-btn btn-xs dropdown-toggle">
+              <i class="icon-exchange"></i>
+            </button>
+            <ul class="dropdown-menu" role="menu">
+
+              {% if folder %}
+
+                {% if current_mode != "is_read" %}
+                    <li>{% container_reading_list_with_count 'read' 'folder' folder 'unread' _('unread') %}</li>
+                {% endif %}
+
+                {% if current_mode != "is_bookmarked" %}
+                    <li>{% container_reading_list_with_count 'read_later' 'folder' folder 'bookmarked' _('for later') %}</li>
+                {% endif %}
+
+                {% if current_mode != "is_starred" %}
+                    <li>{% container_reading_list_with_count 'read_starred' 'folder' folder 'starred' _('starred') %}</li>
+                {% endif %}
+
+                {% if current_mode != "all" %}
+                    <li>{% container_reading_list_with_count 'read_all' 'folder' folder 'all' _('all')  %}</li>
+                {% endif %}
+
+                {% comment %}
+                {# Won't work until we have the corresponding descriptors on folders #}
+
+                <li>{% container_reading_list_with_count 'read_facts' 'folder' folder 'facts' _('facts') %}</li>
+                <li>{% container_reading_list_with_count 'read_numbers' 'folder' folder 'numbers' _('numbers') %}</li>
+                <li>{% container_reading_list_with_count 'read_analysis' 'folder' folder 'analysis' _('analysis') %}</li>
+                <li>{% container_reading_list_with_count 'read_prospective' 'folder' folder 'prospective' _('propective') %}</li>
+                <li>{% container_reading_list_with_count 'read_know_how' 'folder' folder 'knowhow' _('know-how') %}</li>
+                <li>{% container_reading_list_with_count 'read_rules' 'folder' folder 'rules' _('rules') %}</li>
+                <li>{% container_reading_list_with_count 'read_quotes' 'folder' folder 'quotes' _('quotes') %}</li>
+                <li>{% container_reading_list_with_count 'read_knowledge' 'folder' folder 'knowledge' _('knowledge') %}</li>
+                {% endcomment %}
+
+              {% elif subscription %}
+
+                {% if current_mode != "is_read" %}
+                    <li>{% container_reading_list_with_count 'read' 'feed' subscription 'unread' _('unread') %}</li>
+                {% endif %}
+
+                {% if current_mode != "is_bookmarked" %}
+                    <li>{% container_reading_list_with_count 'read_later' 'feed' subscription 'bookmarked' _('for later') %}</li>
+                {% endif %}
+
+                {% if current_mode != "is_starred" %}
+                    <li>{% container_reading_list_with_count 'read_starred' 'feed' subscription 'starred' _('starred') %}</li>
+                {% endif %}
+
+                {% if current_mode != "all" %}
+                    <li>{% container_reading_list_with_count 'read_all' 'feed' subscription 'all' _('all')  %}</li>
+                {% endif %}
+
+                {% comment %}
+                {# Won't work until we have the corresponding descriptors on folders #}
+
+                <li>{% container_reading_list_with_count 'read_facts' 'feed' subscription 'fact' _('facts') %}</li>
+                <li>{% container_reading_list_with_count 'read_numbers' 'feed' subscription 'number' _('numbers') %}</li>
+                <li>{% container_reading_list_with_count 'read_analysis' 'feed' subscription 'analysis' _('analysis') %}</li>
+                <li>{% container_reading_list_with_count 'read_prospective' 'feed' subscription 'prospective' _('propective') %}</li>
+                <li>{% container_reading_list_with_count 'read_know_how' 'feed' subscription 'knowhow' _('know-how') %}</li>
+                <li>{% container_reading_list_with_count 'read_rules' 'feed' subscription 'rules' _('rules') %}</li>
+                <li>{% container_reading_list_with_count 'read_quotes' 'feed' subscription 'quote' _('quotes') %}</li>
+                <li>{% container_reading_list_with_count 'read_knowledge' 'feed' subscription 'knowledge' _('knowledge') %}</li>
+                {% endcomment %}
+
+              {% endif %}
+            </ul>
+          </li><!-- .dopdown -->
+        </ul><!-- .navbar-right -->
+
+      {% endif %}
+
+      <p class="navbar-text navbar-right">
+        <span id="reads-number">{{ read_page_header_text_right|safe }}</span>&nbsp;
+      </p>
+
+          {#{% include 'snippets/selector/import-web-items-trigger.html' with in_list=1 %}#}
+    </div>
+  </div>
+</nav>

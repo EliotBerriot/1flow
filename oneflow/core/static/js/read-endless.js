@@ -185,22 +185,21 @@ function toggle_content(oid, callback) {
             //console.log(meta_url);
 
             $.get(meta_url, function(data) {
-                var $data = $(data);
 
-                // See the server-side template for comments.
+                var $data = $(data),
+                    $article_meta_information = $on_what.find('.article-meta-information').first(),
+                    $article_meta_attributes  = $on_what.find('.article-meta-attributes').first();
 
-                //console.log($data);
-                //console.log($data.find('#article-meta-left-data'));
-                //console.log($data.find('#article-meta-right-data'));
+                // NOTE: see the server-side template for comments.
 
-                $('#article-meta-left').html(
-                    $data.find('#article-meta-left-data').html());
+                $article_meta_information.html(
+                    $data.find('.article-meta-information-data').html());
 
-                $('#article-meta-right').html(
-                    $data.find('#article-meta-right-data').html());
+                $article_meta_attributes.html(
+                    $data.find('.article-meta-attributes-data').html());
 
-                setup_everything($('#article-meta-left'));
-                setup_everything($('#article-meta-right'));
+                setup_everything($article_meta_information);
+                setup_everything($article_meta_attributes);
             });
         },
 
@@ -252,6 +251,7 @@ function toggle_content(oid, callback) {
             //bindable_hovered = content;
 
             $me.addClass('open_content');
+
             open_auxilliary($me);
             $content.slideDown(scroll_speed, "swing", run_callback);
 
@@ -331,8 +331,11 @@ function toggle_content(oid, callback) {
         };
 
     if ($content.is(':visible')) {
+
         if (preferences.read_switches_to_fullscreen) {
+
             $('.navbar').each(function(index){
+
                 if (index == 0) {
                     $(this).slideDown(close_me_real);
 
@@ -340,6 +343,7 @@ function toggle_content(oid, callback) {
                     $(this).slideDown();
                 }
             });
+
         } else {
             close_me_real();
         }
@@ -350,6 +354,9 @@ function toggle_content(oid, callback) {
         // As we close the content, there is nothing
         // bindable anymore, anyway.
         //bindable_hovered = null;
+
+        // Avoid the body to scroll on mousewhell / touchslide
+        $('body').removeClass('modal-open');
 
     } else {
         //console.debug(oid + ' not visible.');
@@ -377,12 +384,16 @@ function toggle_content(oid, callback) {
 
             $("#content-" + to_close).slideUp(scroll_speed, "swing", function(){
                 $current.removeClass('open_content');
+
                 close_auxilliary($current);
             });
 
 
         } else {
             open_me(true);
+
+            // Make the body free again for scrolling
+            $('body').addClass('modal-open');
         }
     }
 }
@@ -968,7 +979,7 @@ function setup_snappers() {
 function hide_initial_loading() {
 
     try {
-        $(".initial-loading").stop(true, true).slideUp(function(){
+        $(".initial-loading").addClass("hidden", function(){
             // WARNING: do not use sole document.location.
             // In case of a '#' inside it will loop all the
             // articles in the counter span!!
@@ -986,10 +997,10 @@ function hide_initial_loading() {
 
 function show_initial_loading() {
 
-    $(".initial-loading").stop(true, true).fadeIn();
+    $(".initial-loading").removeClass("hidden");
 }
 
 function show_no_items() {
 
-    $("#no-items").fadeIn();
+    $("#no-items").removeClass("hidden");
 }

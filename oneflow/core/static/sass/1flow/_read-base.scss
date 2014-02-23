@@ -1,0 +1,177 @@
+
+.read-list-item,
+.read-individual-item {
+    font-weight: 300;
+}
+
+.read-actions {
+
+    i {
+        font-size: 24px;
+    }
+
+    a {
+        display: inline-block;
+        padding-top: 24px;
+        height: 48px;
+        width: 40px;
+        //text-align: center;
+        //vertical-align: middle;
+        color: #29313c;
+        opacity: 0.5;
+
+        /* reset the one from Bootstrap */
+        text-decoration: none;
+
+        /* reset the one from .article-content */
+        border-bottom: none;
+
+        &:first-child,
+        &:nth-child(2) {
+            padding-left: 0;
+        }
+
+        &:hover, &:active {
+            opacity: 1;
+        }
+
+        &:visited, &:active {
+            border: none;
+        }
+    }
+}
+
+.side-actions {
+
+    // cancel all other *-actions CSS
+    background-color: transparent;
+    padding-top: 0;
+    text-align: left;
+
+    .read-actions i {
+        font-size: 15px;
+        margin-right: 5px;
+    }
+
+    .status-icons {
+        margin-bottom: 20px;
+
+        span {
+            margin-left: 10px;
+        }
+    }
+
+    .action {
+        //background-color: #fcc;
+        padding: 0 6% 5px 0;
+
+        &:last-child {
+            padding-right: 0;
+        }
+
+        a {
+            height: auto;
+            //text-align: left;
+            padding-top: 0;
+        }
+    }
+}
+
+.hover-muted {
+    opacity: 0;
+}
+
+.admin-informations {
+    /* don't know why, we've got a blank space after the slideToggle(). */
+    margin-bottom: -20px;
+    padding-left: 4em;
+    padding-right: 4em;
+}
+
+#jump-to-label {
+    a:hover {
+        background-color: inherit;
+        color: rgb(170, 170, 170);
+    }
+}
+
+.restricted-read {
+
+    .article-title {
+        border-bottom: none;
+    }
+
+    .action-read-original {
+        display: none;
+    }
+}
+
+
+// ————————————————— responsive
+
+
+
+@media (min-width: $screen-md-min) and (max-width: $screen-md-max) {
+
+    .read-actions {
+
+        a {
+            width: auto;
+            padding: 0 20px 10px 0;
+
+        }
+    }
+
+    .side-actions {
+
+        .action {
+            text-align: left;
+            padding: 5px 0;
+
+            a {
+                height: auto;
+                text-align: left;
+                padding-top: 0;
+
+                span {
+                    line-height: 25px;
+                    vertical-align: top;
+                }
+            }
+        }
+    }
+}
+
+
+@media (min-width: $screen-lg-min) {
+
+    .read-actions {
+
+        a {
+            width: auto;
+            min-width: 50px;
+        }
+    }
+
+    .side-actions {
+
+        .action {
+            // one per line on big displays.
+            display: block;
+
+            text-align: left;
+            padding: 5px 0;
+
+            a {
+                height: auto;
+                text-align: left;
+                padding-top: 0;
+
+                span {
+                    line-height: 25px;
+                    vertical-align: top;
+                }
+            }
+        }
+    }
+}

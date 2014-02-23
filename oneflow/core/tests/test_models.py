@@ -1,5 +1,24 @@
 # -*- coding: utf-8 -*-
 # pylint: disable=E1103,C0103
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import logging
 
@@ -12,7 +31,7 @@ from django.contrib.auth import get_user_model
 
 from oneflow.core.models import (Feed, Subscription, PseudoQuerySet,
                                  Article, Read, Folder, TreeCycleException,
-                                 User, Tag, WebSite, Author)
+                                 User, Group, Tag, WebSite, Author)
 from oneflow.core.tasks import global_feeds_checker
 from oneflow.base.utils import RedisStatsCounter
 from oneflow.base.tests import (connect_mongodb_testsuite, TEST_REDIS)
@@ -31,6 +50,7 @@ connect_mongodb_testsuite()
 Article.drop_collection()
 Read.drop_collection()
 User.drop_collection()
+Group.drop_collection()
 Feed.drop_collection()
 Tag.drop_collection()
 Folder.drop_collection()
@@ -963,3 +983,184 @@ class FoldersTest(TestCase):
         self.assertRaises(TreeCycleException, ftest2.add_child,  ftest1)
         self.assertRaises(TreeCycleException, ftest3.add_child,  ftest1)
         self.assertRaises(TreeCycleException, ftest3.add_child,  ftest2)
+
+
+@override_settings(STATICFILES_STORAGE=
+                   'pipeline.storage.NonPackagingPipelineStorage',
+                   CELERY_EAGER_PROPAGATES_EXCEPTIONS=True,
+                   CELERY_ALWAYS_EAGER=True,
+                   BROKER_BACKEND='memory',)
+class GroupsTest(TestCase):
+    def setUp(self):
+
+        self.django_user1 = DjangoUser.objects.create_user(
+            username='testuser1', password='testpass',
+            email='test-ocE3f6VQqFaaAZ@1flow.io')
+
+        self.django_user2 = DjangoUser.objects.create_user(
+            username='testuser2', password='testpass',
+            email='test-ocE3f6VQqFaaBZ@1flow.io')
+
+        self.django_user3 = DjangoUser.objects.create_user(
+            username='testuser3', password='testpass',
+            email='test-ocE3f6VQqFaaCZ@1flow.io')
+
+        # Auto-created on PG's post_save().
+        self.alice = self.django_user1.mongo
+        self.bob   = self.django_user2.mongo
+        self.john  = self.django_user3.mongo
+
+        self.alice_friends = Group(name="Alice's friends",
+                                   creator=self.alice).save()
+        self.alice_work = Group(name="Alice's co-workers",
+                                   creator=self.alice).save()
+        self.bob_friends   = Group(name="Bob's friends",
+                                   creator=self.bob).save()
+        self.john_friends  = Group(name="John's friends",
+                                   creator=self.john).save()
+
+    def tearDown(self):
+        User.drop_collection()
+        Group.drop_collection()
+
+    def system_groups_are_always_here(self):
+
+        self.assertEquals(self.alice.all_relations_group.__class__, Group)
+        self.assertEquals(self.bob.all_relations_group.__class__, Group)
+        self.assertEquals(self.john.all_relations_group.__class__, Group)
+
+        self.assertEquals(self.alice.in_relations_of_group.__class__, Group)
+        self.assertEquals(self.bob.in_relations_of_group.__class__, Group)
+        self.assertEquals(self.john.in_relations_of_group.__class__, Group)
+
+        self.assertEquals(self.alice.blocked_group.__class__, Group)
+        self.assertEquals(self.bob.blocked_group.__class__, Group)
+        self.assertEquals(self.john.blocked_group.__class__, Group)
+
+    def basic_inter_relationships(self):
+
+        alice         = self.alice
+        bob           = self.bob
+        alice_friends = self.alice_friends
+        bob_friends   = self.bob_friends
+        assertTrue    = self.assertTrue
+        assertFalse   = self.assertFalse
+
+        alice_friends.add_member(bob)
+
+        assertTrue(bob in alice_friends)
+
+        assertTrue(bob in alice.all_relations_group)
+        assertFalse(bob in alice.in_relations_of_group)
+
+        assertTrue(alice in bob.in_relations_of_group)
+        assertFalse(alice in bob.all_relations_group)
+
+        bob_friends.add_member(alice)
+
+        assertTrue(alice in bob_friends)
+
+        assertTrue(alice in bob.all_relations_group)     # Alice is "promoted"
+        assertFalse(alice in bob.in_relations_of_group)  # (idem)
+
+        assertTrue(bob in alice.all_relations_group)     # Bob doesn't move.
+        assertFalse(bob in alice.in_relations_of_group)  # (idem)
+
+    def unidirectional_relation_deletion(self):
+
+        bob           = self.bob
+        john          = self.john
+        bob_friends   = self.bob_friends
+        assertTrue    = self.assertTrue
+        assertFalse   = self.assertFalse
+
+        bob_friends.add_member(john)
+
+        assertTrue(john in bob_friends)
+
+        assertTrue(john in bob.all_relations_group)
+        assertFalse(john in bob.in_relations_of_group)
+
+        assertFalse(bob in john.all_relations_group)
+        assertTrue(bob in john.in_relations_of_group)
+
+        bob_friends.delete_member(john)
+
+        assertFalse(john in bob_friends)
+
+        assertFalse(john in bob.all_relations_group)
+        assertFalse(john in bob.in_relations_of_group)
+
+        assertFalse(bob in john.all_relations_group)
+        assertFalse(bob in john.in_relations_of_group)
+
+    def bidirectional_relation_deletion(self):
+
+        bob           = self.bob
+        john          = self.john
+        bob_friends   = self.bob_friends
+        john_friends  = self.john_friends
+        assertTrue    = self.assertTrue
+        assertFalse   = self.assertFalse
+
+        bob_friends.add_member(john)
+
+        assertTrue(john in bob_friends)
+
+        assertTrue(john in bob.all_relations_group)
+        assertFalse(john in bob.in_relations_of_group)
+
+        assertFalse(bob in john.all_relations_group)
+        assertTrue(bob in john.in_relations_of_group)
+
+        john_friends.add_member(bob)
+
+        assertTrue(bob in john_friends)
+
+        assertTrue(bob in john.all_relations_group)
+        assertFalse(bob in john.in_relations_of_group)
+
+        assertTrue(bob in john.all_relations_group)    # Bob is "promoted"
+        assertFalse(bob in john.in_relations_of_group)
+
+        bob_friends.delete_member(john)
+
+        assertFalse(john in bob_friends)
+
+        assertFalse(john in bob.all_relations_group)
+        assertTrue(john in bob.in_relations_of_group)   # The unidir-rel remains.
+
+        assertTrue(bob in john.all_relations_group)     # (idem)
+        assertFalse(bob in john.in_relations_of_group)
+
+        john_friends.delete_member(bob)
+
+        assertFalse(bob in john_friends)
+
+        assertFalse(bob in john.all_relations_group)   # No trace left
+        assertFalse(bob in john.in_relations_of_group)
+
+        assertFalse(bob in john.all_relations_group)   # (idem)
+        assertFalse(bob in john.in_relations_of_group)
+
+    def multi_groups_relationships(self):
+
+        alice = self.alice
+        bob   = self.bob
+        john  = self.john
+
+        alice_friends = self.alice_friends
+        alice_work    = self.alice_work
+        bob_friends   = self.bob_friends
+        john_friends  = self.john_friends
+
+        assertTrue  = self.assertTrue
+        assertFalse = self.assertFalse
+
+
+
+
+    def blocking_consequences_in_groups(self):
+
+
+        pass

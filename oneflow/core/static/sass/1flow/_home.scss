@@ -1,0 +1,320 @@
+
+/* --------------------------------------------------------------- Overrides */
+
+html {
+    // To make the footer stick at the bottom.
+    height: 100%;
+}
+
+body {
+    /*
+        olive 20130915: replicate Bootstrap's
+        docs.css to have something working and beautiful.
+    */
+    position: relative;
+
+    padding-top: $navbar-height-xs;
+
+    // To make the footer stick at the bottom.
+    min-height: 100%;
+
+    // Height of the footer + padding for visual breathing
+    // to make the footer stick to the bottom of page.
+    padding-bottom: 8em;
+}
+
+@media (min-width: $screen-lg-min) {
+
+    body {
+        padding-top: $navbar-height-sm + 25px;
+    }
+}
+
+.navbar {
+    .navbar-brand {
+
+        // Avoid ALLCAPS text, this is sooooo ugly on 1flow name.
+        text-transform: none;
+
+        font-weight: 700;
+
+        span.active {
+            text-shadow: 0 0 10px #fff;
+        }
+    }
+
+    .avatar-frame {
+        // Cuts the image on the right, thus disabled. padding-right: 5px;
+
+        img {
+            width: 24px;
+            height: 24px;
+
+            @include border-radius(30px);
+        }
+    }
+
+    .navbar-nav {
+
+        /*  For some reason, <i> only in span is not happily
+            aligned with 1flow logo and user avatar. */
+
+        li a {
+            /*  Simplify the visual (no border at all)
+                and make the color a little brighter. */
+
+            border-left: 0;
+            color: #aaa;
+        }
+
+        .dropdown-menu {
+            /*  But then, we've got to get back the original
+                colors for the dropdown from the source theme. */
+
+            li a {
+                color: inherit;
+
+                &:hover {
+                    /* And here, 'inherit' doesn't work. Force it. */
+                    color: #fff;
+                }
+            }
+        }
+
+        .active {
+            color: #fff;
+            text-shadow: 0 0 10px #fff;
+        }
+    }
+}
+
+// ————————————————————————————————————————————————————————— External overrides
+
+.ui-pnotify-history-container {
+    display: none;
+}
+
+//  ————————————————————————————————————————————————————————————— Home / common
+
+section {}
+
+#application {
+    #header {
+        width: 100%;
+    }
+}
+
+.footer {
+    position: absolute;
+    bottom: 0;
+    min-height: 3em;
+    width: 100%;
+    //border-top: 1px solid beige;
+}
+
+.footer-title {
+    margin-top: 0;
+    margin-bottom: 0;
+    text-align: center;
+}
+
+.footer-right {
+    min-height: 28px;
+    text-align: center;
+    padding-top: 5px;
+    padding-bottom: 10px;
+}
+
+@media (min-width: $screen-md-min) {
+    .footer-title {
+        text-align: left;
+    }
+
+    .footer-right {
+        padding-top: 7px;
+        text-align: right;
+        padding-bottom: 0;
+    }
+}
+
+.side-nav.affix {
+  top: 60px;
+}
+
+header {
+
+    h1 {
+        padding-top: 50px;
+    }
+
+    h2 {
+        padding-bottom: 15px;
+    }
+}
+
+/* ------------------------------------------------------------------ Profile */
+
+#profile {
+    h1 {
+        margin-top: 50px;
+        min-height: 2em;
+        line-height: 0.9em;
+        vertical-align: text-bottom;
+    }
+
+    .application {
+
+        .avatar-frame {
+            margin-top: 50px;
+            box-shadow: 1px 1px 5px #999;
+
+            @include border-radius(100px);
+
+            img {
+                width: 100px;
+                height: 100px;
+                @include border-radius(100px);
+            }
+        }
+    }
+}
+
+/* ------------------------------------------------------------------ Preferences */
+
+#preferences {
+    h1 {
+        margin-bottom: -25px;
+    }
+
+    fieldset {
+        margin-top: 2em;
+
+        legend {
+            margin-bottom: 0;
+        }
+    }
+
+    .form-end-notice {
+        margin-top: 4em;
+
+        // Make the end-notice fieldset stick closer to the form actions.
+        margin-bottom: -0.5em;
+
+        p {
+            margin-bottom: 0;
+        }
+    }
+}
+
+
+
+/* --------------------------------------------------------------------- Help */
+
+#arrow-show-help {
+    position: fixed;
+    right: 340px;
+    top: 50px;
+}
+
+#arrow-show-chat {
+    position: fixed;
+    right: 40px;
+    top: 35%;
+}
+
+#help {
+
+    .help-admin-edit {
+        padding-top: 105px;
+        margin-bottom: -105px;
+
+        &:first-of-type {
+            padding-top: 15px;
+            margin-bottom: 0;
+        }
+
+        a {
+            color: #ccc;
+        }
+    }
+
+    h1 {
+        margin-top: 0;
+        padding-top: 25px;
+    }
+
+    h2 {
+        margin-top: 10px;
+        margin-bottom: 15px;
+    }
+
+    h3, h4, h5, h6 {
+        margin-top: 15px;
+        margin-bottom: 10px;
+    }
+
+}
+
+#help-sections {
+    h2 {
+        border-bottom: 1px solid #ddd;
+        margin-top: 100px;
+        margin-bottom: 25px;
+
+        &:first-of-type {
+            margin-top: 0;
+        }
+    }
+    h3 {
+        margin-top: 25px;
+    }
+}
+
+
+// ———————————————————————————————————————————————————————————————————— Welcome
+
+#welcome-beta {
+
+    .float-right {
+        float: right;
+        img {
+            padding-left: 20px;
+        }
+    }
+
+    h2 {
+        font-size: 250%;
+        padding: 75px 0 50px;
+    }
+
+    p {
+        font-size: 120%;
+        font-weight: 300;
+        padding-bottom: 10px;
+    }
+}
+
+
+// ————————————————————————————————————————————————————————— Endless pagination
+
+.endless_container {
+
+    text-align: center;
+    font-size: 200%;
+    padding: 30px 0 50px;
+
+    .endless_more {
+        opacity: 0.5;
+    }
+
+    .endless_loading {
+        opacity: 0.5;
+    }
+}
+
+#initial-endless-container {
+    // We don't display the endless container:
+    // we have our own loader, which is wayyyyyy cooler.
+
+    display: none;
+}

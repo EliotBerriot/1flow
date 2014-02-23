@@ -1,0 +1,98 @@
+
+// Bootstrap: http://getbootstrap.com/css/#grid-media-queries
+// Until we get a fully-SASS aware bootstrap
+// source code, combined with our theme.
+
+$screen-xs-max: 767px;
+$screen-sm-min: 768px;
+$screen-sm-max: 991px;
+$screen-md-min: 992px;
+$screen-md-max: 1199px;
+$screen-lg-min: 1200px;
+
+// HEADS UP: some of these values are hard
+// coded in templates/.../article-content-iframe.html
+
+// 52px or 47px and always 1px border.
+$navbar-height-xs: 53px;
+$navbar-height-sm: 48px;
+
+// ——————————————————————————————————————————————————————————————— Detail admin
+
+// #eb0c3b
+$red-blood:         rgb(235, 12, 59);
+$light-green:       rgb(166, 208, 184);
+$dark-green:        rgb(70, 130, 138);
+$light-grey:        rgb(163, 181, 181);
+$dark-grey:         rgb(119, 124, 127);
+$navbar-grey:       rgb(60, 82, 95);
+
+$light_orange: rgb(255, 135, 89);
+$dark_orange:  rgb(219, 82, 47);
+
+$black:                 #000 !default;
+$grayDarker:            #222 !default;
+$grayDark:              #333 !default;
+$gray:                  #555 !default;
+$grayLight:             #999 !default;
+$grayLighter:           #ccc !default;
+$grayLighterMedium:     #d8d8d8 !default;
+$grayLighterMediumer:   #ddd !default;
+$grayLightMax:          #eee !default;
+$grayLightMaxer:        #efefef !default;
+$grayLightMaxerMore:    #f8f8f8 !default;
+$white:                 #fff !default;
+
+$bodyBackground:        $white !default;
+$backgroundLightColor:  rgb(247, 247, 247);
+$textColor:             rgb(124, 124, 124) !default;
+
+$linkColor:             rgb(50, 50, 50) !default;
+$linkColorHover:        $dark_orange !default;
+
+// —————————————————————————————————————————————————————————————————————— 1flow
+
+//#586a7f;
+$subscription-link-color:       rgb(44, 55, 66);
+$subscription-link-hover:       $dark_orange;
+$subscription-padding:          15px;
+$subscription-image-size:       40px;
+$baseline-difference:           4px;
+$subscription-name-height:      22px;
+$subscription-opacity-default:  0.4;
+
+$subscription-border-color:    #d7d7d7;
+
+$reading-list-split-lg: 18%;
+$reading-list-split-lg-inner: 25%;
+
+$open-content-z-index-xs: 3000;
+$open-content-z-index-lg: 1000;
+
+// ——————————————————————————————————————————————————————————— article contents
+
+$article-padding-side-xs: 15px;
+$article-padding-side-sm: 15px;
+$article-padding-side-md: 20px;
+$article-padding-side-lg: 15px;
+
+$article-font-size-xs: 16px;
+$article-line-height-xs: 20px;
+$article-font-size-h1-xs: 28px;
+$article-font-size-h2-xs: 22px;
+$article-font-size-h3-xs: 20px;
+$article-font-size-h4-xs: 18px;
+
+$article-font-size-md: 20px;
+$article-line-height-md: 26px;
+$article-font-size-h1-md: 32px;
+$article-font-size-h2-md: 28px;
+$article-font-size-h3-md: 24px;
+$article-font-size-h4-md: 22px;
+
+$article-font-size-lg: 22px;
+$article-line-height-lg: 30px;
+$article-font-size-h1-lg: 36px;
+$article-font-size-h2-lg: 32px;
+$article-font-size-h3-lg: 28px;
+$article-font-size-h4-lg: 24px;

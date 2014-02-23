@@ -1,0 +1,39 @@
+
+<footer id="footer" class="footer">
+  <div class="modal fade" id="copyrights-and-licenses"
+      tabindex="-1" role="dialog" aria-labelledby="cal-modal-label"
+      aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"
+              aria-hidden="true">&times;</button>
+
+          <h4 class="modal-title"
+              id="cal-modal-label">{% trans "1flow's copyrights & licenses" %}</h4>
+        </div>
+        <div class="modal-body">
+            {% include "snippets/copyrights-and-licenses.html" %}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-dismiss="modal"
+              data-target="copyrights-and-licenses">{% trans "Agreed" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container">
+    <div class="row">
+      <div class="col-xs-12 col-md-4">
+        <h3 class="footer-title"><a href="/">1flow</a>
+          <small>version {{ oneflow_version }}</small></h3>
+      </div>
+      <div class="col-xs-12 col-md-8 footer-right">
+        <a href="#" data-toggle="modal"
+            data-target="#copyrights-and-licenses">{% trans "1flow is libre software, © 2013-2014 Olivier Cortès and others" %}</a>,
+            <a href="https://github.com/1flow">{% trans "contributions welcomed!" %}</a>
+      </div>
+    </div>
+  </div>
+</footer>

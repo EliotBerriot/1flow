@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import logging
 
@@ -32,8 +51,8 @@ class ReadShareForm(forms.Form):
         self.default_placeholder = \
             self.sharer.preferences.share.default_message or \
             _(u'Hi {{fullname}},\n\n'
-              u'I wanted to share this article “{{title}}” that '
-              u'you may find interesting. Read it on 1flow:\n\n'
+              u'Here is the item “{{title}}”, you may find it interesting.\n'
+              u'Read it on 1flow:\n\n'
               u'{{link}}\n\n'
               u'Cheers,\n'
               u'--\n{0}').format(self.sharer.get_full_name())

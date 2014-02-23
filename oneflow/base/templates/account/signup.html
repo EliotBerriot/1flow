@@ -1,0 +1,59 @@
+{% extends "onlyme_base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Register a new 1flow account" %}{% endblock %}
+
+{% block onlyme_content %}
+        <form id="signup_form" method="post"
+            action="{% url "account_signup" %}" autocapitalize="off"
+            class="form-horizontal"
+            {% if form.is_multipart %}enctype="multipart/form-data"{% endif %}>
+
+            <legend><h2>{% trans "Register a new account" %}</h2></legend>
+            <fieldset>
+                {% csrf_token %}
+
+                <div class="spacer25"></div>
+
+                {% if form.non_field_errors %}
+                    <div class="alert alert-warning">{{ form.non_field_errors|join:', ' }}</div>
+
+                {% endif %}
+
+                {% for field in form %}
+                    {% if field.is_hidden %}
+                        {{ field }}
+
+                    {% else %}
+                        {% include "widgets/forms/field-generic.html" with field=field %}
+
+                    {% endif %}
+
+                {% endfor %}
+
+                {% if redirect_field_value %}
+                    <input type="hidden" name="{{ redirect_field_name }}" value="{{ redirect_field_value }}" />
+                {% endif %}
+
+                <div class="form-actions">
+                    <div class="pull-right">
+                        <button type="submit" class="btn btn-primary">{% trans "Sign up" %}</button>
+                    </div>
+                    <div class="clearfix"></div>
+                </div>
+            </fieldset>
+        </form>
+
+        <script type="text/javascript">
+            $(document).ready(function(){
+                $('#id_username').focus();
+            });
+        </script>
+
+      <div class="row">
+        <div class="spacer25"></div>
+        <p class="muted small"><br />{% trans "You can link and merge any social account to your 1flow account once done." %}</p>
+      </div>
+     </div>
+{% endblock %}

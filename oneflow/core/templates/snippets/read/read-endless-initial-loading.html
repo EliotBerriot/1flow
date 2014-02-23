@@ -1,15 +1,15 @@
 <li>
-    <div class="initial-loading centered hide">
+    <div class="initial-loading centered hidden">
         <h3 class="loading"><i class="icon-spinner icon-spin icon-large"></i>
             &nbsp;&nbsp;{% trans "Loading entries…" %}</h3>
-        <h4 class="thanks1 hide">{% trans "Thanks for your patience." %}</h4>
-        <h4 class="thanks2 hide">
+        <h4 class="thanks1 hidden fade in">{% trans "Thanks for your patience." %}</h4>
+        <h4 class="thanks2 hidden fade in">
             {% trans "Oh my god, is this <strong>that</strong> long?!" %}
         </h4>
-        <h4 class="thanks3 hide">
+        <h4 class="thanks3 hidden fade in">
             {% trans "Anyway, thanks again for you patience." %}
         </h4>
-        <h5 class="problem-report hide">{% trans "You shouldn't have waited so long, there must be something wrong with the servers. Could you please contact us to report the problem?" %}</h5>
+        <h5 class="problem-report hidden fade in">{% trans "You shouldn't have waited so long, there must be something wrong with the servers. Could you please contact us to report the problem?" %}</h5>
         <script type="text/javascript">
 
             setTimeout(function() {
@@ -17,7 +17,7 @@
                     return;
                 }
                 try {
-                    $('.initial-loading .thanks1').slideDown();
+                    $('.initial-loading .thanks1').removeClass("hidden");
                 } catch (err) {}
             }, 5000);
 
@@ -26,8 +26,8 @@
                     return;
                 }
                 try {
-                    $('.initial-loading .thanks1').slideUp();
-                    $('.initial-loading .thanks2').slideDown();
+                    $('.initial-loading .thanks1').addClass("hidden");
+                    $('.initial-loading .thanks2').removeClass("hidden");
                 } catch (err) {}
             }, 15000);
 
@@ -36,8 +36,8 @@
                     return;
                 }
                 try {
-                    $('.initial-loading .thanks2').slideUp();
-                    $('.initial-loading .thanks3').slideDown();
+                    $('.initial-loading .thanks2').addClass("hidden");
+                    $('.initial-loading .thanks3').removeClass("hidden");
                 } catch (err) {}
             }, 30000);
 
@@ -46,7 +46,7 @@
                     return;
                 }
                 try {
-                    $('.initial-loading .problem-report').slideDown();
+                    $('.initial-loading .problem-report').removeClass("hidden");
                 } catch (err) {}
             }, 45000);
 

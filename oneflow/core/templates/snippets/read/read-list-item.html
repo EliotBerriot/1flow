@@ -17,19 +17,12 @@
       class="read-list-item hover-unmute-children {{ read.is_restricted|yesno:"restricted-read," }} {% read_status_css read %}"
       {% read_action_toggle_url read %} data-index="{{ tenths_counter|add:forloop.counter }}">
 
-    <div class="top-marker only_when_open">
-      <div class="top-horizontal-rule"></div>
-    </div>
+        {% cache 0 article_meta_top article LANGUAGE_CODE %}
+          {% include "snippets/read/article-meta.html" %}
+        {% endcache %}
 
-    <div class="top-closer only_when_open">
-      <a href="#" class="content-toggle"
-        data-toggle-id="{{ article.id }}"
-        data-toggle-function="toggle_content"
-        data-toggle-callback="notice_element">
-        <i class="icon-remove-sign"></i>
-      </a>
-    </div>
-
-      {% include "snippets/read/article-body.html" with with_index=1 read_in_list=1 %}
+      <div class="article-wrapper">
+        {% include "snippets/read/article-body.html" with read_in_list=1 %}
+      </div>
   </li>
 {% endwith %}

@@ -1,0 +1,105 @@
+{% load i18n markdown_deux_tags inplace_edit %}
+
+{% if mongodb_user.avatar_url %}
+  <div class="pull-right avatar-frame">
+    <img src="{{ mongodb_user.avatar_url }}" />
+  </div>
+{% endif %}
+
+<h1 class="user-profile">&nbsp;<br />{% trans "Your profile" %}</h1>
+
+<form method='POST'>
+  {% csrf_token %}
+
+  <table class="table table-hover">
+    <tr>
+      <td>{% trans "username" %}</td>
+      <td><strong>{% if not '@' in user.username %}@{% endif %}{{ user.username }}</strong></td>
+    </tr>
+    <tr>
+      {% if mongodb_user.is_local %}
+
+        <td>{% trans "First name" %}</td>
+        <td>{% inplace_edit "user.first_name" %}</td>
+      </tr>
+      <tr>
+        <td>{% trans "Last name" %}</td>
+        <td>{% inplace_edit "user.last_name" %}</td>
+      </tr>
+      <tr>
+        <td></td>
+        <td><a class="btn btn-xs btn-default" href="{% url "account_password" %}">{% trans "Change password" %}</a></td>
+
+        {% comment %}
+         TODO: merge the django-user-account-settings into here.
+
+        <li><a href="{% url "account_settings" %}">{% trans "Settings" %}</a></li>
+        {% endcomment %}
+
+      {% else %}
+
+        <td>{% trans "First name" %}</td>
+        <td>{{ user.first_name }}</td>
+      </tr>
+      <tr>
+        <td>{% trans "Last name" %}</td>
+        <td>{{ user.last_name }}</td>
+    </tr>
+      {% comment %}
+        TODO: allow to do this. For now, as the user doesn't have any local password, the "current" will always be wrong and it won't work.
+
+        <tr>
+          <td>{% trans "Set your password to enable your local account" %}</td>
+      {% endcomment %}
+
+      {% endif %}
+
+    </tr>
+    <tr>
+      <td>{% trans "e-mail" %}</td>
+      <td>{{ user.email }}</td>
+    </tr>
+    <tr>
+      <td>{% trans "Last login: " %}</td>
+      <td>{{ user.last_login }}</td>
+    </tr>
+    <tr>
+      <td>{% trans "Registered:" %}</td>
+      <td>{{ user.date_joined  }}</td>
+    </tr>
+
+  </table>
+
+  {% if not mongodb_user.is_local %}
+    <p class="muted">{% trans "These data are not stored durably in 1flow. They are offered courtesy of your social account provider (eg. Google, Twitter…). Change any parameter directly there, it will be reflected here next time you sign in." %}</p>
+
+  {% endif %}
+
+{% if debug or user.is_superuser and preferences.staff.super_powers_enabled %}
+  <h3>{% trans "Super-user access" %}</h3>
+  <table class="table table-hover">
+    <tr>
+      <td>{% trans "PostgreSQL" %}</td>
+      <td><code class="muted">DjangoUser.objects.get(id={{ user.id }})</code></td>
+    </tr>
+    <tr>
+      <td>{% trans "MongoDB" %}</td>
+      <td><code class="muted">User.objects.get(id='{{ mongodb_user.id }}')</code></td>
+    </tr>
+  </table>
+{% endif %}
+
+<!--
+
+  <div class=" control-group {% if form.errors %}error{% endif %}">
+   {% if form.errors %}
+       <span class="label label-warning">{% for error in form.errors %}
+           {{ error }}
+       {% endfor %}</span>
+   {% endif %}
+  </div>
+  <div class="input-append control-group {% if form.errors %}error{% endif %}">
+    <button type="submit" class="btn-flat">{% trans "Save" %}</button>
+  </div>
+-->
+</form>

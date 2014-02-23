@@ -1,18 +1,34 @@
 <!-- navbar-static-top -->
-<div class="navbar navbar-inverse navbar-fixed-top">
-  <div class="navbar-inner">
-    <div class="container">
+<div class="navbar navbar-{{ config.WEB_THEME_NAVBAR_INVERSE|yesno:"inverse,default"}} navbar-fixed-top">
+  <div class="container">
+    <div class="navbar-header">
+      <button type="button" class="navbar-toggle" data-toggle="collapse"
+          data-target="#navbar-collapsible-content">
+        <span class="sr-only">{% trans "Toggle navigation" %}</span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+        <span class="icon-bar"></span>
+      </button>
 
-      <a class="brand" href="{% url 'home' %}">
-          <span class="nowrap">
-            <span class="{% reverse_active 'home' %}">1flow </span>
-            <span class="badge badge-warning badge-beta hidden-phone">BETA</span>
-            <span class="badge badge-warning badge-beta visible-phone">β</span>
-          </span>
+      <a class="navbar-brand" href="{% url 'home' %}">
+        <span class="{% reverse_active 'home' %} {% reverse_active 'source_selector' %}">
+          1flow
+          <!--
+            <span class="hidden-inline-xs">
+              <span class="badge badge-warning">BETA</span>
+            </span>
+            <span class="visible-inline-xs">
+              <span class="badge badge-warning">β</span>
+            </span>
+          -->
+        </span>
       </a>
+    </div>
+
+    <div class="collapse navbar-collapse" id="navbar-collapsible-content">
 
       {% if user.is_authenticated %}
-        <ul class="nav pull-right">
+        <ul class="nav navbar-nav navbar-right">
 
           {# nowrap is necessary, else the username gets to next line on Safari+iPad@portrait #}
           <li class="dropdown nowrap">
@@ -21,14 +37,14 @@
 
               {% if mongodb_user.avatar_url %}
                 <span class="avatar-frame">
-                  <img src="{{ mongodb_user.avatar_url }}" />
+                  <img src="{{ mongodb_user.avatar_url }}" style="max-height: 100px; max-width: 100px;" />
                 </span>
               {% else %}
 
-                {# We use align-icon-phone to align the icon correctly on the baseline. #}
-                <span class="align-icon-phone"><i class="icon-user"></i></span>
+                <i class="icon-user"></i>
               {% endif %}
-              <span class="hidden-phone">
+
+              <span>
                 {{ user.username }}
                 <b class="caret"></b>
               </span>
@@ -51,22 +67,26 @@
             {% endif %}
 
               <li class="divider"></li>
-              <li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>
+              <!--<li><a href="{% url 'signout' %}">{% trans 'Sign Out' %}</a></li>-->
+              <li><form id="signout-from-menu-form" method="POST" class="form"
+                  action="{% url "signout" %}">
+                {% csrf_token %}</form><a href="#"
+                  onclick="$('#signout-from-menu-form').submit()">{% trans 'Sign Out' %}</a></li>
             </ul>
           </li>
         </ul>
 
       {% else %}
-        <ul class="nav pull-right">
-          <li><a href="{% url 'signin' %}">{% trans 'Sign in…' %}</a></li>
+        <ul class="nav navbar-nav navbar-right">
+          <li><a href="{% url 'signin' %}">{% trans 'Sign in' %}</a></li>
         </ul>
 
       {% endif %}
 
-      <ul class="nav">
+      <ul class="nav navbar-nav">
         {% if user.is_authenticated and wizards.welcome_beta_shown %}
 
-          <li class="nowrap hidden-phone">
+          <li class="nowrap">
             {% if preferences.home.read_shows == 1 %}
                 <a href="{% url 'read' %}"
             {% else %}
@@ -79,12 +99,12 @@
           </li>
 
           <!--
-          <li class="nowrap hidden-phone">
+          <li class="nowrap hidden-xs">
                 <a href="{% url 'read' %}" class="">
               {% trans 'Write' %}
             </a>
           </li>
-          <li class="nowrap hidden-phone">
+          <li class="nowrap hidden-xs">
                 <a href="{% url 'read' %}" class="">
               {% trans 'Collaborate' %}
             </a>
@@ -92,7 +112,7 @@
           -->
 
           <!-- HIDDEN everywhere. Intended, because it doesn't work yet. -->
-          <li class="hidden-phone hidden-desktop hidden-tablet">
+          <li class="hidden">
               <form>
                 <input class="search"
                     placeholder="{% trans 'Search…' %}" />
@@ -100,11 +120,11 @@
           </li>
 
         </ul>
-        <ul class="nav pull-right">
 
+        <ul class="nav navbar-nav navbar-right">
 
+          {#  NOT hide, even if not super_powers_enabled, we need to know about maintenance mode. #}
           {% if user.is_staff or user.is_superuser %}
-            {# Life or Death: do not hide, even if not super_powers_enabled #}
 
             {% if MAINTENANCE_MODE %}
               <li>
@@ -118,7 +138,9 @@
 
             {% if preferences.staff.super_powers_enabled %}
 
-              <li id="system-informations" class="visible-desktop"><a href="#"
+              <li><a href="javascript: $('.navbar').first().addClass('hidden'); return false"><span class="badge muted"><i class="icon-eye-close"></i></span></a></li>
+
+              <li id="system-informations" class="hidden-inline-block-xs"><a href="#"
                 data-toggle="popover" data-placement="bottom"
                 data-original-title="System Informations" data-html="true"
                 data-content="
@@ -155,13 +177,18 @@
 
                 <script type="text/javascript">
                 $(document).ready(function(){
-                  $("#system-informations").popover();
+                    try {
+                      $("#system-informations").popover();
+                    } catch (err) {
+                      console.debug("Is bootstrap JS loaded/initialized: "
+                                    + err);
+                    }
                 });
                 </script>
 
               <li>
                 <a href="{% url 'preference_toggle' base='staff' sub='super_powers_enabled' %}">
-                  <span class="badge badge-warning">
+                  <span class="badge badge-info">
 
             {% else %}
 
@@ -178,25 +205,7 @@
 
           {% endif %}{# superuser #}
 
-          <li class="nowrap visible-phone">
-            {% if preferences.home.read_shows == 1 %}
-                <a href="{% url 'read' %}"
-            {% else %}
-                <a href="{% url 'source_selector' %}"
-            {% endif %}
-                class="{% reverse_active 'read' %} align-icon-phone-lower">
-              <i class="icon-rss icon-2x"></i>
-            </a>
-          </li>
-
-          <li class="visible-phone nowrap">
-            <a href="{% url 'help' %}"
-                class="{% reverse_active 'help' %} align-icon-phone">
-              <i class="icon-question icon-2x"></i>
-            </a>
-          </li>
-
-          <li class="hidden-phone nowrap">
+          <li class="nowrap">
             <a href="{% url 'help' %}"
                 class="{% reverse_active 'help' %}">
               {% trans 'Features' %}
@@ -212,6 +221,6 @@
         {% endif %}
       </ul>
 
-    </div><!-- .container -->
-  </div><!--/.navbar-inner -->
+    </div><!-- .collapsible -->
+  </div><!-- .container -->
 </div><!--/.navbar -->

@@ -7,7 +7,28 @@
     We don't use the `username` attribute, but it is implemented as a
     readonly property, returning the `email`, which we use as required
     user name field.
+
+    ____________________________________________________________________
+
+    Copyright 2012-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
 """
+
 import logging
 
 from transmeta import TransMeta
@@ -129,3 +150,67 @@ class User(AbstractBaseUser, PermissionsMixin, AbstractUserProfile):
         return self.username
 
     # NOTE: self.email_user() comes from the AbstractUserProfile class
+
+
+class OwnerOrSuperuserEditAdaptor(object):
+    """ This is the custom adaptor for django-inplaceedit permissions.
+
+        It will grant edit access if the current user is superuser or
+        staff and he has NOT disabled the super_powers preference, or
+        if the current user is the owner of the model instance being
+        edited.
+
+        .. note:: it makes some assumptions about beiing used with
+            1flow models. Eg. it assumes the user will have a `.mongo`
+            attribute, and that `obj` instance will have a `.owner`
+            or `.user` attribute. Besides the `.mongo` attr, the
+            others are quite common in all the apps I found until today.
+
+    """
+
+    @classmethod
+    def can_edit(cls, adaptor_field):
+
+        user = adaptor_field.request.user
+        obj = adaptor_field.obj
+
+        if user.is_anonymous():
+            return False
+
+        elif user.mongo.is_staff_or_superuser_and_enabled:
+            return True
+
+        else:
+            try:
+                if isinstance(obj, models.Model):
+                    # We are editing a Django model. A user can be
+                    # editing his own account, or one of its objects.
+                    return user == obj or user == obj.user
+
+                else:
+                    # We are editing a MongoDB Document. Either the it's
+                    # user account object, or one of its own objects. In
+                    # 1flow core, this is stated by either a `.owner`
+                    # (which has my semantic preference) attribute, or a
+                    # more classic `.user` (àla Django, used when the
+                    # relation is not a real "ownership" but a simple
+                    # N-N relation).
+                    try:
+                        return user == obj.django or user.mongo == obj.owner
+
+                    except AttributeError:
+                        # We don't try/except this one: it can crash with
+                        # AttributeError for the same reason as the previous,
+                        # but it will be catched by the outer try/except
+                        # because we have nothing more to try, anyway.
+                        return user == obj.django or user.mongo == obj.user
+
+            except:
+                LOGGER.exception(u'Exception while testing %s ownership on %s',
+                                 user, obj)
+
+            # This test is good for staff members,
+            # but too weak for normal users.
+            #can_edit = has_permission(obj, user, 'edit')
+
+        return False

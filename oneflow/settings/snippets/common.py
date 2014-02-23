@@ -1,9 +1,30 @@
 # -*- coding: utf-8 -*-
+#
 # Django common settings for oneflow project.
 # These are overridden in hostname.py specific files.
 #
 # Here we define the settings for the test platform.
 # Production will override only the needed directives.
+#
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import os
 import sys
@@ -149,19 +170,31 @@ PIPELINE_CSS = {
 
     # TODO: the 'vendor-all' target.
 
+    # ——————————————————————————————————————————————————————————————— Bootstrap
+
     'bootstrap': {
         'source_filenames': (
-            'vendor/bootstrap/less/bootstrap.less',
+            'vendor/bootstrap/3.0.3/less/bootstrap.less',
         ),
         'output_filename': 'css/bootstrap.css',
     },
-    'bootstrap-responsive': {
+
+    'bootstrap-2': {
         'source_filenames': (
-            'vendor/bootstrap/less/bootstrap.less',
-            'vendor/bootstrap/less/responsive.less',
+            'vendor/bootstrap/2.3.2/less/bootstrap.less',
         ),
-        'output_filename': 'css/bootstrap-responsive.css',
+        'output_filename': 'css/bootstrap-2.css',
     },
+
+    'bootstrap-2-responsive': {
+        'source_filenames': (
+            'vendor/bootstrap/2.3.2/less/bootstrap.less',
+            'vendor/bootstrap/2.3.2/less/responsive.less',
+        ),
+        'output_filename': 'css/bootstrap-2-responsive.css',
+    },
+
+    # ———————————————————————————————————————————————————————————— Font-awesome
 
     'font-awesome': {
         'source_filenames': (
@@ -176,30 +209,33 @@ PIPELINE_CSS = {
         'output_filename': 'css/font-awesome-ie7.css',
     },
 
-    # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• 1flow
+    # —————————————————————————————————————————————————————————————— 1flow core
+    # The core uses Bootstrap 3. Either Detail-Admin donated by Erick Alvarez,
+    # or any bootswatch theme: just change the value in the constance config.
 
-    'landing': {
-        # This one is not "compiled" but simply copied. We wanted it
-        # to be integrated into the pipeline for consistency only.
+    'core-bootswatch': {
         'source_filenames': (
-            'css/landing-styles.css',
+            'sass/styles-core-bootswatch.scss',
         ),
-        'output_filename': 'css/landing.css',
+
+        'output_filename': 'css/core-bootswatch.css',
     },
 
-    'core-bootstrap-detail': {
+    'core-detail-admin': {
         'source_filenames': (
-            'sass/detail-admin/bootstrap-overrides.scss',
-            'sass/styles-core-bootstrap-detail.scss',
+            'sass/styles-core-detail-admin.scss',
         ),
-        'output_filename': 'css/core-details.css',
+        'output_filename': 'css/core-detail-admin.css',
     },
+
+    # —————————————————————————————————————————————————————— 1flow landing page
+    # As of 201401xx, the landing page is still Bootstrap 2.
 
     'core-bootstrap-bare': {
         'source_filenames': (
             'sass/styles-core-bootstrap-bare.scss',
         ),
-        'output_filename': 'css/core.css',
+        'output_filename': 'css/core-bootstrap-bare.css',
     }
 }
 
@@ -207,16 +243,42 @@ PIPELINE_JS = {
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• vendor
 
-    'vendor-all': {
+    'vendor-global': {
         # This one includes all external dependancies
         # (eg. non 1flow sources) for a one-file-only dep.
         'source_filenames': (
+            'vendor/raven.js/1.0.8/raven.js',
+            'vendor/underscorejs/1.5.1/underscore.js',
+            'vendor/mousetrap/1.4.2/mousetrap.js',
+            'vendor/hammerjs/1.0.5/hammer.js',
+            'vendor/pnotify/1.2/jquery.pnotify.js',
+            'vendor/jquery-easing/1.3/jquery.easing.js',
+            'vendor/jquery-color/2.1.2/jquery.color.js',
+
             # WARNING: order matters: tooltip must be included before popover.
-            'vendor/bootstrap/js/bootstrap-[a-o]*.js',
-            'vendor/bootstrap/js/bootstrap-t*.js',
-            'vendor/bootstrap/js/bootstrap-p*.js',
-            'vendor/bootstrap/js/bootstrap-[q-s]*.js',
-            'vendor/bootstrap/js/bootstrap-[u-z]*.js',
+            # This order is a copy-n-paste of Bootstrap 3.0.3's Gruntfile.js.
+            'vendor/bootstrap/3.0.3/js/transition.js',
+            'vendor/bootstrap/3.0.3/js/alert.js',
+            'vendor/bootstrap/3.0.3/js/button.js',
+            'vendor/bootstrap/3.0.3/js/carousel.js',
+            'vendor/bootstrap/3.0.3/js/collapse.js',
+            'vendor/bootstrap/3.0.3/js/dropdown.js',
+            'vendor/bootstrap/3.0.3/js/modal.js',
+            'vendor/bootstrap/3.0.3/js/tooltip.js',
+            'vendor/bootstrap/3.0.3/js/popover.js',
+            'vendor/bootstrap/3.0.3/js/scrollspy.js',
+            'vendor/bootstrap/3.0.3/js/tab.js',
+            'vendor/bootstrap/3.0.3/js/affix.js',
+        ),
+
+        'output_filename': 'js/min/vendor-global.js',
+    },
+    #
+    # TODO: find CDNs versions of these, and merge
+    # the 2 vendor-* target for simplification.
+    #
+    'vendor-local': {
+        'source_filenames': (
 
             'vendor/showdown/showdown.js',
             'vendor/showdown/extensions/twitter.js',
@@ -229,35 +291,7 @@ PIPELINE_JS = {
             # NOTE: we use or own implementation
             # of django-endless-pagination JS.
         ),
-        'output_filename': 'js/min/vendor-all.js',
-    },
-
-    'vendor-bootstrap': {
-        'source_filenames': (
-            # WARNING: order matters: tooltip must be included before popover.
-            'vendor/bootstrap/js/bootstrap-[a-o]*.js',
-            'vendor/bootstrap/js/bootstrap-t*.js',
-            'vendor/bootstrap/js/bootstrap-p*.js',
-            'vendor/bootstrap/js/bootstrap-[q-s]*.js',
-            'vendor/bootstrap/js/bootstrap-[u-z]*.js',
-        ),
-        'output_filename': 'js/min/bootstrap.js',
-    },
-
-    'vendor-showdown': {
-        'source_filenames': (
-            'vendor/showdown/showdown.js',
-            'vendor/showdown/extensions/twitter.js',
-        ),
-        'output_filename': 'js/min/showdown.js',
-    },
-
-    'vendor-moment': {
-        'source_filenames': (
-            'vendor/moment/moment.js',
-            'vendor/moment/langs/*.js',
-        ),
-        'output_filename': 'js/min/moment.js',
+        'output_filename': 'js/min/vendor-local.js',
     },
 
     # NOTE: we use or own implementation
@@ -274,6 +308,7 @@ PIPELINE_JS = {
     'utils': {
         'source_filenames': (
             'js/utils/*.js',
+            'js/common.js',
         ),
         'output_filename': 'js/min/utils.js',
     },
@@ -363,6 +398,18 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
+
+    # account's MW must come after 'auth', else they crash.
+    #
+    # BTW, account's LocaleMiddleware produces a strange bug
+    # where /en/ doesn't exist anymore and we have two /fr/
+    # entries, making / fail to load. The logout process
+    # behave badly because of that. BTW again, I didn't see
+    # what it brought / added to the current implementation,
+    # leaving it disabled changes nothing.
+    #'account.middleware.LocaleMiddleware',
+    'account.middleware.TimezoneMiddleware',
+
     # TODO: activate this if needed.
     #'social_auth.middleware.SocialAuthExceptionMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -394,6 +441,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'absolute.context_processors.absolute',
     'constance.context_processors.config',
     'django.contrib.auth.context_processors.auth',
+    'account.context_processors.account',
     'django.contrib.messages.context_processors.messages',
 
     # Only one of them is needed.
@@ -411,9 +459,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'oneflow.core.context_processors.social_things',
 )
 
-INSTALLED_APPS = (
+# NOTE: INSTALLED_APPS is a list (not a tuple)
+# in 1flow, because of the conditional landing.
+INSTALLED_APPS = [
     'raven.contrib.django.raven_compat',
     'django.contrib.auth',
+    'account',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
     #'django.contrib.sites',
@@ -436,6 +487,13 @@ INSTALLED_APPS = (
     'south_admin',
     #'maintenancemode', — not needed at all, the middleware is sufficient.
     'transmeta',
+
+    # Order matters for inplace & friends.
+    'inplaceeditform_bootstrap',
+    'inplaceeditform',
+    #'inplaceeditform_extra_fields',
+    #'bootstrap3_datetime',
+
     'logentry_admin',
     'constance',
     'tastypie',
@@ -463,23 +521,72 @@ INSTALLED_APPS = (
     'widget_tweaks',
     'oneflow.base',
     'oneflow.profiles',
-    'oneflow.landing',
     'oneflow.core',
     # OMG: order matters! as DSA depends on user model,
     # it must come after 'oneflow.base' wich contains it.
     # Without this, tests fail to create database!
     'social_auth',
-)
+]
+
+# ———————————————————————————————————————————————————————— django-user-accounts
+
+ACCOUNT_EMAIL_UNIQUE = True
+ACCOUNT_EMAIL_CONFIRMATION_REQUIRED = True
+# ACCOUNT_LOGIN_REDIRECT_URL =
+ACCOUNT_LOGOUT_REDIRECT_URL = u'signin'
+ACCOUNT_EMAIL_CONFIRMATION_ANONYMOUS_REDIRECT_URL = u'signin'
+ACCOUNT_EMAIL_CONFIRMATION_AUTHENTICATED_REDIRECT_URL = u'home'
+ACCOUNT_PASSWORD_CHANGE_REDIRECT_URL = u'profile'
+ACCOUNT_PASSWORD_RESET_REDIRECT_URL = u'signin'
+
+# —————————————————————————————————————————————————————————— django-inplaceedit
+
+INPLACEEDIT_EDIT_EMPTY_VALUE = ugettext_lazy(u'Click to edit')
+INPLACEEDIT_AUTO_SAVE = True
+INPLACEEDIT_EVENT = "click"
+#INPLACEEDIT_DISABLE_CLICK = True  # For inplace edit text into a link tag
+#INPLACEEDIT_EDIT_MESSAGE_TRANSLATION = 'Write a translation' # transmeta option
+INPLACEEDIT_SUCCESS_TEXT = ugettext_lazy(u'Successfully saved')
+INPLACEEDIT_UNSAVED_TEXT = ugettext_lazy(u'You have unsaved changes')
+#INPLACE_ENABLE_CLASS = 'form-control'
+DEFAULT_INPLACE_EDIT_OPTIONS = {
+    'auto_height': 1,            # be gentle, don't try to guess anything.
+    'class_inplace': 'form',     # Be a little bootstrap compatible.
+    'tag_name_cover': 'div',     # Make the editables more clickable.
+    '__widget_class': 'form-control',   # DOES NOT WORK, ISSUE Github #53
+}
+# modify the behavior of the DEFAULT_INPLACE_EDIT_OPTIONS usage, if True
+# then it use the default values not specified in your template, if False
+# it uses these options only when the dictionnary is empty (when you do put
+            # any options in your template)
+#DEFAULT_INPLACE_EDIT_OPTIONS_ONE_BY_ONE = True
+ADAPTOR_INPLACEEDIT_EDIT = 'oneflow.base.models.OwnerOrSuperuserEditAdaptor'
+ADAPTOR_INPLACEEDIT = {
+    #example: 'tiny': 'inplaceeditform_extra_fields.fields.AdaptorTinyMCEField'
+    #'date': 'inplaceeditform_bootstrap.fields.AdaptorDateBootStrapField',
+    #'datetime': 'inplaceeditform_bootstrap.fields.AdaptorDateTimeBootStrapField',
+}
+#INPLACE_GET_FIELD_URL = None # to change the url where django-inplaceedit use to get a field
+#INPLACE_SAVE_URL = None # to change the url where django-inplaceedit use to save a field
+
+# A django-inplaceedit-bootstrap setting.
+INPLACEEDIT_EDIT_TOOLTIP_TEXT = ugettext_lazy(u'Click to edit')
+
+# ———————————————————————————————————————————————————— django-endlesspagination
 
 ENDLESS_PAGINATION_PER_PAGE = 100
 
 # This is done directly in the templates.
 #ENDLESS_PAGINATION_LOADING  = ugettext_lazy(u'loading more entries…')
 
+# —————————————————————————————————————————————————————————————— django-select2
+
 AUTO_RENDER_SELECT2_STATICS = False
 GENERATE_RANDOM_SELECT2_ID = True
 ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
 # See cache.py for Select2 memcache settings.
+
+# ———————————————————————————————————————————————————— Other
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
@@ -627,7 +734,7 @@ SOCIAL_AUTH_PIPELINE = (
 # —————————————————————————————————————————————————————————————— 1flow settings
 
 
-DEFAULT_USER_AGENT = 'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
+DEFAULT_USER_AGENT = u'Mozilla/5.0 (Macintosh; Intel Mac OS X 10.8; rv:21.0) Gecko/20100101 Firefox/21.0' # NOQA
 
 
 # ••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Logging

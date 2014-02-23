@@ -5,12 +5,18 @@
 {% block title %}{% trans 'Preferences' %}{% endblock title %}
 
 {% block application_content %}
-  <div class="spacer25"></div>
+
+{% with checkbox_label_css="col-xs-10 col-sm-8 col-md-7 col-ld-4" checkbox_input_css="col-xs-2 col-sm-4 col-md-5 col-ld-8" %}
+
+  <div class="spacer25 hidden-xs"></div>
+
   <div class="container-fluid">
-    <div class="row-fluid">
-      <div class="span8 offset2">
+    <div class="row">
+      <div class="col-sm-10 col-sm-offset-1 col-md-8 col-md-offset-2 col-ld-6 col-ld-offset-3">
 
         <h1>{% trans "Preferences" %}</h1>
+
+        <div class="spacer50 visible-xs"></div>
 
         <ul class="nav nav-tabs" id="preferences-tabs">
 
@@ -61,12 +67,13 @@
 
           </div>
 
+          <div class="spacer25"></div>
           {% include "widgets/forms/form-actions.html" %}
         </form>
       </div>
     </div>
   </div>
-
+{% endwith %}
 {% endblock application_content %}
 
 {% block extrajs_footer %}

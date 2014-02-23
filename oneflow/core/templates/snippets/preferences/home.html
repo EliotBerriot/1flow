@@ -1,6 +1,10 @@
+
+{% with field_label_css_class=checkbox_label_css field_input_css_class=checkbox_input_css %}
+
 <fieldset>
   <legend>{% trans "“Read” navbar link" %}</legend>
 
-      {% include "widgets/forms/field-generic.html" with field=home_form.read_shows %}
+      {% include "widgets/forms/field-checkbox.html" with field=home_form.read_shows %}
 </fieldset>
 
+{% endwith %}

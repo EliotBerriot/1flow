@@ -30,6 +30,48 @@ CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 
 CONSTANCE_CONFIG = {
 
+    'STAFF_HAS_FULL_ACCESS': (False, ugettext(u'Allow staff to have full '
+                              u'access to anything. We use this mostly for '
+                              u'debugging purposes, but this can be dangerous '
+                              u'and liberticide in some conditions. NOTE: '
+                              u'disabling this does not prevent any malicious '
+                              u'code which bypasses this configuration flag.')),
+
+    # •••••••••••••••••••••••••••••••••••••••••••••• WEB / Templates / JS & CSS
+
+    'WEB_CDNS_ENABLED': (False, ugettext(u'Enable This to use public CDNs for '
+                         u'common JS and CSS (jQuery, bootstrap...). Disabled '
+                         u'by default to avoid tracking and allow autonomous '
+                         u'run.')),
+
+    'WEB_BOOTSWATCH_THEME': (u'', ugettext(u'Choose your bootswatch '
+                             u'theme here. If you have CDNs enabled, you '
+                             u'must choose a public theme. Default: no '
+                             u'bootswatch theme, meaning that 1flow uses its '
+                             u'original detail-admin. Possible values include '
+                             u'"flatly", "yeti", and all other bootswatch '
+                             u'themes, including your own if you deactivate '
+                             u'the CDN utilization.')),
+
+    'WEB_THEME_NAVBAR_INVERSE': (True, ugettext(u'Does the bootstrap navbar '
+                                 u'uses inverse colors. Default: true, for '
+                                 u'detail-admin theme.')),
+
+    # HEADS UP: the 3 next are translatable, to allow providing
+    #           different addresses for multi-language support.
+
+    'SUPPORT_EMAIL_ADDRESS': (ugettext(u'supportREMOVETHIS@1flow.io'),
+                              ugettext(u'Support email address. Set empty '
+                                       u'to disable displaying it in the '
+                                       u'support text message.')),
+
+    'IRC_SUPPORT_CHANNEL': (ugettext(u'#1flow'), ugettext(u'Support IRC '
+                            u'channel. Set empty to disable displaying it '
+                            u'in the support text message.')),
+
+    'IRC_SUPPORT_SERVER': (ugettext(u'irc.freenode.net'),
+                            ugettext(u'Support IRC server.')),
+
     # ———————————————————————————————————————————— Allow new users to register?
 
     'SOCIAL_LOGIN_ENABLED': (True, ugettext(u'Already known users are allowed '
@@ -76,6 +118,12 @@ CONSTANCE_CONFIG = {
     'READ_ARTICLE_MIN_LENGTH': (24, ugettext(u'Minimum length of an article '
                                 u'content. Set to 0 to always display '
                                 u'Markdown content to users, whatever it is.')),
+
+    # Cf. http://mindbluff.com/askread.htm
+    'READ_AVERAGE_READING_SPEED': (200, ugettext(u'The average number of '
+                                   u'words per minutes that an adult can '
+                                   u'read. When the user has not configured '
+                                   u'his/her own, this one will be used.')),
 
     # •••••••••••••••••••••••••••••••••••••••••••••••••••••••••• RSS feed fetch
 

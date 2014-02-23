@@ -14,169 +14,41 @@
 
 {% block application_content %}
 
-<div id="sidebars-wrapper" class="row-fluid">
-    <div id="article-meta-left" class="reading-sidebar span2"></div>
-    <div id="article-meta-right" class="reading-sidebar span2"></div>
-</div>
+    {# {% include "snippets/read/reading-list-meta-wrapper.html" %} #}
 
-{% with home_style=preferences.home.style %}
-<div class="row-fluid">
-    <div id="reads-list-header" class="span8 offset2">
-        <div class="h1-wrapper">
-            <div class="h1-background"></div>
-            <h1 class="left-side">
-                <a id="back-to-selector" data-toggle="tooltip" class="popover-top"
-                title="{% trans "Go back to source selector" %}"
-                href="{% url 'source_selector' %}{% spaceless %}
+    {% with home_style=preferences.home.style %}
 
-                {% if folder %}
-                    #{{ folder.id }}
+    {% include "snippets/read/reading-list-header.html" %}
 
-                {% elif subscription %}
-                    #{{ subscription.id }}
-
-                {% endif %}
-
-                {% endspaceless %}"><i class="icon-arrow-left"></i>&nbsp;
-                {{ read_page_header_text_left|safe }}</a></h1>
-            <h1 class="right-side"><span
-                    id="reads-number">{{ read_page_header_text_right|safe }}</span>
-
-                {% if folder or subscription %}
-
-                &nbsp;<button class="btn btn-mini dropdown-toggle"
-                        data-toggle="dropdown"><i
-                        class="icon-exchange"></i></button>
-                <ul class="dropdown-menu">
-                    {% if folder %}
-
-                        {% if current_mode != "is_read" %}
-                            <li>{% container_reading_list_with_count 'read' 'folder' folder 'unread' _('unread') %}</li>
-                        {% endif %}
-
-                        {% if current_mode != "is_bookmarked" %}
-                            <li>{% container_reading_list_with_count 'read_later' 'folder' folder 'bookmarked' _('for later') %}</li>
-                        {% endif %}
-
-                        {% if current_mode != "is_starred" %}
-                            <li>{% container_reading_list_with_count 'read_starred' 'folder' folder 'starred' _('starred') %}</li>
-                        {% endif %}
-
-                        {% if current_mode != "all" %}
-                            <li>{% container_reading_list_with_count 'read_all' 'folder' folder 'all' _('all')  %}</li>
-                        {% endif %}
-
-                        {% comment %}
-                        {# Won't work until we have the corresponding descriptors on folders #}
-
-                        <li>{% container_reading_list_with_count 'read_facts' 'folder' folder 'facts' _('facts') %}</li>
-                        <li>{% container_reading_list_with_count 'read_numbers' 'folder' folder 'numbers' _('numbers') %}</li>
-                        <li>{% container_reading_list_with_count 'read_analysis' 'folder' folder 'analysis' _('analysis') %}</li>
-                        <li>{% container_reading_list_with_count 'read_prospective' 'folder' folder 'prospective' _('propective') %}</li>
-                        <li>{% container_reading_list_with_count 'read_know_how' 'folder' folder 'knowhow' _('know-how') %}</li>
-                        <li>{% container_reading_list_with_count 'read_rules' 'folder' folder 'rules' _('rules') %}</li>
-                        <li>{% container_reading_list_with_count 'read_quotes' 'folder' folder 'quotes' _('quotes') %}</li>
-                        <li>{% container_reading_list_with_count 'read_knowledge' 'folder' folder 'knowledge' _('knowledge') %}</li>
-                        {% endcomment %}
-
-                    {% elif subscription %}
-
-                        {% if current_mode != "is_read" %}
-                            <li>{% container_reading_list_with_count 'read' 'feed' subscription 'unread' _('unread') %}</li>
-                        {% endif %}
-
-                        {% if current_mode != "is_bookmarked" %}
-                            <li>{% container_reading_list_with_count 'read_later' 'feed' subscription 'bookmarked' _('for later') %}</li>
-                        {% endif %}
-
-                        {% if current_mode != "is_starred" %}
-                            <li>{% container_reading_list_with_count 'read_starred' 'feed' subscription 'starred' _('starred') %}</li>
-                        {% endif %}
-
-                        {% if current_mode != "all" %}
-                            <li>{% container_reading_list_with_count 'read_all' 'feed' subscription 'all' _('all')  %}</li>
-                        {% endif %}
-
-                        {% comment %}
-                        {# Won't work until we have the corresponding descriptors on folders #}
-
-                        <li>{% container_reading_list_with_count 'read_facts' 'feed' subscription 'fact' _('facts') %}</li>
-                        <li>{% container_reading_list_with_count 'read_numbers' 'feed' subscription 'number' _('numbers') %}</li>
-                        <li>{% container_reading_list_with_count 'read_analysis' 'feed' subscription 'analysis' _('analysis') %}</li>
-                        <li>{% container_reading_list_with_count 'read_prospective' 'feed' subscription 'prospective' _('propective') %}</li>
-                        <li>{% container_reading_list_with_count 'read_know_how' 'feed' subscription 'knowhow' _('know-how') %}</li>
-                        <li>{% container_reading_list_with_count 'read_rules' 'feed' subscription 'rules' _('rules') %}</li>
-                        <li>{% container_reading_list_with_count 'read_quotes' 'feed' subscription 'quote' _('quotes') %}</li>
-                        <li>{% container_reading_list_with_count 'read_knowledge' 'feed' subscription 'knowledge' _('knowledge') %}</li>
-                        {% endcomment %}
-
-                    {% endif %}
+    <div class="row">
+        {% if reads %}
+            {% if preferences.home.style == 'RL' %}
+                <ul id="reads-container" class="list-unstyled col-lg-10 col-lg-offset-1">
+                        {% include 'snippets/read/read-endless-page.html' %}
                 </ul>
 
-                {% endif %}
+            {% elif preferences.home.style == 'T1' %}
+                <div id="reads-container" class="col-lg-10 col-lg-offset-1">
+                        {% include 'snippets/read/read-endless-page.html' %}
+                </div>
 
-                {#{% include 'snippets/selector/import-web-items-trigger.html' with in_list=1 %}#}
-            </h1>
-        </div>
-    </div>
+            {% else %}
+                {# by default, with no preference, we use the TILING mode #}
 
-    {% comment %}
-
-        <div class="span1">
-        <div class="btn-toolbar pull-right">
-            <div class="btn-group" data-toggle="buttons-radio">
-                <button class="btn preference {% if home_style == 'RL' %}active{% endif %}"
-                    data-preference-url="{% url 'set_preference' base='home' sub='style' value='RL' %}"
-                    data-preference-value="RL"
-                    title=""><i class="icon-list"></i></button>
-
-                <button class="btn preference {% if home_style == 'TL' %}active{% endif %}"
-                    data-preference-url="{% url 'set_preference' base='home' sub='style' value='TL' %}"
-                    data-preference-value="TL"
-                    title=""><i class="icon-th-large"></i></button>
-
-            {% if user.is_superuser %}
-                <button class="btn btn-warning preference {% if home_style == 'T1' %}active{% endif %}"
-                    data-preference-url="{% url 'set_preference' base='home' sub='style' value='T1' %}"
-                    data-preference-value="T1"
-                    title="{% trans "Experimental tiles #1" %}"><i class="icon-th"></i></button>
-
+                <div id="reads-container" class="col-lg-10 col-lg-offset-1">
+                        {% include 'snippets/read/read-endless-page.html' %}
+                </div>
             {% endif %}
-            </div>
-        </div>
-    </div>
-
-    {% endcomment %}
-
-</div>
-<div class="row-fluid">
-    {% if reads %}
-        {% if preferences.home.style == 'RL' %}
-            <ul id="reads-container" class="media-list span8 offset2">
-                    {% include 'snippets/read/read-endless-page.html' %}
-            </ul>
-
-        {% elif preferences.home.style == 'T1' %}
-            <div id="reads-container" class="span8 offset2">
-                    {% include 'snippets/read/read-endless-page.html' %}
-            </div>
 
         {% else %}
-            {# by default, with no preference, we use the TILING mode #}
-
-            <div id="reads-container" class="span8 offset2">
-                    {% include 'snippets/read/read-endless-page.html' %}
+            <div class="jumbotron col-md-8 col-md-offset-2">
+                <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
             </div>
+
         {% endif %}
+    </div>
+    {% endwith %}
 
-    {% else %}
-        <div class="hero-unit span8 offset2">
-            <h2>{% trans "Nothing to read yet. Buy a book?" %}</h2>
-        </div>
-
-    {% endif %}
-</div>
-{% endwith %}
 {% endblock application_content %}
 
 {% block application_footer %}

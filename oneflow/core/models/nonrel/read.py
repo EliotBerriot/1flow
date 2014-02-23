@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import sys
 import logging
@@ -21,7 +40,7 @@ from mongoengine.errors import NotUniqueError, ValidationError
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
-from ....base.utils.dateutils import now
+from ....base.utils.dateutils import now, timedelta, naturaldelta
 
 from .common import DocumentHelperMixin  # , CACHE_ONE_DAY
 
@@ -622,6 +641,12 @@ class Read(Document, DocumentHelperMixin):
 
         return any(map(lambda sub: sub.feed.restricted, self.subscriptions))
 
+        # TODO: refresh/implement this to avoid fetching content from the
+        #       database if the remote article is not available anymore.
+        # NOTE: This is clearly overkill in the libre version, as 1flow
+        #       is just a personnal RSS / web crawler tool. This makes
+        #       sense for legal issues only if 1flow.io is a paid service.
+        #
         # delta_from_now = timedelda(now() - self.date_published)
         # if self.is_read:
         #     if self.is_archived:
@@ -676,6 +701,60 @@ class Read(Document, DocumentHelperMixin):
             return _(u'Multiple sources ({0} feeds)').format(sources_count)
 
         return u' / '.join(x.name for x in source)
+
+    @property
+    def reading_time(self):
+        """ Return a rounded value of the approximate reading time,
+            for the user and the article. """
+
+        wc = self.article.word_count_TRANSIENT
+
+        if wc is None:
+            return None
+
+        return wc / self.user.preferences.read.reading_speed
+
+    @property
+    def reading_time_display(self):
+
+        rtm = self.reading_time
+
+        if rtm is None:
+            return u''
+
+        if rtm == 0:
+            return _(u'a quick read')
+
+        return _(u'{0} read').format(naturaldelta(timedelta(seconds=rtm * 60)))
+
+    @property
+    def reading_time_abstracted(self):
+
+        rtm = self.reading_time
+
+        if rtm is None:
+            return u''
+
+        inum = 1
+        icon = u'∎'  # u'<i class="icon-time"></i>'
+        tmpl = _(u'<span class="popover-top" data-toggle="tooltip" '
+                 u'title="Reading time: {0}">{1}</span>')
+        time = naturaldelta(timedelta(seconds=rtm * 60))
+
+        if rtm > 8:
+            inum = 4
+
+        elif rtm > 3:
+            inum = 3
+
+        elif rtm > 1:
+            inum = 2
+
+        elif rtm == 0:
+            # HEADS UP: patch/hack; non-breakable spaces everywhere.
+            time = _(u'very quick (<1 min)')
+
+        return tmpl.format(time, inum * icon)
 
     # ————————————————————————————————————————————————————————————————— Methods
 
@@ -791,19 +870,23 @@ class Read(Document, DocumentHelperMixin):
 
             to_change = [only + '_articles_count' for only in update_only]
 
-        for subscription in self.subscriptions:
             for attr_name in to_change:
-                setattr(subscription, attr_name,
-                        op(getattr(subscription, attr_name), 1))
+                try:
 
-            for folder in subscription.folders:
-                for attr_name in to_change:
-                    setattr(folder, attr_name,
-                            op(getattr(folder, attr_name), 1))
+                    for subscription in self.subscriptions:
+                        setattr(subscription, attr_name,
+                                op(getattr(subscription, attr_name), 1))
 
-        for attr_name in to_change:
-            setattr(self.user, attr_name,
-                    op(getattr(self.user, attr_name), 1))
+                    for folder in subscription.folders:
+                        setattr(folder, attr_name,
+                                op(getattr(folder, attr_name), 1))
+
+                    setattr(self.user, attr_name,
+                            op(getattr(self.user, attr_name), 1))
+
+                except AttributeError, e:
+                    LOGGER.warning(u'Skipped cache descriptor update for %s '
+                                   u'from %s: %s', attr_name, self, e)
 
     def is_read_changed(self):
 

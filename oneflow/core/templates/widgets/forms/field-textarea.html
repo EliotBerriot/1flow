@@ -1,23 +1,11 @@
-<div class="control-group">
-    <label class="control-label" for="{{ field.auto_id }}">{{ field.label|safe }}</label>
+{% extends "widgets/forms/field-generic.html" %}
 
-    <div class="controls">
-        {% render_field field %}
-    </div>
-
-    {% if field.errors %}
-        <span class="help-block">{{ field.errors|join:", " }}</span>
-    {% endif %}
-
-    {% if not hide_help_text %}
-        <div class="controls">
-            <span class="help-block">{{ field.help_text|safe }}</span>
-        </div>
-    {% endif %}
+{% block field_extra_footer %}
+    {{ block.super }}
 
     <script type="text/javascript">
         $('#{{ field.auto_id }}[data-placeholder]').each(function(index) {
             $(this).val($(this).data('placeholder'));
         });
     </script>
-</div>
+{% endblock field_extra_footer %}

@@ -1,0 +1,544 @@
+
+
+// —————————————————————————————————————————————————————— Bootstrap 3 overrides
+
+.btn {
+  white-space: inherit;
+}
+
+a.brand {
+    text-transform: none;
+}
+
+.tab-content {
+  // 20131004, Olive. Without this override, we hit
+  // https://github.com/twbs/bootstrap/issues/6962
+  overflow: inherit;
+}
+
+.nav-tabs .secondary-nav {
+  float: right;
+  margin-left: 10px;
+  margin-right: 0;
+}
+
+.jumbotron label,
+.jumbotron .alert {
+  // Don't oversize the form font, it's ugly.
+  font-size: 15px;
+}
+
+.full-width {
+  width: 100% !important;
+}
+
+
+// ————————————————————————————————————————————————————— Font-awesome overrides
+
+
+// HEADS UP: we override Font-Awesome .icon-fixed-with
+// text-alignment, else the result is visually bad in
+// our reading-lists right sidebar. The right padding
+// is unnecessary, too. It's too much with the &nbsp;
+// we already have.
+[class^="icon-"].icon-fixed-width,
+[class*=" icon-"].icon-fixed-width {
+    text-align: center;
+    padding-right: 0;
+}
+
+// —————————————————————————————————————————————————————————— Select2 overrides
+
+
+.select2-container:not(.select2-container-multi) {
+    padding-top: 6px;
+}
+
+.select2-container {
+    //max-width: 80%;
+    //width: inherit;
+    //min-width: 45%;
+
+    font-size: 20px;
+
+    a.select2-choice {
+        height: 40px;
+
+        .select2-chosen {
+            padding: 5px;
+        }
+    }
+}
+
+.select2-arrow {
+    padding-top: 5px;
+}
+
+.select2-search-choice {
+  padding-left: 24px;
+  padding-right: 8px;
+}
+
+// HEADS UP: multi-level selectors are required,
+//           else select2 CSS still overrides ours.
+
+.select2-container-multi .select2-choices .select2-search-choice {
+  line-height: 24px;
+}
+
+.select2-container-multi .select2-search-choice-close {
+  top: 9px;
+  left: 5px;
+}
+
+// ————————————————————————————————————————————————————————————————— Our mixins
+
+@mixin fainted-anchors() {
+
+    a {
+        padding: 0;
+        margin: 0;
+        color: #aaa;
+        opacity: 0.5;
+
+        &:hover {
+            text-decoration: none;
+            opacity: 1;
+        }
+    }
+}
+
+@mixin clean-anchors() {
+
+    a {
+        padding: 0;
+        margin: 0;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}
+
+
+@mixin thumbnail-img-styles($size) {
+
+    a:hover {
+        text-decoration: none;
+    }
+
+    img, .generic-img {
+        max-width: $size;
+        max-height: $size;
+        @include border-radius(3px);
+    }
+
+    .generic-img {
+        width: $size;
+        height: $size;
+        line-height: $size;
+        font-size: $size / 5 * 3;
+        text-align: center;
+        opacity: 0.75;
+    }
+}
+
+@mixin thumbnail($size: 40px, $opacity: 1, $padding: 0, $absolute: 1, $bwbase: 1) {
+
+    .thumbnail {
+
+        @if $absolute == 1 {
+            position: absolute;
+            top: $padding;
+            left: $padding;
+
+        } @else {
+            padding-top: $padding;
+            padding-left: $padding;
+        }
+
+        border: 0;
+        padding: 0;
+        margin: 0;
+        max-width: $size;
+        max-height: $size;
+
+        opacity: $opacity;
+
+        // blurring icon:
+        //filter: url("/static/img/filters.svg#blur2px");
+        //@include filter(blur(2px));
+
+        @if $bwbase == 1 {
+            @include black-and-white(100%);
+        }
+
+        @include thumbnail-img-styles($size);
+
+        img, .generic-img {
+            max-width: $size;
+            max-height: $size;
+            margin: 0;
+            @include border-radius(3px);
+        }
+
+        .generic-img {
+            width: $size;
+            height: $size;
+            line-height: $size;
+            font-size: $size / 2.5;
+            text-align: center;
+            opacity: 0.75;
+        }
+    }
+}
+
+
+// ————————————————————————————————————————————————————— Our own utility styles
+
+/*  fullscreen for bootstrap modal
+
+    Unused as of 20130826, but keeping it because
+    it took me long to find how to do it.
+
+#read-item-modal {
+    width: 100%;
+    left: 0;
+    margin-left: 0;
+    top: 0;
+    margin-top: 0 !important;
+    height: 100%;
+}
+*/
+
+.spinner-wrapper {
+    text-align: center;
+    vertical-align: middle;
+}
+
+ul.social-auth {
+    list-style: none;
+    margin: 0;
+    padding: 50px;
+    li {
+        margin: 10px 0;
+    }
+}
+
+#profile {
+    ul.social-auth {
+        padding: 0 10px;
+    }
+}
+
+.centered {
+    text-align: center;
+}
+
+.right {
+  text-align: right;
+}
+
+.nowrap {
+  white-space: nowrap;
+}
+
+.pointer {
+    cursor: pointer;
+}
+
+// .slide-togglable {
+//     cursor: pointer;
+// }
+
+img.centered {
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.not-ready {
+  filter: url("/static/img/filters.svg#blur5px");
+  @include filter(blur(5px));
+  cursor: help;
+}
+
+// To place the page correctly on #links, we use the JS implementation of
+// cf. https://github.com/twbs/bootstrap/issues/1768#issuecomment-13306753
+// because the pure-CSS one works only on Firefox but not with Chrome.
+// It's in our `base.html` template.
+//
+// a[id] {
+//   margin-top: -60px;
+//   padding-top: 60px;
+//   -webkit-background-clip: content-box;
+//   background-clip: content-box;
+// }
+
+.css-hover-muted {
+    // the opacity has to be changed directly
+    // in the parent &:hover definition. Just put:
+    //
+    // #whatever-you-want, .whatever-you-want {
+    //     &:hover {
+    //         .css-hover-muted {
+    //             opacity: 1;
+    //             height: auto;
+    //         }
+    //     }
+    // }
+
+    @include single-transition(opacity, 0.5s, ease-out, 0.3s);
+    opacity: 0;
+    height: 0;
+    overflow: hidden;
+}
+
+
+// ————————————————————————————————————————————————————————————Fancy scrollbars
+// Thanks http://stackoverflow.com/questions/7725652/css-scrollbar-style-cross-browser
+
+$sb-border-radius: 3px;
+
+.acceptable-scrollbars {
+  -webkit-overflow-scrolling: touch;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar {
+  height: 6px;
+  width: 6px;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-button:start:decrement,
+.acceptable-scrollbars::-webkit-scrollbar-button:end:increment {
+  background: transparent;
+  display: none;
+  }
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece {
+  background: $backgroundLightColor;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:vertical:start {
+  border-top-left-radius: $sb-border-radius;
+  border-top-right-radius: $sb-border-radius;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: 0
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:vertical:end {
+  border-top-left-radius: 0;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: $sb-border-radius;
+  border-bottom-left-radius: $sb-border-radius;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:horizontal:start {
+  border-top-left-radius: $sb-border-radius;
+  border-top-right-radius: 0;
+  border-bottom-right-radius: 0;
+  border-bottom-left-radius: $sb-border-radius;
+}
+.acceptable-scrollbars::-webkit-scrollbar-track-piece:horizontal:end {
+  border-top-left-radius: 0;
+  border-top-right-radius: $sb-border-radius;
+  border-bottom-right-radius: $sb-border-radius;
+  border-bottom-left-radius: 0;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-thumb:vertical,
+.acceptable-scrollbars::-webkit-scrollbar-thumb:horizontal {
+  background: $grayLighterMedium;
+  border-radius: $sb-border-radius;
+  display: block;
+  height: 50px;
+}
+
+.acceptable-scrollbars::-webkit-scrollbar-button {
+  display: block;
+  height: 4px;
+}
+
+.white-scrollbars::-webkit-scrollbar-track-piece {
+  background: $white;
+}
+
+.white-scrollbars::-webkit-scrollbar-thumb:vertical,
+.white-scrollbars::-webkit-scrollbar-thumb:horizontal {
+  background: $grayLightMaxer;
+}
+// ———————————————————— Thanks https://github.com/twitter/bootstrap/issues/4286
+
+.spacer5   { height: 5px;   width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer10  { height: 10px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer15  { height: 15px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer20  { height: 20px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer25  { height: 25px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer30  { height: 30px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer35  { height: 35px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer40  { height: 40px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer45  { height: 45px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer50  { height: 50px;  width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer100 { height: 100px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+.spacer200 { height: 200px; width: 100%; font-size: 0; margin: 0; padding: 0; border: 0; display: block; }
+
+// ——————————————————————————————————————————————————— Bootstrap submodal
+// https://raw.github.com/jakiestfu/Bootstrap-SubModal/master/bootstrap.submodal.css
+
+.sub-modal{
+    position: absolute;
+    top: 0;
+    left: 60%;
+    width: 80%;
+    border-top: none;
+
+    -webkit-border-top-left-radius: 0;
+    -moz-border-top-left-radius: 0;
+    border-top-left-radius: 0;
+    -webkit-border-top-right-radius: 0;
+    -moz-border-top-right-radius: 0;
+    border-top-right-radius: 0;
+
+    background: -webkit-linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0) 4px);
+    background: -moz-linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0) 4px);
+    background: -ms-linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0) 4px);
+    background: -o-linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0) 4px);
+    background: linear-gradient(rgba(0,0,0,0.12),rgba(0,0,0,0) 4px);
+    background-color: #fff;
+}
+
+.sub-modal .modal-header{
+    display: none;
+}
+
+.sub-modal-backdrop{
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+}
+
+.modal-header{
+    border-color: #ccc;
+}
+
+@media (max-width: $screen-xs-max){
+    .sub-modal{
+        left: 10%;
+    }
+}
+
+// —————————————————————————————— https://github.com/twbs/bootstrap/issues/7501
+// Avoid body scrolling while a modal is open. Note: "position:fixed" resets
+// the page to the top and produces flickering on modal teardown. Note 2: it
+// used to work flawlessly, then no more with bootstrap 2.3. It will work again
+// with Bootstrap 3…  Cf. http://stackoverflow.com/a/11013994/654755
+
+body.modal-open {
+  position: relative;
+  overflow: hidden;
+}
+
+// ——————————————————————————————————————————————————— Accordion with carret
+// http://stackoverflow.com/a/18330745/654755
+
+.accordion-caret .accordion-toggle:hover {
+    text-decoration: none;
+}
+.accordion-caret .accordion-toggle:hover span,
+.accordion-caret .accordion-toggle:hover strong {
+    text-decoration: underline;
+}
+.accordion-caret .accordion-toggle:before {
+    font-size: 25px;
+    vertical-align: -3px;
+}
+.accordion-caret .accordion-toggle:not(.collapsed):before {
+    content: "▾";
+    margin-right: 0px;
+}
+.accordion-caret .accordion-toggle.collapsed:before {
+    content: "▸";
+    margin-right: 0px;
+}
+
+
+// ——————————————————————————————————————————————————— Any Firefox in the room?
+
+// http://sonspring.com/journal/removing-dotted-links
+:-moz-any-link:focus {
+  outline: none;
+}
+
+// TODO: http://stackoverflow.com/questions/1142819/how-to-remove-dotted-border-around-active-hyperlinks-in-ie8-with-css
+
+select {
+    height: 2.2em;
+}
+
+// ————————————————————————————————————————————————————————  Spinner animations
+
+
+.square-spinner {
+  display: inline-block;
+  width: 20px;
+  height: 20px;
+  background-color: #333;
+  //border: 1px solid black;
+
+  margin: 0 0.5em;
+  -webkit-animation: rotateplane 2s infinite ease-in-out;
+  animation: rotateplane 2s infinite ease-in-out;
+}
+
+@-webkit-keyframes rotateplane {
+  0% { -webkit-transform: perspective(120px) }
+  50% { -webkit-transform: perspective(120px) rotateY(180deg) }
+  100% { -webkit-transform: perspective(120px) rotateY(180deg)  rotateX(180deg) }
+}
+
+@keyframes rotateplane {
+  0% { transform: perspective(120px) rotateX(0deg) rotateY(0deg) }
+  50% { transform: perspective(120px) rotateX(-180.1deg) rotateY(0deg) }
+  100% { transform: perspective(120px) rotateX(-180deg) rotateY(-179.9deg) }
+}
+
+// ————————————————————————————————————————————————————————  Isotope animations
+
+.isotope,
+.isotope .isotope-item {
+  /* change duration value to whatever you like */
+  -webkit-transition-duration: 0.3s;
+     -moz-transition-duration: 0.3s;
+      -ms-transition-duration: 0.3s;
+       -o-transition-duration: 0.3s;
+          transition-duration: 0.3s;
+}
+
+.isotope {
+  -webkit-transition-property: height, width;
+     -moz-transition-property: height, width;
+      -ms-transition-property: height, width;
+       -o-transition-property: height, width;
+          transition-property: height, width;
+}
+
+.isotope .isotope-item {
+  -webkit-transition-property: -webkit-transform, opacity;
+     -moz-transition-property:    -moz-transform, opacity;
+      -ms-transition-property:     -ms-transform, opacity;
+       -o-transition-property:      -o-transform, opacity;
+          transition-property:         transform, opacity;
+}
+
+/**** disabling Isotope CSS3 transitions ****/
+
+.isotope.no-transition,
+.isotope.no-transition .isotope-item,
+.isotope .isotope-item.no-transition {
+  -webkit-transition-duration: 0s;
+     -moz-transition-duration: 0s;
+      -ms-transition-duration: 0s;
+       -o-transition-duration: 0s;
+          transition-duration: 0s;
+}

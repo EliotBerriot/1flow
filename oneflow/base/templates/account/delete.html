@@ -1,0 +1,31 @@
+{% extends "onlyme_base.html" %}
+
+{% load i18n %}
+
+{% block title %}{% trans "Delete account" %}{% endblock %}
+
+{% block onlyme_content %}
+    <fieldset>
+    <legend><h2>{% trans "Delete account" %}</h2></legend>
+
+    <div class="spacer25"></div>
+
+    <p>{% blocktrans %}
+        If you go ahead and delete your account, <strong>ALL</strong> your information and data (feeds, reads, tags, etc) will be <b>expunged within {{ ACCOUNT_DELETION_EXPUNGE_HOURS }} hours</b>.{% endblocktrans %}</p>
+
+    <p>{% trans "Make your decision like a man. Or a woman. Or a platypus. Whatever you are. <em>“Freedom is the right of all sentient beings”.</em>" %}</p>
+
+    <div class="spacer30"></div>
+
+    <div class="centered">
+        <form method="post" action="{% url "account_delete" %}" autocapitalize="off">
+            {% csrf_token %}
+            <button type="submit" class="btn btn-danger">{% trans "I understand. Have mercy, just shoot me!" %}</button>
+        </form>
+    </div>
+
+    <div class="spacer30"></div>
+
+    <p>{% blocktrans %}After that you will be redirected to the signin page, and will not be able to login anymore.{% endblocktrans %}</p>
+    </fieldset>
+{% endblock %}

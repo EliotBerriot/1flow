@@ -33,7 +33,12 @@ function start_checking_for_needed_updates() {
     setInterval(check_needs_update, 1000);
 }
 
-$.pnotify.defaults.delay = 5000;
+try {
+    $.pnotify.defaults.delay = 5000;
+} catch (err) {
+    console.log('Pines notify seems not to be present: ' + err);
+}
+
 
 // bindable_hovered NOT USED YET
 //var bindable_hovered = null;
@@ -55,7 +60,7 @@ try {
 });
 
 } catch (err) {
-    console.log("Could not start hammer: " + err);
+    console.log("Hammer seems not to be present: " + err);
     var hammertime = null;
 }
 
@@ -717,24 +722,36 @@ function on_hovered(func_if_found, func_if_not_found){
 
 function handle_modal(e) {
 
+    //console.debug("handle_modal");
+
     e.preventDefault();
 
     var url = $(this).attr('href');
 
     if (url.indexOf('#') == 0) {
-        $(url).modal('open');
+        //console.debug("handle_modal simple");
+
+        $("#" + $(this).data('target')).modal('show');
 
     } else {
+        //console.debug("handle_modal with input auto-focus");
 
         $.get(url, function(data) {
 
-            $(data).modal().on("shown", function () {
+            $(data).modal().on("shown.bs.modal", function () {
+
+                var $first_input = null,
+                    $first_textarea = null;
 
                 $('body').addClass('modal-open');
 
                 setup_everything($(this));
 
-                var $first_input = $('input:visible:enabled').first();
+                $(this).focus();
+
+                //console.debug("input auto-focus...");
+
+                $first_input = $(this).find('input:visible:enabled').first();
 
                 if ($first_input.length) {
 
@@ -749,15 +766,15 @@ function handle_modal(e) {
                     // If there is no input, try with textarea.
                     // For example in the web import form…
 
-                    var $first_textarea = $('textarea:visible:enabled').first();
-                    if ($first_textarea.length) {
+                    $first_textarea = $('textarea:visible:enabled').first();
 
+                    if ($first_textarea.length) {
                         $first_textarea.focus();
                     }
                 }
 
 
-            }).on('hidden', function () {
+            }).on('hidden.bs.modal', function () {
 
                 $('body').removeClass('modal-open');
                 $(this).remove();
@@ -849,28 +866,36 @@ function setup_everything(parent) {
     // to setup the same things on "new" parts of the page without
     // re-walking the whole page.
 
-    if (!Modernizr.touch){
-        setup_tooltips(parent);
-        setup_hover_muters(parent);
+    console.debug('Setup everything...');
+
+    try {
+
+        if (!Modernizr.touch){
+            setup_tooltips(parent);
+            setup_hover_muters(parent);
+        }
+
+        setup_popovers(parent);
+        setup_clicker_muters(parent);
+        setup_collapsibles(parent);
+
+        // bindable_hovered NOT USED YET
+        //setup_hover_notifiers(parent);
+
+        setup_clickovers(parent);
+        setup_delayed_loaders(parent);
+        launch_faders(parent);
+
+        setup_modals(parent);
+
+        setup_post_processors(parent);
+
+        // not fully tested, and not needed yet.
+        //launch_async_gets(parent);
+
+    } catch (err) {
+        console.warn('Something is not properly loaded/initialized: ' + err);
     }
-
-    setup_popovers(parent);
-    setup_clicker_muters(parent);
-    setup_collapsibles(parent);
-
-    // bindable_hovered NOT USED YET
-    //setup_hover_notifiers(parent);
-
-    setup_clickovers(parent);
-    setup_delayed_loaders(parent);
-    launch_faders(parent);
-
-    setup_modals(parent);
-
-    setup_post_processors(parent);
-
-    // not fully tested, and not needed yet.
-    //launch_async_gets(parent);
 
     try {
         // Given we are in <body#home>, try to run home_setup(), and so on.

@@ -2,12 +2,12 @@
 
 {% load i18n %}
 
-{% block landing_title %}{% trans "Resource not found" %}{% endblock landing_title %}
+{% block title %}{% trans "Resource not found" %}{% endblock title %}
 
-{% block onlyme_content %}
+{% block error_content %}
     <h1>{{ _('Not found.') }}</h1>
     <h2>{{ _("The page or resource you requested is unknown to us:") }}</h2>
     <p><code>{{ request.path }}</code></p>
     <p>{{ _('In fact, we asked Google and Bing and they do not know anything about it either. Perhaps you should ask a greek Oracle®?')}}</p>
     <p>{{ _("Just joking. They won't know more than the others. Just go back <a href='/'>Home</a>.") }}</p>
-{% endblock onlyme_content %}
+{% endblock error_content %}

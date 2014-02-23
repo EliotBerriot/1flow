@@ -1,4 +1,23 @@
-# *-* coding: utf-8 -*-
+# -*- coding: utf-8 -*-
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import re
 import logging
@@ -194,6 +213,68 @@ def reading_list_with_count(user, view_name, show_unreads=False,
 
 
 @register.simple_tag
+def subscription_css(subscription, folder, level):
+
+    css_classes = u'subscription'
+
+    if subscription.has_unread:
+        css_classes += u' has-unread'
+
+    if subscription.is_closed:
+        css_classes += u' is_closed'
+
+    # On small devices, any level takes the whole width.
+    css_classes += u' col-xs-12'
+
+    if level == 1:
+        if folder:
+            nb_subscriptions = folder.subscriptions.count()
+
+        else:
+            # We don't care.
+            nb_subscriptions = 1
+
+        if nb_subscriptions > 8:
+            css_classes += u' col-sm-6 col-md-4 col-lg-4'
+
+        elif nb_subscriptions > 3:
+            css_classes += u' col-sm-6 col-md-6 col-lg-6'
+
+    else:
+
+        css_classes += u' col-sm-6 col-md-4 col-lg-3'
+
+    return css_classes
+
+
+@register.simple_tag
+def folder_css(folder, level):
+
+    nb_subscriptions = folder.subscriptions.count()
+
+    #css_classes = u'folder'
+    css_classes = u''
+
+    if folder.has_content:
+        css_classes += u' has_content'
+
+    # On small devices, any level takes the whole width.
+    css_classes += u' col-xs-12'
+
+    if level == 1:
+        if nb_subscriptions > 8:
+            css_classes += u' col-sm-12 col-md-12 col-lg-9'
+
+        elif nb_subscriptions > 3:
+            css_classes += u' col-sm-12 col-md-8 col-lg-6'
+
+        else:
+            css_classes += u' col-sm-12 col-md-4 col-lg-3'
+
+    return css_classes
+
+
+@register.simple_tag
 def special_subscription_list_with_count(user, special_name, css_classes=None):
 
     list_name, tooltip_both, tooltip_unread, tooltip_all, tooltip_none = \
@@ -335,7 +416,10 @@ def article_full_content_display(article):
             # END temporary measure.
 
             try:
-                return markdown(transient_content)
+                # On large screens, make the article start a little far from
+                # the top of the screen, it makes a better reading experience.
+                return (u'<div class="spacer50 visible-lg"></div>'
+                        + markdown(transient_content))
 
             except Exception:
                 LOGGER.exception(u'Live Markdown to HTML conversion '
@@ -352,9 +436,8 @@ def read_original(article, with_text=None):
       <i class="icon-fixed-width icon-globe"></i>&nbsp;{3}</a></span>'''.format(
         u'popover-tooltip' if with_text else u'',
         _(u"Display on the original website"), article.url,
-        u'<span class="hidden-phone">{0}&nbsp;</span>'.format(
-            _(u'Read original')
-        )
+        u'<span class="hidden-inline-xs hidden-inline-sm">'
+        u'{0}&nbsp;</span>'.format(_(u'Read original'))
     )
 
 
@@ -395,27 +478,28 @@ def article_excerpt_content_display(article):
 
 @register.inclusion_tag('snippets/read/article-content.html',
                         takes_context=True)
-def article_content(context, article, is_restricted, with_full_text):
+def article_read_content(context, read):
 
-    if is_restricted:
+    if read.is_restricted:
+        #content = article_excerpt_content_display(article)
+        #excerpt = True
+
+        # Having None triggers the iframe display, which is more elegant
+        # and directly useful to the user than displaying just an excerpt.
         content = None
         excerpt = None
 
-    elif with_full_text:
-        content = article_full_content_display(article)
-        excerpt = False
-
     else:
-        content = article_excerpt_content_display(article)
-        excerpt = True
+        content = article_full_content_display(read.article)
+        excerpt = False
 
     return {
         # Make these up, because the context is not forwarded
         # to the final template. And that's a Django feature.
         # http://stackoverflow.com/q/5842538/654755
-        'article_url': article.url,
+        'article_url': read.article.url,
         'STATIC_URL': settings.STATIC_URL,
-        'is_restricted': is_restricted,
+        'is_restricted': read.is_restricted,
 
         # We don't mark_safe() here, else mark_safe(None) outputs "None"
         # in the templates, and "if content" tests fail because content

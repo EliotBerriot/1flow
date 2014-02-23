@@ -21,10 +21,7 @@
 
         {% else %}
           {#{% include 'snippets/read/article-content-no-content.html' %}#}
-
-          <div class="article-iframe-wrapper no-article-content">
-            <iframe class="article-iframe" src="{{ article_url }}"></iframe>
-          </div>
+          {% include 'snippets/read/article-content-iframe.html' %}
 
         {% endif %}
 
@@ -36,10 +33,7 @@
 
     {% else %}
       {#{% include 'snippets/read/article-content-no-content.html' %}#}
-
-      <div class="article-iframe-wrapper no-article-content">
-        <iframe class="article-iframe" src="{{ article_url }}"></iframe>
-      </div>
+      {% include 'snippets/read/article-content-iframe.html' %}
 
     {% endif %}
 

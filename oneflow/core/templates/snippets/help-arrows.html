@@ -12,36 +12,42 @@
 
 <script>
     $(document).ready(function(){
+        try {
 
-        // This one is tricky, we have no real-link and need to patch it.
-        $('.container-fluid a[href="{{ chat_fake_url }}"]').each(function(){
-            //$(this).attr('href', '#');
-            $(this).attr('onclick', '{{ chat_url }}');
-        });
-
-        _.map({
-            help: '{{ help_url }}',
-            chat: '{{ chat_fake_url }}'
-        }, function(url, key){
-            $('div.application a[href="' + url + '"]').hover(
-                function(){
-
-                    $('#arrow-show-' + key)
-                        .fadeIn(500)
-                        .fadeOut(100)
-                        .fadeIn(500)
-                        .fadeOut(100)
-                        .fadeIn(500)
-                        .fadeOut(100)
-                        .fadeIn(500);
-
-                    // setTimeout(function(){
-                    //     $('#arrow-show-' + key).fadeout();
-                    // }, 2500);
-
-                }, function(){
-                    $('#arrow-show-' + key).stop(true, true).fadeOut();
+            // This one is tricky, we have no real-link and need to patch it.
+            $('.container-fluid a[href="{{ chat_fake_url }}"]').each(function(){
+                //$(this).attr('href', '#');
+                $(this).attr('onclick', '{{ chat_url }}');
             });
-        });
+
+            _.map({
+                help: '{{ help_url }}',
+                chat: '{{ chat_fake_url }}'
+            }, function(url, key){
+                $('div.application a[href="' + url + '"]').hover(
+                    function(){
+
+                        $('#arrow-show-' + key)
+                            .fadeIn(500)
+                            .fadeOut(100)
+                            .fadeIn(500)
+                            .fadeOut(100)
+                            .fadeIn(500)
+                            .fadeOut(100)
+                            .fadeIn(500);
+
+                        // setTimeout(function(){
+                        //     $('#arrow-show-' + key).fadeout();
+                        // }, 2500);
+
+                    }, function(){
+                        $('#arrow-show-' + key).stop(true, true).fadeOut();
+                });
+            });
+        } catch (err) {
+            console.log('Could not setup help arrows: '
+                        + err + '(is "underscore" loaded?)');
+        }
+
     });
 </script>

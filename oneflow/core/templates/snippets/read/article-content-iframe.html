@@ -1,0 +1,33 @@
+<iframe
+    class="article-iframe acceptable-scrollbars"
+    src="{{ article_url }}"></iframe>
+
+<script type="text/javascript">
+    $(document).ready(function(){
+        var width = $(window).width(),
+            frame_val = null;
+
+        $('iframe').closest('.article').css(
+            {'overflow-y': 'hidden', 'padding': '0'}
+        );
+
+        // Sorry for hard-coding the BS3 values here.
+        // Any better solution will be welcomed.
+        if ( width >= 1200) {
+            frame_val = '18%';
+
+        } else if (width >= 992) {
+            frame_val = '10%';
+
+        } else if (width >= 768) {
+            frame_val = '5%';
+
+        }
+
+        if (frame_val) {
+            $('iframe').closest('.article-wrapper').css(
+                {'left': frame_val, 'right': frame_val}
+            );
+        }
+    });
+</script>

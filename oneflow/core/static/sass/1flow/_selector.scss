@@ -1,0 +1,175 @@
+$folder-border-width-default: 2px;
+
+@mixin selector-factory($application-width, $folder-border-width: $folder-border-width-default,
+                        $selector-margin: 20px, $selector-columns: 2) {
+
+    $folder-level-0-children: $application-width - $folder-border-width;
+    $folder-level-0-subscription-width: $folder-level-0-children / $selector-columns - $selector-margin;
+    $folder-level-1-width: $folder-level-0-children / $selector-columns - $folder-border-width - $selector-margin;
+
+    #selector #application,
+    #add-subscription #application {
+
+        @if $application-width < 768 {
+            margin: 1em auto;
+
+        } @else {
+            margin: 2em auto;
+        }
+
+        width: $application-width;
+    }
+
+    @if $selector-columns == 1 {
+
+        .folder .folder-wrapper {
+            width: $folder-level-1-width - $selector-margin - $folder-border-width;
+            margin-left: 0;
+        }
+
+        .folder .folder .folder-wrapper {
+            width: $folder-level-1-width - $selector-margin - $folder-border-width * 2;
+            margin-left: $selector-margin;
+        }
+
+        .folder .folder .folder .folder-wrapper {
+            width: $folder-level-1-width - $selector-margin - $folder-border-width * 3;
+            margin-left: $selector-margin;
+            margin-left: 0;
+        }
+
+        .folder .folder .folder .folder .folder-wrapper {
+            width: $folder-level-1-width - $selector-margin - $folder-border-width * 4;
+            margin-left: $selector-margin;
+        }
+
+    } @else {
+
+        .folder .folder-wrapper {
+            width: $folder-level-1-width;
+            margin-left: $selector-margin;
+        }
+
+        .folder .folder .folder-wrapper {
+            width: $folder-level-1-width - $selector-margin - $folder-border-width;
+            margin-left: 0;
+        }
+
+        .folder .folder .folder .folder-wrapper {
+            width: $folder-level-1-width - $selector-margin - $folder-border-width * $selector-columns;
+        }
+
+        .folder .folder .folder .folder .folder-wrapper {
+            width: $folder-level-1-width - $selector-margin * $selector-columns - $folder-border-width * ($selector-columns + 1);
+            margin-left: $selector-margin;
+        }
+    }
+
+    .subscription {
+        width: $folder-level-0-subscription-width;
+        margin-left: $selector-margin;
+    }
+
+    .folder .folder .subscription {
+        width: 100%;
+        margin-left: 0;
+    }
+
+    .folder-wrapper {
+        .name-wrapper .name:before {
+            border-top-width: $folder-border-width;
+        }
+    }
+}
+
+@mixin folder-borders($level, $top, $side, $fix-even: 0, $fix-odd: 0) {
+    // NOTE: as of 20131011, this mixin is not used anymore, but I keep
+    // it here for memories because it shows a lot of compass usage.
+
+    .folder-wrapper.level-#{$level} {
+        .name-wrapper.level-#{$level} .name:before {
+            top: -$top + 0px;
+
+            @if $level % 2 == 0 {
+                left: -$side + 0px;
+                right: 2px * $side;
+
+            } @else {
+                right: -$side + 0px;
+                left: 2px * $side;
+            }
+        }
+
+        // With an odd border pixel size (1px, 3px, 5px, etc), the
+        // folder width value is rounded to the inferior pixel and we
+        // loose ONE pixel on the total screen width. It makes some
+        // top-borders offset. We have to compensate for this here.
+
+        @if $level % 2 == 0 and $fix-even != 0 {
+
+            &:nth-child(even) {
+
+                .name-wrapper.level-1 .name:before {
+                    top: -$top + 0px;
+                    right: -$side + $fix-odd + 0px;
+                    left: 2px * ($side + $fix-odd);
+                }
+            }
+        }
+
+        @if $level % 2 != 0 and $fix-odd != 0 {
+
+            &:nth-child(odd) {
+
+                .name-wrapper.level-1 .name:before {
+                    top: -$top + 0px;
+                    right: -$side + $fix-odd + 0px;
+                    left: 2px * ($side + $fix-odd);
+                }
+            }
+        }
+    }
+}
+
+
+// ———————————————————————————————————————————————————————————— Source selector
+
+
+#selector {
+    a.manage {
+        text-decoration: none;
+        background-color: transparent;
+        color: grey;
+        opacity: 0.5;
+
+        &:hover,
+        &:active {
+            opacity: 1;
+        }
+
+        &:visited {
+            opacity: 0.5;
+        }
+    }
+
+    #reading-lists,
+    #watching-lists {
+        font-size: 125%;
+
+        ul {
+            margin-bottom: 20px;
+
+            li {
+                padding-bottom: 5px;
+
+                a {
+                    color: $subscription-link-color;
+                }
+            }
+        }
+    }
+}
+
+
+@import "selector-folders";
+@import "selector-subscriptions";

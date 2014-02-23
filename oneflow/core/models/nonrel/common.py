@@ -1,5 +1,22 @@
 # -*- coding: utf-8 -*-
 """
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
     .. note:: as of Celery 3.0.20, there are many unsolved problems related
         to tasks-as-methods. Just to name a few:
         - https://github.com/celery/celery/issues/1458
@@ -40,7 +57,8 @@ from statsd import statsd
 from operator import attrgetter
 from constance import config
 
-from mongoengine import Q
+from mongoengine import Q, EmbeddedDocument
+from mongoengine.fields import StringField
 
 from django.db import models
 from django.conf import settings
@@ -574,6 +592,25 @@ class PseudoQuerySet(list):
         return new_pqs
 
 
+class BackendSource(EmbeddedDocument):
+    """ Used to store social-auth backend specific data.
+
+        For example, to store Google+ groups data in our own :class:`Group`::
+
+            {
+                'name': u'google-oauth2',
+                'text': <the gg2 'content' attribute>,
+                'remote_id': <the gg2 'id' attribute>,
+                'remote_url': <the gg2 'link::self' attribute>,
+            }
+    """
+
+    name = StringField()
+    text = StringField()
+    remote_id = StringField()
+    remote_url = StringField()
+
+
 class CorePermissions(models.Model):
     """ This Django Model holds no data, but allows to create standard Django
         permissions for MongoEngine documents. These permissions are manageable
@@ -582,8 +619,14 @@ class CorePermissions(models.Model):
     class Meta:
         app_label   = 'core'
         permissions = (
-            ('can_read_full_text',
-             _(u'User can read articles with full-text contents')),
-            ('can_import_web_items',
-             _(u'User can import any web items')),
+            # As of 2014-02 and 1flow going Libre Software, there is no
+            # need for these permissions anymore. I removed the related
+            # parts in the templates, but kept some other in models, as
+            # a reference for any future implementation where we would
+            # like to re-use the Django permissions model against MongoDB.
+
+            #('can_read_full_text',
+            # _(u'User can read articles with full-text contents')),
+            #('can_import_web_items',
+            # _(u'User can import any web items')),
         )

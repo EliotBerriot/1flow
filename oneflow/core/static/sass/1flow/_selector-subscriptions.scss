@@ -1,0 +1,139 @@
+
+#subscriptions,
+#closed-subscriptions {
+
+    .global-links {
+        font-size: 80%;
+
+        span {
+            padding-left: 10px;
+
+            span {
+                padding-left: 0;
+            }
+        }
+    }
+}
+
+.folder,
+.subscription {
+    a {
+        color: $subscription-link-color;
+        text-decoration: none;
+
+        &:hover {
+            color: $subscription-link-hover;
+        }
+    }
+
+    .links {
+
+        a {
+            padding: 0 4px;
+        }
+
+        .count.small {
+            font-size: 80%;
+        }
+    }
+}
+
+.subscription {
+    height: $subscription-image-size + $subscription-padding * 2;
+
+    padding-top: $subscription-padding;
+    padding-bottom: $subscription-padding;
+
+    @include thumbnail($subscription-image-size,
+                       $subscription-opacity-default,
+                       $subscription-padding);
+
+    .name {
+        position: absolute;
+        top: $subscription-padding;
+        left: $subscription-image-size + $subscription-padding * 2;
+        right: $subscription-padding;
+
+        font-size: 120%;
+        line-height: $subscription-name-height;
+        max-height: $subscription-name-height;
+
+        overflow: hidden;
+        text-overflow: ellipsis;
+
+        opacity: $subscription-opacity-default;
+
+        a {
+            padding: 0 6px;
+        }
+    }
+
+    .links {
+        position: absolute;
+        top: $subscription-name-height + $subscription-padding;
+        left: $subscription-image-size + $subscription-padding * 2;
+    }
+
+    .last-updated {
+        position: absolute;
+        bottom: $subscription-padding - $baseline-difference;
+        right: $subscription-padding;
+    }
+
+    &:hover {
+        background: #fff;
+        @include border-radius(2px);
+
+        .css-hover-muted {
+            opacity: 1;
+            height: auto;
+        }
+
+        .thumbnail {
+            opacity: 1;
+
+            // unblurring icon:
+            //@include filter(none);
+
+            @include black-and-white(none);
+        }
+
+        .name {
+            opacity: 1;
+        }
+    }
+
+    .tags {
+        position: absolute;
+        bottom: 20px;
+        left: 10px;
+    }
+}
+
+.has-unread {
+
+    .thumbnail {
+        opacity: 1;
+        @include filter(none);
+    }
+
+    .name {
+        opacity: 1;
+        font-weight: 700;
+    }
+}
+
+.unread-count {
+    font-weight: 400;
+    opacity: 0.4;
+}
+
+.is_closed {
+    .name:not(.css-hover-muted) {
+        text-decoration: line-through;
+
+        &:hover {
+            text-decoration: none;
+        }
+    }
+}

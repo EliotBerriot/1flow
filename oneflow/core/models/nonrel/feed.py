@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import logging
 import requests
@@ -893,7 +912,7 @@ class Feed(Document, DocumentHelperMixin):
         return False
 
     @classmethod
-    def check_feedparser_error(cls, parsed_feed):
+    def check_feedparser_error(cls, parsed_feed, feed=None):
 
         if parsed_feed.get('bozo', None) is None:
             return
@@ -904,8 +923,9 @@ class Feed(Document, DocumentHelperMixin):
             return
 
         # Charset declaration problems are harmless (until they are not).
-        if str(error).startswith('document declared as'):
-            LOGGER.warning('Feed parsing: %s', error)
+        if str(error).startswith(u'document declared as'):
+            LOGGER.warning(u'While checking %s: %s',
+                           feed or parsed_feed, error)
             return
 
         # Different error values were observed on:
@@ -1061,7 +1081,7 @@ class Feed(Document, DocumentHelperMixin):
             return
 
         try:
-            Feed.check_feedparser_error(parsed_feed)
+            Feed.check_feedparser_error(parsed_feed, self)
 
         except Exception, e:
             self.close(reason=str(e))

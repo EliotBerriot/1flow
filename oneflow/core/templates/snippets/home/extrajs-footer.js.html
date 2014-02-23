@@ -1,0 +1,70 @@
+
+<script type="text/javascript">
+    {% comment %}
+        This must stay here (in the template, not an
+        external JS file) to get the server-side language.
+
+        Moment is disabled, we do not use it yet client-side.
+
+        moment.lang('{{ LANGUAGE_CODE }}');
+    {% endcomment %}
+
+    // —————————————————————————————————————————— common keyboard shortcuts
+
+    // “Add Item”, “Import Item”
+    Mousetrap.bind(['a i', 'i i'], function() {
+        $("#import-web-item-trigger").click();
+        return false;
+    });
+
+    // “Goto Selector”, “Goto Sources”
+    Mousetrap.bind(['g s'], function() {
+
+        var $back_to_selector = $("a#back-to-selector");
+
+        notify({
+            text: "{% trans "Returning to source selector…" %}",
+            icon: false
+        });
+
+        if ($back_to_selector.length) {
+            document.location = $back_to_selector.attr('href');
+
+        } else {
+            document.location = "{% url 'source_selector' %}";
+        }
+
+        return false;
+    });
+
+    // “Goto Features
+    Mousetrap.bind(['g f'], function() {
+        notify({
+            text: "{% trans "Heading to features / help…" %}",
+            icon: false
+        });
+        document.location = "{% url 'help' %}";
+        return false;
+    });
+
+    // “Goto Preferences”
+    Mousetrap.bind(['g p'], function() {
+        notify({
+            text: "{% trans "Opening your preferences…" %}",
+            icon: false
+        });
+        document.location = "{% url 'preferences' %}";
+        return false;
+    });
+
+    // “Goto Account”
+    Mousetrap.bind(['g a'], function() {
+        notify({
+            text: "{% trans "Opening your account…" %}",
+            icon: false
+        });
+        document.location = "{% url 'profile' %}";
+        return false;
+    });
+
+</script>

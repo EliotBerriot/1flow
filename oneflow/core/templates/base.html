@@ -9,62 +9,51 @@
     <link type="text/plain" rel="author" href="http://1flow.io/humans.txt" />
     <link rel="icon" type="image/png" href="{{ STATIC_URL }}favicon.png" />
 
-    <link rel="stylesheet" media="screen"
-        href="http://netdna.bootstrapcdn.com/twitter-bootstrap/2.3.2/css/bootstrap-combined.no-icons.min.css" />
-    <link rel="stylesheet"
-        href="http://netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" />
-
-    <!--[if IE 7]>
-      {% compressed_css 'font-awesome-ie7' %}
-    <![endif]-->
-    {# HTML5 shim, for IE6-8 support of HTML5 elements #}
-
-    <!--[if lt IE 9]>
-      <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
-    <![endif]-->
-
-    <!--[if gte IE 9]>
-      <style type="text/css">
-        .gradient {
-           filter: none;
-        }
-      </style>
-    <![endif]-->
-
-    <script type="text/javascript"
-        src="//ajax.googleapis.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-
-    <script type="text/javascript">
-      var scrollForHash = function() { scrollBy(0, -70) };
-
-      window.addEventListener("hashchange", scrollForHash);
-
-      function loadScrollForHash() { if (window.location.hash) scrollForHash(); }
-    </script>
+    {% include "base_header.html" %}
 
     {% block extrajs_header %}{% endblock extrajs_header %}
   </head>
-  <body id="{% block body_id %}{% endblock body_id %}" {% block body_data %}{% endblock body_data %} onload="loadScrollForHash()">
+  <body id="{% block body_id %}{% endblock body_id %}" {% block body_data %}{% endblock body_data %} class="acceptable-scrollbars" onload="loadScrollForHash()">
+    {% block navbar %}
+      {% if user.is_superuser %}
+        {# Never cache the navbar for admins, we must know about maintenance mode #}
+        {% include 'snippets/navbar.html' %}
+        {% include 'snippets/help-arrows.html' %}
+
+      {% else %}
+        {% cache 86400 home_navbar user %}
+          {% include 'snippets/navbar.html' %}
+          {% include 'snippets/help-arrows.html' %}
+        {% endcache %}
+
+      {% endif %}
+    {% endblock navbar %}
+
     {% block body %}{% endblock body %}
+
+    {# 20130130: is it still usefull here ? #}
+    {% csrf_token %}
 
     {% block extrajs_footer %}{% endblock extrajs_footer %}
 
-    {% comment %}
-        Caching this block is not easy.
-        It would depend on user_echo_page,
-        would require a dedicated template
-        tag which would probably anihilate
-        the cache gain.
-    {% endcomment %}
-
     {# HOW UGLY IS THIS… When calling a function would be so simple… #}
     {% captureas user_echo_page %}{% reverse_active 'home' %}{% reverse_active 'source_selector' %}{% reverse_active 'profile' %}{% reverse_active 'help' %}{% endcaptureas %}
+
+    {% comment %}
+        Caching the user_echo block is not easy.
+        It would depend on user_echo_page, would require
+        a dedicated template tag which would probably
+        anihilate the cache benefit.
+    {% endcomment %}
+
     {% if not debug and user_echo_page %}
       {% include 'snippets/userecho.html' %}
       {% if user.is_anonymous or not user.is_superuser %}
         {% include 'snippets/google-analytics.html' %}
       {% endif %}
     {% endif %}
+
+    {% include "base_footer.html" %}
 
   </body>
 </html>

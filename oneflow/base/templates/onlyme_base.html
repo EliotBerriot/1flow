@@ -1,17 +1,24 @@
-{% extends 'landing_base.html' %}
+{# NOTE: base.html is in core/templates/ #}
+{% extends 'base.html' %}
 
-{% block header_right %}{# intentionaly empty. #}{% endblock header_right %}
+{% block body %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-md-8 col-md-offset-2">
 
-{% block full_content %}
-    <div class="row-fluid">
-        <div class="span6 offset3">
+            {# div.spacerXX don't work here. #}
             <p>&nbsp;</p>
             <p>&nbsp;</p>
-            <div class="hero-unit only-me">
+
+            <div class="jumbotron only-me">
                 {% block onlyme_content %}{% endblock onlyme_content %}
             </div>
+
+            {# div.spacerXX don't work here. #}
             <p>&nbsp;</p>
             <p>&nbsp;</p>
+
         </div>
     </div>
-{% endblock full_content %}
+</div>
+{% endblock body %}

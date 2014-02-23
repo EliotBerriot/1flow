@@ -12,10 +12,10 @@
 {# HEADS UP: these 4 pivot values are important to not miss any changes #}
 {% cache 86400 folder_block_start folder.id folder.name folder.has_content level %}
 
-<div class="folder-wrapper clearfix level-{{ level }}"
+<div class="folder-wrapper clearfix level-{{ level }} {% folder_css folder level %}"
     style="border-{{ level|divisibleby:'2'|yesno:'left,right' }}-color: {{ folder_color_border }}">
     <div class="folder-border-top" style="background-color: {{ folder_color_border }}"></div>
-    <div class="folder {% if folder.has_content %}has_content{% endif %}">
+    <div class="folder">
 
         <a id="{{ folder.id }}"></a>
 

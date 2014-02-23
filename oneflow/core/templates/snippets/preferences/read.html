@@ -2,42 +2,47 @@
   <legend>{% trans "Reading" %}</legend>
 
   {% include "widgets/forms/field-generic.html" with field=reading_form.auto_mark_read_delay %}
+  {% include "widgets/forms/field-generic.html" with field=reading_form.reading_speed %}
 
 </fieldset>
 
-{% if preferences.home.show_advanced_preferences %}
+{% with field_label_css_class=checkbox_label_css field_input_css_class=checkbox_input_css %}
+
+  {% if preferences.home.show_advanced_preferences %}
+    <fieldset>
+      <legend>{% trans "Comfort" %}</legend>
+
+      {% include "widgets/forms/field-checkbox.html" with field=reading_form.read_switches_to_fullscreen %}
+      {% include "widgets/forms/field-checkbox.html" with field=reading_form.show_bottom_navbar %}
+    </fieldset>
+  {% endif %}
+
   <fieldset>
-    <legend>{% trans "Comfort" %}</legend>
+    <legend>{% trans "Keeping for later" %}</legend>
 
-    {% include "widgets/forms/field-checkbox.html" with field=reading_form.read_switches_to_fullscreen %}
-    {% include "widgets/forms/field-checkbox.html" with field=reading_form.show_bottom_navbar %}
+    {% include "widgets/forms/field-checkbox.html" with field=reading_form.bookmarked_marks_unread %}
   </fieldset>
-{% endif %}
 
-<fieldset>
-  <legend>{% trans "Keeping for later" %}</legend>
+  <fieldset>
+    <legend>{% trans "Starring articles" %}</legend>
 
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.bookmarked_marks_unread %}
-</fieldset>
+    {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_marks_read %}
+    {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_removes_bookmarked %}
+  </fieldset>
 
-<fieldset>
-  <legend>{% trans "Starring articles" %}</legend>
+  <fieldset>
+    <legend>{% trans "Archiving articles" %}</legend>
 
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_marks_read %}
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_removes_bookmarked %}
-</fieldset>
+    <p>{% blocktrans %}
+    Archiving is what keep your content accessible over time, whatever happens on the internet.
+    {% endblocktrans %}</p>
 
-<fieldset>
-  <legend>{% trans "Archiving articles" %}</legend>
+    {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_marks_archived %}
+    {% include "widgets/forms/field-checkbox.html" with field=reading_form.bookmarked_marks_archived %}
+    {% include "widgets/forms/field-checkbox.html" with field=reading_form.watch_attributes_mark_archived %}
+  </fieldset>
 
-  <p>{% blocktrans %}
-  Archiving is what keep your content accessible over time, whatever happens on the internet.
-  {% endblocktrans %}</p>
-
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.starred_marks_archived %}
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.bookmarked_marks_archived %}
-  {% include "widgets/forms/field-checkbox.html" with field=reading_form.watch_attributes_mark_archived %}
-</fieldset>
+{% endwith %}
 
 <fieldset class="form-end-notice">
 <p><strong>{% trans "Important notice:" %}</strong> {% blocktrans %}

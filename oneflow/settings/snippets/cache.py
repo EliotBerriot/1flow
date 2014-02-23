@@ -1,3 +1,23 @@
+# -*- coding: utf-8 -*-
+"""
+    Copyright 2013 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 CACHES = {
     'default': {
@@ -26,8 +46,8 @@ CACHES = {
 # and production-like behaviour check. But in case I need to
 # disable it, just uncomment the next two lines.
 #
-# if DEBUG:
-#    CACHES['default']['BACKEND']  = 'django.core.cache.backends.dummy.DummyCache'
+if DEBUG:
+   CACHES['default']['BACKEND']  = 'django.core.cache.backends.dummy.DummyCache'
 
 SELECT2_MEMCACHE_HOST = '127.0.0.1'
 SELECT2_MEMCACHE_PORT = '11211'

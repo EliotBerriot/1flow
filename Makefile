@@ -4,7 +4,9 @@ bootstrap:
 	pip install -r config/dev-requirements.txt
 	fab -H localhost local sdf.fabfile.dev_django_full
 	sudo chown -R `whoami`: ~/.virtualenvs/1flow
-	fab local runable
+    # This variable is required for the first installation,
+    # but not subsequent runs.
+    SPARKS_PARALLEL=false fab local runable
 
 runable:
 	fab local runable
@@ -22,10 +24,10 @@ compass:
 collectstatic:
 	./manage.py collectstatic
 
-run:
+run: clean
 	honcho -f Procfile.development start --quiet flower,shell,celery_beat
 
-runweb:
+runweb: clean
 	honcho -f Procfile.development start web
 
 runworkers:
@@ -37,7 +39,9 @@ runshell:
 	honcho -f Procfile.development --quiet shell start shell
 
 clean:
-	ps ax | grep manage.py | grep -v grep | awk '{print $$1}' | xargs kill -9
+	ps ax | grep manage.py | grep -v grep | awk '{print $$1}' | xargs kill -9 || true
+	ps ax | grep celeryd | grep -v grep | awk '{print $$1}' | xargs kill -9 || true
+	rm -f celery*.pid
 
 purge:
 	./manage.py celery purge

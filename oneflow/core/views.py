@@ -1,8 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-    1flow "core" application. It's an Ember.JS based application, which
-    explains why we don't have much things here. Everything takes place
-    in the static/ and templates/ directories.
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
 
 """
 
@@ -23,7 +36,7 @@ from django.core.urlresolvers import reverse
 from django.core.exceptions import ObjectDoesNotExist
 from django.conf import settings
 from django.contrib import messages
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 from django.template import add_to_builtins
 #from django.views.generic import ListView
 from django.contrib.auth import authenticate, login, get_user_model
@@ -149,9 +162,9 @@ def skip_welcome_beta(request):
     #       be synched with the home() view.
 
     if user.has_content:
-        return HttpResponseRedirect(reverse('source_selector'))
+        return redirect('source_selector')
 
-    return HttpResponseRedirect(reverse('add_subscription'))
+    return redirect('add_subscription')
 
 
 def home(request):
@@ -166,9 +179,9 @@ def home(request):
         #       with the skip_welcome_beta() view.
 
         if user.has_content:
-            return HttpResponseRedirect(reverse('source_selector'))
+            return redirect('source_selector')
 
-        return HttpResponseRedirect(reverse('add_subscription'))
+        return redirect('add_subscription')
 
     return render(request, 'home.html', {
         'gr_import': GoogleReaderImport(request.user.id),
@@ -266,7 +279,7 @@ def delete_folder(request, folder):
 
     if request.user.is_superuser or folder.owner == request.user.mongo:
         folder.delete()
-        return HttpResponseRedirect(reverse('source_selector'))
+        return redirect('source_selector')
 
     return HttpResponseForbidden()
 
@@ -417,7 +430,7 @@ def delete_subscription(request, **kwargs):
                       u'deleted.').format(subscription.name),
                       extra_tags=u'safe')
 
-        return HttpResponseRedirect(reverse('source_selector'))
+        return redirect('source_selector')
 
     return HttpResponseForbidden()
 
@@ -673,7 +686,7 @@ def read_with_endless_pagination(request, **kwargs):
     order_by       = _rwep_generate_order_by(request, **kwargs)
     djuser         = request.user
     user           = djuser.mongo
-    preferences    = user.preferences
+    #preferences    = user.preferences
 
     # —————————————————————————————————————————————————— subscription or folder
 
@@ -684,9 +697,15 @@ def read_with_endless_pagination(request, **kwargs):
     if subscription:
         subscription = Subscription.get_or_404(subscription)
 
-        if subscription.user != user and not (
-                djuser.is_superuser and preferences.staff.super_powers_enabled):
-            return HttpResponseForbidden('Not Owner')
+        if subscription.user != user:
+            if user.is_staff_or_superuser_and_enabled:
+
+                messages.warning(request, _(u'As administrator, you are '
+                                 u'accessing the feed of another user. '
+                                 u'USE WITH CAUTION.'), extra_tags='sticky')
+
+            else:
+                return HttpResponseForbidden('Not Owner')
 
         #LOGGER.info(u'Refining reads by subscription %s', subscription)
 
@@ -697,9 +716,14 @@ def read_with_endless_pagination(request, **kwargs):
     if folder:
         folder = Folder.get_or_404(folder)
 
-        if folder.owner != user and not (
-                djuser.is_superuser and preferences.staff.super_powers_enabled):
-            return HttpResponseForbidden('Not Owner')
+        if folder.owner != user:
+            if user.is_staff_or_superuser_and_enabled:
+                messages.warning(request, _(u'As administrator, you are '
+                                 u'accessing the feed of another user. '
+                                 u'USE WITH CAUTION.'), extra_tags='sticky')
+
+            else:
+                return HttpResponseForbidden('Not Owner')
 
         # LOGGER.info(u'Refining reads by folder %s', folder)
 
@@ -835,7 +859,7 @@ def read_meta(request, read_id):
     except:
         return HttpResponseTemporaryServerError()
 
-    if not request.is_ajax():
+    if not request.is_ajax() and not settings.DEBUG:
         return HttpResponseBadRequest('Must be called via Ajax')
 
     return render(request,
@@ -974,7 +998,7 @@ def preferences(request):
 
             request.user.mongo.preferences.save()
 
-            return HttpResponseRedirect(reverse('preferences'))
+            return redirect('preferences')
     else:
         home_form = HomePreferencesForm(
             instance=request.user.mongo.preferences.home)
@@ -1347,7 +1371,7 @@ def register(request):
 
             #post_register_actions.delay((user.id, ))
 
-            return HttpResponseRedirect(reverse('home'))
+            return redirect('home')
 
     return render(request, 'register.html', {'form': creation_form})
 

@@ -1,4 +1,23 @@
 # -*- coding: utf-8 -*-
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 import logging
 import feedparser
@@ -331,6 +350,24 @@ class Article(Document, DocumentHelperMixin):
             return _(u'{0} ago').format(naturaldelta(self.date_published))
 
     @property
+    def word_count_TRANSIENT(self):
+        """ TRANSIENT: until we store the words count, which implies to
+            be able to compute it correctly, we do all the work here. """
+
+        if self.word_count:
+            return self.word_count
+
+        else:
+            if self.content_type in CONTENT_TYPES_FINAL:
+
+                # TODO: exclude video / audio...
+
+                if len(self.content) > config.READ_ARTICLE_MIN_LENGTH:
+                    return len(self.content.split())
+
+        return None
+
+    @property
     def get_source(self):
 
         if self.source:
@@ -524,7 +561,7 @@ class Article(Document, DocumentHelperMixin):
             # a F*G page with links in many languages "click here
             # to continue".
             bsoup = BeautifulSoup(requests_response.content)
-            
+
             for anchor in bsoup.findAll('a'):
                 if u'here to continue' in anchor.text:
                     return clean_url(anchor['href'])
@@ -1071,7 +1108,7 @@ class Article(Document, DocumentHelperMixin):
 
         # build a fake permissions object for the template to be happy.
         perms = SimpleObject()
-        perms.core = SimpleObject()
+        #perms.core = SimpleObject()
 
         context = {
             'article': self,
@@ -1113,12 +1150,12 @@ class Article(Document, DocumentHelperMixin):
         # TODO: with Django 1.6, check if cache is already present or not:
         # https://docs.djangoproject.com/en/dev/topics/cache/#django.core.cache.utils.make_template_fragment_key # NOQA
 
-        for full_text_value in (True, False):
-            context['perms'].core.can_read_full_text = full_text_value
+        #for full_text_value in (True, False):
+        #    context['perms'].core.can_read_full_text = full_text_value
 
-            for lang in languages:
-                context['LANGUAGE_CODE'] = lang
-                render_to_string('snippets/read/article-body.html', context)
+        for lang in languages:
+            context['LANGUAGE_CODE'] = lang
+            render_to_string('snippets/read/article-body.html', context)
 
     @property
     def is_good(self):
@@ -1348,9 +1385,9 @@ class Article(Document, DocumentHelperMixin):
                 LOGGER.exception(u'Could not log source HTML content of '
                                  u'article %s.', self)
 
-        LOGGER.warning(u'%s %s %s %s %s', self.origin_type,
-                       self.origin_type == ORIGIN_TYPE_WEBIMPORT,
-                       self.title, self.url, self.title.endswith(self.url))
+        # LOGGER.warning(u'%s %s %s %s %s', self.origin_type,
+        #                self.origin_type == ORIGIN_TYPE_WEBIMPORT,
+        #                self.title, self.url, self.title.endswith(self.url))
 
         if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
                 and self.title.endswith(self.url):

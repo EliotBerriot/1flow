@@ -6,33 +6,23 @@
         this item shows in the top-left "add" menu.
     {% endcomment %}
 
-    {% if perms.core.can_import_web_items %}
-        {% if in_list %}
-            <li>
-
-        {% else %}
-            <span class="hide">
-
-        {% endif %}
-
-        <a id="import-web-item-trigger"
-                href="{% url 'import_web_pages' %}"
-                data-toggle="modal"
-                data-target="#">{% trans "Import web pages" %}</a>
-
-        {% if in_list %}
-            </li>
-
-        {% else %}
-            </span>
-
-        {% endif %}
+    {% if in_list %}
+        <li>
 
     {% else %}
-        {% if in_list %}
-            <li class="muted not-ready" {% feature_not_ready %}>
-                {% trans "Import web item(s)" %}</li>
+        <span class="hide">
 
-        {% endif %}
+    {% endif %}
+
+    <a id="import-web-item-trigger"
+            href="{% url 'import_web_pages' %}"
+            data-toggle="modal"
+            data-target="#">{% trans "Import web pages" %}</a>
+
+    {% if in_list %}
+        </li>
+
+    {% else %}
+        </span>
 
     {% endif %}

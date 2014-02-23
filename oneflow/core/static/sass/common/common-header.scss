@@ -1,0 +1,18 @@
+// •••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••• Compass
+// NOTE: bootstrap should be imported ahead of here.
+
+$experimental-support-for-svg: true;
+
+$default-transition-property: all;
+$default-transition-duration: 0.5s;
+//$default-transition-function: false;
+//$default-transition-delay: false;
+
+// Needed for gradients.
+@import "compass";
+
+//@import "compass/utilities";
+//@import "compass/css3";
+//@import "compass/css3/text-shadow";
+@import "compass/css3/transition";
+@import "compass/css3/filter";

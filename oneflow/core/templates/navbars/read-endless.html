@@ -22,31 +22,37 @@
           <li class="dropup nowrap">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="icon-book"></i>
-              <span class="hidden-phone">
+              <span class="hidden-inline-xs hidden-inline-sm">
                 {% trans "Reading lists" %}
                 <span class="caret"></span>
               </span>
             </a>
             <ul class="dropdown-menu">
 
-              <li class="{% reverse_active 'read_all' %}"><a href="{% url 'read_all' %}">{% trans 'All' %}</a></li>
-              <li class="divider"></li>
-
-              <li class="{% reverse_active 'read_fun' %}"><a href="{% url 'read_fun' %}">{% trans 'Funbox' %}</a></li>
-
-              <li class="{% reverse_active 'read_starred' %}"><a href="{% url 'read_starred' %}">{% trans 'Starred' %}</a></li>
+              <li class="{% reverse_active 'read_all' %}"><a
+                  href="{% url 'read_all' %}">{% trans 'All' %}</a></li>
 
               <li class="divider"></li>
 
-              <li class="{% reverse_active 'read_later' %}"><a href="{% url 'read_later' %}">{% trans 'Read later' %}</a></li>
-              <li class="{% reverse_active 'read' %}"><a href="{% url 'read' %}">{% trans 'Unread' %}</a></li>
+              <li class="{% reverse_active 'read_fun' %}"><a
+                  href="{% url 'read_fun' %}">{% trans 'Funbox' %}</a></li>
+
+              <li class="{% reverse_active 'read_starred' %}"><a
+                  href="{% url 'read_starred' %}">{% trans 'Starred' %}</a></li>
+
+              <li class="divider"></li>
+
+              <li class="{% reverse_active 'read_later' %}"><a
+                  href="{% url 'read_later' %}">{% trans 'Read later' %}</a></li>
+              <li class="{% reverse_active 'read' %}"><a
+                  href="{% url 'read' %}">{% trans 'Unread' %}</a></li>
             </ul>
           </li>
 
           <li class="dropup nowrap">
             <a class="dropdown-toggle" data-toggle="dropdown" href="#">
                 <i class="icon-eye-open"></i>
-              <span class="hidden-phone">
+              <span class="hidden-inline-xs hidden-inline-sm">
                 {% trans "Watching lists" %}
                 <span class="caret"></span>
               </span>

@@ -1,5 +1,24 @@
 # -*- coding: utf-8 -*-
-# Settings for 1flow.net (local development)
+# Settings for 1flow.io local development
+"""
+    Copyright 2013-2014 Olivier Cortès <oc@1flow.io>
+
+    This file is part of the 1flow project.
+
+    1flow is free software: you can redistribute it and/or modify
+    it under the terms of the GNU Affero General Public License as
+    published by the Free Software Foundation, either version 3 of
+    the License, or (at your option) any later version.
+
+    1flow is distributed in the hope that it will be useful,
+    but WITHOUT ANY WARRANTY; without even the implied warranty of
+    MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+    GNU Affero General Public License for more details.
+
+    You should have received a copy of the GNU Affero General Public
+    License along with 1flow.  If not, see http://www.gnu.org/licenses/
+
+"""
 
 MAIN_SERVER = '127.0.0.1'
 
@@ -11,11 +30,15 @@ include_snippets(
         # Don't forget to deactivate nobother when we'ge got time to
         # fix other's bugs. Just kidding…
         '000_nobother',
+
+        # Deactivate 00_development, activate 00_production and _post_
+        # to test 404/500 and switch to full production configuration.
         '00_development',
-        # Activate this to test 404/500…
         #'00_production',
-        '1flow_io',
+
+        '1flow_io_pre_common',
         'common',
+        #'1flow_io_post_common',
         'constance',
         'api_keys',
         'databases',
@@ -43,6 +66,9 @@ if socket.gethostname().lower() == 'duncan':
     SITE_DOMAIN = 'big.1flow.io'
 else:
     SITE_DOMAIN = 'lil.1flow.io'
+
+# For testing both configurations.
+#ACCOUNT_OPEN_SIGNUP = False
 
 EMAIL_HOST = 'gurney'
 #EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'

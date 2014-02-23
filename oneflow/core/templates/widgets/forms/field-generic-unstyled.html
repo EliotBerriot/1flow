@@ -1,0 +1,13 @@
+{% extends "widgets/forms/field-generic.html" %}
+
+{% comment %}
+    We don't add the:
+
+        class+="form-control"
+
+    to allow select2 and others to style the widget without fuss.
+{% endcomment %}
+
+{% block field_input_field %}
+    {% render_field field class+="full-width" %}
+{% endblock field_input_field %}
