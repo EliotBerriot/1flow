@@ -35,7 +35,7 @@ If you are interested, get in touch via GitHub, [Twitter](https://twitter.com/Ka
 
 # Project management and contact
 
-Public project management (features specification, general planned actions, agile iteration content proposals) happens on Trello, backed with the [IRC channel][irc], video conferences and physical meetups. Issues (bugs) are tracked [on GitHub][ghiss]. These are the authoritative working tools.
+Public project management (features specification, general planned actions, agile iteration content proposals) [happens on Trello][trello], backed with the [IRC channel][irc], video conferences and physical meetups. Issues (bugs) are tracked [on GitHub][ghiss]. These are the authoritative working tools.
 
 Public announcements are broadcasted [on the 1flow tumblr][tumblr] and relayed on the [Twitter feed][twitter].
 
