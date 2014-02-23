@@ -1,7 +1,8 @@
 
 # Copyright
 
-Copyright 2014 Olivier Cortès <oc@1flow.io>
+Copyright 2014 Olivier Cortès <oc@1flow.io> and others
+(where applicable, authors are cited)
 
 This file is part of the 1flow project.
 
@@ -19,19 +20,9 @@ You should have received a copy of the GNU Affero General Public
 License along with 1flow. If not, see http://www.gnu.org/licenses/
 
 
-# Copyright & license notices and issues
+# Copyright & license notices
 
 You must know that:
-
-- in order to create the webapp, I used paid templates from wrapbootstrap.com.
-  I paid for only one license, which is in use on http://1flow.io/ . Other
-  installations of the 1flow software have to roll their own templates or
-  buy their own copy of the same wrapbootstrap theme to be legal.
-
-  I'm sorry for this non-free limitation, it's historic (at the beginning,
-  1flow was not libre at all and this was not a concern). I hope this will
-  be resolved during the first crowdfunding cycle, with a completely free
-  graphical theme.
 
 - Static files (JS/CSS) come from various projects on the web (jQuery,
   Bootstrap, Hammer.JS, and a lot more). As far as I remember, I used only
@@ -42,9 +33,8 @@ You must know that:
   In this case, please report this to oc@1flow.io so we can work out the issue
   and find (or write) free software code to replace them.
 
-As far as the `docs/` folder, the `python` files and our own `JS` code are
-concerned, they are all covered by the AGPL license. Please report any
-unknown-status file you find to oc@1flow.io, we will work it out ASAP.
+Please report any unknown-or-unclear-status file you find to oc@1flow.io, we
+will work it out ASAP.
 
 
 # GNU Affero General Public License, version 3
