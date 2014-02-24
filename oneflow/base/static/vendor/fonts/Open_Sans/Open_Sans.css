@@ -42,7 +42,7 @@
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 300;
-  src: local('Open Sans Light Italic'), local('OpenSansLight-Italic'), url(/static/vendor/fonts/Open_Sans/OpenSansLight-Italic.woff) format('woff');
+  src: local('Open Sans Light Italic'), local('OpenSansLight-Italic'), url(/static/vendor/fonts/Open_Sans/OpenSans-LightItalic.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
