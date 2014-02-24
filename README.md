@@ -2,7 +2,7 @@
 
 This project is about reading and writing on the web, while keeping your data safe and sharing it with friends and colleagues.
 
-It can be seen as the merge of the most-valuable features of Feedly/Readability (implemented) and Facebook/Twitter/Medium/Digg/Storify/ScoopIT/Flickr (on the way) in one application. Obviously 1flow offers less bells-and-whistles, its main feature being the global integration of all others (and probably the fact that it's libre software). 
+It can be seen as the merge of the most-valuable features of Feedly/Readability (implemented) and Facebook/Twitter/Medium/Digg/Storify/ScoopIT/Flickr (on the way) in one application. Obviously 1flow offers less bells-and-whistles, its main feature being the global integration of all others (and probably the fact that it's libre software).
 
 It has some similarities with a cloud storage, and could perhaps implement a compatible API.
 
@@ -10,12 +10,14 @@ Your data is stored on your own server (or one mutualized with friends or collea
 
 You'll find a more user-oriented original pitch at http://1flow.io/ and some random technical bits on [my blog][blog].
 
+1flow development is [funded via Gittip][gittip].
+
 
 # Current status
 
-The current implementation is fully usable, for what's done. 
+The current implementation is fully usable, for what's done.
 
-**It's in production on http://1flow.io/ and the early adopters use it since April 2013.** 
+**It's in production on http://1flow.io/ and the early adopters use it since April 2013.**
 
 1flow takes benefit of continuous integration: new features and bug fixes are pushed very regularly.
 
@@ -30,7 +32,7 @@ If you are interested, get in touch via GitHub, [Twitter](https://twitter.com/Ka
 
 # License
 
-1flow is released under the GNU Affero GPL v3. See the `COPYING` file for license full text.
+1flow is released under the GNU Affero GPL v3. See the `COPYING` file for details.
 
 
 # Project management and contact
@@ -51,6 +53,7 @@ Note for developers: this is a `git-flow` repository, we follow the [successful 
 
 Thanks for reading ;-)
 
+  [gittip]: https://gittip.com/1flow/
   [ghiss]: https://github.com/1flow/1flow
   [blog]: http://oliviercortes.com/category/blog.html
   [twitter]: https://twitter.com/1flow_io

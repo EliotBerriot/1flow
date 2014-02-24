@@ -64,9 +64,11 @@
  	- beta testing
  	- features voting and prioritization
  	- project advocacy
+    - [sustainable developer/project funding][gittip] via Gittip
  	- translations
  	- documentation
 
+  [gittip]: https://gittip.com/Karmak23/
   [oc]: https://twitter.com/Karmak23
   [mc]: https://twitter.com/mchaignot
   [ndl]: https://twitter.com/nicolasdelaitre
