@@ -36,7 +36,7 @@
   font-family: 'Open Sans';
   font-style: normal;
   font-weight: 800;
-  src: local('Open Sans Extrabold'), local('OpenSans-Extrabold'), url(/static/vendor/fonts/Open_Sans/OpenSans-Extrabold.woff) format('woff');
+  src: local('Open Sans ExtraBold'), local('OpenSans-ExtraBold'), url(/static/vendor/fonts/Open_Sans/OpenSans-ExtraBold.woff) format('woff');
 }
 @font-face {
   font-family: 'Open Sans';
@@ -66,5 +66,5 @@
   font-family: 'Open Sans';
   font-style: italic;
   font-weight: 800;
-  src: local('Open Sans Extrabold Italic'), local('OpenSans-ExtraboldItalic'), url(/static/vendor/fonts/Open_Sans/OpenSans-ExtraboldItalic.woff) format('woff');
+  src: local('Open Sans ExtraBold Italic'), local('OpenSans-ExtraBoldItalic'), url(/static/vendor/fonts/Open_Sans/OpenSans-ExtraBoldItalic.woff) format('woff');
 }
