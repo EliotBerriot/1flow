@@ -32,6 +32,7 @@ django-debug-toolbar==0.10.2
 django-endless-pagination==2.0
 django-grappelli==2.4.7
 django-inplaceedit==1.3.0
+django-inplaceedit-bootstrap==0.1.1
 django-logentry-admin==0.1.2
 django-maintenancemode==0.10
 django-markdown-deux==1.0.4
