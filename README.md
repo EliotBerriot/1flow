@@ -6,9 +6,9 @@ It can be seen as the merge of the most-valuable features of Feedly/Readability 
 
 It has some similarities with a cloud storage, and could perhaps implement a compatible API.
 
-Your data is stored on your own server (or one mutualized with friends or colleagues). Inter-server communication will be implemented via the GnuPG web of trust.
+Your data is stored on your own server (or one mutualized with friends or colleagues). Inter-server communication will be implemented via [the GnuPG web of trust][kgpg].
 
-You'll find a more user-oriented original pitch at http://1flow.io/ and some random technical bits on [my blog][blog].
+You'll find a more user-oriented original pitch at http://1flow.io/ and project news [on the official blog][1blog].
 
 1flow development is [funded via Gittip][gittip].
 
@@ -55,7 +55,8 @@ Thanks for reading ;-)
 
   [gittip]: https://gittip.com/1flow/
   [ghiss]: https://github.com/1flow/1flow
-  [blog]: http://oliviercortes.com/category/blog.html
+  [1blog]: http://blog.1flow.io/
+  [kgpg]: http://oliviercortes.com/principles-human-trusted-machines-distributed-network.html
   [twitter]: https://twitter.com/1flow_io
   [tumblr]: http://blog.1flow.io/
   [trello]: https://trello.com/b/lSR7Y6Vi/1flow-features-development
