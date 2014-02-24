@@ -825,7 +825,18 @@ class Feed(Document, DocumentHelperMixin):
             return False
 
         if created:
-            new_article.add_original_data('feedparser', unicode(article))
+            try:
+                new_article.add_original_data('feedparser', unicode(article))
+
+            except:
+                # Avoid crashing on anything related to the archive database,
+                # else reads are not created and statistics are not updated.
+                # Not having the archive data is not that important. Not
+                # having the reads created forces us to check everything
+                # afterwise, which is very expensive. Not having stats
+                # updated is not cool for graph-loving users ;-)
+                LOGGER.exception(u'Could not create article content '
+                                 u'in archive database.')
 
         mutualized = created is None
 
