@@ -104,6 +104,9 @@
     ul li, ol li {
         line-height: 1.25em;
 
+        // Contained big elements don't make me larger.
+        max-width: 100%;
+
         p,
         ul,
         ol,
