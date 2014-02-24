@@ -8,16 +8,18 @@
 # Developers
 
  * **[Olivier Cortès (BDFL)][oc]**
+
  	- project initiator and lead developer
  	- software and infrastructure architect
  	- project advocate (public institutions, FOSS conferences)
- 	- core manifesto ideas, sustainable crowdfunding ideas
- 	- project funder (infrastructure hosting, soon legal research)
- 	- features ideas and specifications
+ 	- core manifesto ideas, sustainable crowdfunding integration
+ 	- financial supporter (infrastructure hosting; soon legal research)
+ 	- core features ideas and specifications
  	- emotional design, graphical design (but I will be happy to share/delegate with anyone having real aptitudes on this point)
 
  * **YOUR NAME HERE**
- 	- you are welcomed to participate!
+
+ 	- you are welcome to participate!
  	- come [discuss on IRC][irc], take over issues, submit PRs :-)
  	- see `CONTRIBUTING.md` for development guidelines
 
@@ -27,22 +29,24 @@
  * **[Matthieu Chaignot][mc]**
 
  	- core-developer human supporter since the beginning :-)
+    - end-user project popularization (PPT, video tutorials)
  	- project advocate (users and customers, public institutions)
  	- manifesto ideas and involvement
- 	- legal research initiator and handler
- 	- project funder (legal research, infrastructure hosting)
- 	- features ideas and specifications
+ 	- legal research initiator and manager
+ 	- financial supporter (legal research, infrastructure hosting)
+ 	- lots of feature ideas and specifications
  	- drawings and text content
  	- design ideas
 
  * **[Nicolas de Laitre][ndl]**
 
  	- core-developer human supporter
- 	- manifesto initiator, structure and involvement
- 	- regular discussions, various ideas
- 	- public institutions relationships management
+ 	- manifesto initiator
+ 	- brainstorming discussions, various ideas
+ 	- public institutions relationships hinter
 
  * **[Willian Ver Valen Paiva][wvvp]**
+
  	- RSS fetching code prototype and research
  	- full-content parsing benchmarking and prototypes
  	- test suite development
@@ -50,6 +54,7 @@
  	- various code contributions
 
  * **[Kim Paletou][kimp]**
+
  	- design discussions and ideas
  	- graphical enhancements
 
