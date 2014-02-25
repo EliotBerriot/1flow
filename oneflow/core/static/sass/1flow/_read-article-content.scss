@@ -223,6 +223,14 @@
 
 // ————————————————————————————————————————————————————————————————— responsive
 
+@media (min-width: $screen-md-min) {
+    .article-iframe-wrapper {
+
+        // NOTE: 99-100% creates a 3px scrollbar...
+        height: 98%;
+    }
+
+}
 
 @media (min-width: $screen-md-min) and (max-width: $screen-md-max){
     .article-content {
@@ -280,4 +288,5 @@
             line-height: $article-line-height-lg;
         }
     }
+
 }
