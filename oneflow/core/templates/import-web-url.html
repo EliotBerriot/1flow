@@ -7,14 +7,14 @@
 <div class="spacer50"></div>
 
 <div class="row-fluid">
-	<div class="hero-unit span6 offset3">
+	<div class="jumbotron col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
 
 {% url 'article_conversion_status' article.id as poll_url %}
 {% url 'read_all_feed' mongodb_user.web_import_subscription.id as import_url %}
 
 {% if article %}
 
-	<h1>{% trans "Success" %}</h1>
+	<h1>{% trans "Got it!" %}</h1>
 	<div class="spacer25"></div>
 
 	{# Note: The SPAN inside the P avoids the tooltip to show up at the edge of the .hero-unit DIV. #}
