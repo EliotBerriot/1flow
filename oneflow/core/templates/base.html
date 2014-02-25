@@ -53,7 +53,9 @@
       {% endif %}
     {% endif %}
 
-    {% include "base_footer.html" %}
+    {% block base_footer %}
+      {% include "base_footer.html" %}
+    {% endblock base_footer %}
 
   </body>
 </html>
