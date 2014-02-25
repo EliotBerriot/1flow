@@ -4,92 +4,93 @@
 {% block landing_title %}{% firstof landing_page_title 'landing_page_title' %}{% endblock landing_title %}
 
 {% block full_content %}
-          <div class="row-fluid">
-            <div class="span12">
-                <div class="header-description">
-                  <h2>{{ big_catcher_title|markdown }}</h2>
-                  <h3 id="beta_data" class="span8 offset2">
-                    <span id="beta_timer">
-                        {% blocktrans %}
-                          <strong>1flow</strong> beta will open soon!
-                        {% endblocktrans %}
-                    </span>
-                    <span id="beta_invites_left">
-                      {% include 'snippets/beta_invites_left.html' %}
-                    </span>
-                  </h3>
+  <div class="row">
+    <div class="col-xs-12">
+        <div class="header-description">
+          <h2>{{ big_catcher_title|markdown }}</h2>
+          <h3 id="beta_data" class="col-xs-12 col-md-8 col-md-offset-2">
+            <span id="beta_timer">
+                {% blocktrans %}
+                  <strong>1flow</strong> beta will open soon!
+                {% endblocktrans %}
+            </span>
+            <span id="beta_invites_left">
+              {% include 'snippets/beta_invites_left.html' %}
+            </span>
+          </h3>
 
-                  <form method='POST' class="subemail span8 offset2">
-                    {% csrf_token %}
+          <form method='POST'
+            class="subemail col-xs-12 col-md-8 col-md-offset-2 col-lg-6 col-lg-offset-3">
+            {% csrf_token %}
 
-                    <div class="input-append control-group {% if form.errors %}error{% endif %}">
-                      {% with email_placeholder='placeholder:'|add:email_placeholder_text %}
-                      {% render_field form.email|attr:'autofocus'|attr:email_placeholder|attr:'autocorrect:off'|attr:'autocapitalize:off' class+="input-xlarge custom" %}
-                      {% endwith %}
-                      <button type="submit" class="custom">{{ invitation_button_label }}</button>
-                    </div>
+            <div class="input-append control-group {% if form.errors %}error{% endif %}">
+              {% with email_placeholder='placeholder:'|add:email_placeholder_text %}
+              {% render_field form.email|attr:'autofocus'|attr:email_placeholder|attr:'autocorrect:off'|attr:'autocapitalize:off' class+="input-xlarge custom" %}
+              {% endwith %}
+              <button type="submit" class="custom">{{ invitation_button_label }}</button>
+            </div>
 
-                    <div class=" control-group {% if form.errors %}error{% endif %}">
-                     {% if form.email.errors %}
-                         <span class="label label-warning">{% for error in form.email.errors %}
-                             {{ error }}
-                         {% endfor %}</span>
-                     {% endif %}
+            <div class=" control-group {% if form.errors %}error{% endif %}">
+             {% if form.email.errors %}
+                 <span class="label label-warning">{% for error in form.email.errors %}
+                     {{ error }}
+                 {% endfor %}</span>
+             {% endif %}
 
-                    </div>
-                  </form>
-                </div><!-- /header-description -->
+            </div>
+          </form>
+        </div><!-- /header-description -->
 
-                <div class="header-features">
-                  <div class="row-fluid">
-                    <div class="span6 header-feature" id="promise_left">
-                      <h3><i class="icon-{{ promise_left_icon }}">
-                        </i>&nbsp;{{ promise_left_title|markdown }}</h3>
-                      <p>{{ promise_left_content|markdown }}</p>
-                    </div>
-                    <div class="span6 header-feature" id="promise_right">
-                      <h3><i class="icon-{{ promise_right_icon }}">
-                        </i>&nbsp;{{ promise_right_title|markdown }}</h3>
-                      <p>{{ promise_right_content|markdown }}</p>
-                    </div>
-                  </div>
-                </div><!-- /header-features -->
-            </div><!-- /span12 -->
-          </div><!-- /row-fluid -->
+        <div class="header-features">
+          <div class="row">
+            <div class="col-xs-12 col-md-6 header-feature" id="promise_left">
+              <h3><i class="icon-{{ promise_left_icon }}">
+                </i>&nbsp;{{ promise_left_title|markdown }}</h3>
+              <p>{{ promise_left_content|markdown }}</p>
+            </div>
+            <div class="col-xs-12 col-md-6 header-feature" id="promise_right">
+              <h3><i class="icon-{{ promise_right_icon }}">
+                </i>&nbsp;{{ promise_right_title|markdown }}</h3>
+              <p>{{ promise_right_content|markdown }}</p>
+            </div>
+          </div>
+        </div><!-- /header-features -->
+    </div><!-- /col-xs-12  -->
+  </div><!-- /row -->
 {% endblock full_content %}
 
 {% block landing_features %}
-            <div class="span3">
-              <div class="feature">
-                  <i class="icon-{{ feature_1_icon }} icon-2x pull-left"></i>
-                  <h4>{{ feature_1_title|markdown }}</h4>
-                <p>{{ feature_1_content|markdown }}</p>
-              </div>
-            </div><!-- /span3 -->
+  <div class="col-xs-12 col-md-6 col-lg-3">
+    <div class="feature">
+        <i class="icon-{{ feature_1_icon }} icon-2x pull-left"></i>
+        <h4>{{ feature_1_title|markdown }}</h4>
+      <p>{{ feature_1_content|markdown }}</p>
+    </div>
+  </div><!-- /col-xs-12 col-md-6 col-lg-3 -->
 
-            <div class="span3">
-              <div class="feature">
-                  <i class="icon-{{ feature_2_icon }} icon-2x pull-left"></i>
-                  <h4>{{ feature_2_title|markdown }}</h4>
-                <p>{{ feature_2_content|markdown }}</p>
-              </div>
-            </div><!-- /span3 -->
+  <div class="col-xs-12 col-md-6 col-lg-3">
+    <div class="feature">
+        <i class="icon-{{ feature_2_icon }} icon-2x pull-left"></i>
+        <h4>{{ feature_2_title|markdown }}</h4>
+      <p>{{ feature_2_content|markdown }}</p>
+    </div>
+  </div><!-- /col-xs-12 col-md-6 col-lg-3 -->
 
-            <div class="span3">
-              <div class="feature">
-                  <i class="icon-{{ feature_3_icon }} icon-2x pull-left"></i>
-                  <h4>{{ feature_3_title|markdown }}</h4>
-                <p>{{ feature_3_content|markdown }}</p>
-              </div>
-            </div><!-- /span3 -->
+  <div class="col-xs-12 col-md-6 col-lg-3">
+    <div class="feature">
+        <i class="icon-{{ feature_3_icon }} icon-2x pull-left"></i>
+        <h4>{{ feature_3_title|markdown }}</h4>
+      <p>{{ feature_3_content|markdown }}</p>
+    </div>
+  </div><!-- /col-xs-12 col-md-6 col-lg-3 -->
 
-            <div class="span3">
-              <div class="feature">
-                  <i class="icon-{{ feature_4_icon }} icon-2x pull-left"></i>
-                  <h4>{{ feature_4_title|markdown }}</h4>
-                <p>{{ feature_4_content|markdown }}</p>
-              </div>
-            </div><!-- /span3 -->
+  <div class="col-xs-12 col-md-6 col-lg-3">
+    <div class="feature">
+        <i class="icon-{{ feature_4_icon }} icon-2x pull-left"></i>
+        <h4>{{ feature_4_title|markdown }}</h4>
+      <p>{{ feature_4_content|markdown }}</p>
+    </div>
+  </div><!-- /col-xs-12 col-md-6 col-lg-3 -->
 {% endblock landing_features %}
 
 {% block extrajs_footer %}
