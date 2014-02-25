@@ -89,7 +89,8 @@
 
 {% block extrajs_footer %}
 
-    {% cache 86400 home_extrajs_footer_immutable %}
+    {# TODO: cf. #3 sentry_public_dsn is needed, and a collectstatic should purge this fragment. #}
+    {% cache 86400 home_extrajs_footer_immutable config.WEB_CDNS_ENABLED %}
 
         {{ block.super }}
 
