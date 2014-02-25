@@ -54,13 +54,14 @@
     h2, h3 {
         margin-top: 2em;
         margin-bottom: 1em;
+        font-weight: bold;
     }
 
     h2 {
         font-size: $article-font-size-h2-xs;
     }
 
-    h3 {
+    h3, h4, h5, h6 {
         font-size: $article-font-size-h3-xs;
     }
 
@@ -235,7 +236,8 @@
             font-size: $article-font-size-h2-md;
 
         }
-        h3 {
+
+        h3, h4, h5, h6 {
             font-size: $article-font-size-h3-md;
 
         }
@@ -256,22 +258,21 @@
         //
         // TODO: this could go into a CSS/pref like the "justify"
         // of text-align.
-        width: 700px;
+        width: $article-width-lg;
         margin: 0 auto;
 
         padding: 0 $article-padding-side-lg;
 
         h1 {
             font-size: $article-font-size-h1-lg;
-
         }
+
         h2 {
             font-size: $article-font-size-h2-lg;
-
         }
-        h3 {
-            font-size: $article-font-size-h3-lg;
 
+        h3, h4, h5, h6 {
+            font-size: $article-font-size-h3-lg;
         }
 
         p, ul, ol {
