@@ -1,10 +1,22 @@
+
+  <div class="modal fade" id="copyrights-and-licenses"
+      tabindex="-1" role="dialog" aria-labelledby="cal-modal-label"
+      aria-hidden="true">
+    <div class="modal-dialog">
+      <div class="modal-content">
+        <div class="modal-header">
+          <button type="button" class="close" data-dismiss="modal"
+              aria-hidden="true">&times;</button>
+
+          <h4 class="modal-title"
+              id="cal-modal-label">{% trans "1flow's copyrights & licenses" %}</h4>
+        </div>
+        <div class="modal-body">
 {% filter markdown %}{% blocktrans %}
 
 ## 1flow is free software
 
-Under the terms of the [GNU Affero General Public License version 3][affero] or later.
-
-You can always find the latest source code, and the source code of the version running this web application, in [the public repository][repo].
+Under the terms of the [GNU Affero General Public License version 3][affero] or later. You can always find the latest source code, and the source code of the version running this web application, in [the public repository][repo].
 
   [affero]: http://www.gnu.org/licenses/agpl-3.0.html
   [repo]: https://github.com/1flow/
@@ -12,38 +24,43 @@ You can always find the latest source code, and the source code of the version r
 {% endblocktrans %}{% endfilter %}
 {% filter markdown %}{% blocktrans %}
 
-### 1flow.io help images
+### 1flow.io images
 
 As of 2014-01-17, [Matthieu Chaignot][mchai] offered these images under the CC-BY-SA 4.0 license. This could eventually change, but only in the way to make the new license compatible with the AGPLv3, if the current is proven not to be.
 
 {% endblocktrans %}{% endfilter %}
 {% filter markdown %}{% blocktrans %}
 
-## Copyrights
+### Copyrights
 
 - Copyright 2013-2014 [Olivier Cortès][kmk23] for the source code, most of the website design, the help/features text content, the project persona.
 - Copyright 2013 [Matthieu Chaignot][mchai] for the landing page contents and all email contents, the help/features images and the landing page background image,
-- Copyright 2013 K.P. for parts of design on the reading lists.
+- Partial copyright 2013-2014 other contributors ([see full list][list]).
 
   [kmk23]: https://twitter.com/Karmak23
   [mchai]: https://twitter.com/mchaignot
+  [list]: https://github.com/1flow/1flow/blob/master/AUTHORS.md
 
 {% endblocktrans %}{% endfilter %}
 {% filter markdown %}{% blocktrans %}
 
-## Acknowledgements
+### Acknowledgements
 
-`1flow` is built upon a lot of *Open Source®* and *Libre Software* components. We thank all the developpers for making the world better.
-
-Think about Python, Django, PostgreSQL, MongoDB, Redis, Bootstrap, jQuery, and a lot more.
+`1flow` is built upon a lot of *Open Source®* and *Libre Software* components. We thank all their developers for making the world better. A non-exhaustive list includes `Python`, `Django`, `PostgreSQL`, `MongoDB`, `Redis`, `Bootstrap`, `jQuery`, and a lot more.
 
 {% endblocktrans %}{% endfilter %}
 {% filter markdown %}{% blocktrans %}
 
-## Database contents copyrights
+### Database contents
 
-The contents of the `1flow.io` database (mostly plain text or HTML, because we don't host images nor videos) are copyrights of their respective owner in their respective countries.
-
-In this case, licences may vary a lot given the content (some are CC-*, some are all rights reserved), and you may use the `1flow.io` platform at your own risk on these content, given what you do with it.
+The contents of the `1flow.io` database are copyrights of their respective owner in their respective countries. Licences may vary a lot given the content, and you may use the `1flow.io` platform at your own risk, given what you do with it. You have been warned.
 
 {% endblocktrans %}{% endfilter %}
+        </div>
+        <div class="modal-footer">
+          <button class="btn btn-primary" data-dismiss="modal"
+              data-target="copyrights-and-licenses">{% trans "Agreed" %}</button>
+        </div>
+      </div>
+    </div>
+  </div>

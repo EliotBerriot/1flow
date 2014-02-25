@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-09 11:15+0100\n"
-"PO-Revision-Date: 2014-02-04 14:05+0009\n"
-"Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
+"POT-Creation-Date: 2014-02-25 17:37+0100\n"
+"PO-Revision-Date: 2014-02-25 17:34+0009\n"
+"Last-Translator: Admi Nistrateur <admin@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "Language: \n"
 "MIME-Version: 1.0\n"
@@ -388,15 +388,15 @@ msgstr "Vous avez confirmé votre adresse <b>%(email)s</b>. Merci."
 msgid "Sign in"
 msgstr "S'identifier"
 
-#: templates/account/login.html:15
+#: templates/account/login.html:13
 msgid "Welcome to 1flow"
 msgstr "Bienvenue sur 1flow"
 
-#: templates/account/login.html:26
+#: templates/account/login.html:24
 msgid "Configuration problem"
 msgstr "Problème de configuration"
 
-#: templates/account/login.html:28
+#: templates/account/login.html:26
 msgid ""
 "WARNING: none of <code>LOCAL_LOGIN_ENABLED</code>\n"
 "                nor <code>SOCIAL_LOGIN_ENABLED</code> directives are enabled "
@@ -409,7 +409,7 @@ msgstr ""
 "href=\"/admin/constance/config/\"\n"
 "target=\"_blank\">configuration dynamique</a> de l'application web."
 
-#: templates/account/login.html:32
+#: templates/account/login.html:30
 msgid ""
 "This will prevent any user to\n"
 "                login, and is probably an error. If you need any help "
@@ -420,31 +420,31 @@ msgstr ""
 "ont déjà des comptes. C'est probablement une erreur, l'une des deux au moins "
 "doit être activée. Si vous avez besoin d'aide pour résoudre ce problème, "
 
-#: templates/account/login.html:58
+#: templates/account/login.html:56
 msgid "Sign in with your 1flow account"
 msgstr "Identification via votre compte 1flow"
 
-#: templates/account/login.html:58
+#: templates/account/login.html:56
 msgid "Please sign in"
 msgstr "Merci de vous identifier"
 
-#: templates/account/login.html:89
+#: templates/account/login.html:87
 msgid "Log in"
 msgstr "Se connecter"
 
-#: templates/account/login.html:93
+#: templates/account/login.html:91
 msgid "Forgot your password?"
 msgstr "Mot de passe oublié ?"
 
-#: templates/account/login.html:104
+#: templates/account/login.html:102
 msgid "Register a new account?"
 msgstr "Enregistrer un nouveau compte ?"
 
-#: templates/account/login.html:124
+#: templates/account/login.html:122
 msgid "Authenticate via a social network"
 msgstr "Identification via un réseau social"
 
-#: templates/account/login.html:134
+#: templates/account/login.html:132
 msgid ""
 "If you never signed in before, this will automatically create an account "
 "for you."
@@ -819,17 +819,20 @@ msgstr ""
 "empathie, car l'administrateur n'a configuré aucun canal de support. Désolé "
 "pour vous !"
 
-#: templates/snippets/copyrights-and-licenses.html:1
+#: templates/snippets/copyrights-and-licenses.html:12
+msgid "1flow's copyrights & licenses"
+msgstr "Copyrights & Licences de 1flow"
+
+#: templates/snippets/copyrights-and-licenses.html:15
 msgid ""
 "\n"
 "\n"
 "## 1flow is free software\n"
 "\n"
 "Under the terms of the [GNU Affero General Public License version 3]"
-"[affero] or later.\n"
-"\n"
-"You can always find the latest source code, and the source code of the "
-"version running this web application, in [the public repository][repo].\n"
+"[affero] or later. You can always find the latest source code, and the "
+"source code of the version running this web application, in [the public "
+"repository][repo].\n"
 "\n"
 "  [affero]: http://www.gnu.org/licenses/agpl-3.0.html\n"
 "  [repo]: https://github.com/1flow/\n"
@@ -839,19 +842,18 @@ msgstr ""
 "## 1flow est un logiciel libre\n"
 "\n"
 "Selon les termes de la [licence générale publique GNU Affero version 3]"
-"[affero] ou supérieure.\n"
-"\n"
-"Vous pouvez à tout moment récupérer le code source le plus récent, et celui "
-"qui tourne sur cette application web, dans [le dépôt public][repo].\n"
+"[affero] ou supérieure. Vous pouvez à tout moment récupérer le code source "
+"le plus récent, et celui qui tourne sur cette application web, dans [le "
+"dépôt public][repo].\n"
 "\n"
 "  [affero]: http://www.gnu.org/licenses/agpl-3.0.html\n"
 "  [repo]: https://github.com/1flow/\n"
 
-#: templates/snippets/copyrights-and-licenses.html:13
+#: templates/snippets/copyrights-and-licenses.html:25
 msgid ""
 "\n"
 "\n"
-"### 1flow.io help images\n"
+"### 1flow.io images\n"
 "\n"
 "As of 2014-01-17, [Matthieu Chaignot][mchai] offered these images under the "
 "CC-BY-SA 4.0 license. This could eventually change, but only in the way to "
@@ -869,21 +871,22 @@ msgstr ""
 "\n"
 "  [mchai]: https://twitter.com/mchaignot\n"
 
-#: templates/snippets/copyrights-and-licenses.html:20
+#: templates/snippets/copyrights-and-licenses.html:32
 msgid ""
 "\n"
 "\n"
-"## Copyrights\n"
+"### Copyrights\n"
 "\n"
 "- Copyright 2013-2014 [Olivier Cortès][kmk23] for the source code, most of "
 "the website design, the help/features text content, the project persona.\n"
 "- Copyright 2013 [Matthieu Chaignot][mchai] for the landing page contents "
 "and all email contents, the help/features images and the landing page "
 "background image,\n"
-"- Copyright 2013 K.P. for parts of design on the reading lists.\n"
+"- Partial copyright 2013-2014 other contributors ([see full list][list]).\n"
 "\n"
 "  [kmk23]: https://twitter.com/Karmak23\n"
 "  [mchai]: https://twitter.com/mchaignot\n"
+"  [list]: https://github.com/1flow/1flow/blob/master/AUTHORS.md\n"
 "\n"
 msgstr ""
 "\n"
@@ -895,22 +898,23 @@ msgstr ""
 "- Copyright 2013 [Matthieu Chaignot][mchai] pour les contenus de la landing "
 "page et des emails, ainsi que les images de la section aide/fonctionnalités "
 "et l'arrière-plan de la landing page,\n"
-"- Copyright 2013 K.P. pour une partie du design des listes de lecture.\n"
+"- Copyright partiel 2013-2014 autres contributeurs ([voir la liste complète]"
+"[list]).\n"
 "\n"
 "  [kmk23]: https://twitter.com/Karmak23  \n"
 "  [mchai]: https://twitter.com/mchaignot\n"
+"  [list]: https://github.com/1flow/1flow/blob/master/AUTHORS.md\n"
 
-#: templates/snippets/copyrights-and-licenses.html:32
+#: templates/snippets/copyrights-and-licenses.html:45
 msgid ""
 "\n"
 "\n"
-"## Acknowledgements\n"
+"### Acknowledgements\n"
 "\n"
 "`1flow` is built upon a lot of *Open Source®* and *Libre Software* "
-"components. We thank all the developpers for making the world better.\n"
-"\n"
-"Think about Python, Django, PostgreSQL, MongoDB, Redis, Bootstrap, jQuery, "
-"and a lot more.\n"
+"components. We thank all their developers for making the world better. A non-"
+"exhaustive list includes `Python`, `Django`, `PostgreSQL`, `MongoDB`, "
+"`Redis`, `Bootstrap`, `jQuery`, and a lot more.\n"
 "\n"
 msgstr ""
 "\n"
@@ -918,37 +922,34 @@ msgstr ""
 "\n"
 "`1flow` est fondé sur un grand nombre de composants *logiciels *libres* et "
 "*Open Source®*. Nous remerçions tous leurs développeurs pour leur "
-"contribution à un monde meilleur.\n"
-"\n"
-"Pensez à Python, Django, PostgreSQL, MongoDB, Redis, Bootstrap, jQuery, et "
-"plein d'autres.\n"
+"contribution à un monde meilleur. La liste non-exhaustive inclut `Python`, "
+"`Django`, `PostgreSQL`, `MongoDB`, `Redis`, `Bootstrap`, `jQuery`, et plein "
+"d'autres.\n"
 
-#: templates/snippets/copyrights-and-licenses.html:41
+#: templates/snippets/copyrights-and-licenses.html:52
 msgid ""
 "\n"
 "\n"
-"## Database contents copyrights\n"
+"### Database contents\n"
 "\n"
-"The contents of the `1flow.io` database (mostly plain text or HTML, because "
-"we don't host images nor videos) are copyrights of their respective owner in "
-"their respective countries.\n"
-"\n"
-"In this case, licences may vary a lot given the content (some are CC-*, some "
-"are all rights reserved), and you may use the `1flow.io` platform at your "
-"own risk on these content, given what you do with it.\n"
+"The contents of the `1flow.io` database are copyrights of their respective "
+"owner in their respective countries. Licences may vary a lot given the "
+"content, and you may use the `1flow.io` platform at your own risk, given "
+"what you do with it. You have been warned.\n"
 "\n"
 msgstr ""
 "\n"
-"## Copyrights du contenu des bases de données\n"
+"## Contenu des bases de données\n"
 "\n"
-"Le contenu de la base de données de `1flow.io` (du texte plein et de l'HTML, "
-"car nous n'hébergeons aucune image ni vidéo) sont copyright de leur(s) auteur"
-"(s) dans leur(s) pays respectif(s).\n"
-"\n"
-"Dans ce cadre, les licences sont diverses et variées (de la CC-* à « tous "
-"droits réservés »), et vous utilisez la plateforme `1flow.io` et votre "
-"propre plateforme à vos risques et périls, en fonction de ce que vous faites "
-"avec ce contenu.\n"
+"Les contenus de la base de données de `1flow.io` sont sous copyright de leur"
+"(s) auteur(s) dans leur(s) pays respectif(s). Dans ce cadre, les licences "
+"sont diverses et variées, et vous utilisez la plateforme `1flow.io` à vos "
+"risques et périls, en fonction de ce que vous faites avec ces contenus. Vous "
+"êtes prévenu(e)s !\n"
+
+#: templates/snippets/copyrights-and-licenses.html:62
+msgid "Agreed"
+msgstr "J'ai compris"
 
 #: templatetags/base_utils.py:164 templatetags/base_utils.py:178
 msgid "day"
