@@ -84,6 +84,10 @@ deploystatic:
 	fab prod -H 1flow.io sdf.collectstatic
 	fab prod R:web restart:1
 
+webdeploy-superfast:
+	git upa
+	fab prod R:web pull restart:1
+
 allfixtures: datafixtures fixtures
 
 datafixtures:
