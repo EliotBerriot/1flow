@@ -78,6 +78,12 @@ syncdb:
 	fab local sdf.syncdb
 	fab local sdf.migrate
 
+deploystatic:
+	git upa
+	fab prod R:web pull
+	fab prod -H 1flow.io sdf.collectstatic
+	fab prod R:web restart:1
+
 allfixtures: datafixtures fixtures
 
 datafixtures:
