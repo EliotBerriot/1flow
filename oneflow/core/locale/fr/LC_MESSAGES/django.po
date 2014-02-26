@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-25 17:37+0100\n"
-"PO-Revision-Date: 2014-02-25 17:40+0009\n"
+"POT-Creation-Date: 2014-02-26 09:24+0100\n"
+"PO-Revision-Date: 2014-02-26 09:26+0009\n"
 "Last-Translator: Admi Nistrateur <admin@1flow.net>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -2743,13 +2743,21 @@ msgstr "pas de vignette !"
 msgid "Admin stuff:"
 msgstr "Trucs d'admins :"
 
-#: templates/base_footer.html:13
-msgid "1flow is libre software, © 2013-2014 Olivier Cortès and others"
-msgstr "1flow est un logiciel libre,  © 2013-2014 Olivier Cortès et d'autres"
+#: templates/base_footer.html:10
+msgid "Show the source code of this version"
+msgstr "Afficher le code source de cette version"
 
-#: templates/base_footer.html:14
-msgid "Contributions welcome!"
-msgstr "Les contributions sont bienvenues !"
+#: templates/base_footer.html:15
+msgid "1flow is libre software"
+msgstr "1flow est un logiciel libre"
+
+#: templates/base_footer.html:17
+msgid "Show / Fork this project on Github"
+msgstr "Afficher / forker le projet sur GitHub"
+
+#: templates/base_footer.html:17
+msgid "Contribute"
+msgstr "Contribuez"
 
 #: templates/help.html:3 templates/snippets/navbar.html:211
 msgid "Features"
@@ -4416,6 +4424,9 @@ msgstr "converti"
 msgctxt "awesome-font icon name"
 msgid "exchange"
 msgstr "exchange"
+
+#~ msgid "1flow is libre software, © 2013-2014 Olivier Cortès and others"
+#~ msgstr "1flow est un logiciel libre,  © 2013-2014 Olivier Cortès et d'autres"
 
 #~ msgid "1flow's copyrights & licenses"
 #~ msgstr "Licences & Copyrights de 1flow"
