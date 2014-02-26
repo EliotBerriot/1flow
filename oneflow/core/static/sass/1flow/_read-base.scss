@@ -4,6 +4,13 @@
     font-weight: 300;
 }
 
+.read-content-wrapper {
+
+    // Needed for the iframe-wrapper to take all available height.
+    // Normal MD/HTML article don't require this.
+    height: 100%;
+}
+
 .read-actions {
 
     i {
