@@ -80,7 +80,7 @@
 
     <h4 class="date">
       {% if article.date_published %}
-        <a href="javascript: return false;" class="popover-tooltip popover-top"
+        <a href="#" class="popover-tooltip popover-top"
             title="{{ article.date_published }}">{{ article.date_published_delta }}</a>
       {% else %}
         <span class="no-date">{% trans "no date" %}</span>
@@ -122,25 +122,25 @@
       <!--
       <tr>
         <td>&nbsp;</td>
-        <td class="up"><a href="javascript: open_previous_read(); return false;"
+        <td class="up"><a href="#" onclick="javascript: open_previous_read()"
           data-toggle="tooltip" title="{% trans "Open posterior item" %}"><i class="icon-long-arrow-up icon-2x"></i></a></td>
         <td>&nbsp;</td>
       </tr>-->
       <tr>
         <td class="previous"><a class="popover-top"
-            href="javascript: open_previous_read(); return false;"
+            href="#" onclick="javascript:return open_previous_read()"
             data-toggle="tooltip" title="{% trans "Open posterior item" %}"><i
               class="icon-angle-left icon-2x"></i>
           </a>
         </td>
         <td class="closer"><a class="popover-top"
-            href="javascript: close_current_read(); return false;"
+            href="#" onclick="javascript:return close_current_read()"
             data-toggle="tooltip" title="{% trans "Close current item" %}"><i
               class="icon-remove"></i>
           </a>
         </td>
         <td class="next"><a class="popover-top"
-            href="javascript: open_next_read(); return false;"
+            href="#" onclick="javascript:return open_next_read();"
             data-toggle="tooltip" title="{% trans "Open anterior item" %}"><i
               class="icon-angle-right icon-2x"></i>
           </a>
@@ -148,7 +148,7 @@
       </tr>
       <!--<tr>
         <td>&nbsp;</td>
-        <td class="down"><a href="javascript: open_next_read(); return false;"
+        <td class="down"><a href="#" onclick="javascript: open_next_read()"
           data-toggle="tooltip" title="{% trans "Open anterior item" %}"><i class="icon-long-arrow-down icon-2x"></i></a></td>
         <td>&nbsp;</td>
       </tr>-->
