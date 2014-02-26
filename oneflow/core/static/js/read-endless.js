@@ -449,6 +449,10 @@ function open_next_read() {
             }
         }
     }
+
+    // stop event propagation, old school way
+    // because this function is used in <a href="...">
+    return false;
 }
 function open_previous_read() {
 
@@ -486,11 +490,19 @@ function open_previous_read() {
             });
         }
     }
+
+    // stop event propagation, old school way
+    // because this function is used in <a href="...">
+    return false;
 }
 function close_current_read() {
     if (open_content) {
         return toggle_content(open_content);
     }
+
+    // stop event propagation, old school way
+    // because this function is used in <a href="...">
+    return false;
 }
 function open_last_opened() {
     if (last_opened && !open_content) {
