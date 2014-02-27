@@ -5,10 +5,8 @@
 // TODO: make this even more dynamic, back to 25px when the navbar is hidden.
 //
 
-.ui-pnotify {
-    // make the notifications not overlap the navbar.
-    top: 72px;
-}
+
+// ————————————————————————————————————————————————————— Pines-notify overrides
 
 .ui-pnotify-sticker [class^="icon-"],
 .ui-pnotify-sticker [class*=" icon-"],

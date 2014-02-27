@@ -1,0 +1,26 @@
+{% spaceless %}
+{% if announcements %}
+
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+        {% for message, priority, hide in announcements %}
+
+            notify({
+                text: "{{ message|safe }}",
+                {% if priority %}
+                type: "{{ priority }}",
+                {% endif %}
+                icon: false,
+                sticker: false,
+                hide: {{ hide }},
+                styling: "bootstrap3"
+            });
+
+        {% endfor %}
+
+        });
+    </script>
+
+{% endif %}
+{% endspaceless %}
