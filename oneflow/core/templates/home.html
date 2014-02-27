@@ -133,4 +133,20 @@
         {% include "snippets/home/extrajs-footer.js.html" %}
     {% endcache %}
 
+    <script type="text/javascript">
+
+        // As of 20140227, Pnotify 1.2.2 is not available on CDNs. This
+        // call will crash. But it will succeed if using 1flow "internal"
+        // version, because I upgraded the source from GitHub directly.
+        // Thus the try/catch in case of CDNs use. And generally speaking,
+        // This make the whole thing more reliable on upgrades.
+        try {
+            $.pnotify.defaults.styling = "bootstrap3";
+
+        } catch (err) {
+            console.log("pnotify default styling crashed: " + err);
+        }
+
+    </script>
+
 {% endblock extrajs_footer %}
