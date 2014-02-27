@@ -113,3 +113,6 @@ test-fastdeploy:
 
 prod-fastdeploy:
 	fab prod fastdeploy
+
+fastdeploy-environment:
+	fab prod push_environment restart:1
