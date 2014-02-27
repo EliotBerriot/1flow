@@ -36,7 +36,8 @@ from django.utils.translation import ugettext_lazy as _, pgettext_lazy
 
 #from cache_utils.decorators import cached
 
-from ...base.utils.dateutils import now, naturaldelta as onef_naturaldelta
+from ...base.utils.dateutils import (now, today,
+                                     naturaldelta as onef_naturaldelta)
 
 from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN  # , CACHE_ONE_WEEK
 
@@ -370,6 +371,55 @@ def container_reading_list_with_count(view_name, container_type, container,
             count=count_as_digits))
 
     return u''
+
+
+@register.inclusion_tag('snippets/home/announcements.html')
+def system_announcements(user):
+    """ Get announcements in the constance database, if set.
+
+        If the `ANNOUNCEMENT_{USER,STAFF}` key contains nothing,
+        the corresponding announcement will not be done. All other
+        parameters (prefix, dates, priority) can stay set between
+        announcements, this doesn't hurt.
+
+    """
+
+    announcements = []
+    dttoday = today()
+
+    def stack_announcement(announcement_name):
+
+        ANNMT  = u'ANNOUNCEMENT_' + announcement_name
+        hide   = 'true'  # This is javascript :-D
+
+        message = getattr(config, ANNMT, u'').strip()
+        prefix = getattr(config, ANNMT + u'_PREFIX', u'')
+
+        if message:
+            message = markdown(prefix + message).strip()
+
+            priority = getattr(config, ANNMT + u'_PRIORITY', u'').lower()
+
+            if priority not in (u'', u'info', u'success', u'error'):
+                priority = u'info'
+
+            if priority in (u'info', u'error'):
+                hide = 'false'
+
+            start_date = getattr(config, ANNMT + u'_START', u'')
+            end_date   = getattr(config, ANNMT + u'_END', u'')
+
+            if (not start_date or start_date <= dttoday) and (
+                    not end_date or end_date >= dttoday):
+
+                announcements.append((message, priority, hide))
+
+    stack_announcement(u'USER')
+
+    if user.is_staff or user.is_superuser:
+        stack_announcement(u'STAFF')
+
+    return {'announcements': announcements}
 
 
 @register.simple_tag

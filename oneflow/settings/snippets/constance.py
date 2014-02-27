@@ -30,12 +30,63 @@ CONSTANCE_REDIS_PREFIX = 'c0s1f:'
 
 CONSTANCE_CONFIG = {
 
+    # ————————————————————————————————————————————————————————————— Staff stuff
+
+
     'STAFF_HAS_FULL_ACCESS': (False, ugettext(u'Allow staff to have full '
                               u'access to anything. We use this mostly for '
                               u'debugging purposes, but this can be dangerous '
                               u'and liberticide in some conditions. NOTE: '
                               u'disabling this does not prevent any malicious '
                               u'code which bypasses this configuration flag.')),
+
+
+    # ———————————————————————————————————————————————————— System announcements
+
+
+    'ANNOUNCEMENT_USER': (u'', ugettext(u'Announcement for all users. '
+                          u'Markdown accepted. Leave empty for none.')),
+
+    'ANNOUNCEMENT_USER_PREFIX': (ugettext_lazy('*Announcement:* '),
+                                 ugettext(u'User announcement '
+                                 u'prefix. Set to whatever you want. '
+                                 u'Markdown accepted.')),
+
+    'ANNOUNCEMENT_USER_PRIORITY': (u'', ugettext(u'User announcement '
+                                   u'priority. Accepted values: info, '
+                                   u'success, error or nothing at all.')),
+
+    'ANNOUNCEMENT_USER_START': (datetime.date(1970, 01, 01),
+                                ugettext(u'User announcement start '
+                                u'date. Leave in the past for immediate '
+                                u'display.')),
+
+    'ANNOUNCEMENT_USER_END': (datetime.date(2099, 12, 31),
+                              ugettext(u'User announcement end '
+                              u'date. Leave in the far future for endless '
+                              u'display.')),
+
+    'ANNOUNCEMENT_STAFF': (u'', ugettext(u'Announcement for staff members '
+                           u'only. Markdown accepted. Leave empty for none.')),
+
+    'ANNOUNCEMENT_STAFF_PREFIX': (ugettext_lazy('*STAFF:* '),
+                                 ugettext(u'Staff announcement '
+                                 u'prefix. Set to whatever you want. '
+                                 u'Markdown accepted.')),
+
+    'ANNOUNCEMENT_STAFF_PRIORITY': (u'', ugettext(u'Staff announcement '
+                                   u'priority. Accepted values: info, '
+                                   u'success, error or nothing at all.')),
+
+    'ANNOUNCEMENT_STAFF_START': (datetime.date(1970, 01, 01),
+                                 ugettext(u'Staff announcement start '
+                                 u'date. Leave in the past for immediate '
+                                 u'display.')),
+
+    'ANNOUNCEMENT_STAFF_END': (datetime.date(2099, 12, 31),
+                               ugettext(u'Staff announcement end '
+                               u'date. Leave in the far future for endless '
+                               u'display.')),
 
     # •••••••••••••••••••••••••••••••••••••••••••••• WEB / Templates / JS & CSS
 

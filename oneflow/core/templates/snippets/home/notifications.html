@@ -1,0 +1,30 @@
+{# <div id="notifications" class="row-fluid hide"></div> #}
+
+{% system_announcements user %}
+
+{% if messages %}
+    <script type="text/javascript">
+        $(document).ready(function(){
+
+        {% for message in messages %}
+            {% with message.tags as tags %}
+
+                notify({
+                    text: {% if 'safe' in tags %}"{{ message|safe }}"{% else %}"{{ message }}"{% endif %},
+                    type: "{% if 'warning' in tags %}warning{% elif 'success' in tags %}success{% else %}info{% endif %}",
+                    icon: false,
+
+                    // The play/pause button, to keep auto-hiding
+                    //notifications on screen before they disappear.
+                    sticker: false,
+
+                    // auto-hide or not.
+                    hide: {% if 'sticky' in tags %}false{% else %}true{% endif %}
+                });
+
+            {% endwith %}
+        {% endfor %}
+
+        });
+    </script>
+{% endif %}
