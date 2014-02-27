@@ -47,7 +47,7 @@ CONSTANCE_CONFIG = {
     'ANNOUNCEMENT_USER': (u'', ugettext(u'Announcement for all users. '
                           u'Markdown accepted. Leave empty for none.')),
 
-    'ANNOUNCEMENT_USER_PREFIX': (ugettext_lazy('*Announcement:* '),
+    'ANNOUNCEMENT_USER_PREFIX': (ugettext('*Announcement:* '),
                                  ugettext(u'User announcement '
                                  u'prefix. Set to whatever you want. '
                                  u'Markdown accepted.')),
@@ -69,7 +69,7 @@ CONSTANCE_CONFIG = {
     'ANNOUNCEMENT_STAFF': (u'', ugettext(u'Announcement for staff members '
                            u'only. Markdown accepted. Leave empty for none.')),
 
-    'ANNOUNCEMENT_STAFF_PREFIX': (ugettext_lazy('*STAFF:* '),
+    'ANNOUNCEMENT_STAFF_PREFIX': (ugettext('*STAFF:* '),
                                  ugettext(u'Staff announcement '
                                  u'prefix. Set to whatever you want. '
                                  u'Markdown accepted.')),
