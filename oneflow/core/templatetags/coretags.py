@@ -396,7 +396,9 @@ def system_announcements(user):
         prefix = getattr(config, ANNMT + u'_PREFIX', u'')
 
         if message:
-            message = markdown(prefix + message).strip()
+            # NOTE: This is a non-breakable space, else it gets lost.
+            message = markdown(prefix + (u' ' if prefix else u'')
+                               + message).strip()
 
             priority = getattr(config, ANNMT + u'_PRIORITY', u'').lower()
 
