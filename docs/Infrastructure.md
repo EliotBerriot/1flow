@@ -22,6 +22,9 @@ On the `10.0.3.0` network:
 
 - 101   data.1flow.io (MongoDB, possibly a cluster)
 
+    # local
+    fab -H dbcache tasks.pkg.update tasks.lxc_base_and_dev tasks.db_mongodb
+
 - 109   archive.1flow.io (MongoDB archive database)
 
 - 110    dev.1flow.net (production, sentry)
