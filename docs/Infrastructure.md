@@ -10,9 +10,26 @@ On the `10.0.3.0` network:
 - 40     mail.1flow.io
 - 90     archive.1flow.io (MongoDB archive database, on port 27018 (host) and 27017 (LXC))
 
-- 109    worker (LXC TEMPLATE, must stay down and thus unreachable)
+- 99    worker (LXC TEMPLATE, must stay down and thus unreachable)
+
+- 100   dbcache.1flow.io (PostgreSQL, redis, memcache)
+    # remote
+    sudo route add default gw 10.0.3.1
+    
+    # local
+    fab -H dbcache tasks.pkg.update tasks.lxc_base_and_dev \
+        tasks.db_postgresql tasks.db_redis tasks.db_memcached
+
+- 101   data.1flow.io (MongoDB, possibly a cluster)
+
+    # local
+    fab -H dbcache tasks.pkg.update tasks.lxc_base_and_dev tasks.db_mongodb
+
+- 109   archive.1flow.io (MongoDB archive database)
+
 - 110    dev.1flow.net (production, sentry)
 - 111    cutie.1flow.io (statsd, graphite)
+
 - 112    1flow.io (production, web instance)
 
 - 113    worker-01 (production worker, high queue, flower)
