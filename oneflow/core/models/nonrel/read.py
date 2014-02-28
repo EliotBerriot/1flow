@@ -873,13 +873,20 @@ class Read(Document, DocumentHelperMixin):
             for attr_name in to_change:
                 try:
 
+                    updated_folders = []
+
                     for subscription in self.subscriptions:
                         setattr(subscription, attr_name,
                                 op(getattr(subscription, attr_name), 1))
 
-                    for folder in subscription.folders:
-                        setattr(folder, attr_name,
-                                op(getattr(folder, attr_name), 1))
+                        for folder in subscription.folders:
+                            if folder in updated_folders:
+                                continue
+
+                            setattr(folder, attr_name,
+                                    op(getattr(folder, attr_name), 1))
+
+                            updated_folders.append(folder)
 
                     setattr(self.user, attr_name,
                             op(getattr(self.user, attr_name), 1))
