@@ -19,5 +19,6 @@
 *.pyo
 *.pye
 *.log
+*~
 
 .sass-cache
