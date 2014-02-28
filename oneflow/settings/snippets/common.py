@@ -40,12 +40,6 @@ ugettext = lambda s: s
 # This is imported here to benefit to all other included snippets.
 from sparks import platform # NOQA
 
-MAIN_SERVER = os.environ.get('MAIN_SERVER', None)
-
-if MAIN_SERVER is None:
-    raise RuntimeError('MAIN_SERVER setting must be defined '
-                       'before common.py inclusion!')
-
 # We need to go down 2 times because the starting point of these settings is
 # `project/settings/__init__.py`, instead of good old `project/settings.py`.
 # NOTE: the `execfile()` on snippets doesn't add depth: even if the current

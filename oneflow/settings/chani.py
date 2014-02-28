@@ -20,7 +20,7 @@
 
 """
 
-MAIN_SERVER = '127.0.0.1'
+DBCACHE_SERVER = '127.0.0.1'
 
 import socket
 from sparks.django.settings import include_snippets
