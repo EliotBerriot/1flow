@@ -1064,6 +1064,8 @@ def preferences(request):
 
 def set_preference(request, base, sub, value):
 
+    # Do not is_staff_or_superuser_and_enabled here, else staff users
+    # who have de-activated their super-powers cannot re-enable them.
     if 'staff' in base and not (request.user.is_staff
                                 or request.user.is_superuser):
         return HttpResponseForbidden(u'forbidden')
@@ -1387,34 +1389,6 @@ def help(request):
     help_sections = HelpContent.objects.filter(active=True)
 
     return render(request, u'help.html', {'help_sections': help_sections})
-
-
-def register(request):
-    """ New user creation process.
-
-        DISABLED / NOT USED YET as of 20130625.
-    """
-
-    creation_form = FullUserCreationForm(data=request.POST or None)
-
-    if request.method == 'POST':
-
-        if creation_form.is_valid():
-
-            user = creation_form.save()
-
-            authenticated_user = authenticate(
-                username=user.username,
-                password=creation_form.cleaned_data['password1']
-            )
-
-            login(request, authenticated_user)
-
-            #post_register_actions.delay((user.id, ))
-
-            return redirect('home')
-
-    return render(request, 'register.html', {'form': creation_form})
 
 
 # ———————————————————————————————————————————————————————— Google Reader Import

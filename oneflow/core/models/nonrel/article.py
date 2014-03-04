@@ -71,6 +71,7 @@ from .common import (DocumentHelperMixin,
                      CONTENT_NOT_PARSED, CONTENT_TYPE_NONE,
                      CONTENT_TYPE_HTML,
                      CONTENT_TYPE_MARKDOWN_V1, CONTENT_TYPE_MARKDOWN,
+                     CONTENT_TYPE_BOOKMARK,
                      CONTENT_TYPES_FINAL,
                      CONTENT_PREPARSING_NEEDS_GHOST,
                      CONTENT_FETCH_LIKELY_MULTIPAGE,
@@ -232,7 +233,7 @@ class Article(Document, DocumentHelperMixin):
     image_url     = StringField(verbose_name=_(u'image URL'))
 
     excerpt       = StringField(verbose_name=_(u'Excerpt'),
-                                help_text=_(u'Small exerpt of content, '
+                                help_text=_(u'Small excerpt of content, '
                                             u'if applicable.'))
 
     content       = StringField(default=CONTENT_NOT_PARSED,
@@ -1043,6 +1044,9 @@ class Article(Document, DocumentHelperMixin):
         #
 
         try:
+            # The first that matches will stop the chain.
+            self.fetch_content_bookmark(force=force, commit=commit)
+
             self.fetch_content_text(force=force, commit=commit)
 
         except StopProcessingException, e:
@@ -1370,9 +1374,12 @@ class Article(Document, DocumentHelperMixin):
 
         else:
             LOGGER.info(u'Successfully set title to “%s”', self.title)
+            self.slug = slugify(self.title)
 
         if commit:
             self.save()
+
+        return content
 
     def fetch_content_text_one_page(self, url=None):
         """ Internal function. Please do not call.
@@ -1437,6 +1444,77 @@ class Article(Document, DocumentHelperMixin):
                                  u'article %s.', self)
 
         return content, encoding
+
+    def fetch_content_bookmark(self, force=False, commit=True):
+
+        if config.ARTICLE_FETCHING_TEXT_DISABLED:
+            LOGGER.info(u'Article fetching disabled in configuration.')
+            return
+
+        if self.content_type == CONTENT_TYPE_NONE:
+
+            slashes_parts = [p for p in self.url.split(u'/') if p != u'']
+
+            parts_nr = len(slashes_parts)
+
+            if parts_nr > 5:
+                # For sure, this is not a bookmark.
+                return
+
+            if parts_nr == 2:
+                # This is a simple website link. For sure, a bookmark.
+                # eg. we got ['http', 'www.mysite.com']
+
+                self.content_type = CONTENT_TYPE_BOOKMARK
+
+            #elif parts_nr < 5:
+                # TODO: find a way to ask the user to choose if he wanted
+                # to bookmark the website or just fetch the content.
+
+                domain_dotted = slashes_parts[1]
+                domain_dashed = domain_dotted.replace(u'.', u'-')
+
+                self.image_url = (u'http://images.screenshots.com/'
+                                  u'{0}/{1}-small.jpg').format(
+                    domain_dotted, domain_dashed)
+
+                self.content = (u'http://images.screenshots.com/'
+                                u'{0}/{1}-large.jpg').format(
+                    domain_dotted, domain_dashed)
+
+                if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
+                        and self.title.endswith(self.url):
+
+                    LOGGER.info(u'Setting title of imported item...')
+                    content = self.extract_and_set_title(commit=False)
+
+                    if content is not None:
+                        try:
+                            soup = BeautifulSoup(content)
+                            for meta in soup.find_all('meta'):
+                                if meta.attrs.get('name', 'none').lower() \
+                                        == 'description':
+                                    self.excerpt = meta.attrs['content']
+
+                        except:
+                            LOGGER.exception(u'Could not extract description '
+                                             u'of imported bookmark %s', self)
+
+                        else:
+                            LOGGER.info(u'Successfully set description to “%s”',
+                                        self.excerpt)
+
+                if commit:
+                    self.save()
+
+            # TODO: fetch something like
+            # http://www.siteencyclopedia.com/{parts[1]}/
+            # and put it in the excerpt.
+
+            # TODO: generate a snapshot of the website and store the image.
+
+                raise StopProcessingException(u'Done setting up bookmark '
+                                              u'content for article %s.', self)
 
     def fetch_content_text(self, force=False, commit=True):
 

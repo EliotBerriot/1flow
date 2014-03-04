@@ -32,7 +32,7 @@ from .models.nonrel import (Feed, Subscription,
                             Author, Preferences)
 
 from ..base.api import (UserResource,
-                        common_authentication,
+                        SessionAndApiKeyAuthentications,
                         UserObjectsOnlyAuthorization, )
 
 LOGGER = logging.getLogger(__name__)
@@ -48,7 +48,7 @@ class FeedResource(MongoEngineResource):
         allowed_methods    = ('get', 'post', 'put', 'delete')
 
         # These are specific to 1flow functionnals.
-        authentication     = common_authentication
+        authentication     = SessionAndApiKeyAuthentications()
         authorization      = UserObjectsOnlyAuthorization()
 
 
@@ -63,7 +63,7 @@ class SubscriptionResource(MongoEngineResource):
         allowed_methods    = ('get', 'post', 'put', 'delete')
 
         # These are specific to 1flow functionnals.
-        authentication     = common_authentication
+        authentication     = SessionAndApiKeyAuthentications()
         authorization      = UserObjectsOnlyAuthorization()
 
 
@@ -80,7 +80,7 @@ class AuthorResource(MongoEngineResource):
         filtering          = {'id': ALL, }
         ordering           = ALL
         # These are specific to 1flow functionnals.
-        authentication     = common_authentication
+        authentication     = SessionAndApiKeyAuthentications()
         #authorization      = UserObjectsOnlyAuthorization()
 
 
@@ -105,7 +105,7 @@ class ArticleResource(MongoEngineResource):
         excludes           = ('pages_urls', 'authors', 'url', )
 
         # These are specific to 1flow functionnals.
-        authentication     = common_authentication
+        authentication     = SessionAndApiKeyAuthentications()
         #authorization      = UserObjectsOnlyAuthorization()
 
 
@@ -127,7 +127,7 @@ class ReadResource(MongoEngineResource):
         excludes           = ('article', 'user', )
 
         # These are specific to 1flow functionnals.
-        authentication     = common_authentication
+        authentication     = SessionAndApiKeyAuthentications()
         authorization      = UserObjectsOnlyAuthorization()
 
 
@@ -145,7 +145,7 @@ class PreferencesResource(MongoEngineResource):
         ordering           = ALL
 
         # These are specific to 1flow functionnals.
-        authentication     = common_authentication
+        authentication     = SessionAndApiKeyAuthentications()
         authorization      = UserObjectsOnlyAuthorization()
 
 

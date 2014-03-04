@@ -30,7 +30,7 @@ from mongoengine.fields import (StringField, ListField, ReferenceField,
                                 GenericReferenceField, DBRef)
 from mongoengine.errors import NotUniqueError
 
-from cache_utils.decorators import cached
+#from cache_utils.decorators import cached
 
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _, ugettext as __
@@ -39,7 +39,7 @@ from ....base.fields import IntRedisDescriptor
 from ....base.utils.dateutils import (timedelta, today, combine,
                                       now, time)  # , make_aware, utc)
 
-from .common import DocumentHelperMixin, CACHE_ONE_DAY
+from .common import DocumentHelperMixin  # , CACHE_ONE_DAY
 from .folder import Folder
 from .user import User
 from .feed import Feed
@@ -624,7 +624,7 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
                     self.__class__.__name__, self.id,
                     self.subscriptions.count(),
                     u'' if articles is None
-                    else (u'and %s articles' % articles.count()),
+                    else (u' and %s articles' % articles.count()),
                     missing, rechecked, reads, unreads, failed)
 
 

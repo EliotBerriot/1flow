@@ -260,6 +260,18 @@ img.centered {
   cursor: help;
 }
 
+.muted {
+  color: $gray;
+}
+
+.very-muted {
+  color: $grayLighter;
+}
+
+.small {
+  font-size: 80%;
+}
+
 // To place the page correctly on #links, we use the JS implementation of
 // cf. https://github.com/twbs/bootstrap/issues/1768#issuecomment-13306753
 // because the pure-CSS one works only on Firefox but not with Chrome.

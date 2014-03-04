@@ -35,8 +35,12 @@ from django.contrib.auth import get_user_model
 
 LOGGER = logging.getLogger(__name__)
 
-common_authentication = MultiAuthentication(SessionAuthentication(),
-                                            ApiKeyAuthentication())
+
+def SessionAndApiKeyAuthentications():
+    """ Use like a standard TastyPie Authentication. """
+
+    return MultiAuthentication(
+        SessionAuthentication(), ApiKeyAuthentication())
 
 
 class UserObjectsOnlyAuthorization(Authorization):
@@ -96,10 +100,12 @@ class UserObjectsOnlyAuthorization(Authorization):
         # Since they may not all be saved, iterate over them.
         for obj in object_list:
             try:
+                # Django User is tried first.
                 object_user_id = obj.user.django_user
 
             except AttributeError:
-                object_user = obj
+                # If not, we get the MongoDB id.
+                object_user_id = obj.user.id
 
             if user.is_staff or user.is_superuser or object_user_id == user.id:
                 allowed.append(obj)
@@ -132,7 +138,7 @@ class EmberMeta:
     allowed_methods    = ('get', 'post', 'put', 'delete')
 
     # These are specific to 1flow functionnals.
-    authentication     = common_authentication
+    authentication     = SessionAndApiKeyAuthentications()
     authorization      = UserObjectsOnlyAuthorization()
 
 
@@ -146,4 +152,4 @@ class UserResource(ModelResource):
 
 
 __all__ = ('UserObjectsOnlyAuthorization', 'EmberMeta',
-           'common_authentication', 'UserResource', )
+           'SessionAndApiKeyAuthentications', 'UserResource', )
