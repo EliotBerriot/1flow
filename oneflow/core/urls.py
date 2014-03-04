@@ -229,7 +229,6 @@ urlpatterns = patterns(
 
     url(_(ur'^help/$'), login_required(views.help), name='help'),
 
-    url(_(ur'^register/$'), views.register, name='register'),
     url(_(ur'^signin_error/$'), TemplateView.as_view(
         template_name='signin_error.html'), name='signin_error'),
 
