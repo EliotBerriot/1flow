@@ -1,5 +1,7 @@
 
-{% if is_restricted %}
+{# — {{read}} — {{article}} — {{article.content_type}} — {{CONTENT_TYPE_BOOKMARK}} — #}
+
+{% if read.is_restricted %}
 
       {# https://developer.mozilla.org/fr/docs/Web/HTML/Element/iframe allowfullscreen seamless sandbox #}
       <div class="article-iframe-wrapper">
@@ -9,27 +11,31 @@
 {% else %}
     {% if article.content_type == CONTENT_TYPE_MARKDOWN %}
 
-        {% if content %}
+      {% if content %}
 
-          {% if excerpt %}
-                {% include 'snippets/read/article-content-excerpt.html' %}
-
-          {% else %}
-            {{ content|safe }}
-
-          {% endif %}
+        {% if excerpt %}
+              {% include 'snippets/read/article-content-excerpt.html' %}
 
         {% else %}
-          {#{% include 'snippets/read/article-content-no-content.html' %}#}
-          {% include 'snippets/read/article-content-iframe.html' %}
+          {{ content|safe }}
 
         {% endif %}
 
+      {% else %}
+        {#{% include 'snippets/read/article-content-no-content.html' %}#}
+        {% include 'snippets/read/article-content-iframe.html' %}
+
+      {% endif %}
+
+    {% elif article.content_type == CONTENT_TYPE_BOOKMARK %}
+
+      {% include 'snippets/read/article-content-bookmark.html' %}
+
     {% elif article.content_type == CONTENT_TYPE_HTML %}
-          {% include 'snippets/read/article-content-not-safe.html' %}
+      {% include 'snippets/read/article-content-not-safe.html' %}
 
     {% elif article.content_type in CONTENT_TYPE_FINAL %}
-          {% include 'snippets/read/article-content-not-ready.html' %}
+      {% include 'snippets/read/article-content-not-ready.html' %}
 
     {% else %}
       {#{% include 'snippets/read/article-content-no-content.html' %}#}

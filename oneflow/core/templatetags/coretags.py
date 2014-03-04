@@ -29,7 +29,7 @@ from constance import config
 from markdown_deux import markdown
 
 from django import template
-from django.conf import settings
+#from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _, pgettext_lazy
@@ -40,6 +40,8 @@ from ...base.utils.dateutils import (now, today,
                                      naturaldelta as onef_naturaldelta)
 
 from ..models.nonrel import Read, CONTENT_TYPE_MARKDOWN  # , CACHE_ONE_WEEK
+
+from ..context_processors import content_types
 
 LOGGER = logging.getLogger(__name__)
 
@@ -545,20 +547,21 @@ def article_read_content(context, read):
         content = article_full_content_display(read.article)
         excerpt = False
 
-    return {
-        # Make these up, because the context is not forwarded
-        # to the final template. And that's a Django feature.
-        # http://stackoverflow.com/q/5842538/654755
-        'article_url': read.article.url,
-        'STATIC_URL': settings.STATIC_URL,
-        'is_restricted': read.is_restricted,
+    context.update({
+        'read': read,
+        'article': read.article,
 
         # We don't mark_safe() here, else mark_safe(None) outputs "None"
         # in the templates, and "if content" tests fail because content
         # is "None" instead of plain `None`.
         'content': content,
         'excerpt': excerpt
-    }
+    })
+
+    # WHY DO I NEED TO DO THIS? WHY !?
+    context.update(content_types(None))
+
+    return context
 
 
 @register.inclusion_tag('snippets/read/read-action.html')

@@ -1,0 +1,22 @@
+<div class="article-bookmark">
+    <h1>{{ article.title }}</h1>
+
+    {% if article.excerpt %}
+        <p><span class="very-muted">{% trans "Description:" %}</span> {{ article.excerpt }}</p>
+
+    {% else %}
+        <p>{% trans "The website does not provide any description." %}</p>
+
+    {% endif %}
+
+    <div class="screenshot">
+        {% with article_url=article.url %}
+        <a href="{{ article_url }}" title="{% blocktrans %}Click to open {{article_url}}{% endblocktrans %}" data-toggle="tooltip"><img src="{{ article.content }}" alt="{% trans "Screenshot of the website." %}" /></a>
+
+        <br />
+        {% blocktrans %}Screenshot of <a href="{{ article_url }}" title="Click to open {{article_url}}" data-toggle="tooltip">{{article_url}}</a>.{% endblocktrans %}
+        {% endwith %}
+    </div>
+
+<p class="very-muted small">~ {% trans "This article has been identified as a bookmark by the 1flow engine" %} ~</p>
+</div>
