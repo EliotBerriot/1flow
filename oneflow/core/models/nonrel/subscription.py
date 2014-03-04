@@ -624,7 +624,7 @@ def generic_check_subscriptions_method(self, commit=True, extended_check=False):
                     self.__class__.__name__, self.id,
                     self.subscriptions.count(),
                     u'' if articles is None
-                    else (u'and %s articles' % articles.count()),
+                    else (u' and %s articles' % articles.count()),
                     missing, rechecked, reads, unreads, failed)
 
 
