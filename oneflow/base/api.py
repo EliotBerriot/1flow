@@ -96,10 +96,12 @@ class UserObjectsOnlyAuthorization(Authorization):
         # Since they may not all be saved, iterate over them.
         for obj in object_list:
             try:
+                # Django User is tried first.
                 object_user_id = obj.user.django_user
 
             except AttributeError:
-                object_user = obj
+                # If not, we get the MongoDB id.
+                object_user_id = obj.user.id
 
             if user.is_staff or user.is_superuser or object_user_id == user.id:
                 allowed.append(obj)
