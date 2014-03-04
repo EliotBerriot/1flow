@@ -128,6 +128,11 @@ urlpatterns = patterns(
         login_required(never_cache(views.article_content)),
         name='article_content'),
 
+    # TODO: remove this when all article images are statically set.
+    url(_(ur'^article/image/([0-9a-f]{24,24})/$'),
+        login_required(views.article_image),
+        name='article_image'),
+
     #
     # HEADS UP: if you change this URL, please check:
     # core.forms.selector.WebPagesImportForm.validate_url() and

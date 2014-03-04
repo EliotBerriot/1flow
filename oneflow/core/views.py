@@ -66,7 +66,8 @@ from .tasks import import_google_reader_trigger
 from .models.nonrel import (Feed, Subscription, FeedIsHtmlPageException,
                             Article, Read,
                             Folder, WebSite,
-                            TreeCycleException, CONTENT_TYPES_FINAL)
+                            TreeCycleException,
+                            CONTENT_TYPES_FINAL)
 from .models.reldb import HelpContent
 from ..base.utils import word_match_consecutive_once
 from ..base.utils.dateutils import now
@@ -849,6 +850,26 @@ def article_content(request, article_id):
     return render(request,
                   'snippets/read/article-content-async.html',
                   {'article': article, 'read': read})
+
+
+def article_image(request, article_id):
+
+    try:
+        article = Article.get_or_404(article_id)
+
+    except:
+        return HttpResponseTemporaryServerError()
+
+    if article.image_url:
+        return HttpResponse(article.image_url)
+
+    # BIG FAT WARNING: do not commit until the method gets more love.
+    image_url = article.find_image(commit=False)
+
+    if image_url:
+        return HttpResponse(image_url)
+
+    return HttpResponse(u'http://lorempixel.com/100/100/abstract/')
 
 
 def read_meta(request, read_id):

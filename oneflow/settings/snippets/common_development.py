@@ -37,10 +37,6 @@ EMAIL_SUBJECT_PREFIX='[1flow DEV] '
 
 INTERNAL_IPS = (
     '127.0.0.1',
-    # gurney.licorn.org
-    '109.190.93.141',
-    # my LAN address
-    '192.168.111.23',
 
     # My LAN's proxy address, else the nginx proxy makes debug disappear.
     '192.168.111.111',
@@ -90,8 +86,6 @@ TEST_RUNNER = 'django_nose.NoseTestSuiteRunner'
 JENKINS_TEST_RUNNER='django_jenkins.nose_runner.CINoseTestSuiteRunner'
 
 NOSE_ARGS = ['--stop'] #, '--ipdb', '--ipdb-failures', ]
-
-
 
 import logging
 import south.logger
