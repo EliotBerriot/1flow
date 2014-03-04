@@ -316,7 +316,7 @@ class HomePreferences(EmbeddedDocument):
                                                      u'deployed. USE AT YOUR '
                                                      u'OWN RISK!'))
 
-    def get_template(self):
+    def get_read_list_item_template(self):
         return HomePreferences.style_templates.get(self.style)
 
 
