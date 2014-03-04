@@ -85,6 +85,7 @@ webdeploy-superfast:
 webdeploy-collectstatic:
 	git upa
 	fab prod R:web pull
+	fab prod -H 1flow.io -- rm -rf www/src/static
 	fab prod -H 1flow.io sdf.collectstatic
 	fab prod R:web restart:1
 
