@@ -22,7 +22,7 @@
 
 				{% if subscription %}
 
-					<h1>{% trans "Success" %}</h1>
+					<h1>{% trans "Subscribed!" %}</h1>
 					<div class="spacer25"></div>
 
 					{% with sub_id=subscription.id sub_name=subscription.name %}
@@ -64,7 +64,7 @@
 			{% else %}
 				{# This is for staff members only… #}
 
-				<h1>{% trans "Success" %}</h1>
+				<h1>{% trans "Imported" %}</h1>
 				<div class="spacer25"></div>
 
 				<p><strong>{{ feeds|length }}</strong> feed(s) analyzed.</p>
@@ -101,7 +101,7 @@
 
 				{% if subscription %}
 
-					<h1>{% trans "Success" %}</h1>
+					<h1>{% trans "Subscribed!" %}</h1>
 					<div class="spacer25"></div>
 
 					{% with sub_id=subscription.id sub_name=subscription.name %}
@@ -152,7 +152,7 @@
 			{% else %}
 				{# This is for staff members only… #}
 
-				<h1>{% trans "Success" %}</h1>
+				<h1>{% trans "Imported" %}</h1>
 				<div class="spacer25"></div>
 
 				<p><strong>{{ feeds|length }}</strong> feed(s) analyzed.</p>
