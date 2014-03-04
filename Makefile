@@ -85,7 +85,7 @@ webdeploy-superfast:
 webdeploy-collectstatic:
 	git upa
 	fab prod R:web pull
-	fab prod -H 1flow.io sdf.collectstatic
+	fab prod -H 1flow.io sdf.collectstatic:1
 	fab prod R:web restart:1
 
 webdeploy-compilemessages:
