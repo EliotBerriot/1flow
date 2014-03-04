@@ -1370,9 +1370,12 @@ class Article(Document, DocumentHelperMixin):
 
         else:
             LOGGER.info(u'Successfully set title to “%s”', self.title)
+            self.slug = slugify(self.title)
 
         if commit:
             self.save()
+
+        return content
 
     def fetch_content_text_one_page(self, url=None):
         """ Internal function. Please do not call.
