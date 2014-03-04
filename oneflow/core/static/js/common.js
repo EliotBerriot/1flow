@@ -135,13 +135,23 @@ function find_start(parent, klass){
         start = parent;
 
     } else {
+
         try {
-            start = parent.find('.' + klass);
+            // HEADS UP: SORRY THIS TEST IS WEAK.
+            // But sufficient for our current needs.
+            if (klass.indexOf("[") != -1) {
+                // we are not exactly finding a simple CSS class,
+                // but any jQuery/HTML/CSS selector.
+
+                start = parent.find(klass);
+
+            } else {
+                start = parent.find('.' + klass);
+            }
 
         } catch (err) {
-            // Previous .find() will have failed if we
-            // passed something like '[data-toggle="…"]'
-            start = parent.find(klass);
+            console.error('Error finding ' + klass + ' in '
+                          + parent + ': ' + err)
         }
     }
 
