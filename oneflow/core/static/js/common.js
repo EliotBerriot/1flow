@@ -837,6 +837,23 @@ function handle_ajax_form(event) {
     event.preventDefault();
 }
 
+function setup_async_images(parent) {
+    find_start(parent, 'img[data-toggle="async"]')
+        .each(function() {
+            var $this = $(this);
+            var get_url = $this.data("src");
+            $.get(
+                get_url,
+                function(data) {
+                    //console.log($this);
+                    //console.log(this);
+                    //console.log('got '+ data + ' for ' + $img.attr('src'));
+                    $this.attr("src", data);
+                }
+            );
+        });
+}
+
 function setup_modals(parent) {
 
     // Support for AJAX loaded modal window.
@@ -897,6 +914,8 @@ function setup_everything(parent) {
         launch_faders(parent);
 
         setup_modals(parent);
+
+        setup_async_images(parent);
 
         setup_post_processors(parent);
 
