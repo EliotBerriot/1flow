@@ -1225,8 +1225,15 @@ class Article(Document, DocumentHelperMixin):
 
     def find_image(self, force=False, commit=True):
 
-        LOGGER.info(u'Article.find_image() needs love, disabled for now.')
-        return
+        # __          __       _____   _   _  _____  _   _   _____
+        # \ \        / //\    |  __ \ | \ | ||_   _|| \ | | / ____|
+        #  \ \  /\  / //  \   | |__) ||  \| |  | |  |  \| || |  __
+        #   \ \/  \/ // /\ \  |  _  / | . ` |  | |  | . ` || | |_ |
+        #    \  /\  // ____ \ | | \ \ | |\  | _| |_ | |\  || |__| |
+        #     \/  \//_/    \_\|_|  \_\|_| \_||_____||_| \_| \_____|
+        #
+        # Please modify core.views.article_image() when
+        # the current method gets more love inside.
 
         if self.find_image_must_abort(force=force, commit=commit):
             return
@@ -1239,7 +1246,8 @@ class Article(Document, DocumentHelperMixin):
 
                     if commit:
                         self.save()
-                    break
+
+                    return self.image_url
 
             if not self.image_url:
                 if self.feed and self.feed.default_image_url:
@@ -1248,9 +1256,12 @@ class Article(Document, DocumentHelperMixin):
                     if commit:
                         self.save()
 
+                    return self.image_url
+
         except Exception:
             LOGGER.exception(u'Image extraction failed for article %s.', self)
-            return
+
+        return None
 
     def fetch_content_image(self, force=False, commit=True):
 
@@ -1642,7 +1653,8 @@ class Article(Document, DocumentHelperMixin):
             if replace_newlines:
                 self.content_type = CONTENT_TYPE_MARKDOWN
 
-            self.find_image(commit=False, force=force)
+            # Disabled until more love is put inside.
+            #self.find_image(commit=False, force=force)
 
             if commit:
                 self.save()
