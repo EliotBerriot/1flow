@@ -21,7 +21,8 @@
 
 from django.conf import settings
 from models.nonrel import (CONTENT_TYPE_NONE, CONTENT_TYPE_HTML,
-                           CONTENT_TYPE_MARKDOWN, CONTENT_TYPES_FINAL,
+                           CONTENT_TYPE_MARKDOWN, CONTENT_TYPE_BOOKMARK,
+                           CONTENT_TYPES_FINAL,
                            CACHE_ONE_HOUR, CACHE_ONE_DAY,
                            CACHE_ONE_WEEK, CACHE_ONE_MONTH, )
 
@@ -59,6 +60,7 @@ def content_types(request):
         u'CONTENT_TYPE_NONE':     CONTENT_TYPE_NONE,
         u'CONTENT_TYPE_HTML':     CONTENT_TYPE_HTML,
         u'CONTENT_TYPE_MARKDOWN': CONTENT_TYPE_MARKDOWN,
+        u'CONTENT_TYPE_BOOKMARK': CONTENT_TYPE_BOOKMARK,
         u'CONTENT_TYPES_FINAL':   CONTENT_TYPES_FINAL,
 
         u'CACHE_ONE_HOUR':        CACHE_ONE_HOUR,
