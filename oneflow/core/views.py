@@ -24,6 +24,7 @@ import humanize
 
 import gdata.gauth
 
+from random import choice as random_choice
 from constance import config
 from mongoengine import Q
 
@@ -869,7 +870,26 @@ def article_image(request, article_id):
     if image_url:
         return HttpResponse(image_url)
 
-    return HttpResponse(u'http://lorempixel.com/100/100/abstract/')
+    categories = ('abstract', 'animals', 'business', 'cats', 'city', 'food',
+                  'nightlife', 'fashion', 'people', 'nature', 'sports',
+                  'technics', 'transport')
+
+    tags = set([t.name.lower() for t in article.tags]
+               + [t.name.lower() for t in article.feed.tags])
+
+    try:
+        for tag in tags:
+            if tag in categories:
+                return HttpResponse(
+                    u'http://lorempixel.com/g/36/36/{0}/1'.format(tag))
+
+    except:
+        LOGGER.exception('Could not do fun things with article/feed tags')
+
+    # This will probably be confusing for the user (category
+    # images changes everytime), but is easily fixable.
+    return HttpResponse(u'http://lorempixel.com/g/36/36/{1}/1'.format(
+                        random_choice(categories)))
 
 
 def read_meta(request, read_id):
