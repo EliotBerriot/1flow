@@ -8,7 +8,7 @@
 
     {% else %}
       <link rel="stylesheet"
-          href="{{ STATIC_URL}}/vendor/bootswatch/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
+          href="{{ STATIC_URL }}vendor/bootswatch/{{ config.WEB_BOOTSWATCH_THEME }}/bootstrap.min.css" />
     {% endif %}
 
     {# NOTE: bootswatch already includes bootstrap CSS #}
@@ -41,17 +41,17 @@
 {% else %}
 
   <link rel="stylesheet"
-      href="{{ STATIC_URL}}/vendor/font-awesome/font-awesome.css" />
+      href="{{ STATIC_URL }}vendor/font-awesome/css/font-awesome.css" />
   <script type="text/javascript"
-      src="{{ STATIC_URL}}/vendor/jquery/2.0.3/jquery.min.js"></script>
+      src="{{ STATIC_URL }}vendor/jquery/2.0.3/jquery.min.js"></script>
 
     {% comment %}
       <link rel="stylesheet"
-        href="{{ STATIC_URL}}/vendor/fonts/Open_Sans/Open_Sans.css" />
+        href="{{ STATIC_URL }}vendor/fonts/Open_Sans/Open_Sans.css" />
     {% endcomment %}
 
       <link rel="stylesheet"
-        href="{{ STATIC_URL}}/vendor/fonts/Source_Sans_Pro/Source_Sans_Pro.css" />
+        href="{{ STATIC_URL }}vendor/fonts/Source_Sans_Pro/Source_Sans_Pro.css" />
 
 {% endif %}
 
@@ -76,7 +76,7 @@
     <script src="http://html5shim.googlecode.com/svn/trunk/html5.js"></script>
 
 {% else %}
-  <script src="{{ STATIC_URL}}/vendor/bootswatch/bower_components/html5shiv/dist/html5shiv.js"></script>
+  <script src="{{ STATIC_URL }}vendor/bootswatch/bower_components/html5shiv/dist/html5shiv.js"></script>
 
 {% endif %}
 
