@@ -192,13 +192,13 @@ PIPELINE_CSS = {
 
     'font-awesome': {
         'source_filenames': (
-            'vendor/font-awesome/font-awesome.less',
+            'vendor/font-awesome/less/font-awesome.less',
         ),
         'output_filename': 'css/font-awesome.css',
     },
     'font-awesome-ie7': {
         'source_filenames': (
-            'vendor/font-awesome/font-awesome-ie7.less',
+            'vendor/font-awesome/less/font-awesome-ie7.less',
         ),
         'output_filename': 'css/font-awesome-ie7.css',
     },
