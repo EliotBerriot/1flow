@@ -5,8 +5,8 @@
 #   make runable && make run
 
 web: python manage.py runserver
-#web: python manage.py run_gunicorn -b 0.0.0.0:8000 -w 6
-#web: uwsgi --http :8000 -H ${WORKON_HOME}/1flow --chdir ${HOME}/sources/1flow --wsgi-file oneflow/wsgi.py --master --processes 6
+#web: python manage.py run_gunicorn -b 0.0.0.0:8000 -w 3
+#web: uwsgi --http :8000 -H ${WORKON_HOME}/1flow --chdir ${HOME}/sources/1flow --wsgi-file oneflow/wsgi.py --master --processes 3
 shell: python manage.py shell_ipynb
 flower: python manage.py celery flower --logging=warning --broker_api=redis://${MAIN_SERVER}:6379/${REDIS_CELERY_DB} --broker=redis://${MAIN_SERVER}:6379/${REDIS_CELERY_DB}
 celery_beat:       python manage.py celery beat      --loglevel=warning
