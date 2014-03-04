@@ -888,7 +888,7 @@ def article_image(request, article_id):
 
     # This will probably be confusing for the user (category
     # images changes everytime), but is easily fixable.
-    return HttpResponse(u'http://lorempixel.com/g/36/36/{1}/1'.format(
+    return HttpResponse(u'http://lorempixel.com/g/36/36/{0}/1'.format(
                         random_choice(categories)))
 
 
