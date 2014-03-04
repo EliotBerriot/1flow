@@ -35,8 +35,12 @@ from django.contrib.auth import get_user_model
 
 LOGGER = logging.getLogger(__name__)
 
-common_authentication = MultiAuthentication(SessionAuthentication(),
-                                            ApiKeyAuthentication())
+
+def SessionAndApiKeyAuthentications():
+    """ Use like a standard TastyPie Authentication. """
+
+    return MultiAuthentication(
+        SessionAuthentication(), ApiKeyAuthentication())
 
 
 class UserObjectsOnlyAuthorization(Authorization):
@@ -134,7 +138,7 @@ class EmberMeta:
     allowed_methods    = ('get', 'post', 'put', 'delete')
 
     # These are specific to 1flow functionnals.
-    authentication     = common_authentication
+    authentication     = SessionAndApiKeyAuthentications()
     authorization      = UserObjectsOnlyAuthorization()
 
 
@@ -148,4 +152,4 @@ class UserResource(ModelResource):
 
 
 __all__ = ('UserObjectsOnlyAuthorization', 'EmberMeta',
-           'common_authentication', 'UserResource', )
+           'SessionAndApiKeyAuthentications', 'UserResource', )
