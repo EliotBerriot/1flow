@@ -7,9 +7,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-02-26 09:24+0100\n"
-"PO-Revision-Date: 2014-02-26 09:26+0009\n"
-"Last-Translator: Admi Nistrateur <admin@1flow.net>\n"
+"POT-Creation-Date: 2014-03-04 23:00+0100\n"
+"PO-Revision-Date: 2014-03-04 23:02+0009\n"
+"Last-Translator: Olivier Cortes <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -106,16 +106,16 @@ msgstr "Staff ?"
 msgid "Superuser?"
 msgstr "Super-utilisateur ?"
 
-#: admin.py:457 models/nonrel/article.py:215 models/nonrel/read.py:171
+#: admin.py:457 models/nonrel/article.py:216 models/nonrel/read.py:171
 #: models/nonrel/subscription.py:138
 msgid "Tags"
 msgstr "Tags"
 
-#: admin.py:471 models/nonrel/article.py:280 models/nonrel/tag.py:82
+#: admin.py:471 models/nonrel/article.py:281 models/nonrel/tag.py:82
 msgid "Duplicate of"
 msgstr "Duplicata de"
 
-#: admin.py:482 models/nonrel/article.py:239
+#: admin.py:482 models/nonrel/article.py:240
 msgid "Content"
 msgstr "Contenu"
 
@@ -327,163 +327,163 @@ msgstr "^lire/$"
 msgid "^article/([0-9a-f]{24,24})/$"
 msgstr "^article/([0-9a-f]{24,24})/$"
 
-#: urls.py:137
+#: urls.py:132
+msgid "^article/image/([0-9a-f]{24,24})/$"
+msgstr "^article/image/([0-9a-f]{24,24})/$"
+
+#: urls.py:142
 msgid "^read/([0-9a-f]{24,24})/$"
 msgstr "^lire/([0-9a-f]{24,24})/$"
 
-#: urls.py:141
+#: urls.py:146
 msgid "^share/([0-9a-f]{24,24})/$"
 msgstr "^partager/([0-9a-f]{24,24})/$"
 
-#: urls.py:148
+#: urls.py:153
 msgid "^json/user-address-book/$"
 msgstr "^json/user-address-book/$"
 
-#: urls.py:152
+#: urls.py:157
 msgid "^selector/$"
 msgstr "^selecteur/$"
 
-#: urls.py:156
+#: urls.py:161
 msgid "^folder/new/$"
 msgstr "^dossier/nouveau/$"
 
-#: urls.py:160
+#: urls.py:165
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:164
+#: urls.py:169
 msgid "^folder/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 msgstr "^dossier/(?P<folder>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:170
+#: urls.py:175
 msgid "^feed/add/nosub/(.*)$"
 msgstr "^flux/ajouter/pasdab/(.*)$"
 
-#: urls.py:174
+#: urls.py:179
 msgid "^feed/add/(.*)$"
 msgstr "^flux/ajouter/(.*)$"
 
-#: urls.py:179
+#: urls.py:184
 msgid "^subscription/new/$"
 msgstr "^abonnement/nouveau/$"
 
-#: urls.py:187
+#: urls.py:192
 msgid "^json/feeds-completer/$"
 msgstr "^json/feeds-completer/$"
 
-#: urls.py:192
+#: urls.py:197
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)/delete$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)/supprimer$"
 
-#: urls.py:196
+#: urls.py:201
 msgid "^subscription/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 msgstr "^abonnement/(?P<subscription>(?:[0-9a-f]{24,24})+)$"
 
-#: urls.py:200
+#: urls.py:205
 msgid "^import/contacts/$"
 msgstr "^importer/contacts/$"
 
-#: urls.py:210
+#: urls.py:215
 msgid "^import/url/(.*)$"
 msgstr "^importer/url/(.*)$"
 
-#: urls.py:214
+#: urls.py:219
 msgid "^status/article/([0-9a-f]{24,24})/$"
 msgstr "^etat/article/([0-9a-f]{24,24})/$"
 
-#: urls.py:218
+#: urls.py:223
 msgid "^webimport/$"
 msgstr "^import-web/$"
 
-#: urls.py:222
+#: urls.py:227
 msgid "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 msgstr "^(?P<klass>\\w+)/(?P<oid>\\w+)/toggle/(?P<key>\\w+.\\w+)/?$"
 
-#: urls.py:225
+#: urls.py:230
 msgid "^help/$"
 msgstr "^aide/$"
 
-#: urls.py:227
-msgid "^register/$"
-msgstr "^enregistrement/$"
-
-#: urls.py:228
+#: urls.py:232
 msgid "^signin_error/$"
 msgstr "^erreur_connexion/$"
 
-#: urls.py:233
+#: urls.py:237
 msgid "^grimport/(?:(?P<user_id>\\d+)/)?$"
 msgstr "^importgr/(?:(?P<user_id>\\d+)/)?$"
 
-#: urls.py:236
+#: urls.py:240
 msgid "^grstop/(?P<user_id>\\d+)/$"
 msgstr "^stopgr/(?P<user_id>\\d+)/$"
 
-#: urls.py:239
+#: urls.py:243
 msgid "^grtoggle/(?P<user_id>\\d+)/$"
 msgstr "^basculergr/(?P<user_id>\\d+)/$"
 
-#: urls.py:242
+#: urls.py:246
 msgid "^grstatus/$"
 msgstr "^etatgr/$"
 
-#: urls.py:247
+#: urls.py:251
 msgid "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 msgstr "^feed/(?P<feed_id>\\w+)/close/toggle/$"
 
-#: views.py:240
+#: views.py:242
 msgid "Save <em>{0}</em> failed: {1}"
 msgstr "Enregistrement de <em>{0}</em> impossible : {1}"
 
-#: views.py:245
+#: views.py:247
 msgid "Folder <em>{0}</em> successfully {1}."
 msgstr "Dossier <em>{0}</em> {1} avec succès."
 
-#: views.py:246 models/nonrel/feed.py:215
+#: views.py:248 models/nonrel/feed.py:215
 msgid "modified"
 msgstr "modifié"
 
-#: views.py:247
+#: views.py:249
 msgid "created"
 msgstr "créé"
 
-#: views.py:252
+#: views.py:254
 msgid "Could not {0} folder: {1}."
 msgstr "Impossible de {0} le dossier : {1}."
 
-#: views.py:253
+#: views.py:255
 msgid "modify"
 msgstr "de modifier"
 
-#: views.py:253
+#: views.py:255
 msgid "create"
 msgstr "de créer"
 
-#: views.py:298
+#: views.py:300
 msgid "Subscription <em>{0}</em> successfully modified."
 msgstr "Abonnement <em>{0}</em> modifié avec succès."
 
-#: views.py:303
+#: views.py:305
 msgid "Could not save subscription: {0}."
 msgstr "Impossible d'enregistrer l'abonnement : {0}."
 
-#: views.py:348
+#: views.py:350
 msgid "Malformed URL {0}"
 msgstr "URL {0} mal-formée"
 
-#: views.py:353
+#: views.py:355
 msgid "Very malformed url {0}"
 msgstr "URL {0} très mal-formée"
 
-#: views.py:360
+#: views.py:362
 msgid "The website at {0} does not seem to provide any feed."
 msgstr "Le site web {0} semble ne proposer aucun flux."
 
-#: views.py:364
+#: views.py:366
 msgid "Could not create any feed from URL {0}: {1}"
 msgstr "Impossible de créer un flux à partir de l'adresse {0} : {1}"
 
-#: views.py:407
+#: views.py:409
 msgid ""
 "Successfully subscribed to {0} streams. Articles are being added "
 "progressively, thanks for your patience."
@@ -491,25 +491,25 @@ msgstr ""
 "Abonné à {0} flux avec succès. Les articles sont en train d'être importés "
 "petit-à-petit, merci de votre patience."
 
-#: views.py:429
+#: views.py:431
 msgid "Subscription <em>{0}</em> successfully deleted."
 msgstr "Abonnement <em>{0}</em> résilié avec succès."
 
-#: views.py:664
+#: views.py:666
 #, python-format
 msgid " (%(count)s subscription)"
 msgid_plural " (%(count)s subscriptions)"
 msgstr[0] " (%(count)s abonnement)"
 msgstr[1] " (%(count)s abonnements)"
 
-#: views.py:672
+#: views.py:674
 #, python-format
 msgid "In your <span class=\"hide\">%(count)s</span> subscription"
 msgid_plural "In your %(count)s subscriptions"
 msgstr[0] "Dans votre <span class=\"hide\">%(count)s</span> abonnement"
 msgstr[1] "Dans vos %(count)s abonnements"
 
-#: views.py:703 views.py:721
+#: views.py:705 views.py:723
 msgid ""
 "As administrator, you are accessing the feed of another user. USE WITH "
 "CAUTION."
@@ -517,58 +517,58 @@ msgstr ""
 "Vous accédez au flux d'un autre utilisateur en tant qu'administrateur. "
 "AGISSEZ AVEC PRUDENCE."
 
-#: views.py:790
+#: views.py:792
 msgid "no item"
 msgstr "aucun élément"
 
-#: views.py:890
+#: views.py:931
 msgid "{1} shared <em>{0}</em> with you."
 msgstr "{1} a partagé <em>{0}</em> avec vous."
 
-#: views.py:893
+#: views.py:934
 msgid "Recorded <em>{0}</em> as shared by {1} in your inbox."
 msgstr ""
 "<em>{0}</em> a été enregistré dans votre boîte de réception, comme partagé "
 "par {1}."
 
-#: views.py:935
+#: views.py:976
 msgid "Share article with <code>{0}</code> failed: {1}"
 msgstr "Le partage de l'article avec <code>{0}</code> a échoué : {1}"
 
-#: views.py:941
+#: views.py:982
 msgid "Successfully shared <em>{0}</em> with {1} persons"
 msgstr "L'article <em>{0}</em> a été partagé avec {1} personne(s)"
 
-#: views.py:1403
+#: views.py:1418
 msgid "An import is already running for your Google Reader data."
 msgstr "Un import de vos données Google Reader est déjà en cours."
 
-#: views.py:1407
+#: views.py:1422
 msgid "Google Reader import deactivated."
 msgstr "L'import Google Reader est désactivé."
 
-#: views.py:1411
+#: views.py:1426
 msgid "Your beta invite has not yet been accepted, sorry."
 msgstr "Votre invitation à la BETA n'a pas encore été acceptée, désolé."
 
-#: views.py:1418
+#: views.py:1433
 msgid "You are not logged into Google Oauth or you have no token."
 msgstr ""
 "Vous n'êtes pas identifié(e) via Google, ou vous n'avez pas de jeton "
 "d'accès."
 
-#: views.py:1422
+#: views.py:1437
 msgid "Error parsing Google Oauth tokens. Please try signout and re-signin."
 msgstr ""
 "Erreur pendant le traitement des jetons d'accès Google. Essayez de vous "
 "déconnecter et reconnecter."
 
-#: views.py:1428
+#: views.py:1443
 #, python-format
 msgid "Google Reader import started for user ID %s."
 msgstr "L'import Google Reader a démarré pour l'utilisateur %s."
 
-#: views.py:1431
+#: views.py:1446
 msgid "Google Reader import started."
 msgstr "L'import Google Reader a démarré."
 
@@ -775,19 +775,19 @@ msgstr "Section d'aide"
 msgid "Help contents"
 msgstr "Contenu de l'aide"
 
-#: models/nonrel/article.py:172
+#: models/nonrel/article.py:173
 msgid "Title"
 msgstr "Titre"
 
-#: models/nonrel/article.py:174
+#: models/nonrel/article.py:175
 msgid "Public URL"
 msgstr "URL publique"
 
-#: models/nonrel/article.py:175
+#: models/nonrel/article.py:176
 msgid "Absolute URL"
 msgstr "URL absolue"
 
-#: models/nonrel/article.py:176
+#: models/nonrel/article.py:177
 msgid ""
 "The article URL has been successfully absolutized to its unique and final "
 "location."
@@ -795,29 +795,29 @@ msgstr ""
 "L'URL de l'article a été absolutisée avec succès vers son unique et finale "
 "destination."
 
-#: models/nonrel/article.py:180
+#: models/nonrel/article.py:181
 msgid "URL fetch error"
 msgstr "Erreur de récupération de l'URL"
 
-#: models/nonrel/article.py:181
+#: models/nonrel/article.py:182
 msgid "Error when absolutizing the URL"
 msgstr "Erreur pendant l'absolutisation de l'URL"
 
-#: models/nonrel/article.py:182
+#: models/nonrel/article.py:183
 msgid "Next pages URLs"
 msgstr "URLs des pages suivantes"
 
-#: models/nonrel/article.py:183
+#: models/nonrel/article.py:184
 msgid "In case of a multi-pages article, other pages URLs will be here."
 msgstr ""
 "Dans le cas d'un article multi-pages, les URLs des pages supplémentaires "
 "sont là."
 
-#: models/nonrel/article.py:188 models/nonrel/feed.py:183
+#: models/nonrel/article.py:189 models/nonrel/feed.py:183
 msgid "restricted"
 msgstr "restreint"
 
-#: models/nonrel/article.py:189
+#: models/nonrel/article.py:190
 msgid ""
 "This article comes from a paid paid subscription and cannot be shared like "
 "others inside the platform."
@@ -825,117 +825,117 @@ msgstr ""
 "Cet article vient d'un abonnement payant et ne peut pas être partagé "
 "librement à travers la plateforme."
 
-#: models/nonrel/article.py:195
+#: models/nonrel/article.py:196
 msgid "Orphaned"
 msgstr "Orphelin"
 
-#: models/nonrel/article.py:196
+#: models/nonrel/article.py:197
 msgid ""
 "This article has no public URL anymore, or is unfetchable for some reason."
 msgstr ""
 "Cet article n'a plus d'URL publique, ou son contenu n'est plus récupérable "
 "pour un autre raison."
 
-#: models/nonrel/article.py:200
+#: models/nonrel/article.py:201
 msgid "Word count"
 msgstr "Nombre de mots"
 
-#: models/nonrel/article.py:205
+#: models/nonrel/article.py:206
 msgid "date published"
 msgstr "date de publication"
 
-#: models/nonrel/article.py:206
+#: models/nonrel/article.py:207
 msgid "When the article first appeared on the publisher's website."
 msgstr "Quand l'article est apparu la première fois sur le site de l'éditeur."
 
-#: models/nonrel/article.py:210
+#: models/nonrel/article.py:211
 msgid "Date added"
 msgstr "Date d'ajout"
 
-#: models/nonrel/article.py:211
+#: models/nonrel/article.py:212
 msgid "When the article was added to the 1flow database."
 msgstr "Date à laquelle le flux a été ajouté dans la base 1flow."
 
-#: models/nonrel/article.py:216
+#: models/nonrel/article.py:217
 msgid "Default tags that will be applied to new reads of this article."
 msgstr ""
 "Tags qui seront appliqués automatiquement à toute nouvelle lecture liée à "
 "cet article."
 
-#: models/nonrel/article.py:218
+#: models/nonrel/article.py:219
 msgid "default rating"
 msgstr "score de référence"
 
-#: models/nonrel/article.py:219
+#: models/nonrel/article.py:220
 msgid "Rating used as a base when a user has not already rated the content."
 msgstr ""
 "Score qui sera utilisé comme base tant que l'utilisateur n'a pas encore "
 "noté/starré/reblogué le contenu."
 
-#: models/nonrel/article.py:222
+#: models/nonrel/article.py:223
 msgid "Article language"
 msgstr "Langue de l'article"
 
-#: models/nonrel/article.py:224
+#: models/nonrel/article.py:225
 msgid "2 letters or 5 characters language code (eg “en”, “fr-FR”…)."
 msgstr "Code de langue sur 2 ou 5 caractères."
 
-#: models/nonrel/article.py:227
+#: models/nonrel/article.py:228
 msgid "Text direction"
 msgstr "Direction du texte"
 
-#: models/nonrel/article.py:228
+#: models/nonrel/article.py:229
 msgid "Left-to-Right"
 msgstr "gauche-à-droite"
 
-#: models/nonrel/article.py:229
+#: models/nonrel/article.py:230
 msgid "Right-to-Left"
 msgstr "droite-à-gauche"
 
-#: models/nonrel/article.py:232
+#: models/nonrel/article.py:233
 msgid "image URL"
 msgstr "URL de l'image"
 
-#: models/nonrel/article.py:234
+#: models/nonrel/article.py:235
 msgid "Excerpt"
 msgstr "Extrait"
 
-#: models/nonrel/article.py:235
-msgid "Small exerpt of content, if applicable."
+#: models/nonrel/article.py:236
+msgid "Small excerpt of content, if applicable."
 msgstr "Court résumé de l'article, s'il existe."
 
-#: models/nonrel/article.py:240
+#: models/nonrel/article.py:241
 msgid "Article content"
 msgstr "Contenu de l'article"
 
-#: models/nonrel/article.py:242
+#: models/nonrel/article.py:243
 msgid "Content type"
 msgstr "Type de contenu"
 
-#: models/nonrel/article.py:243
+#: models/nonrel/article.py:244
 msgid "Type of article content (text, image…)"
 msgstr "Type de contenu d'article (texte, image…)"
 
-#: models/nonrel/article.py:245
+#: models/nonrel/article.py:246
 msgid "Error"
 msgstr "Erreur"
 
-#: models/nonrel/article.py:246
+#: models/nonrel/article.py:247
 msgid "Error when fetching content"
 msgstr "Erreur pendant la récupération du contenu"
 
-#: models/nonrel/article.py:253
+#: models/nonrel/article.py:254
 msgid "Origin type"
 msgstr "Type d'origine"
 
-#: models/nonrel/article.py:254
+#: models/nonrel/article.py:255
 msgid ""
 "Origin of article (feedparser, twitter, websnap…). Can be 0 (none/unknown)."
 msgstr ""
 "Origine de l'article (feedparser, twitter, websnap…). Peut être 0 "
 "(aucune/inconnue)."
 
-#: models/nonrel/article.py:281
+#: models/nonrel/article.py:282
 msgid ""
 "This article is a duplicate of another, which is referenced here. Even if "
 "they have different URLs (eg. one can be shortened, the other not), they "
@@ -945,19 +945,19 @@ msgstr ""
 "ont des URLs différentes (une peut être raccourcie, l'autre non), celles-ci "
 "pointent vers la même destination finale sur le web."
 
-#: models/nonrel/article.py:303
+#: models/nonrel/article.py:304
 msgid "{0} (#{1}) from {2}"
 msgstr "{0} (#{1}) from {2}"
 
-#: models/nonrel/article.py:350
+#: models/nonrel/article.py:351
 msgid "{0} ago"
 msgstr "il y a {0}"
 
-#: models/nonrel/article.py:379
+#: models/nonrel/article.py:380
 msgid "Unknown source"
 msgstr "Source inconnue"
 
-#: models/nonrel/article.py:392 models/nonrel/read.py:701
+#: models/nonrel/article.py:393 models/nonrel/read.py:701
 msgid "Multiple sources ({0} feeds)"
 msgstr "Sources multiples ({0} flux)"
 
@@ -989,27 +989,27 @@ msgstr "Lier un auteur internet à un utilisateur 1flow."
 msgid " (unsure)"
 msgstr "(non confirmé)"
 
-#: models/nonrel/common.py:120
+#: models/nonrel/common.py:122
 msgid "Items sent by {0}"
 msgstr "Éléments envoyés par {0}"
 
-#: models/nonrel/common.py:122
+#: models/nonrel/common.py:124
 msgid "Imported items of {0}"
 msgstr "Éléments importés de {0}"
 
-#: models/nonrel/common.py:124
+#: models/nonrel/common.py:126
 msgid "Inbox of {0}"
 msgstr "Boîte de réception de {0}"
 
-#: models/nonrel/common.py:200
+#: models/nonrel/common.py:202
 msgid "{0} #{1} not found"
 msgstr "{0} #{1} introuvable"
 
-#: models/nonrel/common.py:204
+#: models/nonrel/common.py:206
 msgid "{0}({1}) not found"
 msgstr "{0}({1}) introuvable"
 
-#: models/nonrel/common.py:456 models/nonrel/common.py:489
+#: models/nonrel/common.py:458 models/nonrel/common.py:491
 msgid ""
 "{0} is already in the parent chain of {1}. Setting the later parent of the "
 "former would result in a cycle and is not allowed."
@@ -1947,7 +1947,7 @@ msgid "Remove from reading list"
 msgstr "Supprimer de la liste de lecture"
 
 #: models/nonrel/read.py:324 templates/navbars/read-endless.html:46
-#: templatetags/coretags.py:112
+#: templatetags/coretags.py:115
 msgid "Read later"
 msgstr "Lire plus tard"
 
@@ -2571,11 +2571,9 @@ msgstr "(duplicata de #%s)"
 msgid "Add a subscription"
 msgstr "Ajouter un abonnement"
 
-#: templates/add-feed.html:25 templates/add-feed.html.py:67
-#: templates/add-feed.html:104 templates/add-feed.html.py:155
-#: templates/import-contacts.html:14
-msgid "Success"
-msgstr "Succès"
+#: templates/add-feed.html:25 templates/add-feed.html.py:104
+msgid "Subscribed!"
+msgstr "Abonné(e) !"
 
 #: templates/add-feed.html:30
 #, python-format
@@ -2630,6 +2628,10 @@ msgid ""
 msgstr ""
 "\n"
 "Pour mémoire, si ça vous dit quelque chose, l'erreur exacte est : <code>%(sub_exc)s</code>. Moi je n'y comprends rien ; j'espère qu'un développeur nous éclairera. Ils ont souvent la science infuse ces gens là. Enfin, le croient-ils. Moi je dis ça, je dis rien. Po-po-lom-po-pom…"
+
+#: templates/add-feed.html:67 templates/add-feed.html.py:155
+msgid "Imported"
+msgstr "Importé"
 
 #: templates/add-feed.html:76 templates/add-feed.html.py:164
 #, python-format
@@ -2794,6 +2796,10 @@ msgstr "Accueil"
 #: templates/import-contacts.html:2
 msgid "Import contacts"
 msgstr "Importer les contacts"
+
+#: templates/import-contacts.html:14
+msgid "Success"
+msgstr "Succès"
 
 #: templates/import-contacts.html:23
 #, python-format
@@ -2988,11 +2994,11 @@ msgstr "Listes de lecture"
 msgid "All"
 msgstr "Tout"
 
-#: templates/navbars/read-endless.html:38 templatetags/coretags.py:122
+#: templates/navbars/read-endless.html:38 templatetags/coretags.py:125
 msgid "Funbox"
 msgstr "Funbox"
 
-#: templates/navbars/read-endless.html:41 templatetags/coretags.py:115
+#: templates/navbars/read-endless.html:41 templatetags/coretags.py:118
 msgid "Starred"
 msgstr "Sélectionné"
 
@@ -3005,19 +3011,19 @@ msgstr "Non-lu"
 msgid "Watching lists"
 msgstr "Listes de veille"
 
-#: templates/navbars/read-endless.html:63 templatetags/coretags.py:147
+#: templates/navbars/read-endless.html:63 templatetags/coretags.py:150
 msgid "Knowledge"
 msgstr "Savoirs"
 
-#: templates/navbars/read-endless.html:65 templatetags/coretags.py:144
+#: templates/navbars/read-endless.html:65 templatetags/coretags.py:147
 msgid "Quotes"
 msgstr "Citations"
 
-#: templates/navbars/read-endless.html:67 templatetags/coretags.py:135
+#: templates/navbars/read-endless.html:67 templatetags/coretags.py:138
 msgid "Prospective"
 msgstr "Prospective"
 
-#: templates/navbars/read-endless.html:69 templatetags/coretags.py:141
+#: templates/navbars/read-endless.html:69 templatetags/coretags.py:144
 msgid "Regulations"
 msgstr "Réglementations"
 
@@ -3025,15 +3031,15 @@ msgstr "Réglementations"
 msgid "Best-Practices"
 msgstr "Best-practices"
 
-#: templates/navbars/read-endless.html:76 templatetags/coretags.py:126
+#: templates/navbars/read-endless.html:76 templatetags/coretags.py:129
 msgid "Facts"
 msgstr "Faits"
 
-#: templates/navbars/read-endless.html:78 templatetags/coretags.py:129
+#: templates/navbars/read-endless.html:78 templatetags/coretags.py:132
 msgid "Numbers"
 msgstr "Chiffres clefs"
 
-#: templates/navbars/read-endless.html:80 templatetags/coretags.py:132
+#: templates/navbars/read-endless.html:80 templatetags/coretags.py:135
 msgid "Analysis"
 msgstr "Analyses"
 
@@ -3549,6 +3555,36 @@ msgstr "Rien d'ouvert à ajouter aux blagues. C'EST PAS DRÔLE !!"
 msgid "Loading…"
 msgstr "Chargement…"
 
+#: templates/snippets/read/article-content-bookmark.html:5
+msgid "Description:"
+msgstr "Description :"
+
+#: templates/snippets/read/article-content-bookmark.html:8
+msgid "The website does not provide any description."
+msgstr "Le site web ne propose aucune description."
+
+#: templates/snippets/read/article-content-bookmark.html:14
+#, python-format
+msgid "Click to open %(article_url)s"
+msgstr "Cliquez pour ouvrir %(article_url)s"
+
+#: templates/snippets/read/article-content-bookmark.html:14
+msgid "Screenshot of the website."
+msgstr "Capture d'écran du site web."
+
+#: templates/snippets/read/article-content-bookmark.html:17
+#, python-format
+msgid ""
+"Screenshot of <a href=\"%(article_url)s\" title=\"Click to open "
+"%(article_url)s\" data-toggle=\"tooltip\">%(article_url)s</a>."
+msgstr ""
+"Capture de <a href=\"%(article_url)s\" title=\"Cliquez pour ouvrir "
+"%(article_url)s\" data-toggle=\"tooltip\">%(article_url)s</a>."
+
+#: templates/snippets/read/article-content-bookmark.html:21
+msgid "This article has been identified as a bookmark by the 1flow engine"
+msgstr "Cet article a été détecté comme un signet par le moteur 1flow"
+
 #: templates/snippets/read/article-content-excerpt.html:21
 msgid "No excerpt has been fetched for this article. We are sorry for that."
 msgstr ""
@@ -3617,17 +3653,17 @@ msgstr ""
 "Nous avons détecté que le contenu de cet article est potentiellement dangereux (pour votre navigateur, pas pour vos yeux…). Pour protéger votre ordinateur bien-aimé, nous ne l'affichons pas.<br />\n"
 "Alternativement, vous pouvez <a href=\"%(article_url)s\" target=\"_blank\">le lire sur le site d'origine</a>. Désolé du désagrément.\n"
 
-#: templates/snippets/read/article-meta.html:46
+#: templates/snippets/read/article-meta.html:49
 #: templates/snippets/read/read-meta-async.html:87
 msgid "no date"
 msgstr "pas de date"
 
-#: templates/snippets/read/article-meta.html:52
+#: templates/snippets/read/article-meta.html:55
 #: templates/snippets/read/read-meta-async.html:93
 msgid "by"
 msgstr "par"
 
-#: templates/snippets/read/article-meta.html:62
+#: templates/snippets/read/article-meta.html:65
 #: templates/snippets/read/read-meta-async.html:104
 #: templates/snippets/read/read-tiles-experimental-tile.html:41
 #: templates/snippets/read/read-tiles-tile.html:41
@@ -3635,12 +3671,12 @@ msgid "in"
 msgstr "dans"
 
 #: templates/snippets/read/read-action-original.html:2
-#: templatetags/coretags.py:438
+#: templatetags/coretags.py:492
 msgid "Display on the original website"
 msgstr "Afficher sur le site d'origine"
 
 #: templates/snippets/read/read-action-original.html:5
-#: templatetags/coretags.py:440
+#: templatetags/coretags.py:494
 msgid "Read original"
 msgstr "Voir l'original"
 
@@ -4288,99 +4324,99 @@ msgstr "Enregistrer les changements"
 msgid "Reset"
 msgstr "Remettre à zéro"
 
-#: templatetags/coretags.py:95
+#: templatetags/coretags.py:98
 msgid "Imported elements"
 msgstr "Éléments importés"
 
-#: templatetags/coretags.py:97
+#: templatetags/coretags.py:100
 msgid "You have {0} newly imported items."
 msgstr "Vous avez {0} éléments récemment importés"
 
-#: templatetags/coretags.py:99
+#: templatetags/coretags.py:102
 msgid "You have {0} newly imported items, out of {1} so far"
 msgstr "Vous avez {0} éléments non-lus sur un total de {1}"
 
-#: templatetags/coretags.py:101
+#: templatetags/coretags.py:104
 msgid "You imported {0} web items so far"
 msgstr "Vous avez importé {0} éléments web"
 
-#: templatetags/coretags.py:103
+#: templatetags/coretags.py:106
 msgid "You did not import anything until now"
 msgstr "Vous n'avez rien importé pour l'instant"
 
-#: templatetags/coretags.py:106
+#: templatetags/coretags.py:109
 msgid "All articles"
 msgstr "Tous les articles"
 
-#: templatetags/coretags.py:107
+#: templatetags/coretags.py:110
 msgid "You have {0} articles in 1flow"
 msgstr "Vous avez {0} articles dans 1flow"
 
-#: templatetags/coretags.py:109
+#: templatetags/coretags.py:112
 msgid "All unread"
 msgstr "Tous les non-lus"
 
-#: templatetags/coretags.py:110
+#: templatetags/coretags.py:113
 msgid "You have {0} unread articles"
 msgstr "Vous avez {0} articles non-lus"
 
-#: templatetags/coretags.py:113
+#: templatetags/coretags.py:116
 msgid "You have {0} articles to read later"
 msgstr "Vous avez {0} articles à lire plus tard"
 
-#: templatetags/coretags.py:116
+#: templatetags/coretags.py:119
 msgid "You have {0} starred articles"
 msgstr "Vous avez {0} articles sélectionnés"
 
-#: templatetags/coretags.py:118
+#: templatetags/coretags.py:121
 msgid "Archived"
 msgstr "Archivé"
 
-#: templatetags/coretags.py:119
+#: templatetags/coretags.py:122
 msgid "You have {0} archived articles"
 msgstr "Vous avez {0} articles archivés"
 
-#: templatetags/coretags.py:123
+#: templatetags/coretags.py:126
 msgid "You have {0} fun articles"
 msgstr "Vous avez {0} articles tordants"
 
-#: templatetags/coretags.py:127
+#: templatetags/coretags.py:130
 msgid "You have {0} articles marked as fact(s)"
 msgstr "Vous avez {0} articles contenant des faits marquants"
 
-#: templatetags/coretags.py:130
+#: templatetags/coretags.py:133
 msgid "You have {0} articles marked as number(s)"
 msgstr "Vous avez {0} articles contenant des chiffres-clefs"
 
-#: templatetags/coretags.py:133
+#: templatetags/coretags.py:136
 msgid "You have {0} articles marked as analysis"
 msgstr "Vous avez {0} articles marqués comme analyses/études"
 
-#: templatetags/coretags.py:136
+#: templatetags/coretags.py:139
 msgid "You have {0} articles marked as prospective"
 msgstr "Vous avez {0} éléments de prospective"
 
-#: templatetags/coretags.py:138
+#: templatetags/coretags.py:141
 msgid "Best-practices"
 msgstr "Bonnes pratiques"
 
-#: templatetags/coretags.py:139
+#: templatetags/coretags.py:142
 msgid "You have {0} articles marked as best-practices"
 msgstr "Vous avez {0} articles marqués comme bonnes-pratiques/état de l'art"
 
-#: templatetags/coretags.py:142
+#: templatetags/coretags.py:145
 msgid "You have {0} articles marked as regulation/legal"
 msgstr "Vous avez {0} éléments marqués comme réglementation/juridique/légal"
 
-#: templatetags/coretags.py:145
+#: templatetags/coretags.py:148
 msgid "You have {0} articles marked as quote(s)"
 msgstr "Vous avez {0} articles contenant des citations"
 
-#: templatetags/coretags.py:148
+#: templatetags/coretags.py:151
 msgid "You have {0} articles marked as knowledge"
 msgstr "Vous avez {0} éléments marqués comme savoir ou connaissance"
 
-#: templatetags/coretags.py:163
+#: templatetags/coretags.py:166
 msgid ""
 "Feature coming soon. More information on the 1flow blog "
 "http://blog.1flow.io/ or Twitter @1flow_io."
@@ -4388,42 +4424,45 @@ msgstr ""
 "Fonctionnalité en cours de développement. Plus d'informations sur le blog "
 "1flow http://blog.1flow.io/ ou sur Twitter @1flow_io."
 
-#: templatetags/coretags.py:302
+#: templatetags/coretags.py:305
 msgid "You have nothing in this list yet."
 msgstr "Vous n'avez rien dans cette liste"
 
-#: templatetags/coretags.py:347
+#: templatetags/coretags.py:350
 msgid "M+"
 msgstr "M+"
 
-#: templatetags/coretags.py:352
+#: templatetags/coretags.py:355
 msgid "k+"
 msgstr "k+"
 
-#: templatetags/coretags.py:367
+#: templatetags/coretags.py:370
 msgid "{0} articles"
 msgstr "{0} articles"
 
-#: templatetags/coretags.py:531 templatetags/coretags.py:533
+#: templatetags/coretags.py:586 templatetags/coretags.py:588
 msgid "Convert to full-text"
 msgstr "Convertir en plein-texte"
 
-#: templatetags/coretags.py:532
+#: templatetags/coretags.py:587
 msgid "Switch back to original"
 msgstr "Revenir à l'original"
 
-#: templatetags/coretags.py:534
+#: templatetags/coretags.py:589
 msgid "View original"
 msgstr "Voir l'original"
 
-#: templatetags/coretags.py:535
+#: templatetags/coretags.py:590
 msgid "converted"
 msgstr "converti"
 
-#: templatetags/coretags.py:537 templatetags/coretags.py:539
+#: templatetags/coretags.py:592 templatetags/coretags.py:594
 msgctxt "awesome-font icon name"
 msgid "exchange"
 msgstr "exchange"
+
+#~ msgid "^register/$"
+#~ msgstr "^enregistrement/$"
 
 #~ msgid "1flow is libre software, © 2013-2014 Olivier Cortès and others"
 #~ msgstr "1flow est un logiciel libre,  © 2013-2014 Olivier Cortès et d'autres"
