@@ -1,11 +1,13 @@
 
+# "bootstrap" is like "make runable", but with the
+# bare minimum for Fabric calls to succeed.
+#
+# SPARKS_PARALLEL=false is required for the
+# first installation, but not subsequent runs.
 bootstrap:
-	# like runable, but with the manual minimum for Fabric calls to succeed.
-	pip install -r config/dev-requirements.txt
+	pip install -r config/dev-requirements.txt --download-cache ~/.pipcache
 	fab -H localhost local sdf.fabfile.dev_django_full
 	sudo chown -R `whoami`: ~/.virtualenvs/1flow
-    # This variable is required for the first installation,
-    # but not subsequent runs.
     SPARKS_PARALLEL=false fab local runable
 
 runable:
