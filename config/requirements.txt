@@ -73,7 +73,7 @@ ipdbplugin==1.4
 Jinja2==2.7.1
 listparser==0.17
 logilab-common==0.60.0
-lxml==3.3.2
+lxml==3.3.3
 manifesto==0.4.1
 markdown2==2.1.0
 MarkupSafe==0.18
