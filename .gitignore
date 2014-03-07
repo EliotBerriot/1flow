@@ -1,5 +1,6 @@
 # Django's collectstatic
 /static
+.pipcache
 
 # Jenkins reports
 /reports
