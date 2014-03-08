@@ -584,13 +584,20 @@ ENABLE_SELECT2_MULTI_PROCESS_SUPPORT = True
 
 JS_CONTEXT_PROCESSOR = 'oneflow.base.utils.JsContextSerializer'
 
-RAVEN_CONFIG = {
-    # We send flower bugs to a dedicated sentry project,
-    # it pollutes us too much.
-    'dsn': os.environ.get('RAVEN_DSN_FLOWER'
-                          if 'flower' in sys.argv or 'shell_ipynb' in sys.argv
-                          else 'RAVEN_DSN'),
-}
+try:
+    RAVEN_CONFIG = {
+        # We send flower bugs to a dedicated sentry project,
+        # it pollutes us too much.
+        'dsn': os.environ.get('RAVEN_DSN_FLOWER'
+                              if 'flower' in sys.argv or 'shell_ipynb' in sys.argv
+                              else 'RAVEN_DSN'),
+    }
+except KeyError:
+    # No RAVEN_DSN*, raven/sentry will not be used.
+    # NOTE: it's not documented if raven will crash
+    # or not at start without a DSN and at the moment
+    # of this writing I have no way to test it.
+    pass
 
 STATSD_HOST   = os.environ.get('STATSD_HOST')
 STATSD_PORT   = int(os.environ.get('STATSD_PORT', 8125))
