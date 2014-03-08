@@ -1,3 +1,6 @@
+
+
+
 # 1flow — libre information platform
 
 This project is about reading and writing on the web, while keeping your data safe and sharing it with friends and colleagues.
@@ -13,21 +16,96 @@ You'll find a more user-oriented original pitch at http://1flow.io/ and project 
 1flow development is [funded via Gittip][gittip].
 
 
+
+# Quick installation
+
+1flow can be run on a single machine, but it is more likely to be installed on a multi-machines setup, when in production.
+
+If you plan to install it on your machine for development or test purposes, know that this process will install `PostgreSQL`, `MongoDB`, `Redis` and `memcache` and their development packages. A lot more will be installed too, but most of it will be in the `virtualenv`, thus not particularly polluting your machine.
+
+The best option is to run the installation process on a dedicated (probably virtual) machine or in an LXC container.
+
+
+
+## Linux
+
+This installation has been tested on Ubuntu 12.04 LTS and 13.10.
+
+I've written it by memory, please [open an issue](issues/new) in case you find anything unclear or incomplete.
+
+We assume you already have a development environment installed, with `git` and `pip`.
+
+    # sparks (1flow's deployment library) needs virtualenvwrapper to be installed
+    sudo pip install virtualenvwrapper
+    mkvirtualenv 1flow
+    workon 1flow
+    # A lot of things in sparks and 1flow rely on the ~/sources/ directory.
+    cd && mkdir sources && cd sources
+    git clone git+https://github.com/1flow/1flow.git
+    cd 1flow
+    cp config/dot.env.example ~/.env.1flow
+
+    make bootstrap
+
+During the bootstrap phase, which *will* take a long time, you have to:
+
+- tune `~/.env.1flow` to match your environment. It's nearly already set for
+  a development environment on 127.0.0.1. You will not have many things to
+  change if running on localhost, but it's still worth a review.
+- Create the PostgreSQL role `oneflow_admin` with the password you set
+  in `~/.env.1flow`. Grant it `CREATE DATABASE` and `CREATE ROLE`
+  (`INHERIT` is not needed).
+
+Notes:
+
+- as `make bootstrap` will install PostgreSQL, wait a little if it's not installed when you try to create the `oneflow_admin` role.
+- you can run `make bootstrap` as many times as necessary if you miss any manual step.
+
+When the `bootstrap` procedure is acheived, you can run 1flow:
+
+	. ~/.env.1flow
+    make run
+
+Then go to http://localhost:8000/ and enjoy your local 1flow instance.
+
+You can put it behind an `nginx` proxy if you want.
+
+
+
+### And after…
+
+To run a production instance, things are *not* much complicated. You will have to tune the project `fabfile` to suit your needs, and use fabric/sparks commands. If you're curious, the `production` target is the one that powers [1flow.io](http://1flow.io/).
+
+
+
+## Install on OSX
+
+**Important notice**: 1flow doesn't install on OSX Mavericks (10.9). As of 2014-03, there are some uncatched issues in `Cython` with Xcode 5.x. They prevent the `strainer` python module to install, and it's currently essential for 1flow to work (it's the web page parser…).
+
+But **1flow installs and runs perfectly on OSX 10.8 with Xcode 4.6. Just follow the same procedure as for a Linux installation.**
+
+
+
+## Future plans
+
+I'm thinking about creating a `docker` container to get a development environment already setup in one command. Checkout the `feature/installable` branch for up-to-date code and documentation of this task.
+
+If you are interested in helping out, I will be glad to hear from you and help. Please get in touch via [Twitter](https://twitter.com/Karmak23) or [IRC][irc].
+
+
+
 # Current status
 
 The current implementation is fully usable, for what's done.
 
-**It's in production on http://1flow.io/ and the early adopters use it since April 2013.**
+**It's in production on [1flow.io](http://1flow.io/) and the early adopters use it since April 2013.**
 
 1flow takes benefit of continuous integration: new features and bug fixes are pushed very regularly.
 
-As it is my own server and not a company project, I don't offer free accounts. I have limited resources, and there are legal issues – at least in France – that I do not want to deal with. They are completely avoided by using your own 1flow instance.
+As [1flow.io](http://1flow.io/) is my currently my personal server and not a company project, you won't get a free account there. I have limited resources, and there are legal issues – at least in France – that I do not want to deal with, and which are completely avoided by using your own 1flow instance.
 
-Nevertheless, project contributors will eventually get an access once we meet IRL and have established a trusted relationship. Note that it is still at my discretion in the end, there is no obligation at all.
+Nevertheless, project contributors will eventually get an access once we meet IRL and have established a trusted relationship. Note that it is still at my discretion in the end.
 
-I'm currently creating a simple installer to get rid of the complex bits (checkout the `feature/installable` branch, and the `develop` one for up-to-date code and features). It will implement `docker` containers, allowing very easy setups by more people.
-
-If you are interested, get in touch via GitHub, [Twitter](https://twitter.com/Karmak23) or [on IRC][irc].
 
 
 # License
@@ -35,11 +113,12 @@ If you are interested, get in touch via GitHub, [Twitter](https://twitter.com/Ka
 1flow is released under the GNU Affero GPL v3. See the `COPYING` file for details.
 
 
+
 # Project management and contact
 
 Public project management (features specification, general planned actions, agile iteration content proposals) [happens on Trello][trello], backed with the [IRC channel][irc], video conferences and physical meetups. Issues (bugs) are tracked [on GitHub][ghiss]. These are the authoritative working tools.
 
-Public announcements are broadcasted [on the 1flow tumblr][tumblr] and relayed on the [Twitter feed][twitter].
+Public announcements are broadcasted [on the 1flow tumblr][tumblr] and automatically relayed on the [Twitter feed][twitter], where sporadic news and small status updates are posted.
 
 There is a user support forum at http://1flow.userecho.com/ but it's not used for development at all.
 
@@ -52,6 +131,8 @@ Prior version 0.26, 1flow was a startup project. Long in the past, source code a
 Note for developers: this is a `git-flow` repository, we follow the [successful branching model](http://nvie.com/posts/a-successful-git-branching-model/).
 
 Thanks for reading ;-)
+
+
 
   [gittip]: https://gittip.com/1flow/
   [ghiss]: https://github.com/1flow/1flow

@@ -93,7 +93,12 @@
         {% compressed_js 'vendor-local' %}
 
         <script type="text/javascript">
-            Raven.config('{% sentry_public_dsn %}').install();
+            try {
+                Raven.config('{% sentry_public_dsn %}').install();
+
+            } catch (err) {
+                console.log('Sentry is probably unconfigured on this 1flow instance: ' + err)
+            }
         </script>
 
         {# NOTE: JS inclusion order matters. #}
