@@ -2,11 +2,14 @@
 bootstrap:
 	# like runable, but with the manual minimum for Fabric calls to succeed.
 	pip install -r config/dev-requirements.txt
-	fab -H localhost local sdf.fabfile.dev_django_full
+	fab local -H localhost sdf.fabfile.db_memcached sdf.fabfile.db_redis
+	fab local -H localhost sdf.fabfile.db_mongodb sdf.fabfile.db_postgresql
+	fab local -H localhost sdf.fabfile.dev_django_full
 	sudo chown -R `whoami`: ~/.virtualenvs/1flow
     # This variable is required for the first installation,
     # but not subsequent runs.
     SPARKS_PARALLEL=false fab local runable
+	fab local firstdata
 
 runable:
 	fab local runable
