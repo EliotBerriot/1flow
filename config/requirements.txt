@@ -12,7 +12,6 @@
 -e git+https://github.com/nickstenning/honcho.git@b172b30d6c53edde2434687b1e4eb8cac114ff15#egg=honcho
 -e git+https://github.com/noirbizarre/django-ember.git@47b5dad4f623efaccd3492c11d96fa4afdf8fb33#egg=django_ember
 -e git+https://github.com/noirbizarre/django.js.git@e3fb6b87f5eb98aaa0b87498db58fc354b46dcee#egg=django.js
-amqp==1.2.1
 anyjson==0.3.3
 astroid==1.0.1
 beautifulsoup4==4.3.2
