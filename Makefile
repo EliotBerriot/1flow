@@ -9,7 +9,8 @@ bootstrap:
 	fab local -H localhost sdf.fabfile.db_mongodb sdf.fabfile.db_postgresql
 	fab local -H localhost sdf.fabfile.dev_django_full
 	sudo chown -R `whoami`: ~/.virtualenvs/1flow
-    SPARKS_PARALLEL=false fab local runable; fab local firstdata
+	export SPARKS_PARALLEL=false ; fab local runable
+	fab local firstdata
 
 runable:
 	fab local runable
