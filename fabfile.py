@@ -208,32 +208,35 @@ def production():
         'flower': ['worker-01.1flow.io', ],
 
         'worker_high':       ['worker-01.1flow.io',
-                              'worker-02.1flow.io', ],
-
-        'worker_medium':     ['worker-03.1flow.io',
+                              'worker-02.1flow.io',
+                              'worker-03.1flow.io',
                               'worker-04.1flow.io', ],
 
-        'worker_low':        ['worker-05.1flow.io',
-                              'worker-06.1flow.io', ],
+        'worker_medium':     ['worker-02.1flow.io',
+                              'worker-03.1flow.io',
+                              'worker-04.1flow.io', ],
 
-        'worker_fetch':      ['worker-03.1flow.io',
-                              'worker-04.1flow.io',
-                              'worker-06.1flow.io', ],
+        'worker_low':        ['worker-03.1flow.io',
+                              'worker-04.1flow.io', ],
 
-        'worker_swarm':      ['worker-02.1flow.io',
-                              'worker-05.1flow.io', ],
+        'worker_fetch':      ['worker-02.1flow.io',
+                              'worker-03.1flow.io',
+                              'worker-04.1flow.io', ],
 
-        'worker_clean':      ['worker-02.1flow.io', ],
+        'worker_swarm':      ['worker-03.1flow.io',
+                              'worker-04.1flow.io', ],
 
-        'worker_background': ['worker-06.1flow.io', ],
+        'worker_clean':      ['worker-04.1flow.io', ],
+
+        'worker_background': ['worker-04.1flow.io', ],
     })
     env.sparks_options = {
         'nice_arguments': {
-            'worker_low': '-n 5',
-            'worker_fetch': '-n 4',
+            'worker_low': '-n 3',
+            'worker_fetch': '-n 5',
             'worker_background': '-n 3',
             'worker_swarm': '-n 2',
-            'worker_medium': '-n 1',
+            #'worker_medium': '-n -',
             'worker_high': '-n -3',
             'shell': '-n -1',
         },
@@ -246,30 +249,27 @@ def production():
             # We need to patch this because worker-04 is an LXC on the same
             # physical host than dev.1flow.net, and getting from it directly
             # doesn't work because of my NAT configuration.
-            'worker-02.1flow.io': 'git@10.0.3.110:1flow.git',
-            'worker-04.1flow.io': 'git@10.0.3.110:1flow.git',
-            'worker-06.1flow.io': 'git@10.0.3.110:1flow.git',
+            '__all__': 'git@10.0.3.110:1flow.git',
         },
 
         'worker_concurrency': {
             # Setting only 'worker-xx.1flow.io' would override
             # 'worker_xxxxx'. Thus we specify the most precise one.
-            'worker_high@worker-02.1flow.io': 8,
-            'worker_medium@worker-04.1flow.io': 6,
-            'worker_swarm@worker-05.1flow.io': 12,
-            'worker_low@worker-06.1flow.io': 4,
-            'worker_fetch@worker-03.1flow.io': 6,
-            'worker_fetch@worker-06.1flow.io': 12,
+            #'worker_high@worker-02.1flow.io': 8,
+            #'worker_medium@worker-04.1flow.io': 6,
+            #'worker_swarm@worker-05.1flow.io': 12,
+            #'worker_low@worker-06.1flow.io': 4,
+            #'worker_fetch@worker-03.1flow.io': 6,
+            #'worker_fetch@worker-06.1flow.io': 12,
 
-            'worker_swarm': 48,
-            'worker_fetch': 24,
+            'worker_swarm': 32,
+            'worker_fetch': 16,
+            'worker_background': 12,
 
-            'worker_background': 18,
-
-            # This one must not hammer the database, in *any*way
+            # This one must not hammer the database, in *any* way
             'worker_clean': 1,
 
-            '__all__': 12,
+            '__all__': 8,
         },
 
         # 'worker_queues': {
@@ -284,28 +284,29 @@ def production():
         # },
 
         'max_tasks_per_child': {
-            'worker_swarm': '16',
-
             # Fetchers can exhaust memory very quickly. Sometime 1 article
             # suffice to go up to 1Gb and stay there, if the content is
             # faulty. We need to clean often.
-            'worker_fetch': '8',
-
-            '__all__': '64',
+            # 20140309: no more a problem with celery 3.1, the soft time limit
+            # would have killed the worker before, and memory exhaustion is no
+            # more a problem on our 64Gb machine :-D
+            #'worker_fetch': '1',
+            #'worker_swarm': '16',
+            #'__all__': '64',
         },
 
         # Time-limit is useless because there is already the socket timeout.
         # And anyway, it's leaking memory in celery 3.0.x.
         'worker_soft_time_limit': {
-            'worker_swarm':      '120',
+            'worker_swarm': '120',
 
             # I consider that 5 minutes is enough to convert an article to
-            # markdown. If it doesn't acheive the conversion in tis time
+            # markdown. If it doesn't acheive the conversion in this time
             # frame, there is probably a more serious problem. Note that it
             # can take time because of high niceness of worker processes,
             # eg. they run at low priority, and a bunch of them on only a
             # few cpu cores. So we have to let them a fair amount of time.
-            'worker_fetch': '300',
+            'worker_fetch': '60',
         },
 
         # Eventlet works, but sometimes breaks with "RuntimeError(simultaneous

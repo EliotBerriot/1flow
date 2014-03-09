@@ -42,7 +42,13 @@ else:
                             sys.argv[index + 1].split('.', 1)[0])
     del index
 
-CELERYD_PREFETCH_MULTIPLIER = 1
+# 2014-03-09: I benchmarked with 0/1/2 on a 15K-items queue, with various
+# other parameters (mtpc=0/1/4/16/64, crc=16/32/64) and having no prefetching
+# is the option that gives the best continuous throughput, with excellent
+# peaks. All other options make the process-group master stop children to
+# ack and re-prefetch next jobs, which in turn make all other process groups
+# wait. This produce a lot of hickups in the global processing tunnel. Thus, 0.
+CELERYD_PREFETCH_MULTIPLIER = 0
 
 CELERY_DEFAULT_QUEUE = 'medium'
 

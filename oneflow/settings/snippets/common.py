@@ -599,9 +599,14 @@ except KeyError:
     # of this writing I have no way to test it.
     pass
 
-STATSD_HOST   = os.environ.get('STATSD_HOST')
-STATSD_PORT   = int(os.environ.get('STATSD_PORT', 8125))
-STATSD_PREFIX = os.environ.get('STATSD_PREFIX', '1flow')
+STATSD_HOST = os.environ.get('STATSD_HOST', None)
+
+if STATSD_HOST is None:
+    del STATSD_HOST
+
+else:
+    STATSD_PORT   = int(os.environ.get('STATSD_PORT', 8125))
+    STATSD_PREFIX = os.environ.get('STATSD_PREFIX', '1flow')
 
 MAINTENANCE_MODE = os.path.exists(os.path.join(BASE_ROOT, 'MAINTENANCE_MODE'))
 
