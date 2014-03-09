@@ -1254,8 +1254,8 @@ class Article(Document, DocumentHelperMixin):
                     return self.image_url
 
             if not self.image_url:
-                if self.feed and self.feed.default_image_url:
-                    self.image_url = self.feed.default_image_url
+                if self.feed and self.feed.thumbnail_url:
+                    self.image_url = self.feed.thumbnail_url
 
                     if commit:
                         self.save()
