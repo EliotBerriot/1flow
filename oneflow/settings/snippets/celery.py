@@ -93,11 +93,10 @@ CELERYD_POOL_RESTARTS = True
 
 # Since Celery 3.1/3.2, no 'pickle' anymore.
 # JSON is my prefered option, anyway.
-CELERY_ACCEPT_CONTENT = ['json']
+CELERY_ACCEPT_CONTENT = ['pickle', 'json']
 
-# I use these to debug kombu crashes; we get a more informative message.
-#CELERY_TASK_SERIALIZER = 'json'
-#CELERY_RESULT_SERIALIZER = 'json'
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = 'json'
 
 #CELERY_ALWAYS_EAGER=True
 
