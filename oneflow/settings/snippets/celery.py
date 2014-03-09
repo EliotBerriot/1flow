@@ -74,7 +74,10 @@ CELERY_DISABLE_RATE_LIMITS = True
 
 # Allow our remote workers to get tasks faster if they have a
 # slow internet connection (yes Gurney, I'm thinking of you).
-CELERY_MESSAGE_COMPRESSION = 'gzip'
+#
+# 20140309: no more remote worker and we have very small messages (only
+# IDs, no full instance), so stop wasting CPU cycles.
+#CELERY_MESSAGE_COMPRESSION = 'gzip'
 
 # Avoid long running and retried tasks to be run over-and-over again.
 BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 86400}
@@ -87,6 +90,10 @@ CELERY_MAX_CACHED_RESULTS = 32768
 
 # NOTE: I don't know if this is compatible with upstart.
 CELERYD_POOL_RESTARTS = True
+
+# Since Celery 3.1/3.2, no 'pickle' anymore.
+# JSON is my prefered option, anyway.
+CELERY_ACCEPT_CONTENT = ['json']
 
 # I use these to debug kombu crashes; we get a more informative message.
 #CELERY_TASK_SERIALIZER = 'json'
