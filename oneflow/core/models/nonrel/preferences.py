@@ -270,6 +270,9 @@ HOME_STYLE_CHOICES = (
 READ_SHOWS_CHOICES = (
     (1, _(u'Unread articles')),
     (2, _(u'Source selector')),
+    (3, _(u'Read later list')),
+    (4, _(u'Imported items')),
+    (5, _(u'Starred items')),
 )
 
 
