@@ -288,9 +288,15 @@ def production():
             # we still face the problem of slowly leaking workers. Surely it
             # comes from our code, but I didn't find an easy way to find out
             # exactly where. Thus, we relaunch workers every now and then.
-            'worker_fetch': '32',
             #'worker_swarm': '16',
-            '__all__': '1024',
+
+            # Fetchers literally eat memory.
+            'worker_fetch': '8',
+
+            # Cleaning tasks are long; worker consumes ~500Mb after first run.
+            'worker_clean': '1',
+
+            '__all__': '64',
         },
 
         # Time-limit is useless because there is already the socket timeout.
