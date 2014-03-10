@@ -6,12 +6,14 @@
       data-toggle-function="toggle_content"
       data-toggle-callback="notice_element">
 
-    <div class="meta-thumbnail col-xs-2 col-lg-1 only_when_collapsed">
+    <div class="col-xs-2 col-lg-1 only_when_collapsed">
       {# TODO: replace this by a simple URL when all article images are statically set. #}
 
-      <img src="" data-src="{% url 'article_image' article.id %}"
-        data-toggle="async" />
-    </div><!-- .meta-thumbnail -->
+      <div class="meta-thumbnail">
+        <img src="" data-src="{% url 'article_image' article.id %}"
+          data-toggle="async" />
+      </div>
+    </div>
 
     <div class="meta-back-to-list col-xs-2 col-lg-1 only_when_open">
       <i class="icon-angle-left"></i>
