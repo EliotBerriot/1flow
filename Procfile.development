@@ -10,10 +10,10 @@ web: python manage.py runserver
 shell: python manage.py shell_ipynb
 flower: python manage.py celery flower --logging=warning --broker_api=redis://${MAIN_SERVER}:6379/${REDIS_CELERY_DB} --broker=redis://${MAIN_SERVER}:6379/${REDIS_CELERY_DB}
 celery_beat:       python manage.py celery beat      --loglevel=warning
-worker_high:       python manage.py celery worker -E --loglevel=warning --queues high       --hostname high.${HOSTNAME}       -c 6 --maxtasksperchild 64
-worker_medium:     python manage.py celery worker -E --loglevel=warning --queues medium     --hostname medium.${HOSTNAME}     -c 3 --maxtasksperchild 32
-worker_low:        python manage.py celery worker -E --loglevel=info    --queues low        --hostname low.${HOSTNAME}        -c 2 --maxtasksperchild 32
-worker_background: python manage.py celery worker -E --loglevel=warning --queues background --hostname background.${HOSTNAME} -c 2 --maxtasksperchild 16
-worker_fetch:      python manage.py celery worker -E --loglevel=warning --queues fetch      --hostname fetch.${HOSTNAME}      -c 3 --maxtasksperchild 16
-worker_swarm:      python manage.py celery worker -E --loglevel=warning --queues swarm      --hostname swarm.${HOSTNAME}      -c 8 --maxtasksperchild 32
-worker_clean:      python manage.py celery worker -E --loglevel=warning --queues clean      --hostname clean.${HOSTNAME}      -c 1 --maxtasksperchild 8
+worker_high:       python manage.py celery worker -E --loglevel=warning --queues high       --hostname high.${HOSTNAME}       --autoscale 6,1 --maxtasksperchild 64
+worker_medium:     python manage.py celery worker -E --loglevel=warning --queues medium     --hostname medium.${HOSTNAME}     --autoscale 8,1 --maxtasksperchild 32
+worker_low:        python manage.py celery worker -E --loglevel=info    --queues low        --hostname low.${HOSTNAME}        --autoscale 4,0 --maxtasksperchild 32
+worker_background: python manage.py celery worker -E --loglevel=warning --queues background --hostname background.${HOSTNAME} --autoscale 2,0 --maxtasksperchild 16
+worker_fetch:      python manage.py celery worker -E --loglevel=warning --queues fetch      --hostname fetch.${HOSTNAME}      --autoscale 6,0 --maxtasksperchild 8
+worker_swarm:      python manage.py celery worker -E --loglevel=warning --queues swarm      --hostname swarm.${HOSTNAME}      --autoscale 12,2 --maxtasksperchild 32
+worker_clean:      python manage.py celery worker -E --loglevel=warning --queues clean      --hostname clean.${HOSTNAME}      --autoscale 1,0 --maxtasksperchild 1
