@@ -5,8 +5,9 @@
       data-toggle-id="{{ article.id }}"
       data-toggle-function="toggle_content"
       data-toggle-callback="notice_element">
+    {% spaceless %}
 
-    <div class="col-xs-2 only_when_collapsed">
+    <div class="col-xs-5 col-sm-2 only_when_collapsed thumbnail-wrapper">
       {# TODO: replace this by a simple URL when all article images are statically set. #}
 
       <div class="meta-thumbnail">
@@ -15,117 +16,110 @@
       </div>
     </div>
 
-    <div class="meta-back-to-list col-xs-2 only_when_open">
+    <h2 class="col-xs-7 col-sm-10 article-title only_when_collapsed">
+      {{ article.title }}
+    </h2>
+
+    <div class="col-xs-2 col-sm-1 only_when_open meta-back-to-list">
       <i class="icon-angle-left"></i>
-    </div><!-- .meta-back-to-list -->
+    </div>
 
-    <div class="meta-wrapper col-xs-10">
-      <div class="row">
+    <h2 class="col-xs-10 col-sm-11 only_when_open article-title">
+      {{ article.title }}
+    </h2>
 
-        {% spaceless %}
+    <div class="meta-sub col-xs-8 col-sm-8">
 
-        <div class="meta-content col-xs-12 row">
+      <span class="source muted">
+        {# read, not article: we want subscriptions names, not feed names. #}
+        {{ read.get_source_unicode }}
+      </span>
 
-          <h2 class="article-title col-xs-12">
-            {{ article.title }}
-          </h2>
+      <span class="status-icons watch-status">
+        {% include "snippets/read/watch-status.html" %}
+      </span>
 
-          <div class="meta-sub col-xs-9">
+      <span class="hover-muted hide">
 
-            <span class="source muted">
-              {# read, not article: we want subscriptions names, not feed names. #}
-              {# NOOOOOOOOOO: now that the article is cached, we cannot get the read anymore here… #}
-              {{ article.get_source_unicode }}
-            </span>
+        <span class="date">
+          {% if article.date_published %}
+            {{ article.date_published }}
+          {% else %}
+            <span class="no-date">{% trans "no date" %}</span>
+          {% endif %}
+        </span>
 
-            <span class="status-icons watch-status">
-              {% include "snippets/read/watch-status.html" %}
-            </span>
+        {% if article.authors %}
+          <span class="author">
+              <span class="muted">{% trans "by" %}</span>
+              {% for author in article.authors %}
+                  {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+              {% endfor %}
+          </span>
+        {% endif %}
 
-            <span class="hover-muted hide">
-
-            <span class="date">
-              {% if article.date_published %}
-                {{ article.date_published }}
-              {% else %}
-                <span class="no-date">{% trans "no date" %}</span>
-              {% endif %}
-            </span>
-
-            {% if article.authors %}
-              <span class="author">
-                  <span class="muted">{% trans "by" %}</span>
-                  {% for author in article.authors %}
-                      {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
-                  {% endfor %}
-              </span>
-            {% endif %}
-
-            {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
-            {% if article.tags %}
-              <span class="tags">
-                <span class="muted">{% trans "in" %}</span> {% for tag in article.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-              </span>
-            {% endif %}
-
-            {% comment %}
-                No more possible with the cached article.
-
-                {% if with_rating %}
-                  {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
-                {% endif %}
-            {% endcomment %}
-
-            </span>
-          </div>
-
-          <div class="col-xs-3">
-            <div class="reading-time pull-left">
-              {% if article.word_count_TRANSIENT %}
-                {{ read.reading_time_abstracted|safe }}
-              {% endif %}
-            </div>
-
-            <div class="freshness pull-right"
-
-            {% if article.date_published %}
-
-              data-post-process="momentFromNow"
-
-               {% comment %}
-                   data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
-               {% endcomment %}
-
-               >
-              {{ article.date_published|date:'c' }}
-
-            {% else %}
-              >
-
-            {% endif %}
-
-            </div>
-          </div>
-        </div>
+        {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
+        {% if article.tags %}
+          <span class="tags">
+            <span class="muted">{% trans "in" %}</span> {% for tag in article.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
+          </span>
+        {% endif %}
 
         {% comment %}
+            No more possible with the cached article.
 
-          DISABLED UNTIL JS IS FIXED,
-          to allow first libre release.
-
-          <div class="meta-actions visible-lg">
-            {% with with_text=0 %}
-              {# with_admin_actions=1 #}
-              {% include "snippets/read/read-actions.html" %}
-            {% endwith %}
-          </div>
-
+            {% if with_rating %}
+              {% if read.rating %}<span class="rating">{% trans ", rated " %}{{ read.rating }}</span>{% endif %}
+            {% endif %}
         {% endcomment %}
 
-        {% endspaceless %}
+      </span>
+    </div>
 
-      </div><!-- .row -->
-    </div><!-- .meta-wrapper -->
+    <div class="meta-sub col-xs-4 col-sm-2 only_when_collapsed-xs">
+
+      <div class="reading-time pull-left">
+        {% if article.word_count_TRANSIENT %}
+          {{ read.reading_time_abstracted|safe }}
+        {% endif %}
+      </div>
+
+      <div class="freshness pull-right"
+
+      {% if article.date_published %}
+
+        data-post-process="momentFromNow"
+
+         {% comment %}
+             data-toggle="tooltip" title="{% blocktrans with pubdate=article.date_published %}Published on {{ pubdate }}.{% endblocktrans %}"
+         {% endcomment %}
+
+         >
+        {{ article.date_published|date:'c' }}
+
+      {% else %}
+        >
+
+      {% endif %}
+
+      </div>
+    </div>
+
+    {% comment %}
+
+      DISABLED UNTIL JS IS FIXED,
+      to allow first libre release.
+
+      <div class="meta-actions visible-lg">
+        {% with with_text=0 %}
+          {# with_admin_actions=1 #}
+          {% include "snippets/read/read-actions.html" %}
+        {% endwith %}
+      </div>
+
+    {% endcomment %}
+
+  {% endspaceless %}
 
   </div><!-- .row -->
 </div><!-- .article-meta -->
