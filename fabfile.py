@@ -284,15 +284,13 @@ def production():
         # },
 
         'max_tasks_per_child': {
-            # Fetchers can exhaust memory very quickly. Sometime 1 article
-            # suffice to go up to 1Gb and stay there, if the content is
-            # faulty. We need to clean often.
-            # 20140309: no more a problem with celery 3.1, the soft time limit
-            # would have killed the worker before, and memory exhaustion is no
-            # more a problem on our 64Gb machine :-D
-            #'worker_fetch': '1',
+            # 2014-03-10: whereas many things have improved with celery 3.1,
+            # we still face the problem of slowly leaking workers. Surely it
+            # comes from our code, but I didn't find an easy way to find out
+            # exactly where. Thus, we relaunch workers every now and then.
+            'worker_fetch': '32',
             #'worker_swarm': '16',
-            #'__all__': '64',
+            '__all__': '1024',
         },
 
         # Time-limit is useless because there is already the socket timeout.
