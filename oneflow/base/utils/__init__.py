@@ -32,7 +32,7 @@ except:
     blinker = None # NOQA
 
 from bs4 import BeautifulSoup
-from requests.packages import charade
+import charade
 
 from mongoengine import Document, signals
 
@@ -638,6 +638,7 @@ class RedisStatsCounter(object):
 # By default take the normal REDIS connection, but still allow
 # to override it in tests via the class attribute.
 RedisStatsCounter.REDIS = REDIS
+
 
 def word_match_consecutive_once(term, word):
     """ Eat letters as far as we find them
