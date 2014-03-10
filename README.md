@@ -80,11 +80,20 @@ To run a production instance, things are *not* much complicated. You will have t
 
 ## Install on OSX
 
-**Important notice**: 1flow doesn't install on OSX Mavericks (10.9). As of 2014-03, there are some uncatched issues in `Cython` with Xcode 5.x. They prevent the `strainer` python module to install, and it's currently essential for 1flow to work (it's the web page parser…).
+1flow runs perfectly on OSX Mavericks (10.9) with Xcode 5.x. `sparks`
 
-But **1flow installs and runs perfectly on OSX 10.8 with Xcode 4.6. Just follow the same procedure as for a Linux installation.**
+Previously, I developed 1flow on OSX 10.8 with Xcode 4.6 and it worked perfectly. I haven't tested it recently, but it should still work. Please report any issue you find.
 
+Just follow the same procedure as for a Linux installation.
 
+### Caveats
+
+If you run `make bootstrap` more than once, you could eventually end up in a situation where one or more service (MongoDB, PostgreSQL, Redis, Memcached) is installed but not launched. This happens because the related `.plist` is not symlinked to `~/Library/LaunchAgents/`. Just run something like:
+
+    ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
+    lunchy start postgres
+
+([Lunchy](lunch) has been installed by `sparks`, I'm sure you will love it.)
 
 ## Future plans
 
@@ -133,7 +142,7 @@ Note for developers: this is a `git-flow` repository, we follow the [successful 
 Thanks for reading ;-)
 
 
-
+  [lunch]: https://github.com/mperham/lunchy
   [gittip]: https://gittip.com/1flow/
   [ghiss]: https://github.com/1flow/1flow
   [1blog]: http://blog.1flow.io/
