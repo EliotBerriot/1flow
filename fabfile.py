@@ -234,9 +234,9 @@ def production():
         'nice_arguments': {
             'worker_low': '-n 3',
             'worker_fetch': '-n 5',
-            'worker_background': '-n 3',
+            'worker_background': '-n 10',
             'worker_swarm': '-n 2',
-            #'worker_medium': '-n -',
+            'worker_medium': '-n 1',
             'worker_high': '-n -3',
             'shell': '-n -1',
         },
@@ -252,47 +252,33 @@ def production():
             '__all__': 'git@10.0.3.110:1flow.git',
         },
 
-        'worker_concurrency': {
-            # Setting only 'worker-xx.1flow.io' would override
-            # 'worker_xxxxx'. Thus we specify the most precise one.
-            #'worker_high@worker-02.1flow.io': 8,
-            #'worker_medium@worker-04.1flow.io': 6,
-            #'worker_swarm@worker-05.1flow.io': 12,
-            #'worker_low@worker-06.1flow.io': 4,
-            #'worker_fetch@worker-03.1flow.io': 6,
-            #'worker_fetch@worker-06.1flow.io': 12,
+        'autoscale': {
+            'worker_swarm': '32,2',
+            'worker_fetch': '24,1',
+            'worker_background': '4,0',
+            'worker_high': '8,1',
 
-            'worker_swarm': 32,
-            'worker_fetch': 16,
-            'worker_background': 12,
+            # Maximum one worker to avoid hammering
+            # the database with huge requests.
+            'worker_clean': '1,0',
 
-            # This one must not hammer the database, in *any* way
-            'worker_clean': 1,
-
-            '__all__': 8,
+            '__all__': '8,0',
         },
 
-        # 'worker_queues': {
-        #     # The fetchers help on main queues, except 'low' which is… low.
-        #     # Fetchers and swarmers share the background queue, which has
-        #     # no dedicated workers.
-        #     'worker_fetch@worker-02.1flow.io': 'fetch,medium,background',
-        #     'worker_fetch@worker-04.1flow.io': 'fetch,high,background',
-        #     'worker_swarm':  'swarm,background',
-        #     'worker_medium': 'medium,fetch',
-        #     'worker_low':    'low,fetch,background',
-        # },
-
         'max_tasks_per_child': {
-            # Fetchers can exhaust memory very quickly. Sometime 1 article
-            # suffice to go up to 1Gb and stay there, if the content is
-            # faulty. We need to clean often.
-            # 20140309: no more a problem with celery 3.1, the soft time limit
-            # would have killed the worker before, and memory exhaustion is no
-            # more a problem on our 64Gb machine :-D
-            #'worker_fetch': '1',
+            # 2014-03-10: whereas many things have improved with celery 3.1,
+            # we still face the problem of slowly leaking workers. Surely it
+            # comes from our code, but I didn't find an easy way to find out
+            # exactly where. Thus, we relaunch workers every now and then.
             #'worker_swarm': '16',
-            #'__all__': '64',
+
+            # Fetchers can literally eat memory. RECYCLE.
+            'worker_fetch': '8',
+
+            # Cleaning tasks are long; worker consumes ~500Mb after first run.
+            'worker_clean': '1',
+
+            '__all__': '32',
         },
 
         # Time-limit is useless because there is already the socket timeout.
@@ -308,15 +294,8 @@ def production():
             # few cpu cores. So we have to let them a fair amount of time.
             'worker_fetch': '60',
         },
-
-        # Eventlet works, but sometimes breaks with "RuntimeError(simultaneous
-        # write on socket…)" and it's just anoying because we already have
-        # other problems to solve.
-        #
-        #'worker_pool': {
-        #    'worker_swarm': 'eventlet',
-        #},
     }
+
     env.env_was_set = True
 
 
