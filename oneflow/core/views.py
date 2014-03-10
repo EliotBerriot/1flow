@@ -877,19 +877,27 @@ def article_image(request, article_id):
     tags = set([t.name.lower() for t in article.tags]
                + [t.name.lower() for t in article.feed.tags])
 
+    #
+    # HEADS UP: if you change LoremPixel dimensions,
+    #           replicate them in _read-list.scss
+    #
+
+    numbers = (1, 2, 3, 4, 5, 6, 7, 8, 9)
+
     try:
         for tag in tags:
             if tag in categories:
                 return HttpResponse(
-                    u'http://lorempixel.com/g/36/36/{0}/1'.format(tag))
+                    u'http://lorempixel.com/g/90/56/{0}/{1}'.format(
+                        tag, random_choice(numbers)))
 
     except:
         LOGGER.exception('Could not do fun things with article/feed tags')
 
     # This will probably be confusing for the user (category
     # images changes everytime), but is easily fixable.
-    return HttpResponse(u'http://lorempixel.com/g/36/36/{0}/1'.format(
-                        random_choice(categories)))
+    return HttpResponse(u'http://lorempixel.com/g/90/56/{0}/{1}'.format(
+                        random_choice(categories), random_choice(numbers)))
 
 
 def read_meta(request, read_id):
