@@ -178,7 +178,7 @@ def detect_encoding_from_requests_response(response):
         will try to detect the encoding as much as possible. Fist, the "normal"
         response encoding will be tried, else the headers will be parsed, and
         finally the ``<head>`` of the ``<html>`` content will be parsed. If
-        nothing succeeds, we will rly on :module:`charade` to guess from the
+        nothing succeeds, we will rely on :module:`charade` to guess from the
         content.
 
         .. todo:: we have to check if content-type is HTML before parsing the
@@ -214,9 +214,10 @@ def detect_encoding_from_requests_response(response):
             # try to detect it manually wth charade. This can
             # eventually fail, too… In this case, OMG… We are alone.
             try:
-                return charade.detect()['encoding']
+                return charade.detect(response)['encoding']
+
             except:
-                pass
+                LOGGER.critical('Could not detect encoding of %s', response)
 
     return None
 
