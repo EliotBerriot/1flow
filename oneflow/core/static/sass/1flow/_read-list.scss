@@ -91,15 +91,17 @@
     .article-meta {
 
         .meta-thumbnail {
-            height: 40px;
-            width: 40px;
-            padding: 2px;
+            // Make the image a little bigger
+            margin: -8px 0 -8px;
             text-align: center;
             vertical-align: middle;
 
             img {
-                max-width: 36px;
-                max-height: 36px;
+                // If you change the dimensions,
+                // update core.views.article_image()
+                max-width: 90px;
+                max-height: 56px;
+                margin: 0 auto;
             }
 
             i.placeholder {
