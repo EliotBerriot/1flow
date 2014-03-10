@@ -89,7 +89,21 @@
           <li class="nowrap">
             {% if preferences.home.read_shows == 1 %}
                 <a href="{% url 'read' %}"
+
+            {% elif preferences.home.read_shows == 2 %}
+                <a href="{% url 'source_selector' %}"
+
+            {% elif preferences.home.read_shows == 3 %}
+                <a href="{% url 'read_later' %}"
+
+            {% elif preferences.home.read_shows == 4 %}
+                <a href="{% url 'read_all_feed' feed=mongodb_user.web_import_subscription.id %}"
+
+            {% elif preferences.home.read_shows == 5 %}
+                <a href="{% url 'read_starred' %}"
+
             {% else %}
+                {# Just in case there is a problem. #}
                 <a href="{% url 'source_selector' %}"
             {% endif %}
                 {% captureas read_url_i18n %}/{% trans "read" context "verb" %}/{% endcaptureas %}
