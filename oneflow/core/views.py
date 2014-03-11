@@ -870,6 +870,7 @@ def article_image(request, article_id):
     if image_url:
         return HttpResponse(image_url)
 
+    numbers    = (1, 2, 3, 4, 5, 6, 7, 8, 9)
     categories = ('abstract', 'animals', 'business', 'cats', 'city', 'food',
                   'nightlife', 'fashion', 'people', 'nature', 'sports',
                   'technics', 'transport')
@@ -882,13 +883,11 @@ def article_image(request, article_id):
     #           replicate them in _read-list.scss
     #
 
-    numbers = (1, 2, 3, 4, 5, 6, 7, 8, 9)
-
     try:
         for tag in tags:
             if tag in categories:
                 return HttpResponse(
-                    u'http://lorempixel.com/g/90/56/{0}/{1}'.format(
+                    u'http://lorempixel.com/g/180/112/{0}/{1}'.format(
                         tag, random_choice(numbers)))
 
     except:
@@ -896,7 +895,7 @@ def article_image(request, article_id):
 
     # This will probably be confusing for the user (category
     # images changes everytime), but is easily fixable.
-    return HttpResponse(u'http://lorempixel.com/g/90/56/{0}/{1}'.format(
+    return HttpResponse(u'http://lorempixel.com/g/180/112/{0}/{1}'.format(
                         random_choice(categories), random_choice(numbers)))
 
 

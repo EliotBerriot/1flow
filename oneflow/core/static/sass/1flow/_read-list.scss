@@ -41,8 +41,7 @@
 // —————————————————————————————————————————————————————————— reading-list item
 
 .read-list-item {
-    //position: relative;
-    padding: 15px 10px;
+    padding: 15px 10px 10px;
     border-bottom: 1px solid #ddd;
 
     /*
@@ -90,36 +89,7 @@
 
     .article-meta {
 
-        .meta-thumbnail {
-            // Make the image a little bigger
-            margin: -8px 0 -8px;
-            text-align: center;
-            vertical-align: middle;
-
-            img {
-                // If you change the dimensions,
-                // update core.views.article_image()
-                max-width: 90px;
-                max-height: 56px;
-                margin: 0 auto;
-            }
-
-            i.placeholder {
-                color: $grayLightMax;
-                font-size: 36px;
-            }
-        }
-
-        .meta-back-to-list {
-            text-align: center;
-            font-size: 40px;
-            line-height: 40px;
-            margin-top: -10px;
-
-            i {
-                padding-right: 10px;
-            }
-        }
+        // HEADS UP: the meta-* must come after the BS3 overrides.
 
         .row,
         .row .row,
@@ -136,12 +106,44 @@
             margin: 0;
         }
 
-        // HEADS UP: the meta-* must come after the BS3 overrides.
+        // —————————————————————————————————————————————————————————————
+
+        .thumbnail-wrapper {
+            padding: 0;
+            text-align: center;
+        }
+
+        .meta-thumbnail {
+            margin: 0;
+            width: 90px;
+            height: 56px;
+
+            img {
+                // If you change the dimensions,
+                // update core.views.article_image()
+                max-width: 90px;
+                max-height: 56px;
+                margin: 0;
+            }
+
+            i.placeholder {
+                color: $grayLightMax;
+                font-size: 36px;
+            }
+        }
+
+
+        .meta-back-to-list {
+            text-align: center;
+            font-size: 40px;
+            line-height: 40px;
+            margin-top: -5px;
+        }
 
         .meta-content {
             // debug background-color: #cce;
             // debug opacity: 0.8;
-            padding-left: 1em;
+            //padding-left: 1em;
         }
 
         .meta-sub {
@@ -149,6 +151,8 @@
         }
 
         h2.article-title {
+            margin: 0;
+            padding: 0;
             font-size: 16px;
         }
 
@@ -217,6 +221,19 @@
             // @include filter-gradient(#00ffffff, #ffffff, horizontal); // IE6-8
             // IE9 SVG, needs conditional override of 'filter' to 'none'
             @include background-image(linear-gradient(left, rgba(255,255,255,0) 0%, rgba(255,255,255,1) 15%));
+        }
+
+        .meta-sub {
+            max-height: 1.5em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
+        }
+        .article-title {
+            max-height: 1.25em;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            -o-text-overflow: ellipsis;
         }
     }
 
@@ -294,6 +311,25 @@
 
 // ————————————————————————————————————————————————————————————————— responsive
 
+@media (min-width: $screen-sm-min) {
+    .thumbnail-wrapper {
+        margin: -8px 0;
+    }
+
+    .read-list-item .article-meta .meta-thumbnail {
+        margin: 0 auto;
+    }
+}
+
+@media (max-width: $screen-xs-max) {
+
+    .open_content {
+
+        .only_when_collapsed-xs {
+            display: none;
+        }
+    }
+}
 
 @media (min-width: $screen-sm-min) and (max-width: $screen-sm-max) {
     .open_content {
