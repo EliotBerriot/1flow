@@ -78,6 +78,7 @@ function read_setup(parent) {
 
     if(!Modernizr.touch) {
         find_start(parent, 'content-toggle').on('click', function(ev){
+
             var target   = $(this).data('toggle-id'),
                 callback = $(this).data('toggle-callback');
 
@@ -581,23 +582,26 @@ function handle_tap(ev) {
         return;
     }
 
+    //alert('TAP on ' + $this);
+
     // WOW. without ev.preventDefault(), the 2 others
     // don't suffice to avoid the event being sent twice.
     ev.gesture.preventDefault();
     ev.stopPropagation();
-    ev.preventDefault();
+    //ev.preventDefault();
 
     if (ev.gesture.touches.length == 3) {
-        debug_notify('3-fingers tap on ' + target);
+        alert('3-fingers tap on ' + target);
         open_or_hide_actions();
 
     } else if (ev.gesture.touches.length == 2) {
-        debug_notify('2-fingers tap on ' + target);
+        alert('2-fingers tap on ' + target);
         toggle_status(target, "is_starred");
 
     } else {
-        debug_notify('1-finger tap on ' + target);
-        toggle_content(target, open_or_hide_actions);
+        alert('1-finger tap on ' + target);
+        //toggle_content(target, open_or_hide_actions);
+        toggle_content(target);
     }
     return false;
 }
@@ -784,15 +788,15 @@ Mousetrap.bind(['shift+f'], function() {
 
 if (Modernizr.touch) {
 
-    // console.debug('touch events start…');
-
     hammertime.on("swipeleft", ".read-list-item", function(ev) {
+
+        var $this = $(this);
+
+        //alert('SWL on ' + $this);
 
         if (ev.gesture.touches.length != 1) {
             return;
         }
-
-        var $this = $(this);
 
         ev.gesture.preventDefault();
         ev.stopPropagation();
@@ -809,11 +813,13 @@ if (Modernizr.touch) {
 
     hammertime.on("swiperight", ".read-list-item", function(ev) {
 
+        var $this = $(this);
+
+        debug_notify('SWR on '+$this);
+
         if (ev.gesture.touches.length != 1) {
             return;
         }
-
-        var $this = $(this);
 
         ev.gesture.preventDefault();
         ev.stopPropagation();
@@ -829,6 +835,7 @@ if (Modernizr.touch) {
     });
 
     hammertime.on("swipeleft", ".article-content", function(ev) {
+
         var $this = $(this);
 
         if(ev.gesture.touches.length == 2) {
@@ -844,6 +851,7 @@ if (Modernizr.touch) {
     });
 
     hammertime.on("swiperight", ".article-content", function(ev) {
+
         var $this = $(this);
 
         if(ev.gesture.touches.length == 2) {
@@ -920,19 +928,18 @@ if (Modernizr.touch) {
         END NOT READY YET
     */
 
-    hammertime.on("tap", ".article-meta .heading", handle_tap);
-    hammertime.on("tap", ".article-meta .meta",    handle_tap);
+    hammertime.on("tap", ".article-meta", handle_tap);
 
     hammertime.on("pinchin doubletap", ".article-content", function(ev) {
+
+        var $this  = $(this),
+            target = $this.data('toggle-id');
 
         // WOW. without ev.preventDefault(), the 2 others
         // don't suffice to avoid the event being sent twice.
         ev.gesture.preventDefault();
         ev.stopPropagation();
         ev.preventDefault();
-
-        var $this  = $(this),
-            target = $this.data('toggle-id');
 
         debug_notify('pinch/dbltap event on ' + target);
 
@@ -943,14 +950,14 @@ if (Modernizr.touch) {
 
     hammertime.on("pinchout", ".article-meta", function(ev) {
 
+        var $this  = $(this),
+            target = $this.data('toggle-id');
+
         // WOW. without ev.preventDefault(), the 2 others
         // don't suffice to avoid the event being sent twice.
         ev.gesture.preventDefault();
         ev.stopPropagation();
         ev.preventDefault();
-
-        var $this  = $(this),
-            target = $this.data('toggle-id');
 
         debug_notify('pinchout event on ' + target);
 
@@ -961,13 +968,13 @@ if (Modernizr.touch) {
 
     hammertime.on("hold", ".read-list-item", function(ev) {
 
+        var $this = $(this);
+
         // WOW. without ev.preventDefault(), the 2 others
         // don't suffice to avoid the event being sent twice.
         ev.gesture.preventDefault();
         ev.stopPropagation();
         ev.preventDefault();
-
-        var $this = $(this);
 
         if ($this.hasClass("hover-muter-open")) {
             hide_actions(this);
