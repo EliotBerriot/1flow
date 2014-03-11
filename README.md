@@ -80,20 +80,24 @@ To run a production instance, things are *not* much complicated. You will have t
 
 ## Install on OSX
 
-1flow runs perfectly on OSX Mavericks (10.9) with Xcode 5.x. `sparks`
+1flow runs perfectly on OSX Mavericks (10.9) with Xcode 5.x.
 
-Previously, I developed 1flow on OSX 10.8 with Xcode 4.6 and it worked perfectly. I haven't tested it recently, but it should still work. Please report any issue you find.
+Previously, I developed 1flow on OSX 10.8 with Xcode 4.6 and it worked completely fine too. I haven't tested it recently, but it should still work. Please report any issue you find.
 
 Just follow the same procedure as for a Linux installation.
 
-### Caveats
+
+
+### Caveats on OSX
 
 If you run `make bootstrap` more than once, you could eventually end up in a situation where one or more service (MongoDB, PostgreSQL, Redis, Memcached) is installed but not launched. This happens because the related `.plist` is not symlinked to `~/Library/LaunchAgents/`. Just run something like:
 
     ln -sfv /usr/local/opt/postgresql/*.plist ~/Library/LaunchAgents
     lunchy start postgres
 
-([Lunchy](lunch) has been installed by `sparks`, I'm sure you will love it.)
+[Lunchy](lunch) has been installed by `sparks`, I'm sure you will love it.
+
+
 
 ## Future plans
 
@@ -135,7 +139,7 @@ There is a user support forum at http://1flow.userecho.com/ but it's not used fo
 
 `CONTRIBUTING.md` explicits developer guidelines and *how* to contribute.
 
-Prior version 0.26, 1flow was a startup project. Long in the past, source code and repository were not suited for FOSS development. Since version 0.26, I consider they are starting to be; with your help, we will enhance them. Please yield anything you find unclear.
+Prior version 0.26, 1flow was a startup project. Since version 0.26, I consider the code suited for FOSS development, but I could have missed some pieces. Please yield anything you find unclear.
 
 Note for developers: this is a `git-flow` repository, we follow the [successful branching model](http://nvie.com/posts/a-successful-git-branching-model/).
 
