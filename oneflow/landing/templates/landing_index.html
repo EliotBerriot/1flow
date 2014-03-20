@@ -7,7 +7,17 @@
   <div class="row">
     <div class="col-xs-12">
         <div class="header-description">
-          <h2>{{ big_catcher_title|markdown }}</h2>
+
+          {% if catcher_video %}
+
+            <iframe width="800" height="535" src="{{ catcher_video }}" frameborder="0" allowfullscreen></iframe>
+            
+          {% else %}
+
+            <h2>{{ big_catcher_title|markdown }}</h2>
+
+          {% endif %}
+
           <h3 id="beta_data" class="col-xs-12 col-md-8 col-md-offset-2">
             <span id="beta_timer">
                 {% blocktrans %}
