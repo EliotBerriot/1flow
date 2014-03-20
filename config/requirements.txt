@@ -65,7 +65,7 @@ flower==0.6
 futures==2.1.4
 gdata==2.0.18
 greenlet==0.4.1
-gunicorn==0.17.4
+gunicorn==17.5
 hiredis==0.1.1
 html2text==3.200.3
 html5lib==1.0b2
