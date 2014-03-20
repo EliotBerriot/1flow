@@ -10,12 +10,14 @@ coverage==3.6
 django-devserver==0.7.0
 django-nose==1.2
 django-shell-ipynb==0.2.0
+ecsda
 flake8==2.0
 guppy==0.1.10
 ipython==1.1.0
 line-profiler==1.0b3
 paramiko==1.12.0
 pip-tools==0.3.4
+pycrypto
 pyzmq==13.1.0
 sqlparse==0.1.9
 Django==1.5.4
