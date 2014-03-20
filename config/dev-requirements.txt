@@ -10,7 +10,7 @@ coverage==3.6
 django-devserver==0.7.0
 django-nose==1.2
 django-shell-ipynb==0.2.0
-ecsda
+ecdsa
 flake8==2.0
 guppy==0.1.10
 ipython==1.1.0
