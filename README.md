@@ -55,6 +55,15 @@ During the bootstrap phase, which *will* take a long time, you have to:
 - Create the PostgreSQL role `oneflow_admin` with the password you set
   in `~/.env.1flow`. Grant it `CREATE DATABASE` and `CREATE ROLE`
   (`INHERIT` is not needed).
+- under Linux only: create a database and a PG role for your Linux user account. Eg.
+
+    sudo su - postgres
+    createuser YOUR_USERNAME
+    # and set it superuser
+    createdb YOUR_USERNAME -o YOUR_USERNAME
+    exit
+
+- tune `/etc/postgresql/…/pg_hba.conf` to allow yourself to connect via `peer`, and other accounts to connect via `md5`.
 
 Notes:
 

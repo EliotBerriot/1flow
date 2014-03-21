@@ -4,13 +4,14 @@
 # SPARKS_PARALLEL=false is required for the
 # first installation, but not subsequent runs.
 bootstrap:
+	echo $$VIRTUAL_ENV | grep 1flow
 	pip install -r config/dev-requirements.txt
 	fab local -H localhost sdf.fabfile.db_memcached sdf.fabfile.db_redis
 	fab local -H localhost sdf.fabfile.db_mongodb sdf.fabfile.db_postgresql
 	fab local -H localhost sdf.fabfile.dev_django_full
 	sudo chown -R `whoami`: ~/.virtualenvs/1flow
 	export SPARKS_PARALLEL=false ; fab local runable
-	fab local firstdata
+	fab local minimal_content
 
 runable:
 	fab local runable
