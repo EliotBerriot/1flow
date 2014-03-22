@@ -270,17 +270,31 @@ header {
 }
 
 #help-sections {
+    h2, h3, h4 {
+        font-weight: bold;
+    }
+
     h2 {
-        border-bottom: 1px solid #ddd;
+        text-align: right;
+        border-bottom: 1px solid $red-blood;
         margin-top: 100px;
         margin-bottom: 25px;
+        color: $navbar-grey;
 
         &:first-of-type {
             margin-top: 0;
         }
     }
-    h3 {
-        margin-top: 25px;
+
+    h3, h4 {
+        color: $red-blood;
+        margin-top: 50px;
+    }
+
+    img {
+        float: right;
+        margin-left: 10px;
+        margin-right: -100px;
     }
 }
 

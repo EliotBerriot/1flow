@@ -35,7 +35,7 @@
               {% for section in help_sections %}
 <a id="{{ section.slug }}"></a>
 {% if debug and user.is_superuser %}
-  <span class="pull-right help-admin-edit"><a href="/admin/core/helpcontent/{{section.id}}" target="_blank"><i class="icon-cog"></i>{% blocktrans with section_name=section.name %}
+  <span class="pull-left help-admin-edit"><a href="/admin/core/helpcontent/{{section.id}}" target="_blank"><i class="icon-cog"></i>{% blocktrans with section_name=section.name %}
       Edit <em>{{ section_name }}</em> in admin.
   {% endblocktrans %}</a></span>
 {% endif %}
