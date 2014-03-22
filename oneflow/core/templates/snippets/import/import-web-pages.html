@@ -30,7 +30,7 @@
             {% trans "Drag this button to your bookmarks toolbar to install it." as drag_help_text %}
 
             {# BOOKMARK Unicode: U+1F516 (U+D83D U+DD16), UTF-8: F0 9F 94 96 #}
-            <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'import_web_url' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-mini btn-success popover-tooltip"
+            <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'import_web_url' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-success popover-tooltip"
             onclick="javascript:alert(&quot;{{ drag_help_text }}&quot;);return false;"
             title="{{ drag_help_text }}"><i class="icon-bookmark"></i>&nbsp;{% trans "Import in 1flow" %}</a>
 

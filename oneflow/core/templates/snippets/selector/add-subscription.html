@@ -69,12 +69,10 @@
         <div class="bookmarklet-container">
 
             {# BOOKMARK Unicode: U+1F516 (U+D83D U+DD16), UTF-8: F0 9F 94 96 #}
-            <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'add_feed' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-huge btn-success" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;"><i class="icon-bookmark"></i>&nbsp;{% trans "Subscribe in 1flow" %}</a>
+            <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'add_feed' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-lg btn-success popover-top" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;" title="{% trans "Drag this link to your bookmarks toolbar" %}" data-toggle="tooltip"><i class="icon-bookmark"></i>&nbsp;{% trans "Subscribe in 1flow" %}</a>
 
             {% if mongodb_user.is_staff_or_superuser_and_enabled %}
 
-                <br />
-                <br />
                 <br />
 
                 <a href="javascript:void(location.href='http://{{ settings.SITE_DOMAIN }}{% url 'add_feed_staff' '' %}'+encodeURIComponent(location.href));" class="bookmarklet btn btn-huge btn-warning" onclick="javascript:alert(&quot;{% trans "Drag this link to your bookmarks toolbar" %}&quot;);return false;"><i class="icon-cloud-download"></i>&nbsp;{% trans "Import feed into 1flow" %}</a>
