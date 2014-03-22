@@ -1,0 +1,122 @@
+[
+{
+    "pk": 1, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "", 
+        "name_fr": "Import Google Reader", 
+        "content_en": "*NOTE*: **the Google Import has been discontinued on 2013-07-01, when Google closed the service.**\r\n\r\nThe Google Reader import takes places in the background. You can safely\r\nlogout of **1flow** or close your browser window without disrupting it.\r\n\r\nImporting data will take longer if many users are importing at once as we\r\nhave finite computing resources. Your import status is updated every 5 seconds.\r\n\r\nUpon completion, the number of imported articles may be less than the number\r\nof processed articles due to duplicate content in Google data.\r\n\r\nAbout the approximate ETA\u2026 Well\u2026 Given the nature of the data we fetch\r\nfrom Google, it's **very** approximate. Don't rely on it; we don't do.\r\nThe import will probably end before the ETA. It pleased our developer\r\nto display it.", 
+        "ordering": 999, 
+        "label": "Google Reader Import", 
+        "active": true, 
+        "name_en": "Google Reader Import", 
+        "name_nt": "5de264d0-9091-491d-b8e3-9fd8318db030", 
+        "content_nt": ""
+    }
+},
+{
+    "pk": 2, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "Si vous souhaitez entrer en contact avec des humains, vous pouvez utiliser :\r\n\r\n- le **[formulaire de feedback](#chat-fake-url)**, qui vous redirigera vers notre forum d'aide \u00e0 destination des utilisateurs, pour des discussions non techniques,\r\n- le **[widget de chat](#chat-fake-url)**, auquel l'\u00e9quipe de 1flow est connect\u00e9e en temps r\u00e9el (ce n'est pas un robot !),\r\n- le **[canal IRC](irc://chat.freenode.net/#1flow)**, pour les discussions techniques, l'aide \u00e0 l'installation et la communaut\u00e9 de d\u00e9veloppeurs,\r\n- le **[projet Github](https://github.com/1flow/1flow)**, o\u00f9 les probl\u00e8mes sont suivis et le code source est h\u00e9berg\u00e9.\r\n\r\nRemarque : \u00e9vitez au maximum d'utiliser [twitter][] et [tumblr][] pour nous contacter\u00a0: nous utilisons ces canaux essentiellement pour publier des informations et nous ne les lisons pas r\u00e9guli\u00e8rement.\r\n\r\n  [twitter]: https://twitter.com/1flow_io\r\n  [tumblr]: http://blog.1flow.io/", 
+        "name_fr": "Nous contacter", 
+        "content_en": "If you need to reach real people, you can use:\r\n\r\n- the **[feedback form](#chat-fake-url)**, which links to our help forums (for non-technical questions),\r\n- the **[chat widget](#chat-fake-url)**, to which we are connected in real time (it's not a robot!),\r\n- the **[IRC channel](irc://chat.freenode.net/#1flow)**, for technical discussions, installation help, developers community,\r\n- the **[Github project](https://github.com/1flow/1flow)**, where issues are tracked and source code is hosted.\r\n\r\nNote: Try to avoid contacting us via [twitter][] or [tumblr][]: we use it primarily for publishing informations and don't read it very regularly.\r\n\r\n  [twitter]: https://twitter.com/1flow_io\r\n  [tumblr]: http://blog.1flow.io/", 
+        "ordering": 1, 
+        "label": "Reaching us", 
+        "active": true, 
+        "name_en": "Reaching us", 
+        "name_nt": "fa897e94-d90e-4b3b-bcc3-c1408d0d749b", 
+        "content_nt": ""
+    }
+},
+{
+    "pk": 3, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "\r\n### Gestes tactiles\r\n\r\n**[NOTE: les gestes tactiles sont actuellement inop\u00e9rants pour une raison inconnue. Cf. [rapport d\u00e9taill\u00e9 (en anglais)](https://github.com/1flow/1flow/issues/6).]**\r\n\r\n\r\n![help-shortcut](https://lh6.googleusercontent.com/-Zd4DWLzQdOE/Uouo7T5tbAI/AAAAAAAAGP0/IEu2OAxH_aM/w241-h187-p-no/help-tactile.jpg)\r\n\r\n\r\n- `Glisser le titre vers la gauche`\u00a0: marquer comme lu\r\n- `Glisser le titre vers la droite`\u00a0: \u00e0 lire plus tard\r\n- `appuyer une fois sur le titre [1 doigt]` : ouvrir un article\r\n- `appuyer une fois sur le titre [2 doigts]`\u00a0: marque comme pr\u00e9f\u00e9r\u00e9 (ne fonctionne que sur la ligne de titre de l'article, et non sur le contenu de l'article lorsqu'il est ouvert)\r\n\r\nSur un article ouvert, n'importe o\u00f9 dans le corps de celui-ci\u00a0:\r\n\r\n- `appuyer 2 fois [1 doigt]`\u00a0: fermer l'article et le positionner en haut de liste\r\n- `glisser \u00e0 gauche [2 doigts]`\u00a0: ouvrir l'article suivant\r\n- `glisser \u00e0 droite [2 doigts]`\u00a0: ouvrir l'article pr\u00e9c\u00e9dent\r\n\r\n### Raccourcis claviers\r\n![help-shortcut](https://lh5.googleusercontent.com/-Iiml5SY_eu4/Uouo7CDdlyI/AAAAAAAAGP8/iutrg3LJjAU/w373-h187-p-no/help-shortcut.jpg)\r\n\r\n\r\nO\u00f9 que vous soyez dans la liste de lecture :\r\n\r\n- `n`\u00a0: ouvre le prochain article de la liste (ou le premier, si aucun autre article n'est ouvert\u00a0; en anglais \u00ab\u00a0*Next*\u00a0\u00bb),\r\n- `p`\u00a0: ouvre l'article pr\u00e9c\u00e9dent celui que vous \u00eates en train de lire (en anglais \u00ab\u00a0*Previous*\u00a0\u00bb),\r\n- `o l`\u00a0: r\u00e9-ouvrir le dernier article ferm\u00e9 (si applicable\u00a0; en anglais \u00ab\u00a0*Open Last*\u00a0\u00bb)\r\n\r\nQuand un article est ouvert :\r\n\r\n- `m r` : **m**arque l'article actuellement ouvert comme lu ( **r**ead),\r\n- `m s` : **m**arque l'article actuellement ouvert comme pr\u00e9f\u00e9r\u00e9 (**s**tarred),\r\n- `m l` : **m**arque l'article actuellement ouvert comme \u00e0 lire plus tard (read **l**ater),\r\n- `c` : ferme l'article actuellement ouvert et l'affiche en haut de l'\u00e9cran pour continuer la lecture,\r\n\r\n#### Raccourcis de lecture en \u00ab\u00a0mode survol\u00a0\u00bb\r\n\r\nLe mode flux est simplement une approche qui assume que vous allez lire tous les articles de la liste dans l'ordre dans lequel ils vous sont pr\u00e9sent\u00e9s. Avec ceci en t\u00eate, ouvez le premier article avec `n`, puis :\r\n\r\n- `R` ou `N` : marque l'article actuel comme lu et ouvre le suivant,\r\n- `S` : marque l'article actuel comme pr\u00e9f\u00e9r\u00e9 et ouvre le suivant,\r\n- `L` : marque l'article actuel comme \u00e0 lire plus tard et ouvre le suivant,\r\n\r\n#### Raccourcis claviers fond\u00e9s sur les phrase en anglais\r\n\r\nLa plupart des raccourcis indiqu\u00e9s ci-dessus sont \u00e9galement activables via des abr\u00e9viations de phrases en anglais, en prenant les premi\u00e8res lettre de chaque mot. Par exemple,  *mark for later* (marquer \u00e0 lire plus tard) peut \u00eatre activ\u00e9 en tapant `m f l` ou encore `r l` (*read later*)\u00a0. *Open next* (ouvrir l'article suivant) s'active en tapant \u00e9videmment `o n`, mais *goto next* (`g n`) marche \u00e9galement. Essayez de tous les trouver ;-)\r\n\r\n### Navigation \u00e0 la souris\r\n\r\nQuand un article est ouvert, faites un triple clic dans le corps de celui-ci pour le fermer et revenir \u00e0 la liste.", 
+        "name_fr": "Lecture dans 1flow", 
+        "content_en": "\r\n### Gestures on touch-enabled mobile devices\r\n\r\n**[NOTE: gestures are currently broken for an unknown reason. See [detailled issue](https://github.com/1flow/1flow/issues/6).]**\r\n\r\n![help-shortcut](https://lh6.googleusercontent.com/-Zd4DWLzQdOE/Uouo7T5tbAI/AAAAAAAAGP0/IEu2OAxH_aM/w241-h187-p-no/help-tactile.jpg)\r\n\r\n\r\n- `swipe-left`: mark as read\r\n- `swipe-right`: keep for later\r\n- `single tap [1 finger]`: open an article\r\n- `single tap [2 fingers]`: mark as starred (only works on the article row, not on the body when it's open)\r\n\r\nOn an open article:\r\n\r\n- `double tap [1 finger]`: close the currently open article\r\n- `swipe-left [2 fingers]`: open next article\r\n- `swipe-right [2 fingers]`: open previous article\r\n\r\n\r\n### Keyboard shortcuts\r\n![help-shortcut](https://lh5.googleusercontent.com/-Iiml5SY_eu4/Uouo7CDdlyI/AAAAAAAAGP8/iutrg3LJjAU/w373-h187-p-no/help-shortcut.jpg)\r\n\r\n\r\nAnywhere in the reading list:\r\n\r\n- `n`: open next article (or first, if none was open),\r\n- `p`: open previous article,\r\n- `o l`: re-open last closed article (if any) \r\n\r\nWhen an article is open:\r\n\r\n- `m r`: **m**ark currently open as **r**ead,\r\n- `m s`: **m**ark currently open as **s**tarred,\r\n- `m l`: **m**ark currently open as read **l**ater.\r\n- `c`: close it and move it to the top of screen to continue reading,\r\n\r\n#### overview-mode reading shortcuts\r\n\r\nThe \u201cflow\u201d means that you will read all articles one after the other, starting from the top. With this in mind, open the first article with `n`, and then:\r\n\r\n- `R` or `N`: mark current as read and open next\r\n- `S`: star current and open next\r\n- `L`: mark current for later and open next\r\n\r\n\r\n#### Sentence-base keyboard shortcuts\r\n\r\nMost of the previous shortcuts are available as abbreviations of english sentences. For example *mark for later* can be typed as `m f l` or `r l` (*read later*) too; *open next* is obviously `o n`, but *goto next* works too. Try to find them all ;-)\r\n\r\n### Mouse tricks\r\n\r\nWhen an article is open, triple click anywhere in the article content closes it and returns to the list.", 
+        "ordering": 10, 
+        "label": "Reading in 1flow", 
+        "active": true, 
+        "name_en": "Reading in 1flow", 
+        "name_nt": "9dfdd9b8-358f-11e3-8a1d-20c9d083a4d1", 
+        "content_nt": "H2 (##) is used on the \u201cHelp section name\u201d in final output. You should start using titles at H3 (###)."
+    }
+},
+{
+    "pk": 4, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "### Flux d'information standards\r\n\r\nLes flux d'informations standards (ce que les geeks appellent flux [RSS][] ou [Atom][]) font partie des formats natifs de 1fow, comme c'est le cas dans la majorit\u00e9 des lecteurs de flux. Vous pouvez vous abonner aux sources qui ont \u00e9t\u00e9 ajout\u00e9es par les utilisateurs 1flow, ou bien utiliser la *[bookmarklet][]* pour en ajouter de nouvelles.\r\n\r\nNotez que certains sites web proposent plusieurs flux \u00e0 leurs visiteurs. **Notre bookmarklet vous abonnera toujours au premier d'entre eux**. La plupart du temps, c'est le flux *principal* du site web, donc c'est tr\u00e8s bien. Si vous souhaitez plus de contr\u00f4le sur les flux que vous ajoutez \u00e0 vos sources, poursuivez.\r\n\r\n#### S\u00e9lection fine des flux RSS/Atom\r\n\r\nPour choisir des flux sp\u00e9cifiques auxquels vous abonner, vous devez travailler un peu. Mais ceci ne doit \u00eatre fait qu'une seule fois\u00a0:\r\n\r\n- **installez l'[extension d'abonnement RSS][rssext]**. C'est pour Google Chrome, mais vous devriez trouver la m\u00eame chose pour les autres navigateurs\u00a0; si vous lisez ceci, vous savez probablement comment faire.\r\n- Lorsque vous utilisez cette extension pour la premi\u00e8re fois, **choisissez l'\u00e9l\u00e9ment *G\u00e9rer\u2026* dans la liste** d\u00e9roulante, cr\u00e9ez une nouvelle entr\u00e9e et choisissez le nom qui vous plait. **La partie importante c'est l'URL, qui doit \u00eatre [http://1flow.io/fr/flux/ajouter/%s][addurl]** (cliquez bouton-droit > *copiez l'adresse du lien* pour \u00e9viter de la saisir manuellement).\r\n\r\nAvec cette extension configur\u00e9e comme cela, vous allez pouvoir choisir exactement quel(s) flux RSS/Atom vous ajoutez dans vos sources 1flow.\r\n\r\n### Twitter / facebook / etc\r\n\r\nTwitter, Tumblr, facebook et de nombreux autres flux populaires sont actuellement en cours d'int\u00e9gration dans 1flow ou le seront prochainement.\r\n\r\n  [RSS]: http://fr.wikipedia.org/wiki/RSS\r\n  [Atom]: http://fr.wikipedia.org/wiki/Atom\r\n  [rssext]: https://chrome.google.com/webstore/detail/rss-subscription-extensio/nlbjncdgjeocebhnmkbbbdekmmmcbfjd?hl=fr\r\n  [addurl]: http://1flow.io/fr/flux/ajouter/%s\r\n  [bookmarklet]: http://1flow.io/fr/abonnement/nouveau/", 
+        "name_fr": "Ajout de nouvelles sources", 
+        "content_en": "### Standard news feeds\r\n\r\nStandard news feeds (what geeks call [RSS][] or [Atom][] feeds) are one of the native 1flow formats, as in the majority of other news readers. You can search in our already known sources, or simply add a new feed by using our [bookmarklet][].\r\n\r\nNote that some websites offer more than one feed to visitors. **Our bookmarklet will always subscribe to the first found**. Usually, it's the *main* feed of the website, and that's fine. If you would like more control on which feed to add to your 1flow sources, read on.\r\n\r\n#### Fine-grained selection of RSS/Atom feeds\r\n\r\nTo choose feeds specifically, you need a little more work. This only needs to be done once:\r\n\r\n- **install the [RSS Subscription Extension][rssext]**. This is for Google Chrome, but you should be able to find the same for other browsers; if you're reading this, you probably know how to do it.\r\n- when using this extension for the first time, **choose the *Manage\u2026* item** in the list, create a new entry and choose whatever name you want for it. **The important thing is the URL, which should be [http://1flow.io/en/feed/add/%s][addurl]** (just right-click > *copy link address* to avoid typing it manually).\r\n\r\nWith that extension configured this way, you will be able to choose exactly which RSS/Atom feed you add into your sources selector.\r\n\r\n### Twitter / facebook / etc\r\n\r\nTwitter, Tumblr, facebook and other common news streams are beiing added to 1flow, or are planned to be.\r\n\r\n  [RSS]: http://en.wikipedia.org/wiki/RSS\r\n  [Atom]: http://en.wikipedia.org/wiki/Atom_%28standard%29\r\n  [rssext]: https://chrome.google.com/webstore/detail/rss-subscription-extensio/nlbjncdgjeocebhnmkbbbdekmmmcbfjd?hl=en\r\n  [addurl]: http://1flow.io/en/feed/add/%s\r\n  [bookmarklet]: http://1flow.io/en/subscription/new/", 
+        "ordering": 100, 
+        "label": "Adding news sources", 
+        "active": true, 
+        "name_en": "Adding news sources", 
+        "name_nt": "1bdd8fdd-b151-4d8f-ad34-c2f6b4598b45", 
+        "content_nt": ""
+    }
+},
+{
+    "pk": 6, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "### Recherche dans la base de donn\u00e9es 1flow\r\n\r\nCliquez dans le champ de recherche pour faire d\u00e9rouler la liste, ou tapez quelques lettres pour que le champ vous propose une liste de correspondances.\r\n\r\n### Recherche par adresse web\r\n\r\nCette recherche est op\u00e9r\u00e9e en arri\u00e8re-plan par les serveurs de 1flow. Vous aurez donc l'impression au premier abord que rien n'a \u00e9t\u00e9 ajout\u00e9 \u00e0 votre s\u00e9lecteur, car c'est effectivement le cas. Il faudra quelques minutes \u00e0 nos serveurs pour \u00e9tudier l'adresse que vous avez saisie et rechercher directement sur le site ou indirectement dans les moteurs de recherche quels sont les flux d'informations propos\u00e9s par le-dit site web.\r\n\r\nLorsque nos serveurs auront trouv\u00e9 un ou plusieurs contenu fiable(s), ils les ajouteront \u00e0 votre s\u00e9lecteur dans un dossier sp\u00e9cialement cr\u00e9\u00e9 pour l'occasion, vous laissant ainsi le choix de garder ou pas les r\u00e9sultats de la recherche.", 
+        "name_fr": "Ajout d'abonnement", 
+        "content_en": "### Search in the 1flow database\r\n\r\nClick in the search field to open the list, or type a few letters and the field will offer you a list of possible completions.\r\n\r\n### Search via web address\r\n\r\nThis search is operated in the background by our servers. You will find at first that it did nothing, and this will be exactly the case. Our servers will need a few minutes to study the address you typed and search directly on the website or on search engines which information stream(s) the web site offers.\r\n\r\nOnce they have found it, our servers will create a dedicated folder in your selector, where you will find all the search results, that you will then be able to keep or discard at your will.", 
+        "ordering": 100, 
+        "label": "Adding subscriptions", 
+        "active": false, 
+        "name_en": "Adding subscriptions", 
+        "name_nt": "Adding subscriptions", 
+        "content_nt": ""
+    }
+},
+{
+    "pk": 7, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "", 
+        "name_fr": "Fonctionnalit\u00e9s de partage", 
+        "content_en": "### Sharing with individuals\r\n\r\nBasically, it has the same result as if you had sent a mail to some friends. But it does a little more, though:\r\n\r\n- All persons you share the article with, will receive a notification e-mail,\r\n- Among them, those who use 1flow will also get the article directly **in their Inbox** (called *Received items* in 1flow).\r\n\r\nNote: 1flow users who disabled e-mail notifications will *only* receive the article in their **Inbox**.\r\n\r\nSharing with teams is not ready yet, it's a work in progress.\r\n", 
+        "ordering": 100, 
+        "label": "individual/team sharing", 
+        "active": false, 
+        "name_en": "Sharing features", 
+        "name_nt": "09e3eb39-1a28-4e7f-87c6-65a53ed3937b", 
+        "content_nt": "### Broadcasting information\r\n\r\nOn other popular social networks, this is the equivalent of re-blog (on Tumblr) or re-tweet.\r\n\r\nYou will be presented a dia"
+    }
+},
+{
+    "pk": 9, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "### Depuis Readability\r\n\r\nC'est assez simple d'importer vos articles [Readability](http://readability.com/). Visitez la [page d'export](http://www.readability.com/account/export) et demandez votre fichier JSON. Quand vous l'avez re\u00e7u, copiez-collez son contenu **tel-quel** dans le champ d'import de 1flow. L'application reconna\u00eetra le format d'export de Readability et l'importera dans votre liste de lecture idoine.\r\n\r\nLe petit plus\u00a0: vous conserverez votre horodatage d'origine (la date d'ajout \u00e0 la liste de lecture), et le statut *favori* (*s\u00e9lectionn\u00e9*, dans le vocabulaire 1flow) de vos articles. Le statut *archiv\u00e9* n'ayant pas de sens dans le contexte 1flow, il sera \u00e9vinc\u00e9.\r\n\r\n### Depuis Pocket / Instapaper\r\n\r\nNous n'avons pas encore de proc\u00e9dure d'import pour ces services. Si vous en avez besoin, ouvrez une demande de nouvelle fonctionnalit\u00e9 sur nos forums, et nous ferons de notre mieux pour l'impl\u00e9menter aussi rapidement que possible.", 
+        "name_fr": "Import de donn\u00e9es d'autres applications web", 
+        "content_en": "### From Readability\r\n\r\nIt's easy to import your [Readability](http://readability.com/) items. Just visit the [export page](http://www.readability.com/account/export) and ask them for the JSON file. When you receive the file, copy-and-paste its content **as-is** in 1flow's importing field. 1flow will recognise the contents as a Readability export and will import it.\r\n\r\nThe good part is: you will keep your history (date when articles were added to your reading list), and the *favorite* status (*starred*, in 1flow vocabulary) of your articles. As the *archive* status has no meaning in 1flow context, it will be discarded.\r\n\r\n### From Pocket / Instapaper\r\n\r\nWe do not have any import procedure for these services. If you need it, please open a feature request on our forums, and we will do our best to implement it as soon as possible.", 
+        "ordering": 100, 
+        "label": "importing data", 
+        "active": true, 
+        "name_en": "Importing data from other web services", 
+        "name_nt": "6c103d44-3b5a-11e3-8638-20c9d083a4d1", 
+        "content_nt": ""
+    }
+},
+{
+    "pk": 10, 
+    "model": "core.helpcontent", 
+    "fields": {
+        "content_fr": "Il existe actuellement quelques probl\u00e8mes identifi\u00e9s dans la version beta de 1flow.\r\n\r\nLes lister ici serait inefficient car les d\u00e9veloppeurs les g\u00e8rent d\u00e9j\u00e0 [dans un syst\u00e8me de suivi d\u00e9di\u00e9 (en anglais)][github].\r\n\r\nDe surcro\u00eet, les questions d'ergonomie et d'exp\u00e9rience utilisateur, ainsi que les demandes d'am\u00e9liorations sont [cr\u00e9\u00e9es et discut\u00e9es en premier lieu sur Trello (en anglais aussi)][trello].\r\n\r\nMerci de consulter ces listes de probl\u00e8mes connus avant d'en d\u00e9clarer un nouveau. Il est fort probable qu'il aie d\u00e9j\u00e0 \u00e9t\u00e9 identifi\u00e9 par le staff 1flow ou les utilisateurs de la premi\u00e8re heure.\r\n\r\n  [github]: https://github.com/1flow/1flow/issues\r\n  [trello]: https://trello.com/b/lSR7Y6Vi/1flow-features-development", 
+        "name_fr": "Probl\u00e8mes connus & bugs", 
+        "content_en": "There are currently some problems already known with the beta version of 1flow. \r\n\r\nListing them here would be inneficient because developers already handle them [in their bug tracking system][github]. \r\n\r\nAdditionally, usability issues or enhancements requests are [created and discussed on Trello][trello].\r\n\r\nBefore declaring a new issue, please take the time to consult the list of already known ones. It's most likely it has already been identified by the 1flow staff or early adopters.\r\n\r\n  [github]: https://github.com/1flow/1flow/issues\r\n  [trello]: https://trello.com/b/lSR7Y6Vi/1flow-features-development", 
+        "ordering": 0, 
+        "label": "Known problems", 
+        "active": true, 
+        "name_en": "Known problems & bugs", 
+        "name_nt": "09e3eb39-1a28-4e7f-87c6-65a53ed3937a", 
+        "content_nt": ""
+    }
+}
+]
