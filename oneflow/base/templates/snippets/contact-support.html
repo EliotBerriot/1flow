@@ -3,7 +3,17 @@
 
     {% if supmail and supchan %}
 
-        {% blocktrans %} contact us at <a href="mailto:{{ supmail }}">{{ supmail }}</a> or via <a href="irc://{{ supserv }}/{{ supchan}}"><code>{{ supchan }}</code> on <code>{{ supserv }}</code></a>.{% endblocktrans %}
+    	{% spaceless %}
+
+        {% blocktrans %} contact us at <a href="mailto:{{ supmail }}">{{ supmail }}</a> or via <a href="irc://{{ supserv }}/{{ supchan }}"><code>{{ supchan }}</code> on <code>{{ supserv }}</code></a>{% endblocktrans %}
+
+        {% if 'freenode' in supserv %}
+        	{% blocktrans %} (try the <a href="http://webchat.freenode.net/?channels={{ supchan }}">web chat</a> if you do not have an IRC client installed){% endblocktrans %}
+        {% endif %}
+
+        {# This DOT is intended to close the sentence #}.
+
+    	{% endspaceless %}
 
     {% elif supmail %}
 
@@ -11,7 +21,17 @@
 
     {% elif supchan %}
 
-        {% blocktrans %} contact us via <a href="irc://{{ supserv }}/{{ supchan}}"><code>{{ supchan }}</code> on <code>{{ supserv }}</code></a>.{% endblocktrans %}
+    	{% spaceless %}
+
+        {% blocktrans %} contact us via <a href="irc://{{ supserv }}/{{ supchan}}"><code>{{ supchan }}</code> on <code>{{ supserv }}</code></a>{% endblocktrans %}
+
+        {% if 'freenode' in supserv %}
+        	{% blocktrans %} (try the <a href="http://webchat.freenode.net/?channels={{ supchan }}">web chat</a> if you do not have an IRC client installed){% endblocktrans %}
+        {% endif %}
+
+        {# This DOT is intended to close the sentence #}.
+
+    	{% endspaceless %}
 
     {% else %}
 

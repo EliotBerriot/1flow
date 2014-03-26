@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-25 23:08+0100\n"
-"PO-Revision-Date: 2014-03-25 23:11+0009\n"
+"POT-Creation-Date: 2014-03-26 11:14+0100\n"
+"PO-Revision-Date: 2014-03-26 16:13+0009\n"
 "Last-Translator:   <karmak23@gmail.com>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
@@ -688,19 +688,11 @@ msgstr ""
 
 #: templates/account/signup_closed.html:23
 msgid ""
-"If you think you have the required qualities to get an account on our "
-"platform, "
+"If you would like to be part of the contributors team and get an account on "
+"our platform, "
 msgstr ""
-"Si vous pensez avoir les qualités requises pour obtenir un compte sur cette "
-"plateforme, "
-
-#: templates/account/signup_closed.html:27
-msgid ""
-"PS: do not contact us to explicit these qualities. It's up to you to define "
-"and argue them. Have fun!"
-msgstr ""
-"PS: ne nous contactez pas pour savoir quelles sont ces qualités. C'est à "
-"vous de les inventer et de les argumenter. Éclatez-vous !"
+"Si vous souhaitez devenir membre de l'équipe de contributeurs pour ouvrir un"
+" compte sur notre plateforme, "
 
 #: templates/account/email/email_confirmation_message.txt:1
 #, python-format
@@ -759,35 +751,46 @@ msgstr ""
 msgid "[%(site_name)s] Password reset"
 msgstr "[%(site_name)s] ré-initialisation de votre mot de passe"
 
-#: templates/snippets/contact-support.html:6
+#: templates/snippets/contact-support.html:8
 #, python-format
 msgid ""
 " contact us at <a href=\"mailto:%(supmail)s\">%(supmail)s</a> or via <a "
 "href=\"irc://%(supserv)s/%(supchan)s\"><code>%(supchan)s</code> on "
-"<code>%(supserv)s</code></a>."
+"<code>%(supserv)s</code></a>"
 msgstr ""
 "contactez-nous à l'adresse <a href=\"mailto:%(supmail)s\">%(supmail)s</a> ou"
 " via <a href=\"irc://%(supserv)s/%(supchan)s\"><code>%(supchan)s</code> sur "
-"<code>%(supserv)s</code></a>."
+"<code>%(supserv)s</code></a>"
 
-#: templates/snippets/contact-support.html:10
+#: templates/snippets/contact-support.html:11
+#: templates/snippets/contact-support.html:29
+#, python-format
+msgid ""
+" (try the <a href=\"http://webchat.freenode.net/?channels=%(supchan)s\">web "
+"chat</a> if you do not have an IRC client installed)"
+msgstr ""
+" (essayez <a "
+"href=\"http://webchat.freenode.net/?channels=%(supchan)s\">l'interface "
+"web</a> si vous n'avez pas de client IRC installé)"
+
+#: templates/snippets/contact-support.html:20
 #, python-format
 msgid " contact us at <a href=\"mailto:%(supmail)s\">%(supmail)s</a>."
 msgstr ""
 "contactez-nous à l'adresse <a href=\"mailto:%(supmail)s\">%(supmail)s</a>."
 
-#: templates/snippets/contact-support.html:14
+#: templates/snippets/contact-support.html:26
 #, python-format
 msgid ""
 " contact us via <a "
 "href=\"irc://%(supserv)s/%(supchan)s\"><code>%(supchan)s</code> on "
-"<code>%(supserv)s</code></a>."
+"<code>%(supserv)s</code></a>"
 msgstr ""
 "contactez-nous via <a "
 "href=\"irc://%(supserv)s/%(supchan)s\"><code>%(supchan)s</code> sur "
-"<code>%(supserv)s</code></a>."
+"<code>%(supserv)s</code></a>"
 
-#: templates/snippets/contact-support.html:18
+#: templates/snippets/contact-support.html:38
 msgid ""
 " er… How to say it… Well, I can only sympathize because the local "
 "administrator has not configured any support information. Sorry for you!"
@@ -957,6 +960,13 @@ msgstr "m"
 #: templatetags/base_utils.py:197 templatetags/base_utils.py:198
 msgid "s"
 msgstr "s"
+
+#~ msgid ""
+#~ "PS: do not contact us to explicit these qualities. It's up to you to define "
+#~ "and argue them. Have fun!"
+#~ msgstr ""
+#~ "PS: ne nous contactez pas pour savoir quelles sont ces qualités. C'est à "
+#~ "vous de les inventer et de les argumenter. Éclatez-vous !"
 
 #~ msgid "Log in to an existing account"
 #~ msgstr "Identification via un compte local"
