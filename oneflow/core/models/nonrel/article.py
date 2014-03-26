@@ -1456,8 +1456,8 @@ class Article(Document, DocumentHelperMixin):
 
     def fetch_content_bookmark(self, force=False, commit=True):
 
-        if config.ARTICLE_FETCHING_TEXT_DISABLED:
-            LOGGER.info(u'Article fetching disabled in configuration.')
+        if config.ARTICLE_FETCHING_DISABLED:
+            LOGGER.info(u'Bookmarks fetching disabled in configuration.')
             return
 
         if self.content_type == CONTENT_TYPE_NONE:
@@ -1494,7 +1494,7 @@ class Article(Document, DocumentHelperMixin):
                 if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
                         and self.title.endswith(self.url):
 
-                    LOGGER.info(u'Setting title of imported item...')
+                    LOGGER.info(u'Setting title of imported item…')
                     content = self.extract_and_set_title(commit=False)
 
                     if content is not None:
