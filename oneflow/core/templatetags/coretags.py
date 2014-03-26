@@ -22,11 +22,12 @@
 import re
 import logging
 import difflib
+import mistune
 
 from math import pow
 
 from constance import config
-from markdown_deux import markdown
+from markdown_deux import markdown as mk2_markdown
 
 from django import template
 #from django.conf import settings
@@ -399,8 +400,8 @@ def system_announcements(user):
 
         if message:
             # NOTE: This is a non-breakable space, else it gets lost.
-            message = markdown(prefix + (u' ' if prefix else u'')
-                               + message).strip()
+            message = mistune.markdown(prefix + (u' ' if prefix else u'')
+                                       + message).strip()
 
             priority = getattr(config, ANNMT + u'_PRIORITY', u'').lower()
 
@@ -473,12 +474,22 @@ def article_full_content_display(article):
                 # On large screens, make the article start a little far from
                 # the top of the screen, it makes a better reading experience.
                 return (u'<div class="spacer50 visible-lg"></div>'
-                        + markdown(transient_content))
+                        + mistune.markdown(transient_content))
 
-            except Exception:
+            except:
                 LOGGER.exception(u'Live Markdown to HTML conversion '
-                                 u'failed for article %s', article)
-                return None
+                                 u'failed for article %s, trying '
+                                 u'alternate parser.', article)
+
+                try:
+                    return (u'<div class="spacer50 visible-lg"></div>'
+                            + mk2_markdown(transient_content))
+
+                except:
+                    LOGGER.exception(u'Alternate live Markdown to HTML '
+                                     u'conversion failed for article %s',
+                                     article)
+                    return None
 
 
 @register.simple_tag

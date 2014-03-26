@@ -26,6 +26,7 @@ import re
 import gc
 import ast
 import uuid
+import mistune
 import requests
 import strainer
 import html2text
@@ -34,7 +35,7 @@ from bs4 import BeautifulSoup
 from statsd import statsd
 from random import randrange
 from constance import config
-from markdown_deux import markdown
+from markdown_deux import markdown as mk2_markdown
 
 #from xml.sax import SAXParseException
 
@@ -489,10 +490,18 @@ class Article(Document, DocumentHelperMixin):
                     paragraph = u' '.join(paragraph.split(u' ')[:-1])
 
                 try:
-                    final_excerpt = markdown(paragraph).strip()
+
+                    final_excerpt = mistune.markdown(paragraph).strip()
 
                 except:
-                    return None
+                    LOGGER.exception(u'Mistune markdown conversion failed, '
+                                     u'trying the markdown2 parser.')
+
+                    try:
+                        final_excerpt = mk2_markdown(paragraph).strip()
+
+                    except:
+                        return None
 
                 else:
                     if skipped_text:
@@ -1447,8 +1456,8 @@ class Article(Document, DocumentHelperMixin):
 
     def fetch_content_bookmark(self, force=False, commit=True):
 
-        if config.ARTICLE_FETCHING_TEXT_DISABLED:
-            LOGGER.info(u'Article fetching disabled in configuration.')
+        if config.ARTICLE_FETCHING_DISABLED:
+            LOGGER.info(u'Bookmarks fetching disabled in configuration.')
             return
 
         if self.content_type == CONTENT_TYPE_NONE:
@@ -1485,7 +1494,7 @@ class Article(Document, DocumentHelperMixin):
                 if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
                         and self.title.endswith(self.url):
 
-                    LOGGER.info(u'Setting title of imported item...')
+                    LOGGER.info(u'Setting title of imported item…')
                     content = self.extract_and_set_title(commit=False)
 
                     if content is not None:
