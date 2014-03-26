@@ -26,6 +26,7 @@ import re
 import gc
 import ast
 import uuid
+import mistune
 import requests
 import strainer
 import html2text
@@ -34,7 +35,7 @@ from bs4 import BeautifulSoup
 from statsd import statsd
 from random import randrange
 from constance import config
-from markdown_deux import markdown
+from markdown_deux import markdown as mk2_markdown
 
 #from xml.sax import SAXParseException
 
@@ -489,10 +490,18 @@ class Article(Document, DocumentHelperMixin):
                     paragraph = u' '.join(paragraph.split(u' ')[:-1])
 
                 try:
-                    final_excerpt = markdown(paragraph).strip()
+
+                    final_excerpt = mistune.markdown(paragraph).strip()
 
                 except:
-                    return None
+                    LOGGER.exception(u'Mistune markdown conversion failed, '
+                                     u'trying the markdown2 parser.')
+
+                    try:
+                        final_excerpt = mk2_markdown(paragraph).strip()
+
+                    except:
+                        return None
 
                 else:
                     if skipped_text:
