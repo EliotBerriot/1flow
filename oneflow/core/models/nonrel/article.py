@@ -1357,8 +1357,21 @@ class Article(Document, DocumentHelperMixin):
                                    u"but %s." % content_type,
                                    response=response)
 
-    def extract_and_set_title(self, content=None, commit=True):
-        """ Try to extract title from the HTML content, and set """
+    def extract_and_set_title(self, content=None, force=False, commit=True):
+        """ Try to extract title from the HTML content, and set the article
+            title from there. """
+
+        if not force or (self.origin_type == ORIGIN_TYPE_WEBIMPORT
+                            and self.title.endswith(self.url)):
+            # In normal conditions (RSS/Atom feeds), the title has already
+            # been set by the fetcher task, from the feed. No need to do the
+            # work twice.
+            #
+            # NOTE: this will probably change with twitter and other social
+            # related imports, thus we'll have to rework the conditions.
+            LOGGER.warning(u'Refusing to set the title of non-imported '
+                           u'article %s', self)
+            return
 
         if content is None:
             if self.content_type == CONTENT_TYPE_HTML:
@@ -1374,6 +1387,8 @@ class Article(Document, DocumentHelperMixin):
                 # and not the common one.
                 content, encoding = self.prepare_content_text(url=self.url)
 
+        old_title = self.title
+
         try:
             self.title = BeautifulSoup(content).find('title').contents[0]
 
@@ -1382,7 +1397,8 @@ class Article(Document, DocumentHelperMixin):
                              u'article %s', self)
 
         else:
-            LOGGER.info(u'Successfully set title to “%s”', self.title)
+            LOGGER.info(u'Changed title of article #%s from “%s” to “%s”',
+                        self.id, old_title, self.title)
             self.slug = slugify(self.title)
 
         if commit:
@@ -1412,15 +1428,7 @@ class Article(Document, DocumentHelperMixin):
                 LOGGER.exception(u'Could not log source HTML content of '
                                  u'article %s.', self)
 
-        # LOGGER.warning(u'%s %s %s %s %s', self.origin_type,
-        #                self.origin_type == ORIGIN_TYPE_WEBIMPORT,
-        #                self.title, self.url, self.title.endswith(self.url))
-
-        if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
-                and self.title.endswith(self.url):
-
-            LOGGER.warning(u'Setting title of imported item...')
-            self.extract_and_set_title(content, commit=False)
+        self.extract_and_set_title(content, commit=False)
 
         STRAINER_EXTRACTOR = strainer.Strainer(parser='lxml', add_score=True)
         content = STRAINER_EXTRACTOR.feed(content, encoding=encoding)
@@ -1491,27 +1499,27 @@ class Article(Document, DocumentHelperMixin):
                                 u'{0}/{1}-large.jpg').format(
                     domain_dotted, domain_dashed)
 
-                if self.origin_type == ORIGIN_TYPE_WEBIMPORT \
-                        and self.title.endswith(self.url):
+                content = self.extract_and_set_title(commit=False)
 
-                    LOGGER.info(u'Setting title of imported item…')
-                    content = self.extract_and_set_title(commit=False)
+                #
+                # Use the fetched content to get
+                # the description of the page, if any.
+                #
+                if content is not None:
+                    try:
+                        soup = BeautifulSoup(content)
+                        for meta in soup.find_all('meta'):
+                            if meta.attrs.get('name', 'none').lower() \
+                                    == 'description':
+                                self.excerpt = meta.attrs['content']
 
-                    if content is not None:
-                        try:
-                            soup = BeautifulSoup(content)
-                            for meta in soup.find_all('meta'):
-                                if meta.attrs.get('name', 'none').lower() \
-                                        == 'description':
-                                    self.excerpt = meta.attrs['content']
+                    except:
+                        LOGGER.exception(u'Could not extract description '
+                                         u'of imported bookmark %s', self)
 
-                        except:
-                            LOGGER.exception(u'Could not extract description '
-                                             u'of imported bookmark %s', self)
-
-                        else:
-                            LOGGER.info(u'Successfully set description to “%s”',
-                                        self.excerpt)
+                    else:
+                        LOGGER.info(u'Successfully set description to “%s”',
+                                    self.excerpt)
 
                 if commit:
                     self.save()
