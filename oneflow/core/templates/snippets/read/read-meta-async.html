@@ -88,21 +88,28 @@
     </h4>
 
     {% if article.authors %}
-      <h5n class="author">
+      <h5 class="author">
           <span class="muted">{% trans "by" %}</span>
           {% for author in article.authors %}
               {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
           {% endfor %}
-      </h5n>
+      </h5>
     {% endif %}
 
-    {% if with_tags %}
-      {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
-      {% if article.tags %}
-        <span class="tags">
-          <span class="muted">{% trans "in" %}</span> {% for tag in article.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-        </span>
-      {% endif %}
+    {% if read.tags %}
+
+      <span class="in-tags muted">{% trans "in" %}</span>
+      <ul class="tags">
+        {% for tag in read.tags %}<li class="tag"><a href="#">{{ tag.name }}</a></li>{% endfor %}
+      </ul>
+
+    {% elif article.tags %}
+
+      <span class="in-tags muted">{% trans "in" %}</span>
+      <ul class="tags">
+        {% for tag in article.tags %}<li class="tag"><a href="#">{{ tag.name }}</a></li>{% endfor %}
+      </ul>
+
     {% endif %}
 
     {% if with_rating %}

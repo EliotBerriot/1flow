@@ -59,8 +59,15 @@
         </span>
         {% endif %}
 
-        {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
-        {% if article.tags %}
+        {% if read.tags %}
+
+          <span class="in-tags muted">{% trans "in" %}</span>
+          <ul class="tags">
+            {% for tag in read.tags %}<li class="tag"><a href="{# LINK TO TAG READING-LIST HERE WHEN READY #}" disabled="disabled">{{ tag.name }}</a></li>{% endfor %}
+          </ul>
+
+        {% elif article.tags %}
+
           <span class="in-tags muted">{% trans "in" %}</span>
           <ul class="tags">
             {% for tag in article.tags %}<li class="tag"><a href="{# LINK TO TAG READING-LIST HERE WHEN READY #}" disabled="disabled">{{ tag.name }}</a></li>{% endfor %}
