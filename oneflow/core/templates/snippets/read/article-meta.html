@@ -39,33 +39,37 @@
         {% include "snippets/read/watch-status.html" %}
       </span>
 
-      <span class="hover-muted hide">
-
+      <span class="hover-muted">
+        —&nbsp;
         <span class="date">
           {% if article.date_published %}
             {{ article.date_published }}
           {% else %}
-            <span class="no-date">{% trans "no date" %}</span>
+            <span class="no-date">{% trans "no date" %} </span>
           {% endif %}
         </span>
 
         {% if article.authors %}
-          <span class="author">
-              <span class="muted">{% trans "by" %}</span>
-              {% for author in article.authors %}
-                  {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
-              {% endfor %}
-          </span>
+        —&nbsp;
+        <span class="author">
+            <span class="muted">{% trans "by" %}</span>
+            {% for author in article.authors %}
+                {% firstof author.name author.origin_name %}{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+        </span>
         {% endif %}
 
         {# TODO: put this back to read.tags when we circumvent the cache in the read sidebar. #}
         {% if article.tags %}
-          <span class="tags">
-            <span class="muted">{% trans "in" %}</span> {% for tag in article.tags %}{{ tag.name }}{% if not forloop.last %}, {% endif %}{% endfor %}
-          </span>
+          <span class="in-tags muted">{% trans "in" %}</span>
+          <ul class="tags">
+            {% for tag in article.tags %}<li class="tag"><a href="{# LINK TO TAG READING-LIST HERE WHEN READY #}" disabled="disabled">{{ tag.name }}</a></li>{% endfor %}
+          </ul>
         {% endif %}
 
         {% comment %}
+            {% if not forloop.last %}, {% endif %}
+
             No more possible with the cached article.
 
             {% if with_rating %}
@@ -105,19 +109,12 @@
       </div>
     </div>
 
-    {% comment %}
-
-      DISABLED UNTIL JS IS FIXED,
-      to allow first libre release.
-
-      <div class="meta-actions visible-lg">
-        {% with with_text=0 %}
-          {# with_admin_actions=1 #}
-          {% include "snippets/read/read-actions.html" %}
-        {% endwith %}
-      </div>
-
-    {% endcomment %}
+    <div class="meta-actions visible-lg">
+      {% with with_text=0 %}
+        {# with_admin_actions=1 #}
+        {% include "snippets/read/read-actions.html" %}
+      {% endwith %}
+    </div>
 
   {% endspaceless %}
 

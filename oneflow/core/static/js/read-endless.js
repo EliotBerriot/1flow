@@ -529,7 +529,7 @@ function current_read_status(status) {
 function toggle_current_read_status(status) {
 
     if (open_content) {
-        return toggle_status(open_content, status, true);
+        return toggle_status(null, open_content, status, true);
 
     } else {
         notify({
@@ -596,7 +596,7 @@ function handle_tap(ev) {
 
     } else if (ev.gesture.touches.length == 2) {
         alert('2-fingers tap on ' + target);
-        toggle_status(target, "is_starred");
+        toggle_status(null, target, "is_starred");
 
     } else {
         alert('1-finger tap on ' + target);
@@ -806,7 +806,7 @@ if (Modernizr.touch) {
             $this.animate({marginLeft: 0}, 150);
         });
 
-        toggle_status($this.attr('id'), "is_read", false);
+        toggle_status(null, $this.attr('id'), "is_read", false);
 
         return false;
     });
@@ -829,7 +829,7 @@ if (Modernizr.touch) {
             $this.animate({marginLeft: 0}, 150);
         });
 
-        toggle_status($this.attr('id'), "is_bookmarked", false);
+        toggle_status(null, null, $this.attr('id'), "is_bookmarked", false);
 
         return false;
     });
@@ -887,7 +887,7 @@ if (Modernizr.touch) {
             something_done = true;
 
         } else if (ev.distance > 25) {
-            toggle_status($this.attr('id'), "is_read");
+            toggle_status(null, null, $this.attr('id'), "is_read");
             something_done = true;
         }
 
@@ -914,7 +914,7 @@ if (Modernizr.touch) {
             something_done = true;
 
         } else if (ev.distance > 25) {
-            toggle_status($this.attr('id'), "is_bookmarked");
+            toggle_status(null, null, $this.attr('id'), "is_bookmarked");
             something_done = true;
 
         }

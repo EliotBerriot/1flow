@@ -165,7 +165,16 @@ function current_status(article_id, attr_name) {
     return !!$("#" + article_id).hasClass(attr_name);
 }
 
-function toggle_status(article_id, attr_name, send_notify) {
+function toggle_status(event, article_id, attr_name, send_notify) {
+
+    if (event !== null) {
+        // avoid bubbling, notably when clicking on hover-muted
+        // actions in collapsed items of the reading list. In the
+        // same idea, avoid the click to reset the page view when
+        // the anchor points to “#”.
+        event.stopPropagation();
+        event.preventDefault();
+    }
 
     var $article = $("#" + article_id);
     //var is_bookmarked = $article.hasClass('is_bookmarked');

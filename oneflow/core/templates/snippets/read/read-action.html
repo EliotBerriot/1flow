@@ -1,7 +1,7 @@
 <span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-not_{{ action_name }}"
     title="{{ action_data.undo_title }}">
     {% spaceless %}
-    <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
+    <a href="#" onclick="{{ js_func }}" class="nowrap">
       {% if action_data.undo_icon_stack %}
 
         <span class="icon-stack">
@@ -19,7 +19,7 @@
 <span class="action {{ popover_class }} popover-{{ popover_direction }} action-mark-{{ action_name }}"
     title="{{ action_data.do_title }}">
     {% spaceless %}
-    <a href="#" onclick="javascript:return {{ js_func }};" class="nowrap">
+    <a href="#" onclick="{{ js_func }}" class="nowrap">
 
       {% if action_data.do_icon_stack %}
         <span class="icon-stack">

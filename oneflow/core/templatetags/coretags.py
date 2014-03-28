@@ -585,7 +585,7 @@ def read_action(article, action_name, with_text=True, popover_direction=None):
             'action_name': action_name,
             'action_data': Read.status_data.get(action_name),
             'popover_class': '' if with_text else 'popover-tooltip',
-            'js_func': "toggle_status('{0}', '{1}')".format(
+            'js_func': "toggle_status(event, '{0}', '{1}')".format(
                        article.id, action_name)
         }
 
